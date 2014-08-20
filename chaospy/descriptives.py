@@ -18,6 +18,7 @@ import numpy as np
 import poly as po
 import dist as di
 import quadrature as qu
+from scipy.stats import spearmanr
 
 __version__ = "1.0"
 
@@ -570,6 +571,42 @@ Examples
 
     return out
 
+def Spearman(poly, dist, sample=1e4, retall=False, **kws):
+    """
+Calculate Spearman's rank-order correlation coefficient
+
+Parameters
+----------
+poly : Poly
+    Polynomial of interest.
+dist : Dist
+    Defines the space where correlation is taken.
+sample : int
+    Number of samples used in estimation.
+retall : bool
+    If true, return p-value as well.
+**kws : optional
+    Extra keywords passed to dist.sample.
+
+Returns
+-------
+rho[, p-value]
+
+rho : float or ndarray
+    Correlation output. Of type float if two-dimensional problem.
+    Correleation matrix if larger.
+p-value : float or ndarray
+    The two-sided p-value for a hypothesis test whose null
+    hypothesis is that two sets of data are uncorrelated, has same
+    dimension as rho.
+    """
+    samples = dist.sample(sample, **kws)
+    poly = po.flatten(poly)
+    Y = poly(*samples)
+    if retall:
+        return spearmanr(Y.T)
+    return spearmanr(Y.T)[0]
+
 
 def Perc(poly, q, dist, sample=1e4, **kws):
     """
@@ -587,7 +624,7 @@ dist : Dist
 sample : int
     Number of samples used in estimation.
 **kws : optional
-    Extra keywords passed to dist.mom.
+    Extra keywords passed to dist.sample.
 
 Returns
 -------
@@ -737,6 +774,8 @@ Total effect sensitivity index
             dist, **kws))/V
         zero[i] = 1
     return out
+
+
 
 
 if __name__=="__main__":
