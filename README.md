@@ -6,23 +6,30 @@ Source code and documentation for the Chaospy package for uncertainty quantifica
 
 ### Requirements
 
-python
+`python
 numpy
 scipy
-networkx
+networkx`
 
-### optional packages
+### Optional packages
 
-scikit-learn (for regression tools)
-cython (for adaptive cubature)
-gcc (for adaptive cubature)
+For regression analysis:
+
+`scikit-learn`
+
+For adaptive cubature:
+
+`cython
+gcc`
 
 ### Installation in Debian
 
 As super user:
+
 `apt-get install python python-numpy python-scipy python-networkx python-sklearn cython gcc`
 
 ### Enviromental variables
 
 In linux add the folder where
+
 `export PYTHONPATH=$PYTHONPATH:path/to/repo`
