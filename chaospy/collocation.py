@@ -14,8 +14,13 @@ from scipy import linalg as la
 
 try:
     from sklearn import linear_model as lm
+except:
+    pass
+
 try:
     from cubature._cubature import _cubature
+except:
+    pass
 
 import poly as po
 import quadrature as qu
