@@ -2,7 +2,7 @@
 Tools for performing Probabilistic Collocation Method (PCM)
 
 pcm             Front-end function for PCM
-fitter_adaptive Fit an adaptive spectral projection
+fit_adaptive    Fit an adaptive spectral projection
 fit_regression  Fit a point collocation together
 fit_quadrature  Fit a spectral projection together
 lstsq_cv        Cross-validated least squares solver
@@ -11,24 +11,22 @@ rlstsq          Robust least squares solver
 
 import numpy as np
 from scipy import linalg as la
-#  from scipy.optimize import fmin
 
 try:
     from sklearn import linear_model as lm
-except:
-    print "sklearn not imported, advanced regression not available"
+try:
+    from cubature._cubature import _cubature
 
 import poly as po
 import quadrature as qu
 from orthogonal import orth_select
 from dist import samplegen
-from cubature._cubature import _cubature
 from utils import lazy_eval
 
 __version__ = "1.0"
 
 __all__ = [
-"pcm", "fitter_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
+"pcm", "fit_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
 ]
 
 def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
@@ -842,53 +840,6 @@ Examples
     u = u.reshape(u.shape[0], np.prod(u.shape[1:]))
 
     rule = rule.upper()
-    # Scikit-learn wrapper
-    if rule=="BARD":
-        solver = lm.ARDRegression(fit_intercept=False,
-                copy_X=False, **kws)
-
-    elif rule=="BR":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.BayesianRidge(**kws)
-
-    elif rule=="EN":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.ElasticNet(**kws)
-
-    elif rule=="ENC":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.ElasticNetCV(**kws)
-
-    elif rule=="LA":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.Lars(**kws)
-
-    elif rule=="LAC":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.LarsCV(**kws)
-
-    elif rule=="LAS":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.Lasso(**kws)
-
-    elif rule=="LASC":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.LassoCV(**kws)
-
-    elif rule=="LL":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.LassoLars(**kws)
-
-    elif rule=="LLC":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.LassoLarsCV(**kws)
-
-    elif rule=="LLIC":
-        kws["fit_intercept"] = kws.get("fit_intercept", False)
-        solver = lm.LassoLarsIC(**kws)
-
-    elif rule=="OMP":
-        solver = lm.OrthogonalMatchingPursuit(**kws)
 
     # Local rules
     if rule=="LS":
@@ -903,8 +854,60 @@ Examples
                 kws.get("alpha", None), True)
 
     else:
-        uhat = [solver.fit(Q, _).coef_ for _ in u.T]
-        uhat = np.array(uhat).T
+
+        # Scikit-learn wrapper
+        try:
+            _ = lm
+        except:
+            raise NotImplementedError(
+                    "sklearn not installed")
+
+        if rule=="BARD":
+            solver = lm.ARDRegression(fit_intercept=False,
+                    copy_X=False, **kws)
+
+        elif rule=="BR":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.BayesianRidge(**kws)
+
+        elif rule=="EN":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.ElasticNet(**kws)
+
+        elif rule=="ENC":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.ElasticNetCV(**kws)
+
+        elif rule=="LA":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.Lars(**kws)
+
+        elif rule=="LAC":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.LarsCV(**kws)
+
+        elif rule=="LAS":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.Lasso(**kws)
+
+        elif rule=="LASC":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.LassoCV(**kws)
+
+        elif rule=="LL":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.LassoLars(**kws)
+
+        elif rule=="LLC":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.LassoLarsCV(**kws)
+
+        elif rule=="LLIC":
+            kws["fit_intercept"] = kws.get("fit_intercept", False)
+            solver = lm.LassoLarsIC(**kws)
+
+        elif rule=="OMP":
+            solver = lm.OrthogonalMatchingPursuit(**kws)
 
     u = u.reshape(u.shape[0], *shape)
 
@@ -954,7 +957,7 @@ folds : int,optional
 
 
 
-def fitter_adaptive(func, poly, dist, abserr=1.e-8, relerr=1.e-8,
+def fit_adaptive(func, poly, dist, abserr=1.e-8, relerr=1.e-8,
         budget=0, norm=0, bufname="", retall=False):
     """Adaptive estimation of Fourier coefficients.
 
@@ -987,7 +990,7 @@ norm : int
     3 : L1-norm
     4 : L_infinity-norm
 bufname : str, optional
-    Buffer evaluations to file such that the fitter_adaptive can be
+    Buffer evaluations to file such that the fit_adaptive can be
     run again without redooing all evaluations.
 retall : bool
     If true, returns extra values.
@@ -1012,7 +1015,7 @@ Examples
 >>> func = lambda q: q[0]*q[1]
 >>> poly = cp.basis(0,2,2)
 >>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
->>> res = cp.fitter_adaptive(func, poly, dist, budget=100)
+>>> res = cp.fit_adaptive(func, poly, dist, budget=100)
 >>> print res
     """
 
@@ -1051,8 +1054,13 @@ Examples
         out = np.array([Y.T*q1 for q1 in Q]).T.flatten()
         out = out/np.tile(val1, ns)
         return out
+    try:
+        _ = _cubature
+    except:
+        raise NotImplementedError(
+                "cubature not install properly")
     _cubature(f2, dim2, xmin, xmax, (), "h", abserr, relerr, norm,
-            budget, True, val2, err2)
+                budget, True, val2, err2)
 
     shape = (dim1,)+val.shape
     val2 = val2.reshape(shape[::-1]).T
