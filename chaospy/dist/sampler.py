@@ -11,9 +11,9 @@ sample_select and Sampler are obsolete and only available as legacy
 import numpy as np
 from sobol_lib import sobol
 
-from polychaos.utils import combine
-from polychaos import bertran as be
-from polychaos.quadrature import golub_welsch as _gw
+from chaospy.utils import combine
+from chaospy import bertran as be
+from chaospy.quadrature import golub_welsch as _gw
 
 
 def samplegen(order, domain, rule="S", antithetic=None,
@@ -227,13 +227,13 @@ Examples
 --------
 
 Order 3 Gaussian quadrature
->>> S = pc.Sampler(pc.Normal(), scheme=0)
+>>> S = cp.Sampler(cp.Normal(), scheme=0)
 >>> print S(3)
 [-2.33441422 -0.74196378  0.74196378  2.33441422]
 
 Full tensor grid with Clenshaw-Curtis nodes
->>> dist = pc.J(pc.Uniform(), pc.Uniform())
->>> S = pc.Sampler(dist, scheme=2, edge=1)
+>>> dist = cp.J(cp.Uniform(), cp.Uniform())
+>>> S = cp.Sampler(dist, scheme=2, edge=1)
 >>> print S(1)
 [[ 0.   0. ]
  [ 0.   0.5]
@@ -246,7 +246,7 @@ Full tensor grid with Clenshaw-Curtis nodes
  [ 1.   1. ]]
 
 Smolyak sparse grid with Fejer nodes
->>> S = pc.Sampler(dist, scheme=2, edge=0, sparse=2)
+>>> S = cp.Sampler(dist, scheme=2, edge=0, sparse=2)
 >>> print S(1)
 [[ 0.5   0.5 ]
  [ 0.25  0.5 ]
@@ -255,15 +255,15 @@ Smolyak sparse grid with Fejer nodes
  [ 0.5   0.75]]
 
 Stroud's cubature of order 3
->>> S = pc.Sampler(dist, scheme=3)
+>>> S = cp.Sampler(dist, scheme=3)
 >>> print S(3)
 [[ 0.90824829  0.5       ]
  [ 0.5         0.90824829]
  [ 0.09175171  0.5       ]]
 
 Latin Hypercube sampling
->>> pc.seed(1000)
->>> S = pc.Sampler(dist, scheme=4)
+>>> cp.seed(1000)
+>>> S = cp.Sampler(dist, scheme=4)
 >>> print S(3)
 [[ 0.6633974   0.46811863]
  [ 0.27875174  0.05308317]
@@ -606,7 +606,7 @@ def korobov(dim, n, a=17797):
 
 
 if __name__=="__main__":
-    import __init__ as pc
+    import __init__ as cp
     import doctest
     doctest.testmod()
 

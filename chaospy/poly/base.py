@@ -31,13 +31,13 @@ Examples
 --------
 Direct construction:
 
->>> P = pc.Poly({(1,):np.array(1)})
+>>> P = cp.Poly({(1,):np.array(1)})
 >>> print P
 q0
 
 Basic operators:
 
->>> x,y = pc.variable(2)
+>>> x,y = cp.variable(2)
 >>> print x**2 + x*y + 2
 q0q1+q0^2+2
 
@@ -49,7 +49,7 @@ Evaluation:
 
 Arrays:
 
->>> P = pc.Poly([x*y, x, y])
+>>> P = cp.Poly([x*y, x, y])
 >>> print P
 [q0q1, q0, q1]
     """
@@ -862,9 +862,9 @@ dim : int
 
 Examples
 --------
->>> x,y = pc.variable(2)
+>>> x,y = cp.variable(2)
 >>> P = x*x-x*y
->>> print pc.setdim(P, 1)
+>>> print cp.setdim(P, 1)
 q0^2
     """
 
@@ -904,7 +904,7 @@ def decompose(P):
 Decompose a polynomial to component form.
 
 In array missing values are padded with 0 to make decomposition
-compatible with `pc.sum(Q, 0)`.
+compatible with `cp.sum(Q, 0)`.
 
 Parameters
 ----------
@@ -919,13 +919,13 @@ Q : Poly
 
 Examples
 --------
->>> q = pc.variable()
->>> P = pc.Poly([q**2-1, 2])
+>>> q = cp.variable()
+>>> P = cp.Poly([q**2-1, 2])
 >>> print P
 [q0^2-1, 2]
->>> print pc.decompose(P)
+>>> print cp.decompose(P)
 [[q0^2, 0], [-1, 2]]
->>> print pc.sum(pc.decompose(P), 0)
+>>> print cp.sum(cp.decompose(P), 0)
 [q0^2-1, 2]
     """
 
@@ -958,10 +958,10 @@ Q : bool
 
 Examples
 --------
->>> x,y = pc.variable(2)
->>> print pc.is_decomposed(pc.Poly([1,x,x*y]))
+>>> x,y = cp.variable(2)
+>>> print cp.is_decomposed(cp.Poly([1,x,x*y]))
 True
->>> print pc.is_decomposed(pc.Poly([x+1,x*y]))
+>>> print cp.is_decomposed(cp.Poly([x+1,x*y]))
 False
     """
 
@@ -993,12 +993,12 @@ Q : Poly
 
 Examples
 --------
->>> x,y = pc.variable(2)
->>> P = pc.Poly([2, x*y, 2*x])
->>> Q = pc.dimsplit(P)
+>>> x,y = cp.variable(2)
+>>> P = cp.Poly([2, x*y, 2*x])
+>>> Q = cp.dimsplit(P)
 >>> print Q
 [[2, 1, 2], [1, q0, q0], [1, q1, 1]]
->>> print pc.prod(Q, 0)
+>>> print cp.prod(Q, 0)
 [2, q0q1, 2q0]
     """
 
@@ -1072,13 +1072,13 @@ Q : Poly
 
 Examples
 --------
->>> x,y = pc.variable(2)
->>> P = pc.Poly([y*y-1, y*x])
->>> print pc.substitute(P, y, x+1)
+>>> x,y = cp.variable(2)
+>>> P = cp.Poly([y*y-1, y*x])
+>>> print cp.substitute(P, y, x+1)
 [q0^2+2q0, q0^2+q0]
 
 With multiple substitutions:
->>> print pc.substitute(P, [x,y], [y,x])
+>>> print cp.substitute(P, [x,y], [y,x])
 [q0^2-1, q0q1]
     """
 
@@ -1475,6 +1475,6 @@ def asfloat(P):
 
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import doctest
     doctest.testmod()

@@ -188,16 +188,16 @@ w : numpy.array
 
 Examples
 --------
->>> Z = pc.Normal()
->>> x, w = pc.golub_welsch(3, Z)
+>>> Z = cp.Normal()
+>>> x, w = cp.golub_welsch(3, Z)
 >>> print x
 [[-2.33441422 -0.74196378  0.74196378  2.33441422]]
 >>> print w
 [ 0.04587585  0.45412415  0.45412415  0.04587585]
 
 Multivariate
->>> Z = pc.J(pc.Uniform(), pc.Uniform())
->>> x, w = pc. golub_welsch(1, Z)
+>>> Z = cp.J(cp.Uniform(), cp.Uniform())
+>>> x, w = cp. golub_welsch(1, Z)
 >>> print x
 [[ 0.21132487  0.21132487  0.78867513  0.78867513]
  [ 0.21132487  0.78867513  0.21132487  0.78867513]]
@@ -272,8 +272,8 @@ A,B : np.ndarray
 
 Examples
 --------
->>> dist = pc.Uniform()
->>> orth, norms, A, B = pc.stieltjes(dist, 2, retall=True)
+>>> dist = cp.Uniform()
+>>> orth, norms, A, B = cp.stieltjes(dist, 2, retall=True)
 >>> print orth[2]
 [q0^2-q0+0.166666666667]
 >>> print norms
@@ -626,9 +626,9 @@ y : np.ndarray
 
 Examples
 --------
->>> dist = pc.Gamma()
+>>> dist = cp.Gamma()
 >>> func = lambda x: x**3-1
->>> q, x, w, y = pc.quad(func, 1, dist, retall=True, rule="G")
+>>> q, x, w, y = cp.quad(func, 1, dist, retall=True, rule="G")
 >>> print q
 [ 5.]
 >>> print x
@@ -890,8 +890,8 @@ def probabilistic_collocation(order, dist, subset=.1):
 
 
 if __name__=="__main__":
-    import __init__ as pc
-    x,y = pc.variable(2)
+    import __init__ as cp
+    x,y = cp.variable(2)
     import doctest
     doctest.testmod()
 

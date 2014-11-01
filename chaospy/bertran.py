@@ -91,7 +91,7 @@ I : tuple
 Examples
 --------
 >>> for i in range(5):
-...     print pc.multi_index(i,3)
+...     print cp.multi_index(i,3)
 (0, 0, 0)
 (1, 0, 0)
 (0, 1, 0)
@@ -100,7 +100,7 @@ Examples
 
 See Also
 --------
-pc.single_index
+single_index
     """
 
     def _rec(i, D):
@@ -147,9 +147,9 @@ indices : list
 
 Examples
 --------
->>> print pc.bindex(0, 1, 3)
+>>> print cp.bindex(0, 1, 3)
 [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)]
->>> print pc.bindex(2, 3, 2)
+>>> print cp.bindex(2, 3, 2)
 [(2, 0), (1, 1), (0, 2), (3, 0), (2, 1), (1, 2), (0, 3)]
     """
 
@@ -301,9 +301,9 @@ j : int
 
 Examples
 --------
->>> print pc.child(4, 1, 0)
+>>> print cp.child(4, 1, 0)
 5
->>> print pc.child(4, 2, 1)
+>>> print cp.child(4, 2, 1)
 8
     """
     I = multi_index(i, dim)
@@ -319,7 +319,7 @@ Create an lexiographical sorted basis for a given order.
 
 Examples
 --------
->>> pc.olindex(3,2)
+>>> cp.olindex(3,2)
 array([[0, 3],
        [1, 2],
        [2, 1],
@@ -380,13 +380,13 @@ sparse_segments where `||cords||_1 <= D`.
 
 Examples
 --------
->>> pc.sparse_segment([0,2])
+>>> cp.sparse_segment([0,2])
 array([[ 0.5  ,  0.125],
        [ 0.5  ,  0.375],
        [ 0.5  ,  0.625],
        [ 0.5  ,  0.875]])
 
->>> pc.sparse_segment([0,1,0,0])
+>>> cp.sparse_segment([0,1,0,0])
 array([[ 0.5 ,  0.25,  0.5 ,  0.5 ],
        [ 0.5 ,  0.75,  0.5 ,  0.5 ]])
     """
@@ -487,7 +487,7 @@ j : int
 
 
 if __name__=="__main__":
-    import __init__ as pc
+    import __init__ as cp
     import doctest
     doctest.testmod()
 

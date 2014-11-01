@@ -852,7 +852,7 @@ class Composit(Dist):
     def _str(self, dist, N):
         return "%s/%d" % (dist, N)
 
-#  from polychaos.quadrature import momgen
+#  from chaospy.quadrature import momgen
 #  class Custom(Dist):
 #  
 #      def __init__(self, func, dist, order=10, **kws):

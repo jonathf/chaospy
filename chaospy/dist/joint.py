@@ -186,13 +186,13 @@ dist : Dist
 Examples
 --------
 Independent
->>> dist = pc.J(pc.Uniform(), pc.Normal())
+>>> dist = cp.J(cp.Uniform(), cp.Normal())
 >>> print dist.mom([[0,0,1], [0,2,2]])
 [ 1.   1.   0.5]
 
 Dependent
->>> d0 = pc.Uniform()
->>> dist = pc.J(d0, d0+pc.Uniform())
+>>> d0 = cp.Uniform()
+>>> dist = cp.J(d0, d0+cp.Uniform())
 >>> print dist.mom([[0,0,1], [0,1,1]])
 [ 1.          1.          0.53469533]
     """
@@ -215,9 +215,9 @@ variables from an univariate variable.
 
 Examples
 --------
->>> X = pc.Normal()
->>> Y = pc.Iid(X, 4)
->>> pc.seed(1000)
+>>> X = cp.Normal()
+>>> Y = cp.Iid(X, 4)
+>>> cp.seed(1000)
 >>> print Y.sample()
 [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
     """
@@ -268,7 +268,7 @@ N : int
 
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import numpy as np
     import doctest
     doctest.testmod()

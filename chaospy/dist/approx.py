@@ -14,7 +14,7 @@ Functions
     find_interior_point     Find an interior point (global)
 """
 import numpy as np
-from polychaos.quadrature import generate_quadrature
+from chaospy.quadrature import generate_quadrature
 
 
 def pdf(dist, x, G, eps=1.e-7, verbose=False,
@@ -29,7 +29,7 @@ dist : Dist
 x : np.ndarray
     Location coordinates. Requires that x.shape=(len(dist), K).
 G : Graph
-    The polychaos state of the distribution calculations.
+    The chaospy state of the distribution calculations.
 eps : float
     Acceptable error level for the approximations
 retall : bool
@@ -44,7 +44,7 @@ out : np.ndarray
     Local probability density function with out.shape=x.shape.
     To calculate actual density function: np.prod(out, 0)
 G : Graph
-    The polychaos calculation state after approximation is complete.
+    The chaospy calculation state after approximation is complete.
     """
 
     x = np.asfarray(x)
@@ -93,7 +93,7 @@ out : np.ndarray
     Global probability density function with out.shape=x.shape.
     To calculate actual density function: np.prod(out, 0)
 G : Graph
-    The polychaos calculation state after approximation is complete.
+    The chaospy calculation state after approximation is complete.
     """
 
     dim = len(dist)

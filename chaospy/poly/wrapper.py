@@ -95,12 +95,12 @@ Q : p.Poly, f.frac, array_like
 
 Examples
 --------
->>> P = pc.prange(3)*2**-np.arange(0, 6, 2, float)
+>>> P = cp.prange(3)*2**-np.arange(0, 6, 2, float)
 >>> print P
 [1.0, 0.25q0, 0.0625q0^2]
->>> print pc.around(P)
+>>> print cp.around(P)
 [1.0, 0.0, 0.0]
->>> print pc.around(P, 2)
+>>> print cp.around(P, 2)
 [1.0, 0.25q0, 0.06q0^2]
     """
     if isinstance(A, (np.ndarray, float, int, long)):
@@ -157,10 +157,10 @@ Q : Poly, frac, array_like
 
 Examples
 --------
->>> P = pc.prange(6)
+>>> P = cp.prange(6)
 >>> print P
 [1, q0, q0^2, q0^3, q0^4, q0^5]
->>> print pc.reshape(P, (2,3))
+>>> print cp.reshape(P, (2,3))
 [[1, q0, q0^2], [q0^3, q0^4, q0^5]]
     """
     if isinstance(a, (np.ndarray, float, int, long)):
@@ -190,10 +190,10 @@ Q : Poly, frac, array_like
 
 Examples
 --------
->>> P = pc.reshape(pc.prange(4), (2,2))
+>>> P = cp.reshape(cp.prange(4), (2,2))
 >>> print P
 [[1, q0], [q0^2, q0^3]]
->>> print pc.flatten(P)
+>>> print cp.flatten(P)
 [1, q0, q0^2, q0^3]
     """
     if isinstance(A, (np.ndarray, float, int, long)):
@@ -228,10 +228,10 @@ Q : Poly, frac, array_like
 
 Examples
 --------
->>> P = pc.prange(3)
+>>> P = cp.prange(3)
 >>> print P
 [1, q0, q0^2]
->>> print pc.sum(P)
+>>> print cp.sum(P)
 q0^2+q0+1
     """
     if isinstance(A, (np.ndarray, float, int, long)):
@@ -265,14 +265,14 @@ Q : p.Poly
 
 Examples
 --------
->>> P = pc.reshape(pc.prange(8), (2,2,2))
+>>> P = cp.reshape(cp.prange(8), (2,2,2))
 >>> print P
 [[[1, q0], [q0^2, q0^3]], [[q0^4, q0^5], [q0^6, q0^7]]]
->>> print pc.prod(P)
+>>> print cp.prod(P)
 q0^28
->>> print pc.prod(P, 0)
+>>> print cp.prod(P, 0)
 [[q0^4, q0^6], [q0^8, q0^10]]
->>> print pc.prod(P, -1)
+>>> print cp.prod(P, -1)
 [[q0, q0^5], [q0^9, q0^13]]
     """
     if isinstance(A, (np.ndarray, float, int, long)):
@@ -329,8 +329,8 @@ Q : ndarray
 
 Examples
 --------
->>> P = pc.prange(4)
->>> print repr(pc.toarray(P))
+>>> P = cp.prange(4)
+>>> print repr(cp.toarray(P))
 array([1, q0, q0^2, q0^3], dtype=object)
     """
     if isinstance(A, (np.ndarray, float, int, long)):
@@ -387,11 +387,11 @@ Q : p.Poly, f.frac, array_like
 
 Examples
 --------
->>> P = pc.reshape(pc.prange(4), (2,2))
+>>> P = cp.reshape(cp.prange(4), (2,2))
 >>> print P
 [[1, q0], [q0^2, q0^3]]
 
->>> print pc.transpose(P)
+>>> print cp.transpose(P)
 [[1, q0^2], [q0, q0^3]]
     """
 
@@ -558,16 +558,16 @@ Examples
 --------
 Normal use
 
->>> x,y = pc.variable(2)
->>> P = pc.Poly([x-1, y])
->>> Q = pc.Poly([x+1, x*y])
->>> print pc.inner(P, Q)
+>>> x,y = cp.variable(2)
+>>> P = cp.Poly([x-1, y])
+>>> Q = cp.Poly([x+1, x*y])
+>>> print cp.inner(P, Q)
 q0q1^2+q0^2-1
 
 Backwards compatible
 
 >>> x = np.arange(4)
->>> print pc.inner(x, x)
+>>> print cp.inner(x, x)
 14
 
 See also
@@ -610,13 +610,13 @@ Q : p.Poly
 
 Examples
 --------
->>> x = pc.variable()
->>> P = pc.prange(3)
+>>> x = cp.variable()
+>>> P = cp.prange(3)
 >>> print P
 [1, q0, q0^2]
->>> print pc.outer(x, P)
+>>> print cp.outer(x, P)
 [q0, q0^2, q0^3]
->>> print pc.outer(P, P)
+>>> print cp.outer(P, P)
 [[1, q0, q0^2], [q0, q0^2, q0^3], [q0^2, q0^3, q0^4]]
     """
 
@@ -660,6 +660,6 @@ Examples
 
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import doctest
     doctest.testmod()

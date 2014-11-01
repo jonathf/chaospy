@@ -77,8 +77,8 @@ up : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Beta(2, 2, 2, 3)
+>>> cp.seed(1000)
+>>> f = cp.Beta(2, 2, 2, 3)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 2.28714073  2.43293108  2.56706892  2.71285927]
@@ -235,8 +235,8 @@ shift : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Exponential(1)
+>>> cp.seed(1000)
+>>> f = cp.Exponential(1)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 0.22314355  0.51082562  0.91629073  1.60943791]
@@ -423,8 +423,8 @@ shift : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Gamma(1, 1)
+>>> cp.seed(1000)
+>>> f = cp.Gamma(1, 1)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 0.22314355  0.51082562  0.91629073  1.60943791]
@@ -628,8 +628,8 @@ scale : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Laplace(2, 2)
+>>> cp.seed(1000)
+>>> f = cp.Laplace(2, 2)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 0.16741854  1.5537129   2.4462871   3.83258146]
@@ -733,8 +733,8 @@ scale : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Lognormal(0, 1)
+>>> cp.seed(1000)
+>>> f = cp.Lognormal(0, 1)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 0.43101119  0.77619841  1.28833038  2.32012539]
@@ -836,8 +836,8 @@ scale : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.MvNormal([0,0], [[1,.5],[.5,1]])
+>>> cp.seed(1000)
+>>> f = cp.MvNormal([0,0], [[1,.5],[.5,1]])
 >>> q = [[.4,.5,.6],[.4,.5,.6]]
 >>> print f.inv(q)
 [[-0.2533471   0.          0.2533471 ]
@@ -907,8 +907,8 @@ sigma : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Normal(2, 2)
+>>> cp.seed(1000)
+>>> f = cp.Normal(2, 2)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 0.31675753  1.49330579  2.50669421  3.68324247]
@@ -1108,8 +1108,8 @@ Must have lo <= mid <= up
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Triangle(2, 3, 4)
+>>> cp.seed(1000)
+>>> f = cp.Triangle(2, 3, 4)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 2.63245553  2.89442719  3.10557281  3.36754447]
@@ -1194,8 +1194,8 @@ up : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Uniform(2, 4)
+>>> cp.seed(1000)
+>>> f = cp.Uniform(2, 4)
 >>> q = np.linspace(0,1,5)
 >>> print f.inv(q)
 [ 2.   2.5  3.   3.5  4. ]
@@ -1245,8 +1245,8 @@ shift : float, Dist
 
 Examples
 --------
->>> pc.seed(1000)
->>> f = pc.Weibull(2)
+>>> cp.seed(1000)
+>>> f = cp.Weibull(2)
 >>> q = np.linspace(0,1,6)[1:-1]
 >>> print f.inv(q)
 [ 0.47238073  0.71472066  0.95723076  1.26863624]
@@ -1296,7 +1296,7 @@ shift :  float, Dist
 
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import numpy as np
     import doctest
     doctest.testmod()

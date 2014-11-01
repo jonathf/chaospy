@@ -43,10 +43,10 @@ Itterate through distribution's dependencies:
 or get all distributions as a list:
     G.dependencies()
 
-print the polychaos state of graph:
+print the chaospy state of graph:
     print G
 
-Make a copy of polychaos state:
+Make a copy of chaospy state:
     G.copy()
 
 Initiate an itteration process:
@@ -163,7 +163,7 @@ Shallow copy of graph. Distribution stays the same.
         """
 Run through network to perform an operator.
 Using this during another call is possible, but care has to be
-taken to ensure that the polychaos graph state is compatible with the
+taken to ensure that the chaospy graph state is compatible with the
 new call.
 
 x : np.ndarray

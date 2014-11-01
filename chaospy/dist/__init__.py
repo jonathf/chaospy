@@ -28,21 +28,21 @@ The module contains the following submodules:
 
 Examples
 --------
->>> X1 = pc.Normal(0,1)
+>>> X1 = cp.Normal(0,1)
 >>> print X1.mom([1,2,3,4])
 [ 0.  1.  0.  3.]
 
->>> X2 = pc.Uniform(0,4)
+>>> X2 = cp.Uniform(0,4)
 >>> print X2.fwd([2,3,4])
 [ 0.5   0.75  1.  ]
 
->>> X = pc.J(X1,X2)
+>>> X = cp.J(X1,X2)
 >>> print X.sample(3)
 [[ 0.39502989 -1.20032309  1.64760248]
  [ 1.92876561  3.48989814  0.84933072]]
 
->>> Y = pc.Iid(X1, 3)
->>> print pc.Cov(Y)
+>>> Y = cp.Iid(X1, 3)
+>>> print cp.Cov(Y)
 [[ 1.  0.  0.]
  [ 0.  1.  0.]
  [ 0.  0.  1.]]
@@ -130,8 +130,8 @@ from hyperbolic import *
 from trignometric import *
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     seed(1000)
     import doctest
-    import polychaos as pc
+    import chaospy as cp
     doctest.testmod()

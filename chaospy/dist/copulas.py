@@ -6,11 +6,11 @@ Copula wrapper.
 
 Examples
 --------
->>> dist = pc.Iid(pc.Uniform(), 2)
->>> copula = pc.Gumbel(dist, theta=1.5)
+>>> dist = cp.Iid(cp.Uniform(), 2)
+>>> copula = cp.Gumbel(dist, theta=1.5)
 
 The resulting copula is then ready for use
->>> pc.seed(1000)
+>>> cp.seed(1000)
 >>> print copula.sample(5)
 [[ 0.65358959  0.11500694  0.95028286  0.4821914   0.87247454]
  [ 0.02388273  0.10004972  0.00127477  0.10572619  0.4510529 ]]
@@ -182,8 +182,8 @@ out : Dist
 
 Examples
 --------
->>> dist = pc.J(pc.Uniform(), pc.Normal())
->>> copula = pc.Gumbel(dist, theta=2)
+>>> dist = cp.J(cp.Uniform(), cp.Normal())
+>>> copula = cp.Gumbel(dist, theta=2)
 >>> print copula.sample(3, "S")
 [[ 0.5         0.75        0.25      ]
  [ 0.07686128 -1.50814454  1.65112325]]
@@ -308,7 +308,7 @@ def T_copula(dist, a, R):
 
 
 if __name__=="__main__":
-    import __init__ as pc
+    import __init__ as cp
     import numpy as np
     import doctest
     doctest.testmod()

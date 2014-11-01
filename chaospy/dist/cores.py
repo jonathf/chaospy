@@ -196,8 +196,8 @@ class weibull(Dist):
     def _str(self, a):
         return "wei(%s)" % a
 
-from polychaos.quadrature import clenshaw_curtis as cc
-from polychaos.poly import variable
+from chaospy.quadrature import clenshaw_curtis as cc
+from chaospy.poly import variable
 def tri_ttr(k, a):
     q1,w1 = cc(int(10**3*a), 0, a)
     q2,w2 = cc(int(10**3*(1-a)), a, 1)
@@ -635,8 +635,8 @@ class mvstudentt(Dist):
 #  
 #  Examples
 #  --------
-#  >>> pc.seed(1000)
-#  >>> f = pc.Dirichlet([1,2,3])
+#  >>> cp.seed(1000)
+#  >>> f = cp.Dirichlet([1,2,3])
 #  >>> q = [[.3,.3,.7,.7],[.3,.7,.3,.7]]
 #  >>> print f.inv(q)
 #  [[ 0.06885008  0.06885008  0.21399691  0.21399691]

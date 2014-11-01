@@ -54,11 +54,11 @@ Var         Variance operator
 Examples
 --------
 For distributions:
->>> x = pc.variable()
->>> Z = pc.Uniform()
->>> print pc.E(Z)
+>>> x = cp.variable()
+>>> Z = cp.Uniform()
+>>> print cp.E(Z)
 0.5
->>> print pc.E(x**3, Z)
+>>> print cp.E(x**3, Z)
 0.25
     """
     if not isinstance(poly, (di.Dist, po.Poly)):
@@ -131,11 +131,11 @@ Skew        Skewness operator
 
 Examples
 --------
->>> x = pc.variable()
->>> Z = pc.Uniform()
->>> print pc.Var(Z)
+>>> x = cp.variable()
+>>> Z = cp.Uniform()
+>>> print cp.Var(Z)
 0.0833333333333
->>> print pc.Var(x**3, Z)
+>>> print cp.Var(x**3, Z)
 0.0803571428571
     """
 
@@ -212,11 +212,11 @@ Skew        Skewness operator
 
 Examples
 --------
->>> x = pc.variable()
->>> Z = pc.Uniform()
->>> print pc.Var(Z)
+>>> x = cp.variable()
+>>> Z = cp.Uniform()
+>>> print cp.Var(Z)
 0.0833333333333
->>> print pc.Var(x**3, Z)
+>>> print cp.Var(x**3, Z)
 0.0803571428571
     """
 
@@ -295,9 +295,9 @@ Var         Variance operator
 
 Examples
 --------
->>> x = pc.variable()
->>> Z = pc.Gamma()
->>> print pc.Skew(Z)
+>>> x = cp.variable()
+>>> Z = cp.Gamma()
+>>> print cp.Skew(Z)
 2.0
     """
     if isinstance(poly, di.Dist):
@@ -356,12 +356,12 @@ Var         Variance operator
 
 Examples
 --------
->>> x = pc.variable()
->>> Z = pc.Uniform()
->>> print pc.Kurt(Z)
+>>> x = cp.variable()
+>>> Z = cp.Uniform()
+>>> print cp.Kurt(Z)
 -1.2
->>> Z = pc.Normal()
->>> print pc.Kurt(x, Z)
+>>> Z = cp.Normal()
+>>> print cp.Kurt(x, Z)
 4.4408920985e-16
     """
     if isinstance(poly, di.Dist):
@@ -418,14 +418,14 @@ Var         Variance operator
 
 Examples
 --------
->>> Z = pc.MvNormal([0,0], [[2,.5],[.5,1]])
->>> print pc.Cov(Z)
+>>> Z = cp.MvNormal([0,0], [[2,.5],[.5,1]])
+>>> print cp.Cov(Z)
 [[ 2.   0.5]
  [ 0.5  1. ]]
 
->>> x = pc.variable()
->>> Z = pc.Normal()
->>> print pc.Cov([x, x**2], Z)
+>>> x = cp.variable()
+>>> Z = cp.Normal()
+>>> print cp.Cov([x, x**2], Z)
 [[ 1.  0.]
  [ 0.  2.]]
     """
@@ -503,14 +503,14 @@ Var         Variance operator
 
 Examples
 --------
->>> Z = pc.MvNormal([3,4], [[2,.5],[.5,1]])
->>> print pc.Corr(Z)
+>>> Z = cp.MvNormal([3,4], [[2,.5],[.5,1]])
+>>> print cp.Corr(Z)
 [[ 1.          0.35355339]
  [ 0.35355339  1.        ]]
 
->>> x = pc.variable()
->>> Z = pc.Normal()
->>> print pc.Corr([x, x**2], Z)
+>>> x = cp.variable()
+>>> Z = cp.Normal()
+>>> print cp.Corr([x, x**2], Z)
 [[ 1.  0.]
  [ 0.  1.]]
     """
@@ -554,9 +554,9 @@ Corr        Correlation matrix
 
 Examples
 --------
->>> poly = pc.prange(10)[1:]
->>> Z = pc.Uniform()
->>> print pc.Acf(poly, Z, 5)
+>>> poly = cp.prange(10)[1:]
+>>> Z = cp.Uniform()
+>>> print cp.Acf(poly, Z, 5)
 [ 1.          0.99148391  0.9721971   0.94571181  0.91265479]
     """
 
@@ -633,11 +633,11 @@ Q : ndarray
 
 Examples
 --------
->>> pc.seed(1000)
->>> x,y = pc.variable(2)
->>> poly = pc.Poly([x, x*y])
->>> Z = pc.J(pc.Uniform(3,6), pc.Normal())
->>> print pc.Perc(poly, [0, 50, 100], Z)
+>>> cp.seed(1000)
+>>> x,y = cp.variable(2)
+>>> poly = cp.Poly([x, x*y])
+>>> Z = cp.J(cp.Uniform(3,6), cp.Normal())
+>>> print cp.Perc(poly, [0, 50, 100], Z)
 [[  3.         -45.        ]
  [  4.5080777   -0.05862173]
  [  6.          45.        ]]

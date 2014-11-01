@@ -564,6 +564,6 @@ def asfloat(A):
     return np.asfarray(a*1./b)
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import doctest
     doctest.testmod()

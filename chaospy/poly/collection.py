@@ -56,9 +56,9 @@ Q : Poly
 
 Examples
 --------
->>> print pc.basis(4,4,2)
+>>> print cp.basis(4,4,2)
 [q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
->>> print pc.basis([1,1],[2,2])
+>>> print cp.basis([1,1],[2,2])
 [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
     """
 
@@ -490,6 +490,6 @@ def order(P):
 
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import doctest
     doctest.testmod()

@@ -110,11 +110,11 @@ Examples
 
 Define function and distribution:
 >>> func = lambda z: -z[1]**2 + 0.1*z[0]
->>> dist = pc.J(pc.Uniform(), pc.Uniform())
+>>> dist = cp.J(cp.Uniform(), cp.Uniform())
 
 Perform pcm:
->>> q = pc.pcm(func, 2, dist)
->>> print pc.around(q, 10)
+>>> q = cp.pcm(func, 2, dist)
+>>> print cp.around(q, 10)
 0.1q0-q1^2
 
 See also
@@ -232,18 +232,18 @@ y : np.ndarray
 #  
 #  Define function and distribution:
 #  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
-#  >>> dist = pc.J(pc.Uniform(), pc.Uniform())
+#  >>> dist = cp.J(cp.Uniform(), cp.Uniform())
 #  
 #  Perform pcm:
-#  >>> q, x, w, y = pc.pcm_cc(func, 2, dist, acc=2, retall=1)
-#  >>> print pc.around(q, 10)
+#  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1)
+#  >>> print cp.around(q, 10)
 #  -q1^2+0.1q0
 #  >>> print len(w)
 #  9
 #  
 #  With Smolyak sparsegrid
-#  >>> q, x, w, y = pc.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
-#  >>> print pc.around(q, 10)
+#  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
+#  >>> print cp.around(q, 10)
 #  -q1^2+0.1q0
 #  >>> print len(w)
 #  13
@@ -408,11 +408,11 @@ X : np.ndarray
 #  >>> func = lambda z: z[1]*z[0]
 #  
 #  Define distribution:
-#  >>> dist = pc.J(pc.Normal(), pc.Normal())
+#  >>> dist = cp.J(cp.Normal(), cp.Normal())
 #  
 #  Perform pcm:
-#  >>> p, x, w, y = pc.pcm_gq(func, 2, dist, acc=3, retall=True)
-#  >>> print pc.around(p, 10)
+#  >>> p, x, w, y = cp.pcm_gq(func, 2, dist, acc=3, retall=True)
+#  >>> print cp.around(p, 10)
 #  q0q1
 #  >>> print len(w)
 #  16
@@ -515,7 +515,7 @@ orth : int, str, callable, Poly
         It must be of length N+1=comb(M+D, M)
 regression : str
     Linear regression method used.
-    See pc.fit_regression for more details.
+    See fit_regression for more details.
 retall : bool
     If True, return extra values.
 
@@ -526,11 +526,11 @@ retall : bool
 #  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
 #  
 #  Define distribution:
-#  >>> dist = pc.J(pc.Normal(), pc.Normal())
+#  >>> dist = cp.J(cp.Normal(), cp.Normal())
 #  
 #  Perform pcm:
-#  >>> q, x, y = pc.pcm_lr(func, 2, dist, retall=True)
-#  >>> print pc.around(q, 10)
+#  >>> q, x, y = cp.pcm_lr(func, 2, dist, retall=True)
+#  >>> print cp.around(q, 10)
 #  -q1^2+0.1q0
 #  >>> print len(x.T)
 #  12
@@ -824,7 +824,7 @@ uhat : np.ndarray
 
 Examples
 --------
->>> P = pc.Poly([1, x, y])
+>>> P = cp.Poly([1, x, y])
 >>> x = [[-1,-1,1,1], [-1,1,-1,1]]
 >>> u = [0,1,1,2]
 >>> print fit_regression(P, x, u)
@@ -1010,9 +1010,9 @@ norm_error : np.ndarray
 Examples
 --------
 >>> func = lambda q: q[0]*q[1]
->>> poly = pc.basis(0,2,2)
->>> dist = pc.J(pc.Uniform(0,1), pc.Uniform(0,1))
->>> res = pc.fitter_adaptive(func, poly, dist, budget=100)
+>>> poly = cp.basis(0,2,2)
+>>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
+>>> res = cp.fitter_adaptive(func, poly, dist, budget=100)
 >>> print res
     """
 
@@ -1066,9 +1066,9 @@ Examples
 
 if __name__=="__main__":
     import numpy as np
-    import __init__ as pc
+    import __init__ as cp
     import doctest
-    x, y = pc.variable(2)
+    x, y = cp.variable(2)
 
     doctest.testmod()
 

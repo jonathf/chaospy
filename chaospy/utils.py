@@ -63,7 +63,7 @@ Z : matrix of combinations with shape (np.prod(N), np.sum(M)).
 Examples
 --------
 >>> A, B = [1,2], [[4,4],[5,6]]
->>> print pc.combine([A, B])
+>>> print cp.combine([A, B])
 [[ 1.  4.  4.]
  [ 1.  5.  6.]
  [ 2.  4.  4.]
@@ -314,7 +314,7 @@ particles : integer
     Defaults to 2*len(x_0)+4
 
 w : float
-    Factor of influence for polychaos velocity. The higher
+    Factor of influence for a particle velocity. The higher
     the value, the more a particle follows the same path.
     I.e. less turning around.
 
@@ -459,10 +459,10 @@ quadrature  Integration approximation using Gaussian quadrature
 
 Examples
 --------
->>> pc.seed(1000)
+>>> cp.seed(1000)
 >>> foo = lambda x:x**3
->>> dist = pc.Uniform()
->>> print pc.mci(foo, dist=dist)
+>>> dist = cp.Uniform()
+>>> print cp.mci(foo, dist=dist)
 0.250923402627
     """
     x = dist.rnd(size=(len(dist), samples))
@@ -798,5 +798,5 @@ alpha : float, optional
 
 if __name__=="__main__":
     import doctest
-    import __init__ as pc
+    import __init__ as cp
     doctest.testmod()

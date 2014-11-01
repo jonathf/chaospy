@@ -30,9 +30,9 @@ Alternative use the construct generator.
 Examples
 --------
 A general uniform distribution wit two parameters
->>> class Uniform(pc.Dist):
+>>> class Uniform(cp.Dist):
 ...     def __init__(self, lo=0, up=1):
-...         pc.Dist.__init__(self, lo=lo, up=up)
+...         cp.Dist.__init__(self, lo=lo, up=up)
 ...     def _cdf(self, x, lo, up):
 ...         return (x-lo)/(up-lo)
 ...     def _bnd(self, lo, up):
@@ -699,7 +699,7 @@ Custom random variable
 
 
 if __name__=='__main__':
-    import __init__ as pc
+    import __init__ as cp
     import numpy as np
     import doctest
     doctest.testmod()

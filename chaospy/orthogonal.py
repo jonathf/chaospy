@@ -62,8 +62,8 @@ P : Poly
 
 Examples
 --------
->>> Z = pc.J(pc.Normal(), pc.Normal())
->>> print pc.orth_gs(2, Z)
+>>> Z = cp.J(cp.Normal(), cp.Normal())
+>>> print cp.orth_gs(2, Z)
 [1.0, q1, q0, -1.0+q1^2, q0q1, q0^2-1.0]
     """
 
@@ -128,7 +128,7 @@ dist : Dist
 normed : bool
     If True orthonormal polynomials will be used instead of monic.
 sort : str
-    Polynomial sorting. Same as in pc.basis
+    Polynomial sorting. Same as in basis
 retall : bool
     If true return norms as well.
 kws : optional
@@ -142,13 +142,13 @@ orth : Poly
     Orthogonal polynomial expansion
 norms : np.ndarray
     Norms of the orthogonal expansion on the form
-    pc.E(orth**2, dist)
+    E(orth**2, dist)
     Calculated using recurrence coefficients for stability.
 
 Examples
 --------
->>> Z = pc.Normal()
->>> print pc.orth_ttr(4, Z)
+>>> Z = cp.Normal()
+>>> print cp.orth_ttr(4, Z)
 [1.0, q0, q0^2-1.0, q0^3-3.0q0, -6.0q0^2+3.0+q0^4]
     """
 
@@ -199,8 +199,8 @@ kws : optional
 
 Examples
 --------
->>> Z = pc.Normal()
->>> print pc.orth_chol(3, Z)
+>>> Z = cp.Normal()
+>>> print cp.orth_chol(3, Z)
 [1.0, q0, 0.707106781187q0^2-0.707106781187, 0.408248290464q0^3-1.22474487139q0]
     """
 
@@ -254,7 +254,7 @@ P : Poly
 
 Examples
 --------
->>> Z = pc.MvNormal([0,0], [[1,.5],[.5,1]])
+>>> Z = cp.MvNormal([0,0], [[1,.5],[.5,1]])
 >>> P = orth_bert(2, Z)
 >>> print P
 [1.0, q0, q1-0.5q0, q0^2-1.0, -0.5q0^2+q0q1, 0.25q0^2-0.75+q1^2-q0q1]
@@ -329,8 +329,8 @@ normed : bool
 
 Examples
 --------
-#  >>> Z = pc.Normal()
-#  >>> print pc.orth_pcd(2, Z)
+#  >>> Z = cp.Normal()
+#  >>> print cp.orth_pcd(2, Z)
 #  [1.0, q0^2-1.0, q0]
     """
 
@@ -384,8 +384,8 @@ normed : bool
 
 Examples
 --------
-#  >>> Z = pc.Normal()
-#  >>> print pc.orth_svd(2, Z)
+#  >>> Z = cp.Normal()
+#  >>> print cp.orth_svd(2, Z)
 #  [1.0, q0^2-1.0, q0]
     """
 
@@ -455,8 +455,8 @@ kws : optional
 
 Examples
 --------
-#  >>> Z = pc.Normal()
-#  >>> print pc.orth_chol(3, Z)
+#  >>> Z = cp.Normal()
+#  >>> print cp.orth_chol(3, Z)
 #  [1.0, q0, 0.707106781187q0^2-0.707106781187, 0.408248290464q0^3-1.22474487139q0]
     """
 
@@ -628,6 +628,6 @@ X : array_like
 
 if __name__=="__main__":
     import doctest
-    import __init__ as pc
+    import __init__ as cp
     doctest.testmod()
 

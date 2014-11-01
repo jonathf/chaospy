@@ -23,7 +23,7 @@ swapdim         Swap two given dimension
 variable        Variable constructor
 
 In addition there are a function that can be used on np.ndarray,
-pc.frac and pc.Poly.
+cp.frac and cp.Poly.
 
 Overlapping functions
 ---------------------
