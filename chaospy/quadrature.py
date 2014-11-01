@@ -10,6 +10,7 @@ stieltjes       Tool for performing discretized and analytical
                 Stieltjes procedure.
 """
 
+
 import numpy as np
 from scipy.misc import comb
 from scipy.optimize import fminbound
@@ -21,10 +22,10 @@ from genz_keister import gk16
 from gauss_patterson import gp
 
 
-def quadgen(order, domain, acc=100, sparse=False, rule="C",
-        composite=1, growth=None, part=None, **kws):
+def generate_quadrature(order, domain, acc=100, sparse=False, rule="C",
+            composite=1, growth=None, part=None, **kws):
     """
-Numerical quadrature node and weight generator 
+Numerical quadrature node and weight generator
 
 Parameters
 ----------
@@ -46,15 +47,15 @@ sparse : bool
 rule : str
     Quadrature rule
 
-    Key     Description
-    "G"     Optiomal Gaussian quadrature from Golub-Welsch
-            Slow for high order and composite is ignored.
-    "E"     Gauss-Legendre quadrature
-    "C"     Clenshaw-Curtis quadrature. Exponential growth rule is
-            used when sparse is True to make the rule nested.
-    "J"     Leja quadrature. Linear growth rule is nested.
-    "Z"     Hermite Genz-Keizter 16 rule. Nested. Valid to order 8.
-    "P"     Gauss-Patterson quadrature rule. Nested. Valid to order 8.
+    Key                 Description
+    "Gaussian", "G"     Optiomal Gaussian quadrature from Golub-Welsch
+                        Slow for high order and composite is ignored.
+    "Legendre", "E"     Gauss-Legendre quadrature
+    "Clenshaw", "C"     Clenshaw-Curtis quadrature. Exponential growth rule is
+                        used when sparse is True to make the rule nested.
+    "Leja", J"          Leja quadrature. Linear growth rule is nested.
+    "Genz", "Z"         Hermite Genz-Keizter 16 rule. Nested. Valid to order 8.
+    "Patterson", "P"    Gauss-Patterson quadrature rule. Nested. Valid to order 8.
 
     If other is provided, Monte Carlo integration is assumed and
     arguemnt is passed to samplegen with order and domain.
@@ -76,7 +77,14 @@ samplegen   Sample generator
     """
 
     rule = rule.upper()
-    if rule=="G":
+    if      rule == "Gaussian": rule = "G"
+    elif    rule == "Legendre": rule = "E"
+    elif    rule == "Clenshaw": rule = "C"
+    elif    rule == "Leja":     rule = "J"
+    elif    rule == "Genz":     rule = "Z"
+    elif    rule == "Patterson":rule = "P"
+
+    if rule == "G":
 
         assert isinstance(domain, di.Dist)
 
@@ -298,7 +306,7 @@ Examples
         bnd = dist.range()
         kws["rule"] = kws.get("rule", "C")
         assert kws["rule"].upper()!="G"
-        q,w = quadgen(acc, bnd, **kws)
+        q,w = generate_quadrature(acc, bnd, **kws)
         w = w*dist.pdf(q)
 
         dim = len(dist)
@@ -626,7 +634,7 @@ Examples
 >>> print x
 [[ 0.58578644  3.41421356]]
     """
-    x,w = quadgen(order, domain, acc=acc, sparse=sparse, rule=rule,
+    x,w = generate_quadrature(order, domain, acc=acc, sparse=sparse, rule=rule,
             composite=composite)
     y = np.array(map(func, x.T))
     q = np.sum((y.T*w).T, 0)
@@ -800,7 +808,7 @@ def momgen(order, domain, acc=100, sparse=False, rule="C",
         trans = lambda x: [func(x)]
 
     if part is None:
-        X,W = quadgen(order, domain=domain, acc=acc, sparse=sparse,
+        X,W = generate_quadrature(order, domain=domain, acc=acc, sparse=sparse,
                 rule=rule, composite=composite, part=part, **kws)
         Y = np.array(trans(X))
 

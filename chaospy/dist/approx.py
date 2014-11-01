@@ -14,7 +14,7 @@ Functions
     find_interior_point     Find an interior point (global)
 """
 import numpy as np
-from polychaos.quadrature import quadgen
+from polychaos.quadrature import generate_quadrature
 
 
 def pdf(dist, x, G, eps=1.e-7, verbose=False,
@@ -372,7 +372,7 @@ antithetic : array_like, optional
         shape = shape[1:]
 
     order = kws.pop("order", 40)
-    X,W = quadgen(order, dist, **kws)
+    X,W = generate_quadrature(order, dist, **kws)
 
 
     grid = np.mgrid[:len(X[0]),:size]

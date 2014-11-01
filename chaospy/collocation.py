@@ -2,8 +2,9 @@
 Tools for performing Probabilistic Collocation Method (PCM)
 
 pcm             Front-end function for PCM
-fitter_lr       Fit a point collocation together
-fitter_quad     Fit a spectral projection together
+fitter_adaptive Fit an adaptive spectral projection
+fit_regression  Fit a point collocation together
+fit_quadrature  Fit a spectral projection together
 lstsq_cv        Cross-validated least squares solver
 rlstsq          Robust least squares solver
 """
@@ -21,11 +22,13 @@ import poly as po
 import quadrature as qu
 from orthogonal import orth_select
 from dist import samplegen
+from cubature._cubature import _cubature
+from utils import lazy_eval
 
 __version__ = "1.0"
 
 __all__ = [
-"pcm", "fitter_quad", "fitter_lr", "fitter_quad", "lstsq_cv", "rlstsq"
+"pcm", "fitter_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
 ]
 
 def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
@@ -48,7 +51,7 @@ dist_out : Dist
     Distributions for models parameter
 rule : str
     The rule for estimating the Fourier coefficients.
-    For spectral projection/quadrature rules, see quadgen.
+    For spectral projection/quadrature rules, see generate_quadrature.
     For point collocation/nummerical sampling, see samplegen.
 
 Optional arguments
@@ -93,9 +96,9 @@ antithetic : bool, array_like
     Use of antithetic variable
 lr : str
     Linear regresion method.
-    See fitter_lr for more details.
+    See fit_regression for more details.
 lr_kws : dict
-    Extra keyword arguments passed to fitter_lr.
+    Extra keyword arguments passed to fit_regression.
 
 Returns
 -------
@@ -112,11 +115,11 @@ Define function and distribution:
 Perform pcm:
 >>> q = pc.pcm(func, 2, dist)
 >>> print pc.around(q, 10)
--q1^2+0.1q0
+0.1q0-q1^2
 
 See also
 --------
-quadgen         Generator for quadrature rules
+generate_quadrature         Generator for quadrature rules
 samplegen       Generator for sampling schemes
     """
 
@@ -143,12 +146,12 @@ samplegen       Generator for sampling schemes
     if rule in "GEC":
         if sorder is None:
             sorder = porder+1
-        z,w = qu.quadgen(sorder, dist, acc=quad_acc, sparse=sparse,
+        z,w = qu.generate_quadrature(sorder, dist, acc=quad_acc, sparse=sparse,
                 rule=rule, composit=composit, **kws)
 
         x = trans(z)
         y = np.array(map(func, x.T))
-        Q = fitter_quad(orth, x, w, y, **kws)
+        Q = fit_quadrature(orth, x, w, y, **kws)
 
     else:
         if sorder is None:
@@ -157,7 +160,7 @@ samplegen       Generator for sampling schemes
 
         x = trans(z)
         y = np.array(map(func, x.T))
-        Q = fitter_lr(orth, x, y, rule=lr, **kws)
+        Q = fit_regression(orth, x, y, rule=lr, **kws)
 
     return Q
 
@@ -224,38 +227,37 @@ w : np.ndarray
 y : np.ndarray
     Evauluations of func with `len(y)=K`.
 
-Examples
---------
-
-Define function and distribution:
->>> func = lambda z: -z[1]**2 + 0.1*z[0]
->>> dist = pc.J(pc.Uniform(), pc.Uniform())
-
-Perform pcm:
->>> q, x, w, y = pc.pcm_cc(func, 2, dist, acc=2, retall=1)
->>> print pc.around(q, 10)
--q1^2+0.1q0
->>> print len(w)
-9
-
-With Smolyak sparsegrid
->>> q, x, w, y = pc.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
->>> print pc.around(q, 10)
--q1^2+0.1q0
->>> print len(w)
-13
-
+#  Examples
+#  --------
+#  
+#  Define function and distribution:
+#  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
+#  >>> dist = pc.J(pc.Uniform(), pc.Uniform())
+#  
+#  Perform pcm:
+#  >>> q, x, w, y = pc.pcm_cc(func, 2, dist, acc=2, retall=1)
+#  >>> print pc.around(q, 10)
+#  -q1^2+0.1q0
+#  >>> print len(w)
+#  9
+#  
+#  With Smolyak sparsegrid
+#  >>> q, x, w, y = pc.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
+#  >>> print pc.around(q, 10)
+#  -q1^2+0.1q0
+#  >>> print len(w)
+#  13
     """
     if acc is None:
         acc = order+1
 
     if dist_in is None:
-        z,w = qu.quadgen(acc, dist_out, 100, sparse=sparse,
+        z,w = qu.generate_quadrature(acc, dist_out, 100, sparse=sparse,
                 rule="C")
         x = z
         dist = dist_out
     else:
-        z,w = qu.quadgen(acc, dist_in, 100, sparse=sparse,
+        z,w = qu.generate_quadrature(acc, dist_in, 100, sparse=sparse,
                 rule="C")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
@@ -271,13 +273,13 @@ With Smolyak sparsegrid
         orth = orth(order, dist)
 
     y = np.array(map(func, x.T))
-    Q = fitter_quad(orth, x, w, y)
+    Q = fit_quadrature(orth, x, w, y)
 
     if retall:
         return Q, x, w, y
     return Q
 
-def fitter_quad(orth, nodes, weights, solves, retall=False,
+def fit_quadrature(orth, nodes, weights, solves, retall=False,
         norms=None, **kws):
     """
 Using spectral projection to create a polynomial approximation over
@@ -400,32 +402,32 @@ Q : Poly
 X : np.ndarray
     Values used in evaluation
 
-Examples
---------
-Define function:
->>> func = lambda z: z[1]*z[0]
-
-Define distribution:
->>> dist = pc.J(pc.Normal(), pc.Normal())
-
-Perform pcm:
->>> p, x, w, y = pc.pcm_gq(func, 2, dist, acc=3, retall=True)
->>> print pc.around(p, 10)
-q0q1
->>> print len(w)
-16
+#  Examples
+#  --------
+#  Define function:
+#  >>> func = lambda z: z[1]*z[0]
+#  
+#  Define distribution:
+#  >>> dist = pc.J(pc.Normal(), pc.Normal())
+#  
+#  Perform pcm:
+#  >>> p, x, w, y = pc.pcm_gq(func, 2, dist, acc=3, retall=True)
+#  >>> print pc.around(p, 10)
+#  q0q1
+#  >>> print len(w)
+#  16
 
     """
     if acc is None:
         acc = order+1
 
     if dist_in is None:
-        z,w = qu.quadgen(acc, dist_out, 100, sparse=sparse,
+        z,w = qu.generate_quadrature(acc, dist_out, 100, sparse=sparse,
                 rule="G")
         x = z
         dist = dist_out
     else:
-        z,w = qu.quadgen(acc, dist_in, 100, sparse=sparse,
+        z,w = qu.generate_quadrature(acc, dist_in, 100, sparse=sparse,
                 rule="G")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
@@ -513,25 +515,25 @@ orth : int, str, callable, Poly
         It must be of length N+1=comb(M+D, M)
 regression : str
     Linear regression method used.
-    See pc.fitter_lr for more details.
+    See pc.fit_regression for more details.
 retall : bool
     If True, return extra values.
 
-Examples
---------
-
-Define function:
->>> func = lambda z: -z[1]**2 + 0.1*z[0]
-
-Define distribution:
->>> dist = pc.J(pc.Normal(), pc.Normal())
-
-Perform pcm:
->>> q, x, y = pc.pcm_lr(func, 2, dist, retall=True)
->>> print pc.around(q, 10)
--q1^2+0.1q0
->>> print len(x.T)
-12
+#  Examples
+#  --------
+#  
+#  Define function:
+#  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
+#  
+#  Define distribution:
+#  >>> dist = pc.J(pc.Normal(), pc.Normal())
+#  
+#  Perform pcm:
+#  >>> q, x, y = pc.pcm_lr(func, 2, dist, retall=True)
+#  >>> print pc.around(q, 10)
+#  -q1^2+0.1q0
+#  >>> print len(x.T)
+#  12
     """
 
     if dist_in is None:
@@ -569,7 +571,7 @@ Perform pcm:
         y_ = y[:]
         R = orth * y
     else:
-        R, y_ = fitter_lr(orth, x, y, regression, retall=1)
+        R, y_ = fit_regression(orth, x, y, regression, retall=1)
 
     R = po.reshape(R, shape)
 
@@ -697,7 +699,7 @@ cross : bool
     return out
 
 
-def fitter_lr(P, x, u, rule="LS", retall=False, **kws):
+def fit_regression(P, x, u, rule="LS", retall=False, **kws):
     """
 Fit a polynomial chaos expansion using linear regression.
 
@@ -825,7 +827,7 @@ Examples
 >>> P = pc.Poly([1, x, y])
 >>> x = [[-1,-1,1,1], [-1,1,-1,1]]
 >>> u = [0,1,1,2]
->>> print fitter_lr(P, x, u)
+>>> print fit_regression(P, x, u)
 0.5q1+0.5q0+1.0
 
     """
@@ -945,12 +947,121 @@ folds : int,optional
         infold = R==fold
         x = X[:, True-infold]
         y = Y[True-infold]
-        poly = fitter_lr(P, x, y, rule=rule, **kws)
+        poly = fit_regression(P, x, y, rule=rule, **kws)
         out[infold] = out[infold]-poly(*X[:,infold])
 
     return out
 
 
+
+def fitter_adaptive(func, poly, dist, abserr=1.e-8, relerr=1.e-8,
+        budget=0, norm=0, bufname="", retall=False):
+    """Adaptive estimation of Fourier coefficients.
+
+Parameters
+----------
+func : callable
+    Should take a single argument `q` which is 1D array
+    `len(q)=len(dist)`.
+    Must return something compatible with np.ndarray.
+poly : Poly
+    Polynomial vector for which to create Fourier coefficients for.
+dist : Dist
+    A distribution to optimize the Fourier coefficients to.
+abserr : float
+    Absolute error tolerance.
+relerr : float
+    Relative error tolerance.
+budget : int
+    Soft maximum number of function evaluations.
+    0 means unlimited.
+norm : int
+    Specifies the norm that is used to measure the error and
+    determine convergence properties (irrelevant for single-valued
+    functions). The `norm` argument takes one of the values:
+    0 : L0-norm
+    1 : L0-norm on top of paired the L2-norm. Good for complex
+        numbers where each conseqtive pair of the solution is real
+        and imaginery.
+    2 : L2-norm
+    3 : L1-norm
+    4 : L_infinity-norm
+bufname : str, optional
+    Buffer evaluations to file such that the fitter_adaptive can be
+    run again without redooing all evaluations.
+retall : bool
+    If true, returns extra values.
+
+Returns
+-------
+estimate[, coeffs, norms, coeff_error, norm_error]
+
+estimate : Poly
+    The polynomial chaos expansion representation of func.
+coeffs : np.ndarray
+    The Fourier coefficients.
+norms : np.ndarray
+    The norm of the orthogonal polynomial squared.
+coeff_error : np.ndarray
+    Estimated integration error of the coeffs.
+norm_error : np.ndarray
+    Estimated integration error of the norms.
+
+Examples
+--------
+>>> func = lambda q: q[0]*q[1]
+>>> poly = pc.basis(0,2,2)
+>>> dist = pc.J(pc.Uniform(0,1), pc.Uniform(0,1))
+>>> res = pc.fitter_adaptive(func, poly, dist, budget=100)
+>>> print res
+    """
+
+    if bufname:
+        func = lazy_eval(func, load=bufname)
+
+    dim = len(dist)
+    n = [0,0]
+
+    dummy_x = dist.inv(.5*np.ones(dim, dtype=np.float64))
+    val = np.array(func(dummy_x), np.float64)
+
+    xmin = np.zeros(dim, np.float64)
+    xmax = np.ones(dim, np.float64)
+
+    def f1(u, ns, *args):
+        qs = dist.inv(u.reshape(ns, dim))
+        out = (poly(*qs.T)**2).T.flatten()
+        return out
+    dim1 = len(poly)
+    val1 = np.empty(dim1, dtype=np.float64)
+    err1 = np.empty(dim1, dtype=np.float64)
+    _cubature(f1, dim1, xmin, xmax, (), "h", abserr, relerr, norm,
+            budget, True, val1, err1)
+    val1 = np.tile(val1, val.size)
+
+    dim2 = np.prod(val.shape)*dim1
+    val2 = np.empty(dim2, dtype=np.float64)
+    err2 = np.empty(dim2, dtype=np.float64)
+    def f2(u, ns, *args):
+        n[0] += ns
+        n[1] += 1
+        qs = dist.inv(u.reshape(ns, dim))
+        Y = np.array([func(q) for q in qs])
+        Q = poly(*qs.T)
+        out = np.array([Y.T*q1 for q1 in Q]).T.flatten()
+        out = out/np.tile(val1, ns)
+        return out
+    _cubature(f2, dim2, xmin, xmax, (), "h", abserr, relerr, norm,
+            budget, True, val2, err2)
+
+    shape = (dim1,)+val.shape
+    val2 = val2.reshape(shape[::-1]).T
+
+    out = po.transpose(po.sum(poly*val2.T, -1))
+
+    if retall:
+        return out, val2, val1, err2, err1
+    return val2
 
 
 if __name__=="__main__":
