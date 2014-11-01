@@ -8,4 +8,6 @@ setup(name='chaospy',
       license='BSD',
       long_description=package.__doc__,
       platforms='any',
-      packages=['chaospy'])
+      packages=['chaospy', 'chaospy/dist', 'chaospy/poly'])
+
+

@@ -1,10 +1,11 @@
-## chaospy
 
-Source code and documentation for the Chaospy package for uncertainty quantification.
+# Chaospy
 
-## Installation
+Chaospy is a numerical tool for performing uncertainty
+quantification using polynomial chaos expansions and advanced Monte
+Carlo methods.
 
-### Requirements
+## Requirements
 
 `python
 numpy
@@ -19,17 +20,25 @@ For regression analysis:
 
 For adaptive cubature:
 
-`cython
-gcc`
+`cython`
+`gcc`
 
-### Installation in Debian
+### Prerequisite in Debian/Ubuntu
 
-As super user:
+To install the prerequisite on a Debian/Ubuntu machine:
 
-`apt-get install python python-numpy python-scipy python-networkx python-sklearn cython gcc`
+`apt-get install python python-numpy python-scipy python-networkx \`
+`       python-sklearn cython gcc`
 
-### Enviromental variables
+## Installation
 
-In linux add the folder where
+To install in the `site-packages` directory and make it importable
+from anywhere:
 
-`export PYTHONPATH=$PYTHONPATH:path/to/repo`
+`python setup.py install`
+
+## License
+
+The core code base is licensed under BSD terms.
+Files with deviating license have their own license written on top
+of the file.
