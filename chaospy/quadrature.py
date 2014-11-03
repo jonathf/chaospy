@@ -77,12 +77,12 @@ samplegen   Sample generator
     """
 
     rule = rule.upper()
-    if      rule == "Gaussian": rule = "G"
-    elif    rule == "Legendre": rule = "E"
-    elif    rule == "Clenshaw": rule = "C"
-    elif    rule == "Leja":     rule = "J"
-    elif    rule == "Genz":     rule = "Z"
-    elif    rule == "Patterson":rule = "P"
+    if      rule == "GAUSSIAN": rule = "G"
+    elif    rule == "LEGENDRE": rule = "E"
+    elif    rule == "CLENSHAW": rule = "C"
+    elif    rule == "LEJA":     rule = "J"
+    elif    rule == "GENZ":     rule = "Z"
+    elif    rule == "PATTERSON":rule = "P"
 
     if rule == "G":
 
