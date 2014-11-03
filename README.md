@@ -28,6 +28,7 @@ For adaptive cubature:
 To install the prerequisite on a Debian/Ubuntu machine:
 
 `apt-get install python python-numpy python-scipy python-networkx \`
+
 `       python-sklearn cython gcc`
 
 ## Installation
@@ -36,6 +37,9 @@ To install in the `site-packages` directory and make it importable
 from anywhere:
 
 `python setup.py install`
+
+To install the optional Cubature component, go into the subfolder
+`cubature` and run the same command there.
 
 ## License
 
