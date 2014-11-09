@@ -107,7 +107,7 @@ Arrays:
 
             return Poly(out, self.dim, shape, dtype)
 
-        if isinstance(y, (float, list, tuple, int, long)):
+        if isinstance(y, (float, list, tuple, int)):
             y = np.array(y)
 
         if isinstance(y, (np.ndarray, f.frac)):
@@ -398,7 +398,7 @@ dtype : type
 
         if dtype is None:
             dtype = dtype_
-        if dtype==int:
+        if dtype in (int, long):
 
             func1 = asint
             if shape is None:
@@ -465,6 +465,7 @@ dtype : type
     def __iter__(self):
         """x.__iter__() <==> iter(x)"""
 
+
         A = self.A
         Pset = []
 
@@ -475,6 +476,10 @@ dtype : type
 
                 if np.any(A[key][i]):
                     out[key] = A[key][i]
+
+            if len(self.shape) == 1:
+                for key in out.keys():
+                    out[key] = np.array([out[key]])
 
             Pset.append( Poly(out, self.dim, self.shape[1:],
                 self.dtype) )
@@ -1085,7 +1090,7 @@ With multiple substitutions:
     if V: print "Replace", x0, "with", x1, "in", P
     x0,x1 = map(Poly, [x0,x1])
     dim = np.max([p.dim for p in [P,x0,x1]])
-    dtype = dtyping(*map(type, [P,x0,x1]))
+    dtype = dtyping(P.dtype, x0.dtype, x1.dtype)
     P,x0,x1 = [setdim(p, dim) for p in [P,x0,x1]]
 
     if x0.shape:
@@ -1133,6 +1138,7 @@ With multiple substitutions:
     P = Poly(P, dim, None, dtype)
     P = reshape(P, shape)
     P = prod(P, 0)
+
     if not dec:
         P = sum(P, 0)
 
@@ -1148,8 +1154,8 @@ def dtyping(*args):
 
         if isinstance(args[i], np.ndarray):
             args[i] = args[i].dtype
-        elif isinstance(args[i], \
-            (float, f.frac, float, int, long, float)):
+        elif isinstance(args[i],
+            (float, f.frac, int, long)):
             args[i] = type(args[i])
 
     if Poly in args: return Poly
@@ -1160,7 +1166,7 @@ def dtyping(*args):
     if object in args: return object
     if f.frac in args: return f.frac
 
-    if long in args: return long
+    if long in args: return int
     if int in args: return int
     if np.dtype(int) in args: return int
 
@@ -1195,7 +1201,8 @@ def reshape(P, shape):
 
     for key in P.keys:
         A[key] = np.reshape(A[key], shape)
-    return Poly(A, P.dim, shape, P.dtype)
+    out = Poly(A, P.dim, shape, P.dtype)
+    return out
 
 def flatten(P):
     shape = int(np.prod(P.shape))

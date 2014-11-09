@@ -63,7 +63,7 @@ def test_poly_substitute():
 
 def test_poly_substitute_2():
     x, y = xy = cp.variable(2)
-    assert xy(x*y)[0] == xy[0]
+    assert xy(x*y+1)[0] == x*y+1
 
 
 def test_poly_arithmatic():
