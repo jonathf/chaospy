@@ -27,9 +27,9 @@ For adaptive cubature:
 
 To install the prerequisite on a Debian/Ubuntu machine:
 
-`apt-get install python python-numpy python-scipy python-networkx \`
+`apt-get install python-numpy python-scipy python-networkx python-sklearn \`
 
-`       python-sklearn cython gcc`
+`        cython gcc`
 
 ## Installation
 

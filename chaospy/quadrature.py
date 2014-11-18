@@ -48,8 +48,8 @@ rule : str
     Quadrature rule
 
     Key                 Description
-    "Gaussian", "G"     Optiomal Gaussian quadrature from Golub-Welsch
-                        Slow for high order and composite is ignored.
+    "Gaussian", "G"     Optimal Gaussian quadrature from Golub-Welsch
+                        Slow for high order, and composite is ignored.
     "Legendre", "E"     Gauss-Legendre quadrature
     "Clenshaw", "C"     Clenshaw-Curtis quadrature. Exponential growth rule is
                         used when sparse is True to make the rule nested.
@@ -63,13 +63,13 @@ rule : str
 composite : int, optional
     If provided, composite quadrature will be used. Value determines
     the number of domains along an axis.
-    Ignored in the case if gaussian=True.
+    Ignored in the case gaussian=True.
 growth : bool, optional
     If True sets the growth rule for the composite quadrature
     rule to exponential for Clenshaw-Curtis quadrature.
-    If omitted, it is selected from context.
+    Selected from context if omitted.
 **kws : optional
-    Extra keyword passed to samplegen.
+    Extra keywords passed to samplegen.
 
 See also
 --------
@@ -652,7 +652,7 @@ def dep_golub_welsch(dist, order, acc=100):
 
 #  def _quad_dependent(func, order, dist, acc=40, orth=None,
 #      args=(), kws={}, veceval=False, retall=False):
-#  
+#
 #      dim = len(dist)
 #      if isinstance(order, (int, long, float)):
 #          order = [order]*dim
@@ -660,49 +660,49 @@ def dep_golub_welsch(dist, order, acc=100):
 #      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]
 #      X = np.empty([dim,]+[order[i]+1 for i in indices])
 #      W = np.ones([order[i]+1 for i in indices])
-#  
+#
 #      def _dep_quad(I, order, dist, X, W, grid, vals):
-#  
+#
 #          dim = len(dist)
 #          i = len(I)
 #          j = indices[i]
-#  
+#
 #          Z = di.Subset(dist, j, vals)
 #          x,w = Golub_Welsch(order[j], Z, acc)
 #          W[I] *= w[grid[(i,)+I]]
 #          X[(i,)+I] = x[grid[(i,)+I]]
-#  
+#
 #          if i==dim-1:
 #              return X, W
-#  
+#
 #          for k in xrange(order[j]+1):
 #              vals[j] = x[k]
 #              X, W = _dep_quad(I+(k,), order, dist, X, W, grid, vals)
-#  
+#
 #          return X,W
-#  
+#
 #      X,W = _dep_quad((), order, dist, X, W, grid, [0.]*dim)
 #      X = X[indices]
 #      X = X.reshape(dim, X.size/dim)
 #      W = W.flatten()
-#  
+#
 #      if veceval:
 #          Y = np.array(func(X, *args, **kws)).T
 #      else:
 #          Y = np.array([func(_, *args, **kws) for _ in X.T]).T
-#  
+#
 #      if not (orth is None):
 #          Q = orth(*X)
-#  
+#
 #          shape = Y.shape[:-1] + Q.shape
 #          Y = Y.reshape(np.prod(Y.shape[:-1]), Y.shape[-1],)
 #          Q = Q.reshape(np.prod(Q.shape[:-1]), Q.shape[-1],)
-#  
+#
 #          t1,t2 = np.mgrid[:len(Y), :len(Q)]
 #          Y = (Y[t1]*Q[t2]).reshape(shape)
-#  
+#
 #      out = np.sum(Y*W, -1).T
-#  
+#
 #      if retall:
 #          return out, X.T
 #      return out
@@ -894,4 +894,3 @@ if __name__=="__main__":
     x,y = cp.variable(2)
     import doctest
     doctest.testmod()
-
