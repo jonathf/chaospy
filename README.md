@@ -1,5 +1,5 @@
-
 # Chaospy
+![Logo](logo.jpg)
 
 Chaospy is a numerical tool for performing uncertainty
 quantification using polynomial chaos expansions and advanced Monte
