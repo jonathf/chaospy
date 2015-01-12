@@ -660,13 +660,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #      if isinstance(order, (int, long, float)):
 #          order = [order]*dim
 #      indices = di.sort(dist)
-#      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]and precise estimate of the expected value than could be obtained in analog calculation with
-the same computational efforts. Variance reduction parameters are vary with problem types
-so iterative steps must be repeated to determine VR parameters for different problems.[6]
-2. Conceptual role of the Monte Carlo simulation
-The conceptual role of the Monte Carlo simulations is to create a model similar to the real
-system based on known probabilities of occurrence with random sampling of the PDFs.
-This method is use
+#      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]
 #      X = np.empty([dim,]+[order[i]+1 for i in indices])
 #      W = np.ones([order[i]+1 for i in indices])
 #
