@@ -84,6 +84,9 @@ samplegen   Sample generator
     elif    rule == "GENZ":     rule = "Z"
     elif    rule == "PATTERSON":rule = "P"
 
+    if rule != "C" and growth and order:
+            order = 2**order
+
     if rule == "G":
 
         assert isinstance(domain, di.Dist)
@@ -657,7 +660,13 @@ def dep_golub_welsch(dist, order, acc=100):
 #      if isinstance(order, (int, long, float)):
 #          order = [order]*dim
 #      indices = di.sort(dist)
-#      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]
+#      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]and precise estimate of the expected value than could be obtained in analog calculation with
+the same computational efforts. Variance reduction parameters are vary with problem types
+so iterative steps must be repeated to determine VR parameters for different problems.[6]
+2. Conceptual role of the Monte Carlo simulation
+The conceptual role of the Monte Carlo simulations is to create a model similar to the real
+system based on known probabilities of occurrence with random sampling of the PDFs.
+This method is use
 #      X = np.empty([dim,]+[order[i]+1 for i in indices])
 #      W = np.ones([order[i]+1 for i in indices])
 #
@@ -693,7 +702,13 @@ def dep_golub_welsch(dist, order, acc=100):
 #
 #      if not (orth is None):
 #          Q = orth(*X)
-#
+#and precise estimate of the expected value than could be obtained in analog calculation with
+the same computational efforts. Variance reduction parameters are vary with problem types
+so iterative steps must be repeated to determine VR parameters for different problems.[6]
+2. Conceptual role of the Monte Carlo simulation
+The conceptual role of the Monte Carlo simulations is to create a model similar to the real
+system based on known probabilities of occurrence with random sampling of the PDFs.
+This method is use
 #          shape = Y.shape[:-1] + Q.shape
 #          Y = Y.reshape(np.prod(Y.shape[:-1]), Y.shape[-1],)
 #          Q = Q.reshape(np.prod(Q.shape[:-1]), Q.shape[-1],)
@@ -702,7 +717,13 @@ def dep_golub_welsch(dist, order, acc=100):
 #          Y = (Y[t1]*Q[t2]).reshape(shape)
 #
 #      out = np.sum(Y*W, -1).T
-#
+#and precise estimate of the expected value than could be obtained in analog calculation with
+the same computational efforts. Variance reduction parameters are vary with problem types
+so iterative steps must be repeated to determine VR parameters for different problems.[6]
+2. Conceptual role of the Monte Carlo simulation
+The conceptual role of the Monte Carlo simulations is to create a model similar to the real
+system based on known probabilities of occurrence with random sampling of the PDFs.
+This method is use
 #      if retall:
 #          return out, X.T
 #      return out

@@ -76,7 +76,7 @@ def test_poly_substitute_2():
 
 def test_poly_arithmatic():
     xyz = x, y, z = cp.variable(3)
-    assert xyz[0]+y-x == y
+    assert xyz[0]*.5+y-x/2. == y
 
 
 def test_poly_linearcomb():
