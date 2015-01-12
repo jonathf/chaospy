@@ -85,7 +85,10 @@ samplegen   Sample generator
     elif    rule == "PATTERSON":rule = "P"
 
     if rule != "C" and growth and order:
+        if isinstance(order, int):
             order = 2**order
+        else:
+            order = tuple([2**o for o in order])
 
     if rule == "G":
 
