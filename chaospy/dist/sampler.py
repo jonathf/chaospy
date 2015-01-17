@@ -104,7 +104,7 @@ antithetic : array_like, optional
         X = regular_grid(dim, order)
     elif rule=="NG":
         X = regular_grid_nested(dim, order)
-    elif rule=="LH":
+    elif rule=="L":
         X = latin_hypercube(dim, order)
     elif rule=="S":
         X = sobol(dim, order)

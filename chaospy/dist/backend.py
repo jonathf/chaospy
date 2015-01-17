@@ -270,15 +270,15 @@ out : ndarray
             out = np.prod(out, 0)
         return out
 
-    def sample(self, shape=(), rule="R", antithetic=None,
+    def sample(self, size=(), rule="R", antithetic=None,
             verbose=False, **kws):
         """
 Create pseudo-random generated samples.
 
 Parameters
 ----------
-shape : array_like
-    The shape of the samples to generate.
+size : int,array_like
+    The size of the samples to generate.
 rule : str
     Alternative sampling techniques
 
