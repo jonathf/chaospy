@@ -297,7 +297,7 @@ rule : str
     ----    ----------------    ------
     "C"     Chebyshev nodes     maybe
     "G"     Gaussian quadrature no
-    "E"     Gauss-Legendre nodes no
+    "E"     Gauss-Legendre      no
 
 antithetic : bool, array_like
     If provided, will be used to setup antithetic variables.
@@ -315,7 +315,9 @@ out : ndarray
             if isinstance(size, (tuple,list,np.ndarray)):
                 shape = (dim,) + tuple(size)
             else:
-                shape = (dim, shape)
+                shape = (dim, size)
+        else:
+            shape = size
 
         out = samplegen(size_, self, rule, antithetic)
         try:
