@@ -18,18 +18,11 @@ For regression analysis:
 
 `scikit-learn`
 
-For adaptive cubature:
-
-`cython`
-`gcc`
-
 ### Prerequisite in Debian/Ubuntu
 
 To install the prerequisite on a Debian/Ubuntu machine:
 
-`apt-get install python-numpy python-scipy python-networkx python-sklearn \`
-
-`        cython gcc`
+`sudo apt-get install python-scipy python-networkx python-sklearn cython gcc`
 
 ## Installation
 
