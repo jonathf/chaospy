@@ -34,12 +34,17 @@ To install the prerequisite on a Debian/Ubuntu machine:
 ## Installation
 
 To install in the `site-packages` directory and make it importable
-from anywhere:
+from anywhere.
+
+Automated download and installation can be done by running the
+following as super user:
+
+`pip install -e git+https://github.com/hplgit/chaospy.git#egg=chaospy`
+
+Alternative, download the Github folder and run the following
+command as super user in the root folder:
 
 `python setup.py install`
-
-To install the optional Cubature component, go into the subfolder
-`cubature` and run the same command there.
 
 ## License
 
