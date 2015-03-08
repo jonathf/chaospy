@@ -19,7 +19,7 @@ utils           Supporting function not fitting in anywhere else
 """
 
 __version__ = "1.0"
-__author__ = "Jonathan Feinberg, jonathfe@simula.no"
+__author__ = "Jonathan Feinberg, jonathan@feinberg.no"
 
 from cholesky import *
 from dist import *

@@ -270,15 +270,15 @@ out : ndarray
             out = np.prod(out, 0)
         return out
 
-    def sample(self, shape=(), rule="R", antithetic=None,
+    def sample(self, size=(), rule="R", antithetic=None,
             verbose=False, **kws):
         """
 Create pseudo-random generated samples.
 
 Parameters
 ----------
-shape : array_like
-    The shape of the samples to generate.
+size : int,array_like
+    The size of the samples to generate.
 rule : str
     Alternative sampling techniques
 
@@ -297,7 +297,7 @@ rule : str
     ----    ----------------    ------
     "C"     Chebyshev nodes     maybe
     "G"     Gaussian quadrature no
-    "E"     Gauss-Legende nodes no
+    "E"     Gauss-Legendre      no
 
 antithetic : bool, array_like
     If provided, will be used to setup antithetic variables.
@@ -309,15 +309,17 @@ out : ndarray
     Random samples with shape (len(self),)+self.shape
         """
 
-        size = np.prod(shape, dtype=int)
+        size_ = np.prod(size, dtype=int)
         dim = len(self)
         if dim>1:
-            if isinstance(shape, (tuple,list,np.ndarray)):
-                shape = (dim,) + tuple(shape)
+            if isinstance(size, (tuple,list,np.ndarray)):
+                shape = (dim,) + tuple(size)
             else:
-                shape = (dim, shape)
+                shape = (dim, size)
+        else:
+            shape = size
 
-        out = samplegen(size, self, rule, antithetic)
+        out = samplegen(size_, self, rule, antithetic)
         try:
             out = out.reshape(shape)
         except:

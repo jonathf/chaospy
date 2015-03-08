@@ -1,3 +1,5 @@
+"""Testing basic polynomial operators
+"""
 import chaospy as cp
 import numpy as np
 
@@ -36,6 +38,12 @@ def test_poly_dimredux():
     assert basis[0] == X
 
 
+def test_poly_power():
+    X, Y = cp.variable(2)
+    out = X**(1, 0, 2, 1, 0)*Y**(0, 1, 0, 1, 2)
+    assert str(out) == "[q0, q1, q0^2, q0q1, q1^2]"
+
+
 def test_poly_evals():
     xy = x, y = cp.variable(2)
     assert xy(0.5)[0] == 0.5
@@ -68,7 +76,7 @@ def test_poly_substitute_2():
 
 def test_poly_arithmatic():
     xyz = x, y, z = cp.variable(3)
-    assert xyz[0]+y-x == y
+    assert xyz[0]*.5+y-x/2. == y
 
 
 def test_poly_linearcomb():

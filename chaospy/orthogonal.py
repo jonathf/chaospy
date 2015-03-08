@@ -172,6 +172,9 @@ Examples
                 g = [norms[i,I[i]] for i in xrange(dim)]
                 G.append(np.prod(g))
         P = Q
+    else:
+        G = norms[0]
+
     P = po.flatten(po.Poly(P))
 
     if retall:

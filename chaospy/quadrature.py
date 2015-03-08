@@ -84,6 +84,12 @@ samplegen   Sample generator
     elif    rule == "GENZ":     rule = "Z"
     elif    rule == "PATTERSON":rule = "P"
 
+    if rule != "C" and growth and order:
+        if isinstance(order, int):
+            order = 2**order
+        else:
+            order = tuple([2**o for o in order])
+
     if rule == "G":
 
         assert isinstance(domain, di.Dist)
@@ -693,7 +699,6 @@ def dep_golub_welsch(dist, order, acc=100):
 #
 #      if not (orth is None):
 #          Q = orth(*X)
-#
 #          shape = Y.shape[:-1] + Q.shape
 #          Y = Y.reshape(np.prod(Y.shape[:-1]), Y.shape[-1],)
 #          Q = Q.reshape(np.prod(Q.shape[:-1]), Q.shape[-1],)
@@ -702,7 +707,6 @@ def dep_golub_welsch(dist, order, acc=100):
 #          Y = (Y[t1]*Q[t2]).reshape(shape)
 #
 #      out = np.sum(Y*W, -1).T
-#
 #      if retall:
 #          return out, X.T
 #      return out
