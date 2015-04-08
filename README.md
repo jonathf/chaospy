@@ -18,11 +18,17 @@ For regression analysis:
 
 `scikit-learn`
 
+
 ### Prerequisite in Debian/Ubuntu
 
 To install the prerequisite on a Debian/Ubuntu machine:
 
-`sudo apt-get install python-scipy python-networkx python-sklearn cython gcc`
+`sudo apt-get install python-scipy python-networkx cython gcc`
+
+For `scikit-learn`:
+
+`sudo apt-get install build-essential python-dev \`
+`       python-setuptools libatlas-dev libatlas3gf-base`
 
 ## Installation
 
@@ -38,6 +44,10 @@ Alternative, download the Github folder and run the following
 command as super user in the root folder:
 
 `python setup.py install`
+
+For `scikit-learn`:
+
+`pip install --user --install-option="--prefix=" -U scikit-learn`
 
 ## License
 

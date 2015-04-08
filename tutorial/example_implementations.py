@@ -24,7 +24,7 @@ dist = cp.J(a, I)
 
 ## Monte Carlo integration
 samples = dist.sample(10**5)
-u_mc = [U_hat(*s) for s in samples.T]
+u_mc = [u(x, *s) for s in samples.T]
 
 mean = np.mean(u_mc, 1)
 var = np.var(u_mc, 1)
@@ -56,6 +56,17 @@ var = cp.Var(U_hat, dist)
 
 ## Polynomial chaos expansion
 ## using Intrusive Gallerkin method
+# :math:
+# u' = -a*u
+# d/dx sum(c*P) = -a*sum(c*P)
+# <d/dx sum(c*P),P[k]> = <-a*sum(c*P), P[k]>
+# d/dx c[k]*<P[k],P[k]> = -sum(c*<a*P,P[k]>)
+# d/dx c = -E( outer(a*P,P) ) / E( P*P )
+#
+# u(0) = I
+# <sum(c(0)*P), P[k]> = <I, P[k]>
+# c[k](0) <P[k],P[k]> = <I, P[k]>
+# c(0) = E( I*P ) / E( P*P )
 order = 5
 P, norm = cp.orth_ttr(order, dist, retall=True, normed=True)
 
