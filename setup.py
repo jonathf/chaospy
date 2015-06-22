@@ -1,5 +1,6 @@
 from distutils.core import setup
 import chaospy as package
+
 setup(name='chaospy',
       version=package.__version__,
       url='',
@@ -9,5 +10,4 @@ setup(name='chaospy',
       long_description=package.__doc__,
       platforms='any',
       packages=['chaospy', 'chaospy/dist', 'chaospy/poly'])
-
 

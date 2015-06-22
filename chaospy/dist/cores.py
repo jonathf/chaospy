@@ -1315,12 +1315,15 @@ class truncnorm(Dist):
 
     def __init__(self, a, b):
         Dist.__init__(self, a=a, b=b)
+        self.norm = normal()
+        self.fa = self.norm.fwd(a)
+        self.fb = self.norm.fwd(b)
     def _pdf(self, x, a, b):
-        return normal._pdf(x) / self._delta
+        return self.norm._pdf(x) / (self.fb-self.fa)
     def _cdf(self, x, a, b):
-        return (normal._cdf(x) - self._na) / self._delta
+        return (self.norm._cdf(x) - self.fa) / (self.fb-self.fa)
     def _ppf(self, q, a, b):
-        return normal._ppf(q*self._nb + self._na*(1.0-q))
+        return self.norm._ppf(q*(self.fb-self.fa) + self.fa)
     def _bnd(self, a, b):
         return a, b
 
