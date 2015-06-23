@@ -1158,7 +1158,7 @@ mu :  float, Dist
 sigma :  float, Dist
     Standard deviation of normal distribution
     """
-    dist = co.truncnorm(lo, up)*sigma + mu
+    dist = co.truncnorm(lo, up, mu, sigma)
     dist.addattr(str="Truncnorm(%s,%s,%s,%s)"%(lo,up,mu,sigma))
     return dist
 

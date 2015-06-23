@@ -1313,9 +1313,9 @@ class truncexpon(Dist):
 
 class truncnorm(Dist):
 
-    def __init__(self, a, b):
+    def __init__(self, a, b, mu, sigma):
         Dist.__init__(self, a=a, b=b)
-        self.norm = normal()
+        self.norm = normal()*sigma+mu
         self.fa = self.norm.fwd(a)
         self.fb = self.norm.fwd(b)
     def _pdf(self, x, a, b):
