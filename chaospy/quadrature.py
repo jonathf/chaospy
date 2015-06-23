@@ -14,6 +14,7 @@ stieltjes       Tool for performing discretized and analytical
 import numpy as np
 from scipy.misc import comb
 from scipy.optimize import fminbound
+from scipy.linalg import eig_banded
 import bertran as ber
 import poly as po
 from utils import combine, lazy_eval
@@ -218,9 +219,11 @@ Multivariate
     dim = len(dist)
     for d in xrange(dim):
         if o[d]:
-            J = np.diag(np.sqrt(b[d,1:o[d]]), k=-1) + np.diag(a[d,:o[d]]) + \
-                    np.diag(np.sqrt(b[d,1:o[d]]), k=1)
-            vals, vecs = np.linalg.eig(J)
+            A = np.empty((2, o[d]))
+            A[0] = a[d, :o[d]]
+            A[1,:-1] = b[d,1:o[d]]
+
+            vals, vecs = eig_banded(A)
 
             x, w = vals.real, vecs[0,:]**2
             indices = np.argsort(x)

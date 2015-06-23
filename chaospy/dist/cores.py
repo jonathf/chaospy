@@ -1319,11 +1319,11 @@ class truncnorm(Dist):
         self.fa = self.norm.fwd(a)
         self.fb = self.norm.fwd(b)
     def _pdf(self, x, a, b):
-        return self.norm._pdf(x) / (self.fb-self.fa)
+        return self.norm.pdf(x) / (self.fb-self.fa)
     def _cdf(self, x, a, b):
-        return (self.norm._cdf(x) - self.fa) / (self.fb-self.fa)
+        return (self.norm.cdf(x) - self.fa) / (self.fb-self.fa)
     def _ppf(self, q, a, b):
-        return self.norm._ppf(q*(self.fb-self.fa) + self.fa)
+        return self.norm.ppf(q*(self.fb-self.fa) + self.fa)
     def _bnd(self, a, b):
         return a, b
 
