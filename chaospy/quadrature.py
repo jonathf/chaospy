@@ -50,7 +50,7 @@ rule : str
 
     Key                 Description
     "Gaussian", "G"     Optimal Gaussian quadrature from Golub-Welsch
-                        Slow for high order, and composite is ignored.
+                        Slow for high order.
     "Legendre", "E"     Gauss-Legendre quadrature
     "Clenshaw", "C"     Clenshaw-Curtis quadrature. Exponential growth rule is
                         used when sparse is True to make the rule nested.
@@ -213,22 +213,25 @@ Multivariate
     """
 
     o = np.array(order)*np.ones(len(dist), dtype=int)+1
-    P,g,a,b = stieltjes(dist, np.max(o), acc=acc, retall=True, **kws)
+    P,g,a,b = stieltjes(dist, np.max(o)-1, acc=acc, retall=True, **kws)
 
     X,W = [], []
     dim = len(dist)
     for d in xrange(dim):
         if o[d]:
-            A = np.empty((2, o[d]))
-            A[0] = a[d, :o[d]]
-            A[1,:-1] = b[d,1:o[d]]
+            # A = np.empty((2, o[d]))
+            # A[0] = a[d, :o[d]]
+            # A[1,:-1] = b[d, 1:o[d]]
+            # vals, vecs = eig_banded(A, lower=True)
 
-            vals, vecs = eig_banded(A)
+            J = np.diag(np.sqrt(b[d,1:o[d]]), k=-1) + np.diag(a[d,:o[d]]) + \
+                    np.diag(np.sqrt(b[d,1:o[d]]), k=1)
+            vals, vecs = np.linalg.eig(J)
 
             x, w = vals.real, vecs[0,:]**2
             indices = np.argsort(x)
             x, w = x[indices], w[indices]
-            x[np.abs(x)<1e-14] = 0
+            # x[np.abs(w)<1e-14] = 0
         else:
             x,w = np.array([a[d,0]]), np.array([1.])
 
@@ -335,6 +338,9 @@ Examples
             y = orth[-1](*q)**2*w
             inner = np.sum(q*y, -1)
             norms.append(np.sum(y, -1))
+
+            if normed:
+                orth[-1] = orth[-1]/np.sqrt(norms[-1])
 
         A, B = np.array(A).T, np.array(B).T
         norms = np.array(norms[1:]).T

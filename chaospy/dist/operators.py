@@ -574,13 +574,18 @@ def logn(dist, n):
 class Trunk(Dist):
 
     def __init__(self, A, B):
+
         if isinstance(A, Dist):
             assert not A.dependent()
+            assert np.all(A.range()[0] < B)
         if isinstance(B, Dist):
             assert not B.dependent()
+            assert np.all(A < B.range()[1])
+
         a = not isinstance(A, Dist) or 1 and len(A)
         b = not isinstance(B, Dist) or 1 and len(B)
         length = max(a, b)
+
         Dist.__init__(self, A=A, B=B,
                 _length=length, _advance=True)
 
@@ -615,7 +620,7 @@ class Trunk(Dist):
             num = (num.T*np.ones(x.shape[::-1])).T
             u1 = G(x, dist)
             u2 = G_(num, dist)
-            out = u1/u2
+            out = (u1)/u2
 
         return out
 
