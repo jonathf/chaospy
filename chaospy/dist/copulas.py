@@ -270,10 +270,12 @@ class nataf(Dist):
         Dist.__init__(self, C=C, Ci=Ci, _length=len(C))
 
     def _cdf(self, x, C, Ci):
-        return sp.special.ndtr(np.dot(sp.special.ndtri(x).T, Ci)).T
+        out = sp.special.ndtr(np.dot(Ci, sp.special.ndtri(x)))
+        return out
 
     def _ppf(self, q, C, Ci):
-        return sp.special.ndtr(np.dot(sp.special.ndtri(q).T, C)).T
+        out = sp.special.ndtr(np.dot(C, sp.special.ndtri(q)))
+        return out
 
     def _bnd(self, C, Ci):
         return 0.,1.

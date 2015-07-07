@@ -746,9 +746,6 @@ Main effect sensitivity index
     zero = [0]*dim
     out = np.zeros((dim,) + poly.shape)
     V = Var(poly, dist, **kws)
-    print "Variance"
-    print V
-    v = (V != 0)
     for i in range(dim):
         zero[i] = 1
         out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/(V+(V==0))*(V!=0)
