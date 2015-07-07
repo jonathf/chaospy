@@ -7,11 +7,12 @@ import numpy as np
 
 class Saltelli:
 
-    def __init__(self, dist, samples, rule="R"):
+    def __init__(self, dist, samples, poly=None, rule="R"):
         self.dist = dist
         samples_ = dist.sample(2*samples, rule=rule)
         self.samples1 = samples_.T[:samples].T
         self.samples2 = samples_.T[samples:].T
+        self.poly = poly
 
     def __getitem__(self, indices):
         assert len(self.dist) == len(indices)
@@ -27,6 +28,9 @@ class Saltelli:
                 new[i] = self.samples1[i]
             else:
                 new[i] = self.samples2[i]
+
+        if self.poly:
+            new = self.poly(*new)
 
         setattr(self, key, new)
         return new
