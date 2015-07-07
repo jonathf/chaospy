@@ -736,7 +736,7 @@ def Sens_m(poly, dist, **kws):
 Variance-based decomposition
 AKA Sobol' indices
 
-Main effect sensitivity index
+First order sensitivity indices
     """
 
     dim = len(dist)
@@ -750,6 +750,32 @@ Main effect sensitivity index
         zero[i] = 1
         out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/(V+(V==0))*(V!=0)
         zero[i] = 0
+    return out
+
+
+def Sens_m2(poly, dist, **kws):
+    """
+Variance-based decomposition
+AKA Sobol' indices
+
+Second order sensitivity indices
+    """
+
+    dim = len(dist)
+    if poly.dim<dim:
+        poly = po.setdim(poly, len(dist))
+
+    zero = [0]*dim
+    out = np.zeros((dim, dim) + poly.shape)
+    V = Var(poly, dist, **kws)
+    for i in range(dim):
+        zero[i] = 1
+        for j in range(dim):
+            zero[j] = 1
+            out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/(V+(V==0))*(V!=0)
+            zero[j] = 0
+        zero[i] = 0
+
     return out
 
 

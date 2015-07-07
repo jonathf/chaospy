@@ -30,3 +30,4 @@ from orthogonal import *
 from poly import *
 from collocation import *
 from quadrature import *
+from saltelli import Saltelli
