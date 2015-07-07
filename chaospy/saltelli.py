@@ -34,3 +34,49 @@ class Saltelli:
 
         setattr(self, key, new)
         return new
+
+
+def Sens_m_sample(poly, dist, samples, rule="R"):
+
+    dim = len(dist)
+    Y = Saltelli(dist, samples, poly)
+
+    ones = [1]*dim
+    zeros = [0]*dim
+    index = [0]*dim
+
+    V = np.var(Y[zeros], -1)
+
+    out = []
+    for d in xrange(dim):
+
+        index[d] = 1
+        s = np.mean(Y[ones]*(Y[index]-Y[zeros]), -1) / (V+(V==0))*(V!=0)
+        out.append(s)
+        index[d] = 0
+
+    return np.array(out)
+
+
+def Sens_t_sample(poly, dist, samples, rule="R"):
+
+    assert isinstance(samples, int)
+
+    dim = len(dist)
+    Y = Saltelli(dist, samples, poly)
+
+    zeros = [0]*dim
+    index = [1]*dim
+
+    V = np.var(Y[zeros], -1)
+
+    out = []
+    for d in xrange(dim):
+
+        index[d] = 0
+        s = 1-np.mean((Y[index]-Y[zeros])**2, -1) / (2*V+(V==0))*(V!=0)
+        out.append(s)
+        index[d] = 1
+
+    return np.array(out)
+
