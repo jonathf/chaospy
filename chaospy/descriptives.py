@@ -744,11 +744,14 @@ Main effect sensitivity index
         poly = po.setdim(poly, len(dist))
 
     zero = [0]*dim
-    out = np.empty((dim,) + poly.shape)
+    out = np.zeros((dim,) + poly.shape)
     V = Var(poly, dist, **kws)
+    print "Variance"
+    print V
+    v = (V != 0)
     for i in range(dim):
         zero[i] = 1
-        out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/V
+        out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/(V+(V==0))*(V!=0)
         zero[i] = 0
     return out
 
@@ -766,12 +769,12 @@ Total effect sensitivity index
         poly = po.setdim(poly, len(dist))
 
     zero = [1]*dim
-    out = np.empty((dim,) + poly.shape)
+    out = np.zeros((dim,) + poly.shape, dtype=float)
     V = Var(poly, dist, **kws)
     for i in range(dim):
         zero[i] = 0
         out[i] = (V-Var(E_cond(poly, zero, dist, **kws),
-            dist, **kws))/V
+            dist, **kws))/(V+(V==0))*(V!=0)
         zero[i] = 1
     return out
 
