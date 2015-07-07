@@ -213,25 +213,37 @@ Multivariate
     """
 
     o = np.array(order)*np.ones(len(dist), dtype=int)+1
-    P,g,a,b = stieltjes(dist, np.max(o)-1, acc=acc, retall=True, **kws)
+    P,g,a,b = stieltjes(dist, np.max(o), acc=acc, retall=True, **kws)
 
     X,W = [], []
     dim = len(dist)
+
     for d in xrange(dim):
         if o[d]:
-            # A = np.empty((2, o[d]))
-            # A[0] = a[d, :o[d]]
-            # A[1,:-1] = b[d, 1:o[d]]
-            # vals, vecs = eig_banded(A, lower=True)
-
-            J = np.diag(np.sqrt(b[d,1:o[d]]), k=-1) + np.diag(a[d,:o[d]]) + \
-                    np.diag(np.sqrt(b[d,1:o[d]]), k=1)
-            vals, vecs = np.linalg.eig(J)
+            A = np.empty((2, o[d]))
+            A[0] = a[d, :o[d]]
+            A[1,:-1] = np.sqrt(b[d, 1:o[d]])
+            vals, vecs = eig_banded(A, lower=True)
 
             x, w = vals.real, vecs[0,:]**2
             indices = np.argsort(x)
             x, w = x[indices], w[indices]
-            # x[np.abs(w)<1e-14] = 0
+
+
+            p = P[-1][d]
+            dp = po.differential(p, po.basis(1,1,dim)[d])
+
+            x = x - p(x)/dp(x)
+            x = x - p(x)/dp(x)
+            x = x - p(x)/dp(x)
+
+            z = np.arange(dim)
+            b = dist.mom([k*(z == d)
+                for k in range(2*o[d]-3)])
+            X_,r = np.meshgrid(x, np.arange(2*o[d]-3))
+            X_ = X_**r
+            w = np.linalg.lstsq(X_, b)[0].T[0]
+
         else:
             x,w = np.array([a[d,0]]), np.array([1.])
 
