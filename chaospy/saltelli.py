@@ -39,6 +39,7 @@ class Saltelli:
 def Sens_m_sample(poly, dist, samples, rule="R"):
 
     dim = len(dist)
+
     Y = Saltelli(dist, samples, poly)
 
     ones = [1]*dim
@@ -47,20 +48,71 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
 
     V = np.var(Y[zeros], -1)
 
+    yo = Y[ones]
+    yz = Y[zeros]
+    mean = .5*(np.mean(yo) + np.mean(yz))
+
+    yo -= mean
+    yz -= mean
+
     out = []
     for d in xrange(dim):
 
         index[d] = 1
-        s = np.mean(Y[ones]*(Y[index]-Y[zeros]), -1) / (V+(V==0))*(V!=0)
+
+        yi = Y[index]-mean
+
+        s = np.mean(yo*(yi-yz), -1) / (V+(V==0))*(V!=0)
         out.append(s)
         index[d] = 0
 
     return np.array(out)
 
 
-def Sens_t_sample(poly, dist, samples, rule="R"):
+def Sens_m2_sample(poly, dist, samples, rule="R"):
 
-    assert isinstance(samples, int)
+    dim = len(dist)
+
+    Y = Saltelli(dist, samples, poly)
+
+    ones = [1]*dim
+    zeros = [0]*dim
+    index = [0]*dim
+
+    V = np.var(Y[zeros], -1)
+
+    yo = Y[ones]
+    yz = Y[zeros]
+    mean = .5*(np.mean(yo) + np.mean(yz))
+
+    yo -= mean
+    yz -= mean
+
+    out = np.empty((dim,dim)+poly.shape)
+    for d1 in xrange(dim):
+
+        index[d1] = 1
+        yi = Y[index]-mean
+        s = np.mean(yo*(yi-yz), -1) / (V+(V==0))*(V!=0)
+        out[d1,d1] = s
+
+        for d2 in xrange(d1+1, dim):
+
+            index[d2] = 1
+
+            yi = Y[index]-mean
+
+            s = np.mean(yo*(yi-yz), -1) / (V+(V==0))*(V!=0)
+            out[d1,d2] = out[d2,d1] = s
+
+            index[d2] = 0
+
+        index[d1] = 0
+
+    return out
+
+
+def Sens_t_sample(poly, dist, samples, rule="R"):
 
     dim = len(dist)
     Y = Saltelli(dist, samples, poly)
@@ -80,3 +132,17 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
 
     return np.array(out)
 
+if __name__ == "__main__":
+
+    import __init__ as cp
+
+    rho = 0.5
+    poly = cp.basis(0,2,2)
+    dist = cp.Iid(cp.Normal(), 2)
+    dist_dep = cp.MvNormal([0,0], [[1, rho], [rho, 1]])
+
+    print poly
+    print "md\n", Sens_m_sample(poly, dist_dep, 10**6)
+    print "m2d\n", Sens_m2_sample(poly, dist_dep, 10**6)[0,1]
+    print "td\n", Sens_t_sample(poly, dist_dep, 10**6)
+    print [[0,1,0,1,1/(1+rho*rho),0], [0,0,1,0,1/(1+rho*rho),1]]
