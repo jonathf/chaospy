@@ -263,11 +263,20 @@ def Joe(dist, theta=2., eps=1e-6):
 class nataf(Dist):
     "Nataf (normal) copula backend"
 
-    def __init__(self, R):
+    def __init__(self, R, ordering=None):
         "R symmetric & positive definite matrix"
-        C = np.linalg.cholesky(R)
-        Ci = np.linalg.inv(C)
-        Dist.__init__(self, C=C, Ci=Ci, _length=len(C))
+
+        if ordering is None:
+            ordering = range(len(R))
+        ordering = np.array(ordering)
+
+        P = np.eye(len(R))[ordering]
+
+        R = np.dot(P, np.dot(R, P.T))
+        R = np.linalg.cholesky(R)
+        R = np.dot(P.T, np.dot(R, P))
+        Ci = np.linalg.inv(R)
+        Dist.__init__(self, C=R, Ci=Ci, _length=len(R))
 
     def _cdf(self, x, C, Ci):
         out = sp.special.ndtr(np.dot(Ci, sp.special.ndtri(x)))
@@ -280,9 +289,9 @@ class nataf(Dist):
     def _bnd(self, C, Ci):
         return 0.,1.
 
-def Nataf(dist, R):
+def Nataf(dist, R, ordering=None):
     "Nataf (normal) copula"
-    return Copula(dist, nataf(R))
+    return Copula(dist, nataf(R, ordering))
 
 
 class t_copula(Dist):
