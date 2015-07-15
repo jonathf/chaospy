@@ -2,17 +2,17 @@
 The superclass for Dist and tools for constructing a custom
 distribuiton.
 
-Each distribution have the following methods
+Each distribution has the following methods
 
-fwd         Cumulative distribution function (Rosenblatt transform)
+fwd         Cumulative distribution function (Rosenblatt transformation)
 mom         Raw statistical moments
 pdf         Probability density function
-inv         Point percentile function (Inverse Rosenblatt)
+inv         Point percentile function (Inverse Rosenblatt transformation)
 sample      Random number sampler
 ttr         Three terms recurrence coefficient generator
 range       Upper and lower bounds of the distribution
 
-If direct subclass of Dist, the following method must be provided:
+If direct subclass of Dist, two method must be provided:
 
     _cdf(self, x, **prm)    Cumulative distribution function (CDF)
     _bnd(self, **prm)       Upper and lower bounds
@@ -172,7 +172,7 @@ out : ndarray
 
     def inv(self, q, maxiter=100, tol=1e-5, verbose=False, **kws):
         """
-Inverse Rosenblatt transformation
+Inverse Rosenblatt transformation.
 
 Parameters
 ----------
