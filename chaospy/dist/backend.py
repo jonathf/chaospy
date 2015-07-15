@@ -12,9 +12,9 @@ sample      Random number sampler
 ttr         Three terms recurrence coefficient generator
 range       Upper and lower bounds of the distribution
 
-If direct subset of Dist, the following method must be provided:
+If direct subclass of Dist, the following method must be provided:
 
-    _cdf(self, x, **prm)    Cumulative distribution function
+    _cdf(self, x, **prm)    Cumulative distribution function (CDF)
     _bnd(self, **prm)       Upper and lower bounds
 
 The following can be provided:
@@ -23,13 +23,13 @@ The following can be provided:
     _ppf(self, q, **prm)    CDF inverse
     _mom(self, k, **prm)    Statistical moment generator
     _ttr(self, k, **prm)    TTR coefficients generator
-    _str(self, **prm)       Preaty print of distribution
+    _str(self, **prm)       Pretty print of distribution
 
 Alternative use the construct generator.
 
 Examples
 --------
-A general uniform distribution wit two parameters
+A general uniform distribution with two parameters:
 >>> class Uniform(cp.Dist):
 ...     def __init__(self, lo=0, up=1):
 ...         cp.Dist.__init__(self, lo=lo, up=up)
@@ -45,7 +45,7 @@ A general uniform distribution wit two parameters
 ...         return "u(%s%s)" % (lo, up)
 ...
 >>> dist = Uniform(-3,3)
->>> print dist.fwd([-3,0,3])
+>>> print dist.fwd([-3,0,3])  # Forward Rosenblatt transformation
 [ 0.   0.5  1. ]
 
 See also
@@ -69,7 +69,7 @@ __all__ = [
 
 class Dist(object):
     """
-A represatation of a random variable.
+Represatation of a random variable by a distribution.
     """
 
     def __init__(self, **prm):
@@ -85,7 +85,7 @@ _advanced : bool
     sub-functions.
         """
 
-        for key,val in prm.items():
+        for key, val in prm.items():
             if not isinstance(val, Dist):
                 prm[key] = np.array(val)
 
@@ -204,10 +204,10 @@ out : ndarray
 
         try:
             out, G = self.G.run(q, "inv", maxiter=maxiter, tol=tol,
-                    verbose=verbose)
+                                verbose=verbose)
         except NotImplementedError:
             out,N,q_ = inv(self, q,
-                    maxiter=maxiter, tol=tol, retall=True)
+                           maxiter=maxiter, tol=tol, retall=True)
             if verbose:
                 diff = np.max(np.abs(q-q_))
                 print "approx %s.inv w/%d calls and eps=%g" \
@@ -707,4 +707,3 @@ if __name__=='__main__':
     doctest.testmod()
 
 from operators import add, mul, neg, pow, trunk
-
