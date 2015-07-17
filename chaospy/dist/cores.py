@@ -1,7 +1,7 @@
 """
 Backend for the collection distributions.
 
-To create a user defined distributions use the distributions in
+To create a user-defined distribution use the distributions in
 this module as template.
 
 Documentation for each distribution is available in
@@ -257,10 +257,10 @@ class triangle(Dist):
 
 
 #  class wigner(Dist):
-#  
+#
 #      def __init__(self):
 #          Dist.__init__(self)
-#  
+#
 #      def _pdf(self, x):
 #          return 2*np.sqrt(1-x*x)/np.pi
 #      def _cdf(self, x):
@@ -573,35 +573,35 @@ class mvstudentt(Dist):
         return lo,up
 
 #      def _mom(self, k, G):
-#  
+#
 #          C, loc = G.K["C"], G.K["loc"]
 #          scale = np.dot(C, C.T)
-#  
+#
 #          def mom(k):
-#  
+#
 #              zeros = (np.sum(k,0)%2==1)+np.any(np.array(k)<0, 0)
 #              if np.all(zeros, 0):
 #                  return 0.
-#  
+#
 #              dim, K = k.shape
 #              ra = np.arange(dim).repeat(K).reshape(dim,K)
-#  
+#
 #              i = np.argmax(k!=0, 0)
-#  
+#
 #              out = np.zeros(k.shape[1:])
 #              out[:] = np.where(np.choose(i,k),
 #                      (np.choose(i,k)-1)*scale[i,i]*mom(k-2*(ra==i)), 1)
 #              for x in xrange(1, dim):
 #                  out += \
 #                  (np.choose(i,k)!=0)*(x>i)*k[x]*scale[i,x]*mom(k-(ra==i)-(ra==x))
-#  
+#
 #              return out
-#  
+#
 #          dim = len(loc)
 #          K = np.mgrid[[slice(0,_+1,1) for _ in np.max(k, 1)]]
 #          K = K.reshape(dim, K.size/dim)
 #          M = mom(K)
-#  
+#
 #          out = np.zeros(k.shape[1])
 #          for i in xrange(len(M)):
 #              coef = np.prod(sp.misc.comb(k.T, K[:,i]).T, 0)
@@ -611,7 +611,7 @@ class mvstudentt(Dist):
 #              pos = np.all(pos, 1)
 #              loc_ = np.prod(loc**diff, 1)
 #              out += pos*coef*loc_*M[i]
-#  
+#
 #          return out
 
     def _dep(self, G):
@@ -625,14 +625,14 @@ class mvstudentt(Dist):
 #  class Dirichlet(be.Dist):
 #      """
 #  Dirichlet \sim Dir(alpha)
-#  
+#
 #  Parameters
 #  ----------
 #  alpha : array_like
 #      Shape parameters.
 #      len(alpha)>1
 #      np.all(alpha>0)
-#  
+#
 #  Examples
 #  --------
 #  >>> cp.seed(1000)
@@ -650,40 +650,40 @@ class mvstudentt(Dist):
 #  >>> print f.mom((1,1))
 #  0.047619047619
 #      """
-#  
+#
 #      def __init__(self, alpha=[1,1,1]):
-#  
+#
 #          dists = [co.beta() for _ in xrange(len(alpha)-1)]
 #          ba.Dist.__init__(self, _dists=dists, alpha=alpha, _name="D")
-#  
+#
 #      def _upd(self, alpha, **prm):
-#  
+#
 #          alpha = alpha.flatten()
 #          dim = len(alpha)-1
 #          out = [None]*dim
 #          _dists = prm.pop("_" + self.name)
 #          cum = _dists[0]
-#  
+#
 #          _dists[0].upd(a=alpha[0], b=np.sum(alpha[1:], 0))
 #          out[0] = _dists[0]
 #          for i in xrange(1, dim):
 #              _dists[i].upd(a=alpha[i], b=np.sum(alpha[i+1:], 0))
 #              out[i] = _dists[i]*(1-cum)
 #              cum = cum+out[i]
-#  
+#
 #          prm = dict(alpha=alpha)
 #          prm["_" + self.name] = out
 #          return prm
-#  
+#
 #      def _mom(self, k, alpha, **prm):
-#  
+#
 #          out = np.empty(k.shape[1:])
 #          out[:] = sp.special.gamma(np.sum(alpha, 0))
 #          out /= sp.special.gamma(np.sum(alpha, 0)+np.sum(k, 0))
 #          out *= np.prod(sp.special.gamma(alpha[:-1]+k.T).T, 0)
 #          out /= np.prod(sp.special.gamma(alpha[:-1]), 0)
 #          return out
-#  
+#
 
 
 ##NEW
@@ -1124,7 +1124,7 @@ class chisquared(Dist):
         return 0.0, self._ppf(1-1e-10, nc)
 
 #  class f(Dist):
-#  
+#
 #      def __init__(self, n=1, m=1):
 #          Dist.__init__(self, n=n, m=m)
 #      def _pdf(self, x, n, m):
