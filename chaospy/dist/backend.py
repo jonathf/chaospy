@@ -387,15 +387,19 @@ out : ndarray
         K = np.array(K, dtype=int)
         shape = K.shape
         dim = len(self)
-        if dim>1:
+
+        if dim > 1:
             shape = shape[1:]
+
         size = K.size/dim
         K = K.reshape(dim, size)
 
         try:
             out, G = self.G.run(K, "mom", **kws)
+
         except NotImplementedError:
             out = mom(self, K, **kws)
+            
         return out.reshape(shape)
 
 
