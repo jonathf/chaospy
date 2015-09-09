@@ -213,39 +213,41 @@ Multivariate
     """
 
     o = np.array(order)*np.ones(len(dist), dtype=int)+1
-    P,g,a,b = stieltjes(dist, np.max(o), acc=acc, retall=True, **kws)
+    P, g, a, b = stieltjes(dist, np.max(o), acc=acc, retall=True, **kws)
 
-    X,W = [], []
+    X, W = [], []
     dim = len(dist)
 
     for d in xrange(dim):
         if o[d]:
             A = np.empty((2, o[d]))
             A[0] = a[d, :o[d]]
-            A[1,:-1] = np.sqrt(b[d, 1:o[d]])
+            A[1, :-1] = np.sqrt(b[d, 1:o[d]])
             vals, vecs = eig_banded(A, lower=True)
 
-            x, w = vals.real, vecs[0,:]**2
+            x, w = vals.real, vecs[0, :]**2
             indices = np.argsort(x)
             x, w = x[indices], w[indices]
 
-
-            p = P[-1][d]
-            dp = po.differential(p, po.basis(1,1,dim)[d])
-
-            x = x - p(x)/dp(x)
-            x = x - p(x)/dp(x)
-            x = x - p(x)/dp(x)
-
-            z = np.arange(dim)
-            b = dist.mom([k*(z == d)
-                for k in range(2*o[d]-3)])
-            X_,r = np.meshgrid(x, np.arange(2*o[d]-3))
-            X_ = X_**r
-            w = np.linalg.lstsq(X_, b)[0].T[0]
+            # p = P[-1][d]
+            # dp = po.differential(p, po.basis(1,1,dim)[d])
+            #
+            # x = x - p(x)/dp(x)
+            # x = x - p(x)/dp(x) 
+            # x = x - p(x)/dp(x)
+            #
+            # z = np.arange(dim)
+            # arg = np.array([k*(z == d) for k in range(2*o[d]-3)])
+            # b_ = dist.mom(arg.T)
+            #
+            # X_, r = np.meshgrid(x, np.arange(2*o[d]-3))
+            # X_ = X_**r
+            # w = np.linalg.lstsq(X_, b_)[0].flatten()
+            # print "w", w.shape
+            # print np.linalg.lstsq(X_, b_)[0]
 
         else:
-            x,w = np.array([a[d,0]]), np.array([1.])
+            x, w = np.array([a[d, 0]]), np.array([1.])
 
         X.append(x)
         W.append(w)
@@ -259,7 +261,6 @@ Multivariate
 
     assert len(x)==dim
     assert len(w)==len(x.T)
-
     return x, w
 
 

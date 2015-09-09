@@ -925,6 +925,29 @@ Examples
         return R, uhat, Q
     return R
 
+def fit_lagrange(X, Y):
+    """Simple lagrange method"""
+
+    X = np.array(X)
+    Y = np.array(Y)
+    assert X.shape[0] == Y.shape[0]
+
+    if len(X.shape) == 1:
+        X = X.reshape(1, X.size)
+    
+    N, dim = X.shape
+
+    basis = []
+    n = 1
+    while len(basis) < N:
+        basis = po.basis(0, n, dim)
+        n += 1
+
+    basis = basis[:N]
+
+    return fit_regression(basis, X, Y)
+
+
 
 def cross_validate(P, X, Y, folds=None, rule="LS", **kws):
     """
