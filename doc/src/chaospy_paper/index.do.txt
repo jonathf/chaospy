@@ -4,7 +4,7 @@ AUTHOR: Hans Petter Langtangen Email:hpl@simula.no {copyright|CC BY-NC} at Cente
 DATE: August 30, 2015
 
  * PDF:
-   * "for screen": "chaospy-4screen.pdf",
+   * "for screen": "chaospy-4screen.pdf"
    * "for printing": "chaospy-4print.pdf"
  * HTML:
    * "Bootstrap": "chaospy-bootstrap.html"

@@ -26,8 +26,6 @@ framework for computing Rosenblatt transformations and a new approach
 for creating polynomial chaos expansions with dependent stochastic
 variables.
 
-Keywords
-~~~~~~~~
-
-uncertainty quantification; polynomial chaos expansions; Monte Carlo simulation; Rosenblatt transformations; Python package
+**Note:** This paper is accepted in Journal of Computational Science and
+will be published as an Open Access paper.
 

@@ -85,24 +85,24 @@ be considered a subset of polynomial approximation methods, but
 particularly designed for uncertainty quantification.  A general
 polynomial approximation can be defined as</p>
 <div class="math" id="equation-eq_approx_poly">
-<span id="eq-eq-approx-poly"></span><span class="eqno">(1)</span>\[         \hat f(\bm x, t, \bm Q) =
-         \sum_{n\in I_N} c_n(\bm x, t) \bm\Phi_n(\bm Q) \qquad
+<span id="eq-eq-approx-poly"></span><span class="eqno">(1)</span>\[         \hat f(\boldsymbol{x}, t, \boldsymbol{Q}) =
+         \sum_{n\in I_N} c_n(\boldsymbol{x}, t) \boldsymbol{\Phi}_n(\boldsymbol{Q}) \qquad
          I_N = \{0,\dots,N\},\]</div>
 <p>where <span class="math">\(\{c_n\}_{n\in I_N}\)</span> are coefficients (often known as Fourier coefficients)
-and <span class="math">\(\{\bm\Phi_n\}_{n\in I_N}\)</span> are polynomials.
+and <span class="math">\(\{\boldsymbol{\Phi}_n\}_{n\in I_N}\)</span> are polynomials.
 If <span class="math">\(\hat f\)</span> is a good approximation of <span class="math">\(f\)</span>, it is possible to
 either infer statistical properties of <span class="math">\(\hat f\)</span> analytically
 or through cheap numerical computations where <span class="math">\(\hat f\)</span> is used
 as a surrogate for <span class="math">\(f\)</span>.</p>
 <p>A polynomial chaos expansion is defined as a polynomial approximation,
 as in <a href="#equation-eq_approx_poly">(1)</a>, where the polynomials
-<span class="math">\(\{\bm\Phi_n\}_{n\in I_N}\)</span> are orthogonal on a custom weighted
+<span class="math">\(\{\boldsymbol{\Phi}_n\}_{n\in I_N}\)</span> are orthogonal on a custom weighted
 function space <span class="math">\(L_Q\)</span>:</p>
 <div class="math" id="equation-eq_orthogonal">
-<span id="eq-eq-orthogonal"></span><span class="eqno">(2)</span>\[         \inner{\bm\Phi_n,\bm\Phi_m} =
-         \E{ \bm\Phi_n(\bm Q) \bm\Phi_m(\bm Q) } =
-         \idotsint \bm\Phi_n(\bm q) \bm\Phi_m(\bm q)
-             p_{\bm Q}(\bm q) \ud \bm q = 0
+<span id="eq-eq-orthogonal"></span><span class="eqno">(2)</span>\[         \left\langle\boldsymbol{\Phi}_n,\boldsymbol{\Phi}_m\right\rangle =
+         \mathbb{E}\!\left[ \boldsymbol{\Phi}_n(\boldsymbol{Q}) \boldsymbol{\Phi}_m(\boldsymbol{Q}) \right] =
+         \int\cdots\int \boldsymbol{\Phi}_n(\boldsymbol{q}) \boldsymbol{\Phi}_m(\boldsymbol{q})
+             p_{\boldsymbol{Q}}(\boldsymbol{q}) {\rm d} \boldsymbol{q} = 0,\quad
          n\neq m.\]</div>
 <p>As a side note, it is worth noting that in parallel with polynomial
 chaos expansions, there also exists an alternative collocation method
@@ -119,9 +119,9 @@ polynomial chaos expansions will be discussed.</p>
 <span id="sec-orthogonal"></span><h2>Orthogonal Polynomials Construction<a class="headerlink" href="#orthogonal-polynomials-construction" title="Permalink to this headline">¶</a></h2>
 <p>From <a href="#equation-eq_orthogonal">(2)</a> it follows that the orthogonality property
 is not in general transferable between distributions, since a new set
-of polynomials has to be constructed for each <span class="math">\(p_{\bm Q}\)</span>.  The
+of polynomials has to be constructed for each <span class="math">\(p_{\boldsymbol{Q}}\)</span>.  The
 easiest approach to construct orthogonal polynomials is to identify
-the probability density <span class="math">\(p_{\bm Q}\)</span> in the so-called Askey-Wilson
+the probability density <span class="math">\(p_{\boldsymbol{Q}}\)</span> in the so-called Askey-Wilson
 scheme <a class="reference internal" href="._chaospy005.html#ref29" id="id2">[Ref29]</a>.  The polynomials can then be picked
 from a list, or be built from analytical components.  The continuous
 distributions supported in the scheme include the standard normal,
@@ -191,7 +191,7 @@ it is the only truly numerically stable method for orthogonal
 polynomial construction.  It is based upon one-dimensional recursion
 coefficients that are estimated using numerical integration.
 Unfortunately, the method is only applicable in the multivariate case
-if the components of <span class="math">\(p_{\bm Q}\)</span> are stochastically independent.</p>
+if the components of <span class="math">\(p_{\boldsymbol{Q}}\)</span> are stochastically independent.</p>
 <div class="section" id="generalized-polynomial-chaos-expansions">
 <h3>Generalized Polynomial Chaos Expansions<a class="headerlink" href="#generalized-polynomial-chaos-expansions" title="Permalink to this headline">¶</a></h3>
 <p>One approach to model densities with stochastically dependent
@@ -203,19 +203,19 @@ the mapping between any domain and the unit hypercube <span class="math">\([0,1]
 a double transformation we can reformulate the response function <span class="math">\(f\)</span>
 as</p>
 <div class="math">
-\[\begin{split}f(\bm x, t, \bm Q) =
-f(\bm x, t, T_{\bm Q}^{-1}(T_{\bm R}(\bm R))) &amp;\approx
-\hat f(\bm x, t, \bm R) =
-\sum_{n\in I_N} c_n(\bm x, t)\bm \Phi_n(\bm R),\end{split}\]</div>
-<p>where <span class="math">\(\bm R\)</span> is any random variable drawn from <span class="math">\(p_{\bm R}\)</span>, which
+\[\begin{split}f(\boldsymbol{x}, t, \boldsymbol{Q}) =
+f(\boldsymbol{x}, t, T_{\boldsymbol{Q}}^{-1}(T_{\boldsymbol{R}}(\boldsymbol{R}))) &amp;\approx
+\hat f(\boldsymbol{x}, t, \boldsymbol{R}) =
+\sum_{n\in I_N} c_n(\boldsymbol{x}, t)\boldsymbol{\Phi}_n(\boldsymbol{R}),\end{split}\]</div>
+<p>where <span class="math">\(\boldsymbol{R}\)</span> is any random variable drawn from <span class="math">\(p_{\boldsymbol{R}}\)</span>, which
 for simplicity is chosen to consists of independent components.
-Also, <span class="math">\(\{\bm\Phi_n\}_{n\in I_N}\)</span>
-is constructed to be orthogonal with respect to <span class="math">\(L_{\bm R}\)</span>, not
-<span class="math">\(L_{\bm Q}\)</span>.
-In any case, <span class="math">\(\bm R\)</span> is either selected from the Askey-Wilson
+Also, <span class="math">\(\{\boldsymbol{\Phi}_n\}_{n\in I_N}\)</span>
+is constructed to be orthogonal with respect to <span class="math">\(L_{\boldsymbol{R}}\)</span>, not
+<span class="math">\(L_{\boldsymbol{Q}}\)</span>.
+In any case, <span class="math">\(\boldsymbol{R}\)</span> is either selected from the Askey-Wilson
 scheme, or calculated using the discretized Stieltjes procedure.
 We remark that the accuracy of the approximation deteriorate if the
-transformation composition <span class="math">\(T_{\bm Q}^{-1}\circ T_{\bm R}\)</span> is not
+transformation composition <span class="math">\(T_{\boldsymbol{Q}}^{-1}\circ T_{\boldsymbol{R}}\)</span> is not
 smooth <a class="reference internal" href="._chaospy005.html#ref34" id="id12">[Ref34]</a>.</p>
 <p>Dakota, Turns, and Chaospy all support generalized polynomial chaos
 expansions for independent stochastic variables and the Normal/Nataf
@@ -226,9 +226,9 @@ available for all densities.</p>
 </div>
 <div class="section" id="the-direct-multivariate-approach">
 <h3>The Direct Multivariate Approach<a class="headerlink" href="#the-direct-multivariate-approach" title="Permalink to this headline">¶</a></h3>
-<p>Given that both the density <span class="math">\(p_{\bm Q}\)</span> has stochastically dependent
-components, and the transformation composition <span class="math">\(T^{-1}_{\bm Q}\circ
-T_{\bm R}\)</span> is not smooth, it is still possible to generate orthogonal
+<p>Given that both the density <span class="math">\(p_{\boldsymbol{Q}}\)</span> has stochastically dependent
+components, and the transformation composition <span class="math">\(T^{-1}_{\boldsymbol{Q}}\circ
+T_{\boldsymbol{R}}\)</span> is not smooth, it is still possible to generate orthogonal
 polynomials numerically.  As noted above, most methods are numerically
 unstable, and the accuracy in the orthogonality can deteriorate with
 polynomial order, but the methods can still be useful
@@ -248,7 +248,7 @@ demonstrated in the next example involving a second-order Hermite
 polynomial expansion, orthogonal with respect to the normal density
 <a class="reference internal" href="._chaospy005.html#ref29" id="id17">[Ref29]</a>:</p>
 <div class="math">
-\[\left\{\bm\Phi_n\right\}_{n\in I_6} =
+\[\left\{\boldsymbol{\Phi}_n\right\}_{n\in I_6} =
 \left\{ 1, Q_0, Q_1, Q_0^2-1, Q_0Q_1, Q_1^2-1 \right\}\]</div>
 <p>The relevant Chaospy code for creating this polynomial expansion looks like</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">variable</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -438,23 +438,23 @@ practical, generic implementation of these two methods in Chaospy.</p>
 <div class="section" id="integration-methods">
 <h2>Integration Methods<a class="headerlink" href="#integration-methods" title="Permalink to this headline">¶</a></h2>
 <p>The pseudo-spectral projection method is based on a standard least
-squares minimization in the weighted function space <span class="math">\(L_{\bm Q}\)</span>.
+squares minimization in the weighted function space <span class="math">\(L_{\boldsymbol{Q}}\)</span>.
 Since the polynomials are orthogonal in this space, the associated
 linear system is diagonal, which allows a closed-form expression for
 the Fourier coefficients. The expression involves high-dimensional
-integrals in <span class="math">\(L_{\bm Q}\)</span>. Numerical integration is then required,</p>
+integrals in <span class="math">\(L_{\boldsymbol{Q}}\)</span>. Numerical integration is then required,</p>
 <div class="math" id="equation-eq_quadrature">
-<span id="eq-eq-quadrature"></span><span class="eqno">(3)</span>\[         c_n = \frac{\E{Y \bm\Phi_n}}{\E{\bm\Phi_n^2}} =
-         \frac{1}{\E{\bm\Phi_n^2}} \idotsint p_{\bm Q}(\bm q)
-         f(\bm x, t, \bm q) \bm\Phi_n(\bm q)\ud\bm q\]</div>
+<span id="eq-eq-quadrature"></span><span class="eqno">(3)</span>\[         c_n = \frac{{\mathbb{E}\!\left[Y \boldsymbol{\Phi\right]}_n}}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}} =
+         \frac{1}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}} \idotsint p_{\boldsymbol{Q}}(\boldsymbol{q})
+         f(\boldsymbol{x}, t, \boldsymbol{q}) \boldsymbol{\Phi}_n(\boldsymbol{q}){\rm d}\boldsymbol{q}\]</div>
 <div class="math">
 \[\notag
-  \approx \frac{1}{\E{\bm\Phi_n^2}}
-  \sum_{k\in I_K} w_k p_{\bm Q}(\bm q_k)
-  f(\bm x, t, \bm q_k)
-  \bm\Phi_n(\bm q_k)
+  \approx \frac{1}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}}
+  \sum_{k\in I_K} w_k p_{\boldsymbol{Q}}(\boldsymbol{q}_k)
+  f(\boldsymbol{x}, t, \boldsymbol{q}_k)
+  \boldsymbol{\Phi}_n(\boldsymbol{q}_k)
   I_K = \{0,\dots,K-1\},\]</div>
-<p>where <span class="math">\(w_k\)</span> are weights and <span class="math">\(\bm q_k\)</span> nodes in a quadrature scheme.
+<p>where <span class="math">\(w_k\)</span> are weights and <span class="math">\(\boldsymbol{q}_k\)</span> nodes in a quadrature scheme.
 Note that <span class="math">\(f\)</span> is only evaluated for the nodes <span class="math">\(\boldsymbol{q}_k\)</span>, and these
 evaluations can be made once. Thereafter, one can experiment with the
 polynomial order since any <span class="math">\(c_n\)</span> depends on the same evaluations of <span class="math">\(f\)</span>.</p>
@@ -592,7 +592,7 @@ expansion, we use the <code class="docutils literal"><span class="pre">cp.fit_qu
 arguments: the set of orthogonal polynomials, quadrature nodes,
 quadrature weights, and the user&#8217;s function for evaluating the forward
 model (to be executed at the quadrature nodes).  Note that in the case
-of the discretized Stieltjes method discussed in the section <a class="reference internal" href="#sec-orthogonal"><span class="std std-ref">Orthogonal Polynomials Construction</span></a>, the nominator <span class="math">\(\E{\bm\Phi_n^2}\)</span> in
+of the discretized Stieltjes method discussed in the section <a class="reference internal" href="#sec-orthogonal"><span class="std std-ref">Orthogonal Polynomials Construction</span></a>, the nominator <span class="math">\({\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}\)</span> in
 <a href="#equation-eq_quadrature">(3)</a> can be calculated more accurately using
 recurrence coefficients <a class="reference internal" href="._chaospy005.html#ref32" id="id35">[Ref32]</a>.  Special
 numerical features like this can be added by including optional
@@ -603,7 +603,7 @@ arguments in <code class="docutils literal"><span class="pre">cp.fit_quadrature<
 <p>The other non-intrusive approach to estimate the coefficients
 <span class="math">\(\{c_k\}_{k\in I_K}\)</span> is the point collocation method.  One way of
 formulating the method is to require the polynomial expansion to equal
-the model evaluations at a set of collocation nodes <span class="math">\(\{\bm q_k\}_{k\in
+the model evaluations at a set of collocation nodes <span class="math">\(\{\boldsymbol{q}_k\}_{k\in
 I_K}\)</span>, resulting in an over-determined set of linear equations for the
 Fourier coefficients:</p>
 <div class="math" id="equation-eq_pcm">

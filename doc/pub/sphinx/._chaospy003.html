@@ -85,16 +85,16 @@
 <p>Numerical methods for uncertainty quantification need to generate
 pseudo-random realizations</p>
 <div class="math">
-\[\{\bm Q_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},\]</div>
-<p>from the density <span class="math">\(p_{\bm Q}\)</span>.  Each <span class="math">\(\bm Q\in \{\bm Q_k\}_{k\in I_K}\)</span>
+\[\{\boldsymbol{Q}_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},\]</div>
+<p>from the density <span class="math">\(p_{\boldsymbol{Q}}\)</span>.  Each <span class="math">\(\boldsymbol{Q}\in \{\boldsymbol{Q}_k\}_{k\in I_K}\)</span>
 is multivariate with the number of dimensions <span class="math">\(D&gt;1\)</span>.  Generating
-realizations from a given density <span class="math">\(p_{\bm Q}\)</span> is often non-trivial, at
+realizations from a given density <span class="math">\(p_{\boldsymbol{Q}}\)</span> is often non-trivial, at
 least when <span class="math">\(D\)</span> is large.  A very common assumption made in uncertainty
-quantification is that each dimension in <span class="math">\(\bm Q\)</span> consists of
+quantification is that each dimension in <span class="math">\(\boldsymbol{Q}\)</span> consists of
 stochastically independent components.  Stochastic independence allows
 for a joint sampling scheme to be reduced to a series of univariate
 samplings, drastically reducing the complexity of generating a sample
-<span class="math">\(\bm Q\)</span>.</p>
+<span class="math">\(\boldsymbol{Q}\)</span>.</p>
 <p>Unfortunately, the assumption of independence does not always hold in
 practice.  We have examples from many research fields where stochastic
 dependence must be assumed, including modelling of climate
@@ -108,16 +108,16 @@ any cases, modelling of stochastically dependent variables are
 required to perform uncertainty quantification adequately.  A strong
 feature of Chaospy is its support for stochastic dependence.</p>
 <p>All random samples are in Chaospy generated using Rosenblatt
-transformations <span class="math">\(T_{\bm Q}\)</span> <a class="reference internal" href="._chaospy005.html#ref15" id="id6">[Ref15]</a>.  It allows
-for a random variable <span class="math">\(\bm U\)</span>, generated uniformly on a unit hypercube
-<span class="math">\([0,1]^D\)</span>, to be transformed into <span class="math">\(\bm Q = T^{-1}_{\bm Q}(\bm U)\)</span>,
-which behaves as if it were drawn from the density <span class="math">\(p_{\bm Q}\)</span>.  It is
+transformations <span class="math">\(T_{\boldsymbol{Q}}\)</span> <a class="reference internal" href="._chaospy005.html#ref15" id="id6">[Ref15]</a>.  It allows
+for a random variable <span class="math">\(\boldsymbol{U}\)</span>, generated uniformly on a unit hypercube
+<span class="math">\([0,1]^D\)</span>, to be transformed into <span class="math">\(\boldsymbol{Q} = T^{-1}_{\boldsymbol{Q}}(\boldsymbol{U})\)</span>,
+which behaves as if it were drawn from the density <span class="math">\(p_{\boldsymbol{Q}}\)</span>.  It is
 easy to generate pseudo-random samples from a uniform distribution,
 and the Rosenblatt transformation can then be used as a method for
 generating samples from arbitrary densities.</p>
 <p>The Rosenblatt transformation can be derived as follows.  Consider a
 probability decomposition, for example for a bivariate random variable
-<span class="math">\(\bm Q=(Q_0, Q_1)\)</span>:</p>
+<span class="math">\(\boldsymbol{Q}=(Q_0, Q_1)\)</span>:</p>
 <div class="math" id="equation-eq_bivariate">
 <span id="eq-eq-bivariate"></span><span class="eqno">(1)</span>\[         p_{Q_0,Q_1}(q_0,q_1) =
          p_{Q_0}(q_0) p_{Q_1\mid Q_0}(q_1 \mid q_0),\]</div>
@@ -126,7 +126,7 @@ probability decomposition, for example for a bivariate random variable
 For the multivariate case, the density decomposition
 will have the form</p>
 <div class="math" id="equation-eq_decompostion">
-<span id="eq-eq-decompostion"></span><span class="eqno">(2)</span>\[         p_{\boldsymbol{Q}}(\bm q) =
+<span id="eq-eq-decompostion"></span><span class="eqno">(2)</span>\[         p_{\boldsymbol{Q}}(\boldsymbol{q}) =
          \prod_{d=0}^{D-1} p_{Q^{\prime}_d}(q^{\prime}_d),\]</div>
 <p>where</p>
 <div class="math" id="equation-eq_notation">
@@ -136,7 +136,7 @@ will have the form</p>
 lower indices.
 A forward Rosenblatt transformation can then be defined as</p>
 <div class="math" id="equation-eq_forward">
-<span id="eq-eq-forward"></span><span class="eqno">(4)</span>\[         T_{\bm Q}(\bm q) =
+<span id="eq-eq-forward"></span><span class="eqno">(4)</span>\[         T_{\boldsymbol{Q}}(\boldsymbol{q}) =
          (F_{Q_0^{\prime}}(q_0^{\prime}),
          \dots,F_{Q_{D-1}^{\prime}}(q_{D-1}^{\prime})),\]</div>
 <p>where <span class="math">\(F_{Q_d^{\prime}}\)</span> is the cumulative distribution function:</p>
@@ -144,16 +144,16 @@ A forward Rosenblatt transformation can then be defined as</p>
 <span id="eq-eq-general-cdf"></span><span class="eqno">(5)</span>\[         F_{Q_d^{\prime}}(q_d^{\prime}) =
          \int_{-\infty}^{q_d} \!\!
          p_{Q_d^{\prime}}(r\mid q_0,\dots,q_{d-1})
-         \ud r.\]</div>
+         {\rm d} r.\]</div>
 <p>This transformation is bijective, so it is always possible to define
-the inverse Rosenblatt transformation <span class="math">\(T_{\bm Q}^{-1}\)</span> in a similar
+the inverse Rosenblatt transformation <span class="math">\(T_{\boldsymbol{Q}}^{-1}\)</span> in a similar
 fashion.</p>
 </div>
 <div class="section" id="numerical-estimation-of-inverse-rosenblatt-transformations">
 <span id="sec-invrosenblatt"></span><h2>Numerical Estimation of Inverse Rosenblatt Transformations<a class="headerlink" href="#numerical-estimation-of-inverse-rosenblatt-transformations" title="Permalink to this headline">¶</a></h2>
 <p>To implement the Rosenblatt transformation in practice, we need to
-identify the inverse transform <span class="math">\(T_{\bm Q}^{-1}\)</span>.  Unfortunately,
-<span class="math">\(T_{\bm Q}\)</span> is often non-linear without a closed-form formula, making
+identify the inverse transform <span class="math">\(T_{\boldsymbol{Q}}^{-1}\)</span>.  Unfortunately,
+<span class="math">\(T_{\boldsymbol{Q}}\)</span> is often non-linear without a closed-form formula, making
 analytical calculations of the transformation&#8217;s inverse difficult.  In
 the scenario where we do not have a symbolic representation of the
 inverse transformation, a numerical scheme has to be employed.  To the
@@ -161,8 +161,8 @@ authors&#8217; knowledge, there are no standards for defining such a
 numerical scheme.  The following paragraphs therefore describe our
 proposed method for calculating the inverse transformation
 numerically.</p>
-<p>The problem of calculating the inverse transformation <span class="math">\(T^{-1}_{\bm
-Q}\)</span> can, by decomposing the definition of the forward Rosenblatt
+<p>The problem of calculating the inverse transformation <span class="math">\(T^{-1}_{\boldsymbol{Q}}\)</span>
+can, by decomposing the definition of the forward Rosenblatt
 transformation in <a href="#equation-eq_forward">(4)</a>, be reformulated as</p>
 <div class="math">
 \[\begin{split}F_{Q^\prime_d}^{-1}(u\mid q_0,\dots,q_{d-1}) &amp;=
@@ -222,10 +222,10 @@ section.</p>
 <div class="section" id="constructing-distributions">
 <span id="sec-variable"></span><h2>Constructing Distributions<a class="headerlink" href="#constructing-distributions" title="Permalink to this headline">¶</a></h2>
 <p>The backbone of distributions in Chaospy is the Rosenblatt
-transformation <span class="math">\(T_{\bm Q}\)</span>.  The method, as described in the previous
-section, assumes that <span class="math">\(p_{\bm Q}\)</span> is known to be able to perform the
+transformation <span class="math">\(T_{\boldsymbol{Q}}\)</span>.  The method, as described in the previous
+section, assumes that <span class="math">\(p_{\boldsymbol{Q}}\)</span> is known to be able to perform the
 transformation and its inverse.  In practice, however, we first need
-to construct <span class="math">\(p_{\bm Q}\)</span>, before the transformation can be used.  This
+to construct <span class="math">\(p_{\boldsymbol{Q}}\)</span>, before the transformation can be used.  This
 can be a challenging task, but in Chaospy a lot of effort has been put
 into constructing novel tools for making the process as flexible and
 painless as possible.  In essence, users can create their own custom
@@ -290,7 +290,7 @@ conditioned on the uniform distribution, and not the other way
 around.</p>
 <p>Another favorable feature in Chaospy is that multiple transformations
 can be stacked on top of each other.  For example, consider the
-example of a multivariate log-normal random variable <span class="math">\(\bm Q\)</span> with
+example of a multivariate log-normal random variable <span class="math">\(\boldsymbol{Q}\)</span> with
 three dependent components.  (Let us ignore for a moment the fact that
 Chaospy already offers such a distribution.) Trying to decompose this
 distribution is a very cumbersome task if performed manually.
@@ -298,8 +298,8 @@ However, this process can be drastically simplified through variable
 transformations, for which Chaospy has strong support.  A log-normal
 distribution, for example, can be expressed as</p>
 <div class="math">
-\[\bm Q = e^{\bm Z L + \bm b},\]</div>
-<p>where <span class="math">\(\bm Z\)</span> are standard normal variables, and <span class="math">\(L\)</span> and <span class="math">\(\bm b\)</span>
+\[\boldsymbol{Q} = e^{\boldsymbol{Z} L + \boldsymbol{b}},\]</div>
+<p>where <span class="math">\(\boldsymbol{Z}\)</span> are standard normal variables, and <span class="math">\(L\)</span> and <span class="math">\(\boldsymbol{b}\)</span>
 are predefined matrix and vector, respectively.
 To implement this particular transformation, we only
 have to write</p>
@@ -308,7 +308,7 @@ have to write</p>
 </pre></div>
 </div>
 <p>The resulting distribution is fully functional multivariate
-log-normal, assuming <span class="math">\(L\)</span> and <span class="math">\(\bm b\)</span> are properly defined.</p>
+log-normal, assuming <span class="math">\(L\)</span> and <span class="math">\(\boldsymbol{b}\)</span> are properly defined.</p>
 <p>One obvious prerequisite for using univariate distributions to create
 conditionals and multivariate distributions, is the availability of
 univariate distributions.  Since the univariate distribution is the
@@ -786,16 +786,16 @@ It shows that Turns supports 7 methods, Chaospy
 <div class="section" id="variance-reduction-techniques">
 <span id="sec-monte-carlo"></span><h2>Variance Reduction Techniques<a class="headerlink" href="#variance-reduction-techniques" title="Permalink to this headline">¶</a></h2>
 <p>As noted in the beginning of the section <a class="reference internal" href="#sec-dist"><span class="std std-ref">Modelling Random Variables</span></a>, by generating
-samples <span class="math">\(\{\bm Q_k\}_{k\in I_K}\)</span> and evaluating the response function
+samples <span class="math">\(\{\boldsymbol{Q}_k\}_{k\in I_K}\)</span> and evaluating the response function
 <span class="math">\(f\)</span>, it is possible to draw inference upon <span class="math">\(Y\)</span> without knowledge about
 <span class="math">\(p_{Y}\)</span>, through Monte Carlo simulation.  Unfortunately, the number of
 samples <span class="math">\(K\)</span> to achieve reasonable accuracy can often be very high, so
 if <span class="math">\(f\)</span> is assumed to be computationally expensive, the number of
 samples needed frequently make Monte Carlo simulation infeasible for
 practical applications.  As a way to mitigate this problem, it is
-possible to modify <span class="math">\(\{\bm Q_k\}_{k\in I_K}\)</span> from traditional
+possible to modify <span class="math">\(\{\boldsymbol{Q}_k\}_{k\in I_K}\)</span> from traditional
 pseudo-random samples, so that the accuracy increases.  Schemes that
-select non-traditional samples for <span class="math">\(\{\bm Q_k\}_{k\in I_K}\)</span> to
+select non-traditional samples for <span class="math">\(\{\boldsymbol{Q}_k\}_{k\in I_K}\)</span> to
 increase accuracy are known as emph{variance reduction techniques}.
 A list of such techniques are presented in the tables below,
 and they show that Dakota, Turns and Chaospy
@@ -886,7 +886,7 @@ support 4, 7, and 7 variance reduction techniques, respectively.</p>
 </table>
 <p>One of the more popular variance reduction technique is the
 <em>quasi-Monte Carlo scheme</em> <a class="reference internal" href="._chaospy005.html#ref01" id="id20">[Ref01]</a>.  The
-method consists of selecting the samples <span class="math">\(\{\bm Q_k\}_{k\in I_K}\)</span> to
+method consists of selecting the samples <span class="math">\(\{\boldsymbol{Q}_k\}_{k\in I_K}\)</span> to
 be a low-discrepancy sequence instead of pseudo-random samples.  The
 idea is that samples placed with a given distance from each other
 increase the coverage over the sample space, requiring fewer samples

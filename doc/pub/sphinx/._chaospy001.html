@@ -80,20 +80,20 @@
             
   <div class="section" id="introduction">
 <span id="sec-intro"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>We consider a computational science problem in space <span class="math">\(\bm x\)</span> and time
+<p>We consider a computational science problem in space <span class="math">\(\boldsymbol{x}\)</span> and time
 <span class="math">\(t\)</span> where the aim is to quantify the uncertainty in some response <span class="math">\(Y\)</span>,
 computed by a forward model <span class="math">\(f\)</span>, which depends on uncertain
-input parameters <span class="math">\(\bm Q\)</span>:</p>
+input parameters <span class="math">\(\boldsymbol{Q}\)</span>:</p>
 <div class="math" id="equation-eq_function">
-<span id="eq-eq-function"></span><span class="eqno">(1)</span>\[         Y = f(\bm x, t,\bm Q).\]</div>
-<p>We treat <span class="math">\(\bm Q\)</span> as a vector of model parameters, and <span class="math">\(Y\)</span> is normally
+<span id="eq-eq-function"></span><span class="eqno">(1)</span>\[         Y = f(\boldsymbol{x}, t,\boldsymbol{Q}).\]</div>
+<p>We treat <span class="math">\(\boldsymbol{Q}\)</span> as a vector of model parameters, and <span class="math">\(Y\)</span> is normally
 computed as some grid function in space and time.  The uncertainty in
-this problem stems from the parameters <span class="math">\(\bm Q\)</span>, which are assumed to
-have a known joint probability density function <span class="math">\(p_{\bm Q}\)</span>.  The
+this problem stems from the parameters <span class="math">\(\boldsymbol{Q}\)</span>, which are assumed to
+have a known joint probability density function <span class="math">\(p_{\boldsymbol{Q}}\)</span>.  The
 challenge is that we want to quantify the uncertainty
 in <span class="math">\(Y\)</span>, but nothing is known about its density <span class="math">\(p_{Y}\)</span>.  The goal is
 then to either build the density <span class="math">\(p_Y\)</span> or relevant descriptive
-properties of <span class="math">\(Y\)</span> using the density <span class="math">\(p_{\bm Q}\)</span> and the forward model
+properties of <span class="math">\(Y\)</span> using the density <span class="math">\(p_{\boldsymbol{Q}}\)</span> and the forward model
 <span class="math">\(f\)</span>.  For all practical purposes this must be done by a numerical
 procedure.</p>
 <p>In this paper, we focus on two approaches to numerically quantify

@@ -10,8 +10,8 @@ Automatically generated HTML file from DocOnce source
 
 <title>Chaospy: An Open Source Tool for Designing Methods of Uncertainty Quantification</title>
 
-<!-- Bootstrap style: bootswatch_journal -->
-<link href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/journal/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap style: bootswatch_readable -->
+<link href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/readable/bootstrap.min.css" rel="stylesheet">
 <!-- not necessary
 <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 -->
@@ -26,8 +26,7 @@ code { color: inherit; background-color: transparent; }
 
 <!-- tocinfo
 {'highest level': 1,
- 'sections': [('Keywords', 3, None, '___sec0'),
-              ('Introduction', 1, 'sec:intro', 'sec:intro'),
+ 'sections': [('Introduction', 1, 'sec:intro', 'sec:intro'),
               ('A Glimpse of Chaospy in Action', 1, 'sec:case', 'sec:case'),
               ('Modelling Random Variables', 1, 'sec:dist', 'sec:dist'),
               ('Rosenblatt Transformation',
@@ -55,21 +54,21 @@ code { color: inherit; background-color: transparent; }
               ('Generalized Polynomial Chaos Expansions',
                3,
                None,
-               '___sec11'),
-              ('The Direct Multivariate Approach', 3, None, '___sec12'),
-              ('Custom Polynomial Expansions', 3, None, '___sec13'),
+               '___sec10'),
+              ('The Direct Multivariate Approach', 3, None, '___sec11'),
+              ('Custom Polynomial Expansions', 3, None, '___sec12'),
               ('Calculating Coefficients', 2, 'sec:spectral', 'sec:spectral'),
-              ('Integration Methods', 2, None, '___sec15'),
+              ('Integration Methods', 2, None, '___sec14'),
               ('Point Collocation', 2, 'sec:ptcolloc', 'sec:ptcolloc'),
-              ('Model Evaluations', 2, None, '___sec17'),
-              ('Extension of polynomial expansions', 2, None, '___sec18'),
+              ('Model Evaluations', 2, None, '___sec16'),
+              ('Extension of polynomial expansions', 2, None, '___sec17'),
               ('Descriptive Tools', 2, 'sec:descriptive', 'sec:descriptive'),
               ('Conclusion and Further Work',
                1,
                'sec:conclusion',
                'sec:conclusion'),
-              ('Acknowledgement', 2, None, '___sec21'),
-              ('Bibliography', 2, None, '___sec22')]}
+              ('Acknowledgement', 2, None, '___sec20'),
+              ('Bibliography', 2, None, '___sec21')]}
 end of tocinfo -->
 
 <body>
@@ -87,6 +86,12 @@ MathJax.Hub.Config({
 <script type="text/javascript"
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
+
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
+$$
+
 
 
 
@@ -106,11 +111,11 @@ MathJax.Hub.Config({
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Contents <b class="caret"></b></a>
         <ul class="dropdown-menu">
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap001.html#sec:intro" style="font-size: 80%;">Introduction</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap002.html#sec:case" style="font-size: 80%;">A Glimpse of Chaospy in Action</a></li>
-     <!-- navigation toc: --> <li><a href="#sec:dist" style="font-size: 80%;">Modelling Random Variables</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap004.html#sec:chaos" style="font-size: 80%;">Polynomial Chaos Expansions</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap005.html#sec:conclusion" style="font-size: 80%;">Conclusion and Further Work</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap002.html#sec:intro" style="font-size: 80%;">Introduction</a></li>
+     <!-- navigation toc: --> <li><a href="#sec:case" style="font-size: 80%;">A Glimpse of Chaospy in Action</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap004.html#sec:dist" style="font-size: 80%;">Modelling Random Variables</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap005.html#sec:chaos" style="font-size: 80%;">Polynomial Chaos Expansions</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap006.html#sec:conclusion" style="font-size: 80%;">Conclusion and Further Work</a></li>
 
         </ul>
       </li>
@@ -126,605 +131,194 @@ MathJax.Hub.Config({
 <a name="part0003"></a>
 <!-- !split -->
 
-<h1 id="sec:dist">Modelling Random Variables</h1>
-
-<h2 id="sec:rosenblatt">Rosenblatt Transformation</h2>
+<h1 id="sec:case">A Glimpse of Chaospy in Action</h1>
 
 <p>
-Numerical methods for uncertainty quantification need to generate
-pseudo-random realizations
+To demonstrate how Chaospy is used to solve an uncertainty quantification
+problem, we consider a simple physical example of (scaled)
+exponential decay with an uncertain, piecewise constant coefficient:
+
+$$
+\begin{equation}
+u'(x) = -c(x)u(x),\quad u(0)=u_0,\ c(x) = \left\lbrace
+\begin{array}{ll}
+c_0, & x < 0.5\\
+c_1, & 0.5\leq x < 0.7\\
+c_2, & x\geq 0.7
+\end{array}
+\right.
+\end{equation}
+$$
+
+Such a model arises in many contexts, but we may here think of \( u(x) \)
+as the porosity at depth \( x \)
+in geological layers and \( c_i \) as a (scaled) compaction constant
+in layer number \( i \). For simplicity, we consider only three layers with three
+uncertain constants \( c_0 \), \( c_1 \), and \( c_2 \).
+
+<p>
+The model can easily be evaluated by solving the differential equation
+problem, here by a 2nd-order Runge-Kutta method on a mesh <code>x</code>,
+coded in Python as:
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">model</span>(x, u0, c0, c1, c2):
+    <span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">c</span>(x):
+        <span style="color: #008000; font-weight: bold">if</span>   x <span style="color: #666666">&lt;</span> <span style="color: #666666">0.5</span>:           <span style="color: #008000; font-weight: bold">return</span> c0
+        <span style="color: #008000; font-weight: bold">elif</span> <span style="color: #666666">0.5</span> <span style="color: #666666">&lt;=</span> x <span style="color: #666666">&lt;</span> <span style="color: #666666">0.7</span>:    <span style="color: #008000; font-weight: bold">return</span> c1
+        <span style="color: #008000; font-weight: bold">else</span>:                   <span style="color: #008000; font-weight: bold">return</span> c2
+
+    N <span style="color: #666666">=</span> <span style="color: #008000">len</span>(x)
+    u <span style="color: #666666">=</span> np<span style="color: #666666">.</span>zeros(N)
+
+    u[<span style="color: #666666">0</span>] <span style="color: #666666">=</span> u0
+    <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #AA22FF; font-weight: bold">in</span> <span style="color: #008000">xrange</span>(N<span style="color: #666666">-1</span>):
+        dx <span style="color: #666666">=</span> x[n<span style="color: #666666">+1</span>] <span style="color: #666666">-</span> x[n]
+        K1 <span style="color: #666666">=</span> <span style="color: #666666">-</span>dx<span style="color: #666666">*</span>u[n]<span style="color: #666666">*</span>c(x[n])
+        K2 <span style="color: #666666">=</span> <span style="color: #666666">-</span>dx<span style="color: #666666">*</span>u[n] <span style="color: #666666">+</span> K1<span style="color: #666666">/2*</span>c(x[n]<span style="color: #666666">+</span>dx<span style="color: #666666">/2</span>)
+        u[n<span style="color: #666666">+1</span>] <span style="color: #666666">=</span> u[n] <span style="color: #666666">+</span> K1 <span style="color: #666666">+</span> K2
+    <span style="color: #008000; font-weight: bold">return</span> u
+</pre></div>
+<p>
+Alternatively, the model can be implemented in some external software in
+another programming language. This software can either be run as a
+stand-alone application, where the Python function <code>model</code>
+runs the application and communicates with it through input and output
+files, or the <code>model</code> function can communicate with the external software
+through function calls if a Python wrapper has been made for the software
+(there are numerous technologies available for creating Python wrappers for
+C, C++, and Fortran software).
+
+<p>
+The Chaospy package may be loaded by
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #008000; font-weight: bold">import</span> <span style="color: #0000FF; font-weight: bold">chaospy</span> <span style="color: #008000; font-weight: bold">as</span> <span style="color: #0000FF; font-weight: bold">cp</span>
+</pre></div>
+<p>
+Each of the uncertain parameters must be assigned a probability
+density, and we assume that \( c_0 \), \( c_1 \), and \( c_2 \) are stochastically
+independent:
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%">c0 <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Normal(<span style="color: #666666">0.5</span>, <span style="color: #666666">0.15</span>)
+c1 <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Uniform(<span style="color: #666666">0.5</span>, <span style="color: #666666">2.5</span>)
+c2 <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Uniform(<span style="color: #666666">0.03</span>, <span style="color: #666666">0.07</span>)
+<span style="color: #408080; font-style: italic"># Joint probability distribution</span>
+distribution <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>J(c0, c1, c2)
+</pre></div>
+<p>
+The sample points \( (c_0,c_1,c_2) \) in probability space, where the
+model is to be evaluated, can be chosen
+in many ways. Here we specify
+a third-order Gaussian Quadrature scheme tailored to the joint distribution:
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%">nodes, weights <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>generate_quadrature(
+    order<span style="color: #666666">=3</span>, domain<span style="color: #666666">=</span>distribution, rule<span style="color: #666666">=</span><span style="color: #BA2121">&quot;Gaussian&quot;</span>)
+</pre></div>
+<p>
+The next step is to evaluate the computational model
+at these sample points (object <code>nodes</code>):
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%">x <span style="color: #666666">=</span> np<span style="color: #666666">.</span>linspace(<span style="color: #666666">0</span>, <span style="color: #666666">1</span>, <span style="color: #666666">101</span>)
+samples <span style="color: #666666">=</span> [model(x, u0, node[<span style="color: #666666">0</span>], node[<span style="color: #666666">1</span>], node[<span style="color: #666666">2</span>])
+           <span style="color: #008000; font-weight: bold">for</span> node <span style="color: #AA22FF; font-weight: bold">in</span> nodes<span style="color: #666666">.</span>T]
+</pre></div>
+<p>
+Now, <code>samples</code> contains a list of arrays, each array containing
+\( u \) values at the 101
+<code>x</code> values for one combination \( (c_0,c_1,c_2) \) of the input parameters.
+
+<p>
+To create a polynomial chaos expansion, we must generate orthogonal polynomials
+corresponding to the joint distribution. We choose polynomials
+of the same order as specified in the quadrature rule, computed by the
+widely used three-term recurrence relation (<code>ttr</code>):
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%">polynomials <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>orth_ttr(order<span style="color: #666666">=3</span>, dist<span style="color: #666666">=</span>distribution)
+</pre></div>
+<p>
+To create an approximate solver (or surrogate model),
+we join the polynomial chaos expansion,
+the quadrature nodes and weights, and the model samples:
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%">model_approx <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>fit_quadrature(
+               polynomials, nodes, weights, samples)
+</pre></div>
+<p>
+The <code>model_approx</code> object can now cheaply evaluate the model
+at a point \( (c_0,c_1,c_2) \) in probability space for all \( x \) points
+in the <code>x</code> array.
+Built-in tools can be used to
+derive statistical information about the model response:
+
+<p>
+
+<!-- code=python (!bc pycod) typeset with pygments style "default" -->
+<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%">mean <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>E(model_approx, distribution)
+deviation <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Std(model_approx, distribution)
+</pre></div>
+<p>
+The <code>mean</code> and <code>deviation</code> objects are arrays containing the
+mean value and standard deviation at each point in <code>x</code>.
+A graphical illustration is shown
+in Figure <a href="#fig_sode">1</a>.
+
+<p>
+The accuracy of the estimation is comparable to what Dakota and Turns
+can provide.  Figure <a href="#fig_compare">2</a> shows that the estimation error
+in the three software toolboxes are almost indistinguishable.  The
+error is calculated as the absolute difference between the true value
+and the estimated value integrated over the depth \( x \):
 
 $$
 \begin{align*}
-    \{\bm Q_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},
+\varepsilon_{\mathbb E} &=
+ \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x
+ & \varepsilon_{\mathbb V} &=
+   \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | {\rm d} x
 \end{align*}
 $$
 
-from the density \( p_{\bm Q} \).  Each \( \bm Q\in \{\bm Q_k\}_{k\in I_K} \)
-is multivariate with the number of dimensions \( D>1 \).  Generating
-realizations from a given density \( p_{\bm Q} \) is often non-trivial, at
-least when \( D \) is large.  A very common assumption made in uncertainty
-quantification is that each dimension in \( \bm Q \) consists of
-stochastically independent components.  Stochastic independence allows
-for a joint sampling scheme to be reduced to a series of univariate
-samplings, drastically reducing the complexity of generating a sample
-\( \bm Q \).
+<p>
+Both the point collocation method and the pseudo-spectral projection
+method are included.  The former is calculated using two times the
+random collocation nodes as the number of polynomials, and the latter
+using Gaussian quadrature integration with quadrature order equal to
+polynomial order.  Note that Turns does not support pseudo-spectral
+projection, and is therefore only compared using point collocation.
 
 <p>
-Unfortunately, the assumption of independence does not always hold in
-practice.  We have examples from many research fields where stochastic
-dependence must be assumed, including modelling of climate
-<a href="._chaospy-bootstrap005.html#laux_impact_2010">[10]</a>, iron-ore minerals <a href="._chaospy-bootstrap005.html#boardman_review_2011">[11]</a>,
-finance <a href="._chaospy-bootstrap005.html#dobric_goodness_2007">[12]</a>, and ion channel densities in
-detailed neuroscience models <a href="._chaospy-bootstrap005.html#achard_complex_2006">[13]</a>.  There also
-exists examples where introducing dependent random variables is
-beneficial for the modelling process, even though the original input
-was stochastically independent <a href="._chaospy-bootstrap005.html#feinberg_multivariate_2015">[14]</a>.  In
-any cases, modelling of stochastically dependent variables are
-required to perform uncertainty quantification adequately.  A strong
-feature of Chaospy is its support for stochastic dependence.
+<center> <!-- figure -->
+<hr class="figure">
+<center><p class="caption">Figure 1:  Solution of a simple stochastic differential equation with uncertain coefficients. <div id="fig_sode"></div> </p></center>
+<p><img src="fig/ode.png" align="bottom" width=500></p>
+</center>
 
 <p>
-All random samples are in Chaospy generated using Rosenblatt
-transformations \( T_{\bm Q} \) <a href="._chaospy-bootstrap005.html#rosenblatt_remarks_1952">[15]</a>.  It allows
-for a random variable \( \bm U \), generated uniformly on a unit hypercube
-\( [0,1]^D \), to be transformed into \( \bm Q = T^{-1}_{\bm Q}(\bm U) \),
-which behaves as if it were drawn from the density \( p_{\bm Q} \).  It is
-easy to generate pseudo-random samples from a uniform distribution,
-and the Rosenblatt transformation can then be used as a method for
-generating samples from arbitrary densities.
-
-<p>
-The Rosenblatt transformation can be derived as follows.  Consider a
-probability decomposition, for example for a bivariate random variable
-\( \bm Q=(Q_0, Q_1) \):
-
-$$
-\begin{align}
-\tag{2}
-    p_{Q_0,Q_1}(q_0,q_1) &=
-    p_{Q_0}(q_0) p_{Q_1\mid Q_0}(q_1 \mid q_0),
-\end{align}
-$$
-
-were \( p_{Q_0} \) is an marginal density function, and
-\( p_{Q_1\mid Q_0} \) is a conditional density.
-For the multivariate case, the density decomposition
-will have the form
-
-$$
-\begin{align}
-    p_{\boldsymbol{Q}}(\bm q) &=
-    \prod_{d=0}^{D-1} p_{Q^{\prime}_d}(q^{\prime}_d),
-    \tag{3}
-\end{align}
-$$
-
-where
-
-$$
-\begin{align}
-\tag{4}
-    Q^\prime_d &= Q_d \mid Q_0, \dots, Q_{d-1} \qquad
-    q^\prime_d = q_d \mid q_0,\dots,q_{d-1}
-\end{align}
-$$
-
-denotes that \( Q_d \) and \( q_d \) are dependent on all components with
-lower indices.
-A forward Rosenblatt transformation can then be defined as
-
-$$
-\begin{align}
-\tag{5}
-    T_{\bm Q}(\bm q) &=
-    (F_{Q_0^{\prime}}(q_0^{\prime}),
-    \dots,F_{Q_{D-1}^{\prime}}(q_{D-1}^{\prime})),
-\end{align}
-$$
-
-where \( F_{Q_d^{\prime}} \) is the cumulative distribution function:
-
-$$
-\begin{align}
-    F_{Q_d^{\prime}}(q_d^{\prime}) &=
-    \int_{-\infty}^{q_d} \!\!
-    p_{Q_d^{\prime}}(r\mid q_0,\dots,q_{d-1})
-    \ud r.
-    \tag{6}
-\end{align}
-$$
-
-This transformation is bijective, so it is always possible to define
-the inverse Rosenblatt transformation \( T_{\bm Q}^{-1} \) in a similar
-fashion.
-
-<h2 id="sec:invRosenblatt">Numerical Estimation of Inverse Rosenblatt Transformations</h2>
-
-<p>
-To implement the Rosenblatt transformation in practice, we need to
-identify the inverse transform \( T_{\bm Q}^{-1} \).  Unfortunately,
-\( T_{\bm Q} \) is often non-linear without a closed-form formula, making
-analytical calculations of the transformation's inverse difficult.  In
-the scenario where we do not have a symbolic representation of the
-inverse transformation, a numerical scheme has to be employed.  To the
-authors' knowledge, there are no standards for defining such a
-numerical scheme.  The following paragraphs therefore describe our
-proposed method for calculating the inverse transformation
-numerically.
-
-<p>
-The problem of calculating the inverse transformation \( T^{-1}_{\bm
-Q} \) can, by decomposing the definition of the forward Rosenblatt
-transformation in <a href="#mjx-eqn-5">(5)</a>, be reformulated as
-
-$$
-\begin{align*}
-    F_{Q^\prime_d}^{-1}(u\mid q_0,\dots,q_{d-1}) &=
-    \left\{ r : F_{Q^\prime_d}(r\mid q_0,\dots,q_{d-1})=u \right\}
-    \qquad d=0,\dots,D-1.
-\end{align*}
-$$
-
-In other words, the challenge of calculating the inverse
-transformation can be reformulated as a series of one dimensional
-root-finding problems.  In Chaospy, these roots are found by employing
-a Newton-Raphson scheme.  However, to ensure convergence, the scheme
-is coupled with a bisection method.  The bisection method is
-applicable here since the problem is one-dimensional and the functions
-of interest are by definition monotone.  When the Newton-Raphson
-method fails to converge at an increment, a bisection step gives the
-Newton-Raphson a new start location away from the previous
-location. This algorithm ensures fast and reliable convergence towards
-the root.
-
-<p>
-The Newton-Raphson-bisection hybrid method is implemented as follows.
-The initial values are the lower and upper bounds \( [lo_0, up_0] \).  If
-\( p_{Q^{\prime}_d} \) is unbound, the interval is selected such that it
-approximately covers the density.  For example for a standard normal
-random variable, which is unbound, the interval \( [-7.5,7.5] \) will
-approximately cover the whole density with an error about \( 10^{-14} \).
-The algorithm starts with a Newton-Raphson increment, using the
-initial value \( r_0=(up_0-lo_0) u + lo_0 \):
-
-$$
-\begin{align}
-    \tag{7}
-    r_{k+1} &= r_k - \frac{F_{Q^\prime_d}
-    (r_k\mid q_0,\dots,q_{d-1})-u}{
-    p_{Q^\prime_d}
-    (r_k\mid q_0,\dots,q_{d-1})},
-\end{align}
-$$
-
-where the density \( p_{Q^\prime_d} \) can be approximated using finite
-differences.
-If the new value does not fall in the interval \( [lo_k, up_k] \), this
-proposed value is rejected, and is instead replaced with a
-bisection increment:
-
-$$
-\begin{align}
-    \tag{8}
-    r_{k+1} &= \frac{up_k+lo_k}{2}.
-\end{align}
-$$
-
-In either case, the bounds are updated according to
-
-$$
-\begin{align}
-    (lo_{k+1},up_{k+1}) &=
-    \begin{cases}
-        (lo_{k}, r_{k+1}) &
-        F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u
-        \\
-        (r_{k+1}, up_{k}) &
-        F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) < u
-    \end{cases}
-    \tag{9}
-\end{align}
-$$
-
-The algorithm repeats the steps in <a href="#mjx-eqn-7">(7)</a>,
-<a href="#mjx-eqn-8">(8)</a> and <a href="#mjx-eqn-9">(9)</a>, until the residual
-\( |F_{Q^\prime_d}(r_k\mid q_0,\dots,q_{d-1})-u| \) is sufficiently
-small.
-
-<p>
-The described algorithm overcomes one of the challenges of
-implementing Rosenblatt transformations in practice: how to calculate
-the inverse transformation.  Another challenge is how to construct a
-transformation in the first place.  This is the topic of the next
-section.
-
-<h2 id="sec:variable">Constructing Distributions</h2>
-
-<p>
-The backbone of distributions in Chaospy is the Rosenblatt
-transformation \( T_{\bm Q} \).  The method, as described in the previous
-section, assumes that \( p_{\bm Q} \) is known to be able to perform the
-transformation and its inverse.  In practice, however, we first need
-to construct \( p_{\bm Q} \), before the transformation can be used.  This
-can be a challenging task, but in Chaospy a lot of effort has been put
-into constructing novel tools for making the process as flexible and
-painless as possible.  In essence, users can create their own custom
-multivariate distributions using a new methodology as described next.
-
-<p>
-Following the definition in <a href="#mjx-eqn-5">(5)</a>, each Rosenblatt
-transformation consists of a collection of conditional distributions.
-We express all conditionality through distribution parameters.  For
-example, the location parameter of a normal distribution can be set to
-be uniformly distributed, say on \( [-1,1] \).  The following interactive
-Python code defines a normal variable with a normally distributed
-mean:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> uniform <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Uniform(lo<span style="color: #666666">=-1</span>, up<span style="color: #666666">=1</span>)
-<span style="color: #666666">&gt;&gt;&gt;</span> normal <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Normal(mu<span style="color: #666666">=</span>uniform, sigma<span style="color: #666666">=0.1</span>)
-</pre></div>
-<p>
-We now have two stochastic variables, <code>uniform</code> and <code>normal</code>,
-whose joint bivariate distribution can be constructed
-through the <code>cp.J</code> function:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> joint <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>J(uniform, normal)
-</pre></div>
-<p>
-The software will, from this minimal formulation, try to sort out
-the dependency ordering and construct the full Rosenblatt
-transformation.
-The only requirement is that a decomposition as
-in <a href="#mjx-eqn-3">(3)</a> is in fact possible.
-The result is a fully functioning forward and inverse Rosenblatt
-transformation. The following code evaluates the forward
-transformation (the density)
-at \( (1,0.9) \), the inverse transformation at \( (0.4, 0.6) \),
-and draws a random sample from the joint distribution:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> <span style="color: #008000; font-weight: bold">print</span> joint<span style="color: #666666">.</span>fwd([<span style="color: #666666">1</span>, <span style="color: #666666">0.9</span>])
-[ <span style="color: #666666">1.</span>          <span style="color: #666666">0.15865525</span>]
-<span style="color: #666666">&gt;&gt;&gt;</span> <span style="color: #008000; font-weight: bold">print</span> joint<span style="color: #666666">.</span>inv([<span style="color: #666666">0.4</span>, <span style="color: #666666">0.6</span>])
-[<span style="color: #666666">-0.2</span>        <span style="color: #666666">-0.17466529</span>]
-<span style="color: #666666">&gt;&gt;&gt;</span> <span style="color: #008000; font-weight: bold">print</span> joint<span style="color: #666666">.</span>sample()
-[<span style="color: #666666">-0.05992158</span> <span style="color: #666666">-0.07456064</span>]
-</pre></div>
-<p>
-Distributions in higher dimensions are trivially obtained by including more
-arguments to the <code>cp.J</code> function.
-
-<p>
-As an alternative to the explicit formulation of dependency through
-distribution parameters, it is also possible to construct dependencies
-implicitly through arithmetic operators.  For example, it is possible
-to recreate the example above using addition of stochastic variables
-instead of letting a distribution parameter be stochastic. More
-precisely, we have a uniform variable on \( [-1,1] \) and a normally
-distributed variable with location at \( x=0 \). Adding the uniform
-variable to the normal variable creates a new normal variable with
-stochastic location:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> uniform <span style="color: #666666">=</span> Uniform(lo<span style="color: #666666">=-1</span>, up<span style="color: #666666">=1</span>)
-<span style="color: #666666">&gt;&gt;&gt;</span> normal0 <span style="color: #666666">=</span> Normal(mu<span style="color: #666666">=0</span>, scale<span style="color: #666666">=0.1</span>)
-<span style="color: #666666">&gt;&gt;&gt;</span> normal <span style="color: #666666">=</span> normal0 <span style="color: #666666">+</span> uniform
-<span style="color: #666666">&gt;&gt;&gt;</span> joint <span style="color: #666666">=</span> J(uniform, normal)
-</pre></div>
-<p>
-As before, the software automatically sorts the dependency
-ordering from the context.
-Here, since the uniform variable is present as first argument, the
-software recognises the second argument as a normal distribution,
-conditioned on the uniform distribution, and not the other way
-around.
-
-<p>
-Another favorable feature in Chaospy is that multiple transformations
-can be stacked on top of each other.  For example, consider the
-example of a multivariate log-normal random variable \( \bm Q \) with
-three dependent components.  (Let us ignore for a moment the fact that
-Chaospy already offers such a distribution.) Trying to decompose this
-distribution is a very cumbersome task if performed manually.
-However, this process can be drastically simplified through variable
-transformations, for which Chaospy has strong support.  A log-normal
-distribution, for example, can be expressed as
-
-$$
-\begin{align*}
-    \bm Q = e^{\bm Z L + \bm b},
-\end{align*}
-$$
-
-where \( \bm Z \) are standard normal variables, and \( L \) and \( \bm b \)
-are predefined matrix and vector, respectively.
-To implement this particular transformation, we only
-have to write
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> Z <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>J(cp<span style="color: #666666">.</span>Normal(<span style="color: #666666">0</span>,<span style="color: #666666">1</span>), cp<span style="color: #666666">.</span>Normal(<span style="color: #666666">0</span>,<span style="color: #666666">1</span>), cp<span style="color: #666666">.</span>Normal(<span style="color: #666666">0</span>,<span style="color: #666666">1</span>))
-<span style="color: #666666">&gt;&gt;&gt;</span> Q <span style="color: #666666">=</span> e<span style="color: #666666">**</span>(Z<span style="color: #666666">*</span>L <span style="color: #666666">+</span> b)
-</pre></div>
-<p>
-The resulting distribution is fully functional multivariate
-log-normal, assuming \( L \) and \( \bm b \) are properly defined.
-
-<p>
-One obvious prerequisite for using univariate distributions to create
-conditionals and multivariate distributions, is the availability of
-univariate distributions.  Since the univariate distribution is the
-fundamental building block, Chaospy offers a large collection of 64
-univariate distributions.  They are all listed in table below.  The
-titles 'D', 'T' and 'C' represents Dakota, Turns and Chaospy
-respectively. The elements 'y' and 'n' represent the answers 'yes' and
-'no' indicating if the distribution is supported or not.  The list
-shows that Dakota's support is limited to 11 distributions, and Turns
-has a collection of 26 distributions.
-
-<p>
-
-<div class="row">
-  <div class="col-xs-3">
-    <table class="table table-striped table-hover table-condensed">
-<thead>
-<tr><td align="center"><b>  <b>Distribution</b>  </b></td> <td align="center"><b>D</b></td> <td align="center"><b>T</b></td> <td align="center"><b>C</b></td> </tr>
-</thead>
-<tbody>
-<tr><td align="center">   Alpha                      </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Anglit                     </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Arcsinus                   </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Beta                       </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Brandford                  </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Burr                       </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Cauchy                     </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Chi                        </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Chi-Square                 </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Double Gamma               </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Double Weibull             </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Epanechnikov               </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Erlang                     </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Exponential                </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Exponential Power          </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Exponential Weibull        </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Birnbaum-Sanders           </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Fisher-Snedecor            </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Fisk/Log-Logistic          </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Folded Cauchy              </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Folded Normal              </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Frechet                    </td> <td align="center">   y    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gamma                      </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gen. Exponential           </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gen. Extreme Value         </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gen. Gamma                 </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gen. Half-Logistic         </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gilbrat                    </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Truncated Gumbel           </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Gumbel                     </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Hypergeometric Secant      </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Inverse-Normal             </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   n    </td> </tr>
-<tr><td align="center">   Kumaraswamy                </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Laplace                    </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Levy                       </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Log-Gamma                  </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Log-Laplace                </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Log-Normal                 </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Log-Uniform                </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Logistic                   </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Lomax                      </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Maxwell                    </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Mielke's Beta-Kappa        </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Nakagami                   </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Non-Central Chi-Squared    </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Non-Central Student-T      </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Non-central F              </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Normal                     </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Pareto (First kind)        </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Power Log-Normal           </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Power Normal               </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Raised Cosine              </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Rayleigh                   </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Reciprocal                 </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Rice                       </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   n    </td> </tr>
-<tr><td align="center">   Right-skewed Gumbel        </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Student-T                  </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Trapezoidal                </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   n    </td> </tr>
-<tr><td align="center">   Triangle                   </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Truncated Exponential      </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Truncated Normal           </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Tukey-Lamdba               </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Uniform                    </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Wald                       </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Weibull                    </td> <td align="center">   y    </td> <td align="center">   y    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Wigner                     </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Wrapped Cauchy             </td> <td align="center">   n    </td> <td align="center">   n    </td> <td align="center">   y    </td> </tr>
-<tr><td align="center">   Zipf-Mandelbrot            </td> <td align="center">   n    </td> <td align="center">   y    </td> <td align="center">   n    </td> </tr>
-</tbody>
-    </table>
-  </div>
-</div> <!-- col-xs-3 -->
-<p>
-The Chaospy software supports in addition custom distributions through
-the function <code>cp.constructor</code>.  To illustrate its use, consider the
-simple example of a uniform random variable on the interval \( [lo,up] \).
-The minimal input to create such a distribution is
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> Uniform <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>constructor(
-<span style="color: #666666">...</span>     cdf<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">lambda</span> <span style="color: #008000">self</span>,x,lo,up: (x<span style="color: #666666">-</span>lo)<span style="color: #666666">/</span>(up<span style="color: #666666">-</span>lo),
-<span style="color: #666666">...</span>     bnd<span style="color: #666666">=</span><span style="color: #008000; font-weight: bold">lambda</span> <span style="color: #008000">self</span>,x,lo,up: (lo,up) )
-<span style="color: #666666">&gt;&gt;&gt;</span> uniform <span style="color: #666666">=</span> Uniform(lo<span style="color: #666666">=-1</span>, up<span style="color: #666666">=1</span>)
-</pre></div>
-<p>
-Here, the two provided arguments are a cumulative distribution
-function (<code>cdf</code>), and a boundary interval function
-(<code>bnd</code>), respectively.
-The <code>cp.constructor</code> function also takes several
-optional arguments to provide extra functionality.
-For example, the inverse of the cumulative distribution function --
-the point percentile function - can be provided through the
-<code>ppf</code> keyword.
-If this function is not provided, the software will automatically
-approximate it using the method described in the section <a href="#sec:invRosenblatt">Numerical Estimation of Inverse Rosenblatt Transformations</a>.
-
-<h2 id="sec:copulas">Copulas</h2>
-
-<p>
-Dakota and Turns do not support the Rosenblatt transformation
-applied to multivariate distributions with dependencies.  Instead, the
-two packages model dependencies using copulas
-<a href="._chaospy-bootstrap005.html#nelsen_introduction_1999">[16]</a>.  A copula consists of stochastically
-independent multivariate distributions made dependent using a
-parameterized function \( g \).  Since the Rosenblatt transformation is
-general purpose, it is possible to construct any copula
-directly. However, this can quickly become a very cumbersome task
-since each copula must be decomposed individually for each combination
-of independent distributions and parameterization of \( g \).
-
-<p>
-To simplify the user's efforts, Chaospy has dedicated constructors
-that can reformulate a copula coupling into a Rosenblatt
-transformation.  This is done following the work of Lee
-<a href="._chaospy-bootstrap005.html#lee_generating_1993">[17]</a> and approximated using finite differences.
-The implementation is based of the software toolbox RoseDist
-<a href="._chaospy-bootstrap005.html#feinberg_rosedist:_2013">[18]</a>.  In practice, this approach allow
-copulas to be defined in a Rosenblatt transformation setting.  For
-example, to construct a bivariate normal distribution with a Clayton
-copula in Chaospy, we do the following:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "default" -->
-<div class="highlight" style="background: #f8f8f8"><pre style="line-height: 125%"><span style="color: #666666">&gt;&gt;&gt;</span> joint <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>J(cp<span style="color: #666666">.</span>Normal(<span style="color: #666666">0</span>,<span style="color: #666666">1</span>), cp<span style="color: #666666">.</span>Normal(<span style="color: #666666">0</span>,<span style="color: #666666">1</span>))
-<span style="color: #666666">&gt;&gt;&gt;</span> clayton <span style="color: #666666">=</span> cp<span style="color: #666666">.</span>Clayton(joint, theta<span style="color: #666666">=2</span>)
-</pre></div>
-<p>
-A list of supported copulas is provided below.
-It shows that Turns supports 7 methods, Chaospy
-6, while Dakota offers 1 method.
-
-<p>
-
-<div class="row">
-  <div class="col-xs-5">
-    <table class="table table-striped table-hover table-condensed">
-<thead>
-<tr><td align="center"><b> <b>Supported Copulas</b></b></td> <td align="center"><b>Dakota</b></td> <td align="center"><b>Turns</b></td> <td align="center"><b>Chaospy</b></td> </tr>
-</thead>
-<tbody>
-<tr><td align="left">   Ali-Mikhail-Haq              </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Clayton                      </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Farlie-Gumbel-Morgenstein    </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   no         </td> </tr>
-<tr><td align="left">   Frank                        </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Gumbel                       </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Joe                          </td> <td align="center">   no        </td> <td align="center">   no       </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Minimum                      </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   no         </td> </tr>
-<tr><td align="left">   Normal/Nataf                 </td> <td align="center">   yes       </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-</tbody>
-    </table>
-  </div>
-</div> <!-- col-xs-5 -->
-
-<h2 id="sec:monte_carlo">Variance Reduction Techniques</h2>
-
-<p>
-As noted in the beginning of the section <a href="#sec:dist">Modelling Random Variables</a>, by generating
-samples \( \{\bm Q_k\}_{k\in I_K} \) and evaluating the response function
-\( f \), it is possible to draw inference upon \( Y \) without knowledge about
-\( p_{Y} \), through Monte Carlo simulation.  Unfortunately, the number of
-samples \( K \) to achieve reasonable accuracy can often be very high, so
-if \( f \) is assumed to be computationally expensive, the number of
-samples needed frequently make Monte Carlo simulation infeasible for
-practical applications.  As a way to mitigate this problem, it is
-possible to modify \( \{\bm Q_k\}_{k\in I_K} \) from traditional
-pseudo-random samples, so that the accuracy increases.  Schemes that
-select non-traditional samples for \( \{\bm Q_k\}_{k\in I_K} \) to
-increase accuracy are known as \emph{variance reduction techniques}.
-A list of such techniques are presented in the tables below,
-and they show that Dakota, Turns and Chaospy
-support 4, 7, and 7 variance reduction techniques, respectively.
-
-<p>
-
-<div class="row">
-  <div class="col-xs-9">
-    <table class="table table-striped table-hover table-condensed">
-<thead>
-<tr><td align="center"><b>                 <b>Quasi-Monte Carlo Scheme</b>                 </b></td> <td align="center"><b>Dakota</b></td> <td align="center"><b>Turns</b></td> <td align="center"><b>Chaospy</b></td> </tr>
-</thead>
-<tbody>
-<tr><td align="left">   Faure sequence <a href="._chaospy-bootstrap005.html#galanti_low-discrepancy_1997">[19]</a>      </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   no         </td> </tr>
-<tr><td align="left">   Halton sequence <a href="._chaospy-bootstrap005.html#halton_efficiency_1960">[20]</a>           </td> <td align="center">   yes       </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Hammersley sequence <a href="._chaospy-bootstrap005.html#hammersley_monte_1960">[21]</a>        </td> <td align="center">   yes       </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Haselgrove sequence <a href="._chaospy-bootstrap005.html#haselgrove_method_1961">[22]</a>       </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   no         </td> </tr>
-<tr><td align="left">   Korobov latice <a href="._chaospy-bootstrap005.html#korobov_approximate_1957">[23]</a>          </td> <td align="center">   no        </td> <td align="center">   no       </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Niederreiter sequence <a href="._chaospy-bootstrap005.html#niederreiter_point_1987">[24]</a>    </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   no         </td> </tr>
-<tr><td align="left">   Sobol sequence <a href="._chaospy-bootstrap005.html#sobol_distribution_1967">[25]</a>           </td> <td align="center">   no        </td> <td align="center">   yes      </td> <td align="center">   yes        </td> </tr>
-</tbody>
-    </table>
-  </div>
-</div> <!-- col-xs-9 -->
-<p>
-
-<div class="row">
-  <div class="col-xs-10">
-    <table class="table table-striped table-hover table-condensed">
-<thead>
-<tr><td align="center"><b>                       <b>Other Methods</b>                       </b></td> <td align="center"><b>Dakota</b></td> <td align="center"><b> Turns </b></td> <td align="center"><b>Chaospy</b></td> </tr>
-</thead>
-<tbody>
-<tr><td align="left">   Antithetic variables <a href="._chaospy-bootstrap005.html#rubinstein_simulation_2007">[1]</a>    </td> <td align="center">   no        </td> <td align="center">   no         </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Importance sampling <a href="._chaospy-bootstrap005.html#rubinstein_simulation_2007">[1]</a>     </td> <td align="center">   yes       </td> <td align="center">   yes        </td> <td align="center">   yes        </td> </tr>
-<tr><td align="left">   Latin Hypercube sampling <a href="._chaospy-bootstrap005.html#mckay_comparison_1979">[26]</a>    </td> <td align="center">   yes       </td> <td align="center">   limited    </td> <td align="center">   yes        </td> </tr>
-</tbody>
-    </table>
-  </div>
-</div> <!-- col-xs-10 -->
-<p>
-One of the more popular variance reduction technique is the
-<em>quasi-Monte Carlo scheme</em> <a href="._chaospy-bootstrap005.html#rubinstein_simulation_2007">[1]</a>.  The
-method consists of selecting the samples \( \{\bm Q_k\}_{k\in I_K} \) to
-be a low-discrepancy sequence instead of pseudo-random samples.  The
-idea is that samples placed with a given distance from each other
-increase the coverage over the sample space, requiring fewer samples
-to reach a given accuracy.  For example, if standard Monte Carlo
-requires \( 10^6 \) samples for a given accuracy, quasi-Monte Carlo can
-often get away with only \( 10^3 \).  Note that this would break some of
-the statistical properties of the samples <a href="._chaospy-bootstrap005.html#tezuka_uniform_1995">[27]</a>.
-
-<p>
-Most of the theory on quasi-Monte Carlo methods focuses on generating
-samples on the unit hypercube \( [0,1]^N \).  The option to generate
-samples directly on to other distributions exists, but is often very
-limited.  To the authors' knowledge, the only viable method for
-including most quasi-Monte Carlo methods into the vast majority of
-non-standard probability distributions, is through the Rosenblatt
-transformation.  Since Chaospy is built around the Rosenblatt
-transformation, it has the novel feature of supporting quasi-Monte
-Carlo methods for all probability distributions.  Turns and Dakota
-only support Rosenblatt transformations for independent variables and
-the Normal copula.
-
-<p>
-Sometimes the quasi-Monte Carlo method is infeasible because the
-forward model is too computationally costly.  The next section
-describes polynomial chaos expansions, which often require far fewer
-samples than the quasi-Monte Carlo method for the same amount of
-accuracy.
+<center> <!-- figure -->
+<hr class="figure">
+<center><p class="caption">Figure 2:  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. <div id="fig_compare"></div> </p></center>
+<p><img src="fig/compare.png" align="bottom" width=800></p>
+</center>
 
 <p>
 <p>

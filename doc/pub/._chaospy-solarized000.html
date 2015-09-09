@@ -34,8 +34,7 @@ div { text-align: justify; text-justify: inter-word; }
 
 <!-- tocinfo
 {'highest level': 1,
- 'sections': [('Keywords', 3, None, '___sec0'),
-              ('Introduction', 1, 'sec:intro', 'sec:intro'),
+ 'sections': [('Introduction', 1, 'sec:intro', 'sec:intro'),
               ('A Glimpse of Chaospy in Action', 1, 'sec:case', 'sec:case'),
               ('Modelling Random Variables', 1, 'sec:dist', 'sec:dist'),
               ('Rosenblatt Transformation',
@@ -63,21 +62,21 @@ div { text-align: justify; text-justify: inter-word; }
               ('Generalized Polynomial Chaos Expansions',
                3,
                None,
-               '___sec11'),
-              ('The Direct Multivariate Approach', 3, None, '___sec12'),
-              ('Custom Polynomial Expansions', 3, None, '___sec13'),
+               '___sec10'),
+              ('The Direct Multivariate Approach', 3, None, '___sec11'),
+              ('Custom Polynomial Expansions', 3, None, '___sec12'),
               ('Calculating Coefficients', 2, 'sec:spectral', 'sec:spectral'),
-              ('Integration Methods', 2, None, '___sec15'),
+              ('Integration Methods', 2, None, '___sec14'),
               ('Point Collocation', 2, 'sec:ptcolloc', 'sec:ptcolloc'),
-              ('Model Evaluations', 2, None, '___sec17'),
-              ('Extension of polynomial expansions', 2, None, '___sec18'),
+              ('Model Evaluations', 2, None, '___sec16'),
+              ('Extension of polynomial expansions', 2, None, '___sec17'),
               ('Descriptive Tools', 2, 'sec:descriptive', 'sec:descriptive'),
               ('Conclusion and Further Work',
                1,
                'sec:conclusion',
                'sec:conclusion'),
-              ('Acknowledgement', 2, None, '___sec21'),
-              ('Bibliography', 2, None, '___sec22')]}
+              ('Acknowledgement', 2, None, '___sec20'),
+              ('Bibliography', 2, None, '___sec21')]}
 end of tocinfo -->
 
 <body>
@@ -95,6 +94,12 @@ MathJax.Hub.Config({
 <script type="text/javascript"
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
+
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
+$$
+
 
 
 
@@ -154,10 +159,9 @@ framework for computing Rosenblatt transformations and a new approach
 for creating polynomial chaos expansions with dependent stochastic
 variables.
 
-<h3 id="___sec0">Keywords </h3>
-
 <p>
-uncertainty quantification; polynomial chaos expansions; Monte Carlo simulation; Rosenblatt transformations; Python package
+<b>Note:</b> This paper is accepted in Journal of Computational Science and
+will be published as an Open Access paper.
 
 <p>
 <p>

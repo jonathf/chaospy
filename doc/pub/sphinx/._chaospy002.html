@@ -191,9 +191,9 @@ error is calculated as the absolute difference between the true value
 and the estimated value integrated over the depth <span class="math">\(x\)</span>:</p>
 <div class="math">
 \[\begin{split}\varepsilon_{\mathbb E} &amp;=
- \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | \ud x
+ \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x
  &amp; \varepsilon_{\mathbb V} &amp;=
-   \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | \ud x\end{split}\]</div>
+   \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | {\rm d} x\end{split}\]</div>
 <p>Both the point collocation method and the pseudo-spectral projection
 method are included.  The former is calculated using two times the
 random collocation nodes as the number of polynomials, and the latter
@@ -201,11 +201,11 @@ using Gaussian quadrature integration with quadrature order equal to
 polynomial order.  Note that Turns does not support pseudo-spectral
 projection, and is therefore only compared using point collocation.</p>
 <div class="figure" id="id1">
-<span id="fig-sode"></span><a class="reference internal image-reference" href="_images/ode.png"><img alt="_images/ode.png" src="_images/ode.png" style="width: 400px;" /></a>
+<span id="fig-sode"></span><a class="reference internal image-reference" href="_images/ode.png"><img alt="_images/ode.png" src="_images/ode.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text"><em>Solution of a simple stochastic differential equation with uncertain coefficients</em></span></p>
 </div>
 <div class="figure" id="id2">
-<span id="fig-compare"></span><a class="reference internal image-reference" href="_images/compare.png"><img alt="_images/compare.png" src="_images/compare.png" style="width: 400px;" /></a>
+<span id="fig-compare"></span><a class="reference internal image-reference" href="_images/compare.png"><img alt="_images/compare.png" src="_images/compare.png" style="width: 800px;" /></a>
 <p class="caption"><span class="caption-text"><em>The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical</em></span></p>
 </div>
 </div>

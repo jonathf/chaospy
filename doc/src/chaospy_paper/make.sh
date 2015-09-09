@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 name=chaospy
 
 function system {
@@ -10,7 +11,7 @@ function system {
   fi
 }
 
-system doconce format pdflatex $name --device=screen "--latex_code_style=default:vrb-blue1@sys:vrb[frame=lines,label=\\fbox{{\tiny Terminal}},framesep=2.5mm,framerule=0.7pt,fontsize=\fontsize{9pt}{9pt}]"
+system doconce format pdflatex $name --device=screen "--latex_code_style=default:vrb-blue1@sys:vrb[frame=lines,label=\\fbox{{\tiny Terminal}},framesep=2.5mm,framerule=0.7pt,fontsize=\fontsize{9pt}{9pt}]" --latex_copyright=titlepages
 system pdflatex $name
 system bibtex $name
 # makeindex $name
@@ -18,7 +19,7 @@ pdflatex $name
 pdflatex $name
 cp ${name}.pdf ${name}-4screen.pdf
 
-system doconce format pdflatex $name --device=paper "--latex_code_style=default:vrb-blue1@sys:vrb[frame=lines,label=\\fbox{{\tiny Terminal}},framesep=2.5mm,framerule=0.7pt,fontsize=\fontsize{9pt}{9pt}]"
+system doconce format pdflatex $name --device=paper "--latex_code_style=default:vrb-blue1@sys:vrb[frame=lines,label=\\fbox{{\tiny Terminal}},framesep=2.5mm,framerule=0.7pt,fontsize=\fontsize{9pt}{9pt}]" --latex_copyright=titlepages
 system pdflatex $name
 bibtex $name
 # makeindex $name
@@ -31,7 +32,7 @@ system doconce format html $name --html_style=solarized3 --html_output=${name}-$
 system doconce split_html ${name}-${style}.html
 
 style=bootstrap
-system doconce format html $name --html_style=bootswatch_journal --html_output=${name}-${style} --html_code_style=inherit
+system doconce format html $name --html_style=bootswatch_readable --html_output=${name}-${style} --html_code_style=inherit
 system doconce split_html ${name}-${style}.html
 
 system doconce format sphinx $name

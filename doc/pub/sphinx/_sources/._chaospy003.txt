@@ -15,18 +15,18 @@ pseudo-random realizations
 
 .. math::
         
-            \{\bm Q_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},
+            \{\boldsymbol{Q}_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},
         
 
-from the density :math:`p_{\bm Q}`.  Each :math:`\bm Q\in \{\bm Q_k\}_{k\in I_K}`
+from the density :math:`p_{\boldsymbol{Q}}`.  Each :math:`\boldsymbol{Q}\in \{\boldsymbol{Q}_k\}_{k\in I_K}`
 is multivariate with the number of dimensions :math:`D>1`.  Generating
-realizations from a given density :math:`p_{\bm Q}` is often non-trivial, at
+realizations from a given density :math:`p_{\boldsymbol{Q}}` is often non-trivial, at
 least when :math:`D` is large.  A very common assumption made in uncertainty
-quantification is that each dimension in :math:`\bm Q` consists of
+quantification is that each dimension in :math:`\boldsymbol{Q}` consists of
 stochastically independent components.  Stochastic independence allows
 for a joint sampling scheme to be reduced to a series of univariate
 samplings, drastically reducing the complexity of generating a sample
-:math:`\bm Q`.
+:math:`\boldsymbol{Q}`.
 
 Unfortunately, the assumption of independence does not always hold in
 practice.  We have examples from many research fields where stochastic
@@ -42,17 +42,17 @@ required to perform uncertainty quantification adequately.  A strong
 feature of Chaospy is its support for stochastic dependence.
 
 All random samples are in Chaospy generated using Rosenblatt
-transformations :math:`T_{\bm Q}` [Ref15]_.  It allows
-for a random variable :math:`\bm U`, generated uniformly on a unit hypercube
-:math:`[0,1]^D`, to be transformed into :math:`\bm Q = T^{-1}_{\bm Q}(\bm U)`,
-which behaves as if it were drawn from the density :math:`p_{\bm Q}`.  It is
+transformations :math:`T_{\boldsymbol{Q}}` [Ref15]_.  It allows
+for a random variable :math:`\boldsymbol{U}`, generated uniformly on a unit hypercube
+:math:`[0,1]^D`, to be transformed into :math:`\boldsymbol{Q} = T^{-1}_{\boldsymbol{Q}}(\boldsymbol{U})`,
+which behaves as if it were drawn from the density :math:`p_{\boldsymbol{Q}}`.  It is
 easy to generate pseudo-random samples from a uniform distribution,
 and the Rosenblatt transformation can then be used as a method for
 generating samples from arbitrary densities.
 
 The Rosenblatt transformation can be derived as follows.  Consider a
 probability decomposition, for example for a bivariate random variable
-:math:`\bm Q=(Q_0, Q_1)`:
+:math:`\boldsymbol{Q}=(Q_0, Q_1)`:
 
 .. _Eq:eq_bivariate:
 
@@ -74,7 +74,7 @@ will have the form
 .. math::
    :label: eq_decompostion
         
-            p_{\boldsymbol{Q}}(\bm q) =
+            p_{\boldsymbol{Q}}(\boldsymbol{q}) =
             \prod_{d=0}^{D-1} p_{Q^{\prime}_d}(q^{\prime}_d),
             
         
@@ -101,7 +101,7 @@ A forward Rosenblatt transformation can then be defined as
    :label: eq_forward
         
         
-            T_{\bm Q}(\bm q) =
+            T_{\boldsymbol{Q}}(\boldsymbol{q}) =
             (F_{Q_0^{\prime}}(q_0^{\prime}),
             \dots,F_{Q_{D-1}^{\prime}}(q_{D-1}^{\prime})),
         
@@ -116,12 +116,12 @@ where :math:`F_{Q_d^{\prime}}` is the cumulative distribution function:
             F_{Q_d^{\prime}}(q_d^{\prime}) =
             \int_{-\infty}^{q_d} \!\!
             p_{Q_d^{\prime}}(r\mid q_0,\dots,q_{d-1})
-            \ud r.
+            {\rm d} r.
             
         
 
 This transformation is bijective, so it is always possible to define
-the inverse Rosenblatt transformation :math:`T_{\bm Q}^{-1}` in a similar
+the inverse Rosenblatt transformation :math:`T_{\boldsymbol{Q}}^{-1}` in a similar
 fashion.
 
 .. _sec:invRosenblatt:
@@ -130,8 +130,8 @@ Numerical Estimation of Inverse Rosenblatt Transformations
 ----------------------------------------------------------
 
 To implement the Rosenblatt transformation in practice, we need to
-identify the inverse transform :math:`T_{\bm Q}^{-1}`.  Unfortunately,
-:math:`T_{\bm Q}` is often non-linear without a closed-form formula, making
+identify the inverse transform :math:`T_{\boldsymbol{Q}}^{-1}`.  Unfortunately,
+:math:`T_{\boldsymbol{Q}}` is often non-linear without a closed-form formula, making
 analytical calculations of the transformation's inverse difficult.  In
 the scenario where we do not have a symbolic representation of the
 inverse transformation, a numerical scheme has to be employed.  To the
@@ -140,8 +140,8 @@ numerical scheme.  The following paragraphs therefore describe our
 proposed method for calculating the inverse transformation
 numerically.
 
-The problem of calculating the inverse transformation :math:`T^{-1}_{\bm
-Q}` can, by decomposing the definition of the forward Rosenblatt
+The problem of calculating the inverse transformation :math:`T^{-1}_{\boldsymbol{Q}}`
+can, by decomposing the definition of the forward Rosenblatt
 transformation in :eq:`eq_forward`, be reformulated as
 
 .. math::
@@ -238,10 +238,10 @@ Constructing Distributions
 --------------------------
 
 The backbone of distributions in Chaospy is the Rosenblatt
-transformation :math:`T_{\bm Q}`.  The method, as described in the previous
-section, assumes that :math:`p_{\bm Q}` is known to be able to perform the
+transformation :math:`T_{\boldsymbol{Q}}`.  The method, as described in the previous
+section, assumes that :math:`p_{\boldsymbol{Q}}` is known to be able to perform the
 transformation and its inverse.  In practice, however, we first need
-to construct :math:`p_{\bm Q}`, before the transformation can be used.  This
+to construct :math:`p_{\boldsymbol{Q}}`, before the transformation can be used.  This
 can be a challenging task, but in Chaospy a lot of effort has been put
 into constructing novel tools for making the process as flexible and
 painless as possible.  In essence, users can create their own custom
@@ -317,7 +317,7 @@ around.
 
 Another favorable feature in Chaospy is that multiple transformations
 can be stacked on top of each other.  For example, consider the
-example of a multivariate log-normal random variable :math:`\bm Q` with
+example of a multivariate log-normal random variable :math:`\boldsymbol{Q}` with
 three dependent components.  (Let us ignore for a moment the fact that
 Chaospy already offers such a distribution.) Trying to decompose this
 distribution is a very cumbersome task if performed manually.
@@ -327,10 +327,10 @@ distribution, for example, can be expressed as
 
 .. math::
         
-            \bm Q = e^{\bm Z L + \bm b},
+            \boldsymbol{Q} = e^{\boldsymbol{Z} L + \boldsymbol{b}},
         
 
-where :math:`\bm Z` are standard normal variables, and :math:`L` and :math:`\bm b`
+where :math:`\boldsymbol{Z}` are standard normal variables, and :math:`L` and :math:`\boldsymbol{b}`
 are predefined matrix and vector, respectively.
 To implement this particular transformation, we only
 have to write
@@ -341,7 +341,7 @@ have to write
         >>> Q = e**(Z*L + b)
 
 The resulting distribution is fully functional multivariate
-log-normal, assuming :math:`L` and :math:`\bm b` are properly defined.
+log-normal, assuming :math:`L` and :math:`\boldsymbol{b}` are properly defined.
 
 One obvious prerequisite for using univariate distributions to create
 conditionals and multivariate distributions, is the availability of
@@ -357,74 +357,74 @@ has a collection of 26 distributions.
 =======================  =  =  =  
     **Distribution**     D  T  C  
 =======================  =  =  =  
-         Alpha           n  n  y  
-         Anglit          n  n  y  
-        Arcsinus         n  n  y  
-          Beta           y  y  y  
-       Brandford         n  n  y  
-          Burr           n  y  y  
-         Cauchy          n  n  y  
-          Chi            n  y  y  
-       Chi-Square        n  y  y  
-      Double Gamma       n  n  y  
-     Double Weibull      n  n  y  
-      Epanechnikov       n  y  y  
-         Erlang          n  n  y  
-      Exponential        y  y  y  
-   Exponential Power     n  n  y  
-  Exponential Weibull    n  n  y  
-    Birnbaum-Sanders     n  n  y  
-    Fisher-Snedecor      n  y  y  
-   Fisk/Log-Logistic     n  n  y  
-     Folded Cauchy       n  n  y  
-     Folded Normal       n  n  y  
-        Frechet          y  n  y  
-         Gamma           y  y  y  
-    Gen. Exponential     n  n  y  
-   Gen. Extreme Value    n  n  y  
-       Gen. Gamma        n  n  y  
-   Gen. Half-Logistic    n  n  y  
-        Gilbrat          n  n  y  
-    Truncated Gumbel     n  n  y  
-         Gumbel          y  y  y  
- Hypergeometric Secant   n  n  y  
-     Inverse-Normal      n  y  n  
-      Kumaraswamy        n  n  y  
-        Laplace          n  y  y  
-          Levy           n  n  y  
-       Log-Gamma         n  n  y  
-      Log-Laplace        n  n  y  
-       Log-Normal        y  y  y  
-      Log-Uniform        y  y  y  
-        Logistic         n  y  y  
-         Lomax           n  n  y  
-        Maxwell          n  n  y  
-  Mielke's Beta-Kappa    n  n  y  
-        Nakagami         n  n  y  
+Alpha                    n  n  y  
+Anglit                   n  n  y  
+Arcsinus                 n  n  y  
+Beta                     y  y  y  
+Brandford                n  n  y  
+Burr                     n  y  y  
+Cauchy                   n  n  y  
+Chi                      n  y  y  
+Chi-Square               n  y  y  
+Double Gamma             n  n  y  
+Double Weibull           n  n  y  
+Epanechnikov             n  y  y  
+Erlang                   n  n  y  
+Exponential              y  y  y  
+Exponential Power        n  n  y  
+Exponential Weibull      n  n  y  
+Birnbaum-Sanders         n  n  y  
+Fisher-Snedecor          n  y  y  
+Fisk/Log-Logistic        n  n  y  
+Folded Cauchy            n  n  y  
+Folded Normal            n  n  y  
+Frechet                  y  n  y  
+Gamma                    y  y  y  
+Gen. Exponential         n  n  y  
+Gen. Extreme Value       n  n  y  
+Gen. Gamma               n  n  y  
+Gen. Half-Logistic       n  n  y  
+Gilbrat                  n  n  y  
+Truncated Gumbel         n  n  y  
+Gumbel                   y  y  y  
+Hypergeometric Secant    n  n  y  
+Inverse-Normal           n  y  n  
+Kumaraswamy              n  n  y  
+Laplace                  n  y  y  
+Levy                     n  n  y  
+Log-Gamma                n  n  y  
+Log-Laplace              n  n  y  
+Log-Normal               y  y  y  
+Log-Uniform              y  y  y  
+Logistic                 n  y  y  
+Lomax                    n  n  y  
+Maxwell                  n  n  y  
+Mielke's Beta-Kappa      n  n  y  
+Nakagami                 n  n  y  
 Non-Central Chi-Squared  n  y  y  
- Non-Central Student-T   n  y  y  
-     Non-central F       n  n  y  
-         Normal          y  y  y  
-  Pareto (First kind)    n  n  y  
-    Power Log-Normal     n  n  y  
-      Power Normal       n  n  y  
-     Raised Cosine       n  n  y  
-        Rayleigh         n  y  y  
-       Reciprocal        n  n  y  
-          Rice           n  y  n  
-  Right-skewed Gumbel    n  n  y  
-       Student-T         n  y  y  
-      Trapezoidal        n  y  n  
-        Triangle         y  y  y  
- Truncated Exponential   n  n  y  
-    Truncated Normal     n  y  y  
-      Tukey-Lamdba       n  n  y  
-        Uniform          y  y  y  
-          Wald           n  n  y  
-        Weibull          y  y  y  
-         Wigner          n  n  y  
-     Wrapped Cauchy      n  n  y  
-    Zipf-Mandelbrot      n  y  n  
+Non-Central Student-T    n  y  y  
+Non-central F            n  n  y  
+Normal                   y  y  y  
+Pareto (First kind)      n  n  y  
+Power Log-Normal         n  n  y  
+Power Normal             n  n  y  
+Raised Cosine            n  n  y  
+Rayleigh                 n  y  y  
+Reciprocal               n  n  y  
+Rice                     n  y  n  
+Right-skewed Gumbel      n  n  y  
+Student-T                n  y  y  
+Trapezoidal              n  y  n  
+Triangle                 y  y  y  
+Truncated Exponential    n  n  y  
+Truncated Normal         n  y  y  
+Tukey-Lamdba             n  n  y  
+Uniform                  y  y  y  
+Wald                     n  n  y  
+Weibull                  y  y  y  
+Wigner                   n  n  y  
+Wrapped Cauchy           n  n  y  
+Zipf-Mandelbrot          n  y  n  
 =======================  =  =  =  
 
 The Chaospy software supports in addition custom distributions through
@@ -504,16 +504,16 @@ Variance Reduction Techniques
 -----------------------------
 
 As noted in the beginning of the section :ref:`sec:dist`, by generating
-samples :math:`\{\bm Q_k\}_{k\in I_K}` and evaluating the response function
+samples :math:`\{\boldsymbol{Q}_k\}_{k\in I_K}` and evaluating the response function
 :math:`f`, it is possible to draw inference upon :math:`Y` without knowledge about
 :math:`p_{Y}`, through Monte Carlo simulation.  Unfortunately, the number of
 samples :math:`K` to achieve reasonable accuracy can often be very high, so
 if :math:`f` is assumed to be computationally expensive, the number of
 samples needed frequently make Monte Carlo simulation infeasible for
 practical applications.  As a way to mitigate this problem, it is
-possible to modify :math:`\{\bm Q_k\}_{k\in I_K}` from traditional
+possible to modify :math:`\{\boldsymbol{Q}_k\}_{k\in I_K}` from traditional
 pseudo-random samples, so that the accuracy increases.  Schemes that
-select non-traditional samples for :math:`\{\bm Q_k\}_{k\in I_K}` to
+select non-traditional samples for :math:`\{\boldsymbol{Q}_k\}_{k\in I_K}` to
 increase accuracy are known as \emph{variance reduction techniques}.
 A list of such techniques are presented in the tables below,
 and they show that Dakota, Turns and Chaospy
@@ -541,7 +541,7 @@ Latin Hypercube sampling [Ref26]_   yes    limited    yes
 
 One of the more popular variance reduction technique is the
 *quasi-Monte Carlo scheme* [Ref01]_.  The
-method consists of selecting the samples :math:`\{\bm Q_k\}_{k\in I_K}` to
+method consists of selecting the samples :math:`\{\boldsymbol{Q}_k\}_{k\in I_K}` to
 be a low-discrepancy sequence instead of pseudo-random samples.  The
 idea is that samples placed with a given distance from each other
 increase the coverage over the sample space, requiring fewer samples

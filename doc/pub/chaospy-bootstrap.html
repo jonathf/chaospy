@@ -10,8 +10,8 @@ Automatically generated HTML file from DocOnce source
 
 <title>Chaospy: An Open Source Tool for Designing Methods of Uncertainty Quantification</title>
 
-<!-- Bootstrap style: bootswatch_journal -->
-<link href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/journal/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap style: bootswatch_readable -->
+<link href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/readable/bootstrap.min.css" rel="stylesheet">
 <!-- not necessary
 <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 -->
@@ -26,8 +26,7 @@ code { color: inherit; background-color: transparent; }
 
 <!-- tocinfo
 {'highest level': 1,
- 'sections': [('Keywords', 3, None, '___sec0'),
-              ('Introduction', 1, 'sec:intro', 'sec:intro'),
+ 'sections': [('Introduction', 1, 'sec:intro', 'sec:intro'),
               ('A Glimpse of Chaospy in Action', 1, 'sec:case', 'sec:case'),
               ('Modelling Random Variables', 1, 'sec:dist', 'sec:dist'),
               ('Rosenblatt Transformation',
@@ -55,21 +54,21 @@ code { color: inherit; background-color: transparent; }
               ('Generalized Polynomial Chaos Expansions',
                3,
                None,
-               '___sec11'),
-              ('The Direct Multivariate Approach', 3, None, '___sec12'),
-              ('Custom Polynomial Expansions', 3, None, '___sec13'),
+               '___sec10'),
+              ('The Direct Multivariate Approach', 3, None, '___sec11'),
+              ('Custom Polynomial Expansions', 3, None, '___sec12'),
               ('Calculating Coefficients', 2, 'sec:spectral', 'sec:spectral'),
-              ('Integration Methods', 2, None, '___sec15'),
+              ('Integration Methods', 2, None, '___sec14'),
               ('Point Collocation', 2, 'sec:ptcolloc', 'sec:ptcolloc'),
-              ('Model Evaluations', 2, None, '___sec17'),
-              ('Extension of polynomial expansions', 2, None, '___sec18'),
+              ('Model Evaluations', 2, None, '___sec16'),
+              ('Extension of polynomial expansions', 2, None, '___sec17'),
               ('Descriptive Tools', 2, 'sec:descriptive', 'sec:descriptive'),
               ('Conclusion and Further Work',
                1,
                'sec:conclusion',
                'sec:conclusion'),
-              ('Acknowledgement', 2, None, '___sec21'),
-              ('Bibliography', 2, None, '___sec22')]}
+              ('Acknowledgement', 2, None, '___sec20'),
+              ('Bibliography', 2, None, '___sec21')]}
 end of tocinfo -->
 
 <body>
@@ -87,6 +86,12 @@ MathJax.Hub.Config({
 <script type="text/javascript"
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
+
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
+$$
+
 
 
 
@@ -106,11 +111,11 @@ MathJax.Hub.Config({
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Contents <b class="caret"></b></a>
         <ul class="dropdown-menu">
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap001.html#sec:intro" style="font-size: 80%;">Introduction</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap002.html#sec:case" style="font-size: 80%;">A Glimpse of Chaospy in Action</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap003.html#sec:dist" style="font-size: 80%;">Modelling Random Variables</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap004.html#sec:chaos" style="font-size: 80%;">Polynomial Chaos Expansions</a></li>
-     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap005.html#sec:conclusion" style="font-size: 80%;">Conclusion and Further Work</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap002.html#sec:intro" style="font-size: 80%;">Introduction</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap003.html#sec:case" style="font-size: 80%;">A Glimpse of Chaospy in Action</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap004.html#sec:dist" style="font-size: 80%;">Modelling Random Variables</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap005.html#sec:chaos" style="font-size: 80%;">Polynomial Chaos Expansions</a></li>
+     <!-- navigation toc: --> <li><a href="._chaospy-bootstrap006.html#sec:conclusion" style="font-size: 80%;">Conclusion and Further Work</a></li>
 
         </ul>
       </li>
@@ -170,14 +175,17 @@ for creating polynomial chaos expansions with dependent stochastic
 variables.
 
 <p>
+<b>Note:</b> This paper is accepted in Journal of Computational Science and
+will be published as an Open Access paper.
+
+<p>
+
+
+<p><a href="._chaospy-bootstrap001.html" class="btn btn-primary btn-lg">Read &raquo;</a></p>
+
+
 </div> <!-- end jumbotron -->
 
-<h3 id="___sec0">Keywords </h3>
-
-<p>
-uncertainty quantification; polynomial chaos expansions; Monte Carlo simulation; Rosenblatt transformations; Python package
-
-<p>
 <p>
 <!-- navigation buttons at the bottom of the page -->
 <ul class="pager">

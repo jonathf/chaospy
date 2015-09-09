@@ -16,13 +16,13 @@ polynomial approximation can be defined as
    :label: eq_approx_poly
         
         
-            \hat f(\bm x, t, \bm Q) =
-            \sum_{n\in I_N} c_n(\bm x, t) \bm\Phi_n(\bm Q) \qquad
+            \hat f(\boldsymbol{x}, t, \boldsymbol{Q}) =
+            \sum_{n\in I_N} c_n(\boldsymbol{x}, t) \boldsymbol{\Phi}_n(\boldsymbol{Q}) \qquad
             I_N = \{0,\dots,N\},
         
 
 where :math:`\{c_n\}_{n\in I_N}` are coefficients (often known as Fourier coefficients)
-and :math:`\{\bm\Phi_n\}_{n\in I_N}` are polynomials.
+and :math:`\{\boldsymbol{\Phi}_n\}_{n\in I_N}` are polynomials.
 If :math:`\hat f` is a good approximation of :math:`f`, it is possible to
 either infer statistical properties of :math:`\hat f` analytically
 or through cheap numerical computations where :math:`\hat f` is used
@@ -30,7 +30,7 @@ as a surrogate for :math:`f`.
 
 A polynomial chaos expansion is defined as a polynomial approximation,
 as in :eq:`eq_approx_poly`, where the polynomials
-:math:`\{\bm\Phi_n\}_{n\in I_N}` are orthogonal on a custom weighted
+:math:`\{\boldsymbol{\Phi}_n\}_{n\in I_N}` are orthogonal on a custom weighted
 function space :math:`L_Q`:
 
 .. _Eq:eq_orthogonal:
@@ -38,10 +38,10 @@ function space :math:`L_Q`:
 .. math::
    :label: eq_orthogonal
         
-            \inner{\bm\Phi_n,\bm\Phi_m} =
-            \E{ \bm\Phi_n(\bm Q) \bm\Phi_m(\bm Q) } =
-            \idotsint \bm\Phi_n(\bm q) \bm\Phi_m(\bm q)
-                p_{\bm Q}(\bm q) \ud \bm q = 0 
+            \left\langle\boldsymbol{\Phi}_n,\boldsymbol{\Phi}_m\right\rangle =
+            \mathbb{E}\!\left[ \boldsymbol{\Phi}_n(\boldsymbol{Q}) \boldsymbol{\Phi}_m(\boldsymbol{Q}) \right] =
+            \int\cdots\int \boldsymbol{\Phi}_n(\boldsymbol{q}) \boldsymbol{\Phi}_m(\boldsymbol{q})
+                p_{\boldsymbol{Q}}(\boldsymbol{q}) {\rm d} \boldsymbol{q} = 0,\quad
             n\neq m.
             
         
@@ -66,9 +66,9 @@ Orthogonal Polynomials Construction
 
 From :eq:`eq_orthogonal` it follows that the orthogonality property
 is not in general transferable between distributions, since a new set
-of polynomials has to be constructed for each :math:`p_{\bm Q}`.  The
+of polynomials has to be constructed for each :math:`p_{\boldsymbol{Q}}`.  The
 easiest approach to construct orthogonal polynomials is to identify
-the probability density :math:`p_{\bm Q}` in the so-called Askey-Wilson
+the probability density :math:`p_{\boldsymbol{Q}}` in the so-called Askey-Wilson
 scheme [Ref29]_.  The polynomials can then be picked
 from a list, or be built from analytical components.  The continuous
 distributions supported in the scheme include the standard normal,
@@ -89,12 +89,12 @@ respectively.
 ===============================  ======  =====  =======  
   **Orthogonalization Method**   Dakota  Turns  Chaospy  
 ===============================  ======  =====  =======  
-   Askey-Wilson Scheme [Ref29]_   yes     yes     yes    
-     Bertran recursion [Ref31]_    no      no     yes    
+Askey-Wilson Scheme [Ref29]_      yes     yes     yes    
+Bertran recursion [Ref31]_         no      no     yes    
 Cholesky Decomposition [Ref14]_    no      no     yes    
- Discretized Stieltjes [Ref32]_   yes      no     yes    
-    Modified Chebyshev [Ref32]_   yes     yes      no    
- Modified Gram-Schmidt [Ref32]_   yes     yes     yes    
+Discretized Stieltjes [Ref32]_    yes      no     yes    
+Modified Chebyshev [Ref32]_       yes     yes      no    
+Modified Gram-Schmidt [Ref32]_    yes     yes     yes    
 ===============================  ======  =====  =======  
 
 Looking beyond an analytical approach, the most popular method for
@@ -104,7 +104,7 @@ it is the only truly numerically stable method for orthogonal
 polynomial construction.  It is based upon one-dimensional recursion
 coefficients that are estimated using numerical integration.
 Unfortunately, the method is only applicable in the multivariate case
-if the components of :math:`p_{\bm Q}` are stochastically independent.
+if the components of :math:`p_{\boldsymbol{Q}}` are stochastically independent.
 
 Generalized Polynomial Chaos Expansions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,21 +120,21 @@ as
 
 .. math::
         
-            f(\bm x, t, \bm Q) =
-            f(\bm x, t, T_{\bm Q}^{-1}(T_{\bm R}(\bm R))) &\approx
-            \hat f(\bm x, t, \bm R) =
-            \sum_{n\in I_N} c_n(\bm x, t)\bm \Phi_n(\bm R),
+            f(\boldsymbol{x}, t, \boldsymbol{Q}) =
+            f(\boldsymbol{x}, t, T_{\boldsymbol{Q}}^{-1}(T_{\boldsymbol{R}}(\boldsymbol{R}))) &\approx
+            \hat f(\boldsymbol{x}, t, \boldsymbol{R}) =
+            \sum_{n\in I_N} c_n(\boldsymbol{x}, t)\boldsymbol{\Phi}_n(\boldsymbol{R}),
         
 
-where :math:`\bm R` is any random variable drawn from :math:`p_{\bm R}`, which
+where :math:`\boldsymbol{R}` is any random variable drawn from :math:`p_{\boldsymbol{R}}`, which
 for simplicity is chosen to consists of independent components.
-Also, :math:`\{\bm\Phi_n\}_{n\in I_N}`
-is constructed to be orthogonal with respect to :math:`L_{\bm R}`, not
-:math:`L_{\bm Q}`.
-In any case, :math:`\bm R` is either selected from the Askey-Wilson
+Also, :math:`\{\boldsymbol{\Phi}_n\}_{n\in I_N}`
+is constructed to be orthogonal with respect to :math:`L_{\boldsymbol{R}}`, not
+:math:`L_{\boldsymbol{Q}}`.
+In any case, :math:`\boldsymbol{R}` is either selected from the Askey-Wilson
 scheme, or calculated using the discretized Stieltjes procedure.
 We remark that the accuracy of the approximation deteriorate if the
-transformation composition :math:`T_{\bm Q}^{-1}\circ T_{\bm R}` is not
+transformation composition :math:`T_{\boldsymbol{Q}}^{-1}\circ T_{\boldsymbol{R}}` is not
 smooth [Ref34]_.
 
 Dakota, Turns, and Chaospy all support generalized polynomial chaos
@@ -147,9 +147,9 @@ available for all densities.
 The Direct Multivariate Approach
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Given that both the density :math:`p_{\bm Q}` has stochastically dependent
-components, and the transformation composition :math:`T^{-1}_{\bm Q}\circ
-T_{\bm R}` is not smooth, it is still possible to generate orthogonal
+Given that both the density :math:`p_{\boldsymbol{Q}}` has stochastically dependent
+components, and the transformation composition :math:`T^{-1}_{\boldsymbol{Q}}\circ
+T_{\boldsymbol{R}}` is not smooth, it is still possible to generate orthogonal
 polynomials numerically.  As noted above, most methods are numerically
 unstable, and the accuracy in the orthogonality can deteriorate with
 polynomial order, but the methods can still be useful
@@ -172,7 +172,7 @@ polynomial expansion, orthogonal with respect to the normal density
 
 .. math::
         
-            \left\{\bm\Phi_n\right\}_{n\in I_6} =
+            \left\{\boldsymbol{\Phi}_n\right\}_{n\in I_6} =
             \left\{ 1, Q_0, Q_1, Q_0^2-1, Q_0Q_1, Q_1^2-1 \right\}
         
 
@@ -293,11 +293,11 @@ Integration Methods
 -------------------
 
 The pseudo-spectral projection method is based on a standard least
-squares minimization in the weighted function space :math:`L_{\bm Q}`.
+squares minimization in the weighted function space :math:`L_{\boldsymbol{Q}}`.
 Since the polynomials are orthogonal in this space, the associated
 linear system is diagonal, which allows a closed-form expression for
 the Fourier coefficients. The expression involves high-dimensional
-integrals in :math:`L_{\bm Q}`. Numerical integration is then required,
+integrals in :math:`L_{\boldsymbol{Q}}`. Numerical integration is then required,
 
 .. _Eq:eq_quadrature:
 
@@ -305,21 +305,21 @@ integrals in :math:`L_{\bm Q}`. Numerical integration is then required,
    :label: eq_quadrature
         
             
-            c_n = \frac{\E{Y \bm\Phi_n}}{\E{\bm\Phi_n^2}} =
-            \frac{1}{\E{\bm\Phi_n^2}} \idotsint p_{\bm Q}(\bm q)
-            f(\bm x, t, \bm q) \bm\Phi_n(\bm q)\ud\bm q 
+            c_n = \frac{{\mathbb{E}\!\left[Y \boldsymbol{\Phi\right]}_n}}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}} =
+            \frac{1}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}} \idotsint p_{\boldsymbol{Q}}(\boldsymbol{q})
+            f(\boldsymbol{x}, t, \boldsymbol{q}) \boldsymbol{\Phi}_n(\boldsymbol{q}){\rm d}\boldsymbol{q} 
         
 
 .. math::
           \notag
-            \approx \frac{1}{\E{\bm\Phi_n^2}}
-            \sum_{k\in I_K} w_k p_{\bm Q}(\bm q_k)
-            f(\bm x, t, \bm q_k)
-            \bm\Phi_n(\bm q_k) 
+            \approx \frac{1}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}}
+            \sum_{k\in I_K} w_k p_{\boldsymbol{Q}}(\boldsymbol{q}_k)
+            f(\boldsymbol{x}, t, \boldsymbol{q}_k)
+            \boldsymbol{\Phi}_n(\boldsymbol{q}_k) 
             I_K = \{0,\dots,K-1\},
         
 
-where :math:`w_k` are weights and :math:`\bm q_k` nodes in a quadrature scheme.
+where :math:`w_k` are weights and :math:`\boldsymbol{q}_k` nodes in a quadrature scheme.
 Note that :math:`f` is only evaluated for the nodes :math:`\boldsymbol{q}_k`, and these
 evaluations can be made once. Thereafter, one can experiment with the
 polynomial order since any :math:`c_n` depends on the same evaluations of :math:`f`.
@@ -423,7 +423,7 @@ expansion, we use the ``cp.fit_quadrature`` function.  It takes four
 arguments: the set of orthogonal polynomials, quadrature nodes,
 quadrature weights, and the user's function for evaluating the forward
 model (to be executed at the quadrature nodes).  Note that in the case
-of the discretized Stieltjes method discussed in the section :ref:`sec:orthogonal`, the nominator :math:`\E{\bm\Phi_n^2}` in
+of the discretized Stieltjes method discussed in the section :ref:`sec:orthogonal`, the nominator :math:`{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}` in
 :eq:`eq_quadrature` can be calculated more accurately using
 recurrence coefficients [Ref32]_.  Special
 numerical features like this can be added by including optional
@@ -437,7 +437,7 @@ Point Collocation
 The other non-intrusive approach to estimate the coefficients
 :math:`\{c_k\}_{k\in I_K}` is the point collocation method.  One way of
 formulating the method is to require the polynomial expansion to equal
-the model evaluations at a set of collocation nodes :math:`\{\bm q_k\}_{k\in
+the model evaluations at a set of collocation nodes :math:`\{\boldsymbol{q}_k\}_{k\in
 I_K}`, resulting in an over-determined set of linear equations for the
 Fourier coefficients:
 

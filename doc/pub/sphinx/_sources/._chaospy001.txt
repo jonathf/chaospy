@@ -5,10 +5,10 @@
 Introduction
 ============
 
-We consider a computational science problem in space :math:`\bm x` and time
+We consider a computational science problem in space :math:`\boldsymbol{x}` and time
 :math:`t` where the aim is to quantify the uncertainty in some response :math:`Y`,
 computed by a forward model :math:`f`, which depends on uncertain
-input parameters :math:`\bm Q`:
+input parameters :math:`\boldsymbol{Q}`:
 
 .. _Eq:eq_function:
 
@@ -16,17 +16,17 @@ input parameters :math:`\bm Q`:
    :label: eq_function
         
             
-            Y = f(\bm x, t,\bm Q).
+            Y = f(\boldsymbol{x}, t,\boldsymbol{Q}).
         
 
-We treat :math:`\bm Q` as a vector of model parameters, and :math:`Y` is normally
+We treat :math:`\boldsymbol{Q}` as a vector of model parameters, and :math:`Y` is normally
 computed as some grid function in space and time.  The uncertainty in
-this problem stems from the parameters :math:`\bm Q`, which are assumed to
-have a known joint probability density function :math:`p_{\bm Q}`.  The
+this problem stems from the parameters :math:`\boldsymbol{Q}`, which are assumed to
+have a known joint probability density function :math:`p_{\boldsymbol{Q}}`.  The
 challenge is that we want to quantify the uncertainty
 in :math:`Y`, but nothing is known about its density :math:`p_{Y}`.  The goal is
 then to either build the density :math:`p_Y` or relevant descriptive
-properties of :math:`Y` using the density :math:`p_{\bm Q}` and the forward model
+properties of :math:`Y` using the density :math:`p_{\boldsymbol{Q}}` and the forward model
 :math:`f`.  For all practical purposes this must be done by a numerical
 procedure.
 

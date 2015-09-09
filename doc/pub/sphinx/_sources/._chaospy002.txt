@@ -142,9 +142,9 @@ and the estimated value integrated over the depth :math:`x`:
 .. math::
         
         \varepsilon_{\mathbb E} &=
-         \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | \ud x
+         \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x
          & \varepsilon_{\mathbb V} &=
-           \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | \ud x
+           \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | {\rm d} x
         
 
 Both the point collocation method and the pseudo-spectral projection
@@ -157,14 +157,14 @@ projection, and is therefore only compared using point collocation.
 .. _fig_sode:
 
 .. figure:: ode.png
-   :width: 400
+   :width: 500
 
    *Solution of a simple stochastic differential equation with uncertain coefficients*
 
 .. _fig_compare:
 
 .. figure:: compare.png
-   :width: 400
+   :width: 800
 
    *The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical*
 

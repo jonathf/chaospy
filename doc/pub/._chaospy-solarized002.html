@@ -34,8 +34,7 @@ div { text-align: justify; text-justify: inter-word; }
 
 <!-- tocinfo
 {'highest level': 1,
- 'sections': [('Keywords', 3, None, '___sec0'),
-              ('Introduction', 1, 'sec:intro', 'sec:intro'),
+ 'sections': [('Introduction', 1, 'sec:intro', 'sec:intro'),
               ('A Glimpse of Chaospy in Action', 1, 'sec:case', 'sec:case'),
               ('Modelling Random Variables', 1, 'sec:dist', 'sec:dist'),
               ('Rosenblatt Transformation',
@@ -63,21 +62,21 @@ div { text-align: justify; text-justify: inter-word; }
               ('Generalized Polynomial Chaos Expansions',
                3,
                None,
-               '___sec11'),
-              ('The Direct Multivariate Approach', 3, None, '___sec12'),
-              ('Custom Polynomial Expansions', 3, None, '___sec13'),
+               '___sec10'),
+              ('The Direct Multivariate Approach', 3, None, '___sec11'),
+              ('Custom Polynomial Expansions', 3, None, '___sec12'),
               ('Calculating Coefficients', 2, 'sec:spectral', 'sec:spectral'),
-              ('Integration Methods', 2, None, '___sec15'),
+              ('Integration Methods', 2, None, '___sec14'),
               ('Point Collocation', 2, 'sec:ptcolloc', 'sec:ptcolloc'),
-              ('Model Evaluations', 2, None, '___sec17'),
-              ('Extension of polynomial expansions', 2, None, '___sec18'),
+              ('Model Evaluations', 2, None, '___sec16'),
+              ('Extension of polynomial expansions', 2, None, '___sec17'),
               ('Descriptive Tools', 2, 'sec:descriptive', 'sec:descriptive'),
               ('Conclusion and Further Work',
                1,
                'sec:conclusion',
                'sec:conclusion'),
-              ('Acknowledgement', 2, None, '___sec21'),
-              ('Bibliography', 2, None, '___sec22')]}
+              ('Acknowledgement', 2, None, '___sec20'),
+              ('Bibliography', 2, None, '___sec21')]}
 end of tocinfo -->
 
 <body>
@@ -96,6 +95,12 @@ MathJax.Hub.Config({
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
+<!-- newcommands_keep.tex -->
+$$
+\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
+$$
+
+
 
 
     
@@ -113,194 +118,144 @@ MathJax.Hub.Config({
 <p>
 <!-- !split -->
 
-<h1 id="sec:case">A Glimpse of Chaospy in Action</h1>
+<h1 id="sec:intro">Introduction</h1>
 
 <p>
-To demonstrate how Chaospy is used to solve an uncertainty quantification
-problem, we consider a simple physical example of (scaled)
-exponential decay with an uncertain, piecewise constant coefficient:
+We consider a computational science problem in space \( \boldsymbol{x} \) and time
+\( t \) where the aim is to quantify the uncertainty in some response \( Y \),
+computed by a forward model \( f \), which depends on uncertain
+input parameters \( \boldsymbol{Q} \):
 
 $$
-\begin{equation}
-u'(x) = -c(x)u(x),\quad u(0)=u_0,\ c(x) = \left\lbrace
-\begin{array}{ll}
-c_0, & x < 0.5\\
-c_1, & 0.5\leq x < 0.7\\
-c_2, & x\geq 0.7
-\end{array}
-\right.
-\end{equation}
+\begin{align}
+    \tag{1}
+    Y = f(\boldsymbol{x}, t,\boldsymbol{Q}).
+\end{align}
 $$
 
-Such a model arises in many contexts, but we may here think of \( u(x) \)
-as the porosity at depth \( x \)
-in geological layers and \( c_i \) as a (scaled) compaction constant
-in layer number \( i \). For simplicity, we consider only three layers with three
-uncertain constants \( c_0 \), \( c_1 \), and \( c_2 \).
+We treat \( \boldsymbol{Q} \) as a vector of model parameters, and \( Y \) is normally
+computed as some grid function in space and time.  The uncertainty in
+this problem stems from the parameters \( \boldsymbol{Q} \), which are assumed to
+have a known joint probability density function \( p_{\boldsymbol{Q}} \).  The
+challenge is that we want to quantify the uncertainty
+in \( Y \), but nothing is known about its density \( p_{Y} \).  The goal is
+then to either build the density \( p_Y \) or relevant descriptive
+properties of \( Y \) using the density \( p_{\boldsymbol{Q}} \) and the forward model
+\( f \).  For all practical purposes this must be done by a numerical
+procedure.
 
 <p>
-The model can easily be evaluated by solving the differential equation
-problem, here by a 2nd-order Runge-Kutta method on a mesh <code>x</code>,
-coded in Python as:
+In this paper, we focus on two approaches to numerically quantify
+uncertainty: Monte Carlo simulation and non-intrusive global
+polynomial chaos expansions.  For a review of the former, there is a
+very useful book by Rubinstein, Reuven and Kroese
+<a href="._chaospy-solarized006.html#rubinstein_simulation_2007">[1]</a>, while for the latter, we refer to
+the excellent book by Xiu <a href="._chaospy-solarized006.html#xiu_numerical_2010">[2]</a>.  Note that other
+methods for performing uncertainty quantification also exist, such as
+perturbation methods, moment equations, and operator based methods.
+These methods are all discussed in <a href="._chaospy-solarized006.html#xiu_numerical_2010">[2]</a>, but are
+less general and less widely applicable than the two addressed in this
+paper.
 
 <p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%"><span style="color: #8B008B; font-weight: bold">def</span> <span style="color: #008b45">model</span>(x, u0, c0, c1, c2):
-    <span style="color: #8B008B; font-weight: bold">def</span> <span style="color: #008b45">c</span>(x):
-        <span style="color: #8B008B; font-weight: bold">if</span>   x &lt; <span style="color: #B452CD">0.5</span>:           <span style="color: #8B008B; font-weight: bold">return</span> c0
-        <span style="color: #8B008B; font-weight: bold">elif</span> <span style="color: #B452CD">0.5</span> &lt;= x &lt; <span style="color: #B452CD">0.7</span>:    <span style="color: #8B008B; font-weight: bold">return</span> c1
-        <span style="color: #8B008B; font-weight: bold">else</span>:                   <span style="color: #8B008B; font-weight: bold">return</span> c2
-
-    N = <span style="color: #658b00">len</span>(x)
-    u = np.zeros(N)
-
-    u[<span style="color: #B452CD">0</span>] = u0
-    <span style="color: #8B008B; font-weight: bold">for</span> n <span style="color: #8B008B">in</span> <span style="color: #658b00">xrange</span>(N-<span style="color: #B452CD">1</span>):
-        dx = x[n+<span style="color: #B452CD">1</span>] - x[n]
-        K1 = -dx*u[n]*c(x[n])
-        K2 = -dx*u[n] + K1/<span style="color: #B452CD">2</span>*c(x[n]+dx/<span style="color: #B452CD">2</span>)
-        u[n+<span style="color: #B452CD">1</span>] = u[n] + K1 + K2
-    <span style="color: #8B008B; font-weight: bold">return</span> u
-</pre></div>
-<p>
-Alternatively, the model can be implemented in some external software in
-another programming language. This software can either be run as a
-stand-alone application, where the Python function <code>model</code>
-runs the application and communicates with it through input and output
-files, or the <code>model</code> function can communicate with the external software
-through function calls if a Python wrapper has been made for the software
-(there are numerous technologies available for creating Python wrappers for
-C, C++, and Fortran software).
+The number of toolboxes available to perform Monte Carlo simulation is
+vastly larger than the number of toolboxes for non-intrusive
+polynomial chaos expansion.  As far as the authors know, there are
+only a few viable options for the latter class of methods: <em>The Dakota
+Project</em> (referred to as Dakota) <a href="._chaospy-solarized006.html#eldred_dakota_2007">[3]</a>, the <em>Opus
+Open Turns library</em> (referred to as Turns) <a href="._chaospy-solarized006.html#andrianov_open_2007">[4]</a>,
+<em>Uncertenty Quantification Toolkit</em> <a href="._chaospy-solarized006.html#debusschere_numerical_2004">[5]</a>,
+and <em>MIT Uncertenty Quantification Library</em>
+<a href="._chaospy-solarized006.html#conrad_adaptive_2013">[6]</a>.  In this paper we will focus on the former
+two: Dakota and Turns.  Both packages consist of libraries with
+extensive sets of tools, where Monte Carlo simulation and
+non-intrusive polynomial chaos expansion are just two tools available
+among several others.
 
 <p>
-The Chaospy package may be loaded by
+It is worth noting that both Dakota and Turns can be used from two
+perspectives: as a user and as a developer.  Both packages are open
+source projects with comprehensive developer manuals.  As such, they
+both allow anyone to extend the software with any functionality one
+sees fit.  However, these extension features are not targeting the
+common user and require a deeper understanding of both coding practice
+and the underlying design of the library.  In our opinion, the
+threshold for a common user to extend the library is normally out of
+reach.  Consequently, we are in this paper only considering Dakota and
+Turns from the point of view of the common user.
 
 <p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%"><span style="color: #8B008B; font-weight: bold">import</span> <span style="color: #008b45; text-decoration: underline">chaospy</span> <span style="color: #8B008B; font-weight: bold">as</span> <span style="color: #008b45; text-decoration: underline">cp</span>
-</pre></div>
-<p>
-Each of the uncertain parameters must be assigned a probability
-density, and we assume that \( c_0 \), \( c_1 \), and \( c_2 \) are stochastically
-independent:
+Dakota requires the forward model \( f \) to be wrapped in a stand-alone
+callable executable.  The common approach is then to link this
+executable to the analysis software through a configuration file.  The
+technical steps are somewhat cumbersome, but has their advantage in
+that already built and installed simulation software can be used
+without writing a line of code.
 
 <p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%">c0 = cp.Normal(<span style="color: #B452CD">0.5</span>, <span style="color: #B452CD">0.15</span>)
-c1 = cp.Uniform(<span style="color: #B452CD">0.5</span>, <span style="color: #B452CD">2.5</span>)
-c2 = cp.Uniform(<span style="color: #B452CD">0.03</span>, <span style="color: #B452CD">0.07</span>)
-<span style="color: #228B22"># Joint probability distribution</span>
-distribution = cp.J(c0, c1, c2)
-</pre></div>
-<p>
-The sample points \( (c_0,c_1,c_2) \) in probability space, where the
-model is to be evaluated, can be chosen
-in many ways. Here we specify
-a third-order Gaussian Quadrature scheme tailored to the joint distribution:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%">nodes, weights = cp.generate_quadrature(
-    order=<span style="color: #B452CD">3</span>, domain=distribution, rule=<span style="color: #CD5555">&quot;Gaussian&quot;</span>)
-</pre></div>
-<p>
-The next step is to evaluate the computational model
-at these sample points (object <code>nodes</code>):
+Alternative to this direct approach is to interact with an application
+programming interface (API).  This approach requires the user to know
+how to program in the supported languages, but this also has clear
+benefits as an interface through a programming language allows for a
+deeper level of integration between the user's model and the UQ tools.
+Also, exposing the software's internal components through an API
+allows a higher detailed control over the tools and how they can be
+combined in statistical algorithms.  This feature is attractive to
+scientists who would like the possibility to experiment with new or
+non-standard methods in ways not thought of before.  This approach is
+used by the Turns software (using the languages Python or R) and is
+supported in Dakota through a library mode (using C++).
 
 <p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%">x = np.linspace(<span style="color: #B452CD">0</span>, <span style="color: #B452CD">1</span>, <span style="color: #B452CD">101</span>)
-samples = [model(x, u0, node[<span style="color: #B452CD">0</span>], node[<span style="color: #B452CD">1</span>], node[<span style="color: #B452CD">2</span>])
-           <span style="color: #8B008B; font-weight: bold">for</span> node <span style="color: #8B008B">in</span> nodes.T]
-</pre></div>
-<p>
-Now, <code>samples</code> contains a list of arrays, each array containing
-\( u \) values at the 101
-<code>x</code> values for one combination \( (c_0,c_1,c_2) \) of the input parameters.
+For example, consider bootstrapping <a href="._chaospy-solarized006.html#efron_bootstrap_1979">[7]</a>, a
+popular method for measuring the stability of any parameter
+estimation.  Neither Dakota nor Turns support bootstrapping
+directly. However, since Turns exposes some of the inner components to
+the user, a programmer can combine these to implement a custom
+bootstrapping technique.
 
 <p>
-To create a polynomial chaos expansion, we must generate orthogonal polynomials
-corresponding to the joint distribution. We choose polynomials
-of the same order as specified in the quadrature rule, computed by the
-widely used three-term recurrence relation (<code>ttr</code>):
+This paper describes a new, third alternative open source software
+package called Chaospy <a href="._chaospy-solarized006.html#feinberg_chaospy_2014">[8]</a>.  Like Dakota and
+Turns, it is a toolbox for analysing uncertainty using advanced Monte
+Carlo simulation and non-intrusive polynomial chaos expansions.
+However, unlike the others, it aims to assist scientists in
+constructing tailored statistical methods by combining a lot of
+fundamental and advanced building blocks.  Chaospy builds upon the
+same philosophy as Turns in that it offers flexibility to the user,
+but takes it significantly further.  In Chaospy, it is possible to
+gain detailed control and add user defined functionality to all of the
+following: random variable generation, polynomial construction,
+sampling schemes, numerical integration rules, response evaluation,
+and point collocation.  The software is designed from the ground up in
+Python to be modular and easy to experiment with.  The number of lines
+of code to achieve a full uncertainty analysis is amazingly low. It is
+also very easy to compare a range of methods in a given
+problem. Standard statistical methods are easily accessible through a
+few lines of R or Pandas <a href="._chaospy-solarized006.html#mckinney_python_2012">[9]</a> code, and one may
+think of Chaospy as a tool similar to R or Pandas, just tailored to
+polynomial chaos expansion and Monte Carlo simulation.
 
 <p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%">polynomials = cp.orth_ttr(order=<span style="color: #B452CD">3</span>, dist=distribution)
-</pre></div>
-<p>
-To create an approximate solver (or surrogate model),
-we join the polynomial chaos expansion,
-the quadrature nodes and weights, and the model samples:
-
-<p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%">model_approx = cp.fit_quadrature(
-               polynomials, nodes, weights, samples)
-</pre></div>
-<p>
-The <code>model_approx</code> object can now cheaply evaluate the model
-at a point \( (c_0,c_1,c_2) \) in probability space for all \( x \) points
-in the <code>x</code> array.
-Built-in tools can be used to
-derive statistical information about the model response:
+Although Chaospy is designed with a large focus on modularity,
+flexibility, and customization, the toolbox comes with a wide range
+of pre-defined statistical methods.
+Within the scope of Monte Carlo sampling and non-intrusive
+polynomial chaos expansion, Chaospy has a competitive
+collection of methods, comparable to both Dakota and
+Turns. It also offers some novel features regarding statistical methods,
+first and foremostly a flexible framework for defining and handling
+input distributions, including <em>dependent</em> stochastic variables.
+Detailed comparisons of features in the three packages appear
+throughout the paper.
 
 <p>
-
-<!-- code=python (!bc pycod) typeset with pygments style "perldoc" -->
-<div class="highlight" style="background: #eeeedd"><pre style="line-height: 125%">mean = cp.E(model_approx, distribution)
-deviation = cp.Std(model_approx, distribution)
-</pre></div>
-<p>
-The <code>mean</code> and <code>deviation</code> objects are arrays containing the
-mean value and standard deviation at each point in <code>x</code>.
-A graphical illustration is shown
-in Figure <a href="#fig_sode">1</a>.
-
-<p>
-The accuracy of the estimation is comparable to what Dakota and Turns
-can provide.  Figure <a href="#fig_compare">2</a> shows that the estimation error
-in the three software toolboxes are almost indistinguishable.  The
-error is calculated as the absolute difference between the true value
-and the estimated value integrated over the depth \( x \):
-
-$$
-\begin{align*}
-\varepsilon_{\mathbb E} &=
- \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | \ud x
- & \varepsilon_{\mathbb V} &=
-   \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | \ud x
-\end{align*}
-$$
-
-<p>
-Both the point collocation method and the pseudo-spectral projection
-method are included.  The former is calculated using two times the
-random collocation nodes as the number of polynomials, and the latter
-using Gaussian quadrature integration with quadrature order equal to
-polynomial order.  Note that Turns does not support pseudo-spectral
-projection, and is therefore only compared using point collocation.
-
-<p>
-<center> <!-- figure -->
-<hr class="figure">
-<center><p class="caption">Figure 1:  Solution of a simple stochastic differential equation with uncertain coefficients. <div id="fig_sode"></div> </p></center>
-<p><img src="fig/ode.png" align="bottom" width=400></p>
-</center>
-
-<p>
-<center> <!-- figure -->
-<hr class="figure">
-<center><p class="caption">Figure 2:  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. <div id="fig_compare"></div> </p></center>
-<p><img src="fig/compare.png" align="bottom" width=400></p>
-</center>
+The paper is structured as follows. We start in the section <a href="._chaospy-solarized003.html#sec:case">A Glimpse of Chaospy in Action</a>
+with a quick demonstration of how the software can be used to perform
+uncertainty quantification in a simple physical problem.  The section <a href="._chaospy-solarized004.html#sec:dist">Modelling Random Variables</a> addresses probability distributions and the theory
+relevant to perform Monte Carlo simulation. The section <a href="._chaospy-solarized005.html#sec:chaos">Polynomial Chaos Expansions</a>
+concerns non-intrusive polynomial chaos expansions, while conclusions
+and topics for further work appear in the section <a href="._chaospy-solarized006.html#sec:conclusion">Conclusion and Further Work</a>.
 
 <p>
 <p>

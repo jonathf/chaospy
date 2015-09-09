@@ -25,34 +25,41 @@ framework for computing Rosenblatt transformations and a new approach
 for creating polynomial chaos expansions with dependent stochastic
 variables.
 
+_Note:_ This paper is accepted in Journal of Computational Science and
+will be published as an Open Access paper.
 
+# #ifdef KEYWORDS
 === Keywords ===
 
 uncertainty quantification; polynomial chaos expansions; Monte Carlo simulation; Rosenblatt transformations; Python package
+# #endif
+
+!split
+TOC: on
 
 !split
 ======= Introduction =======
 label{sec:intro}
 
-We consider a computational science problem in space $\bm x$ and time
+We consider a computational science problem in space $\bm{x}$ and time
 $t$ where the aim is to quantify the uncertainty in some response $Y$,
 computed by a forward model $f$, which depends on uncertain
-input parameters $\bm Q$:
+input parameters $\bm{Q}$:
 
 !bt
 \begin{align}
     label{eq_function}
-    Y = f(\bm x, t,\bm Q).
+    Y = f(\bm{x}, t,\bm{Q}).
 \end{align}
 !et
-We treat $\bm Q$ as a vector of model parameters, and $Y$ is normally
+We treat $\bm{Q}$ as a vector of model parameters, and $Y$ is normally
 computed as some grid function in space and time.  The uncertainty in
-this problem stems from the parameters $\bm Q$, which are assumed to
-have a known joint probability density function $p_{\bm Q}$.  The
+this problem stems from the parameters $\bm{Q}$, which are assumed to
+have a known joint probability density function $p_{\bm{Q}}$.  The
 challenge is that we want to quantify the uncertainty
 in $Y$, but nothing is known about its density $p_{Y}$.  The goal is
 then to either build the density $p_Y$ or relevant descriptive
-properties of $Y$ using the density $p_{\bm Q}$ and the forward model
+properties of $Y$ using the density $p_{\bm{Q}}$ and the forward model
 $f$.  For all practical purposes this must be done by a numerical
 procedure.
 
@@ -258,9 +265,9 @@ and the estimated value integrated over the depth $x$:
 !bt
 \begin{align*}
 \varepsilon_{\mathbb E} &=
- \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | \ud x
+ \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x
  & \varepsilon_{\mathbb V} &=
-   \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | \ud x
+   \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | {\rm d} x
 \end{align*}
 !et
 
@@ -272,9 +279,9 @@ polynomial order.  Note that Turns does not support pseudo-spectral
 projection, and is therefore only compared using point collocation.
 
 
-FIGURE: [fig/ode.pdf, width=400 frac=1.0] Solution of a simple stochastic differential equation with uncertain coefficients. label{fig_sode}
+FIGURE: [fig/ode.pdf, width=500 frac=1.0] Solution of a simple stochastic differential equation with uncertain coefficients. label{fig_sode}
 
-FIGURE: [fig/compare.pdf, width=400 frac=1.0]  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. label{fig_compare}
+FIGURE: [fig/compare.pdf, width=800 frac=1.0]  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. label{fig_compare}
 
 !split
 ======= Modelling Random Variables =======
@@ -288,18 +295,18 @@ pseudo-random realizations
 
 !bt
 \begin{align*}
-    \{\bm Q_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},
+    \{\bm{Q}_k\}_{k\in I_K} \qquad I_K = \{1,\dots,K\},
 \end{align*}
 !et
-from the density $p_{\bm Q}$.  Each $\bm Q\in \{\bm Q_k\}_{k\in I_K}$
+from the density $p_{\bm{Q}}$.  Each $\bm{Q}\in \{\bm{Q}_k\}_{k\in I_K}$
 is multivariate with the number of dimensions $D>1$.  Generating
-realizations from a given density $p_{\bm Q}$ is often non-trivial, at
+realizations from a given density $p_{\bm{Q}}$ is often non-trivial, at
 least when $D$ is large.  A very common assumption made in uncertainty
-quantification is that each dimension in $\bm Q$ consists of
+quantification is that each dimension in $\bm{Q}$ consists of
 stochastically independent components.  Stochastic independence allows
 for a joint sampling scheme to be reduced to a series of univariate
 samplings, drastically reducing the complexity of generating a sample
-$\bm Q$.
+$\bm{Q}$.
 
 Unfortunately, the assumption of independence does not always hold in
 practice.  We have examples from many research fields where stochastic
@@ -316,10 +323,10 @@ feature of Chaospy is its support for stochastic dependence.
 
 
 All random samples are in Chaospy generated using Rosenblatt
-transformations $T_{\bm Q}$ cite{rosenblatt_remarks_1952}.  It allows
-for a random variable $\bm U$, generated uniformly on a unit hypercube
-$[0,1]^D$, to be transformed into $\bm Q = T^{-1}_{\bm Q}(\bm U)$,
-which behaves as if it were drawn from the density $p_{\bm Q}$.  It is
+transformations $T_{\bm{Q}}$ cite{rosenblatt_remarks_1952}.  It allows
+for a random variable $\bm{U}$, generated uniformly on a unit hypercube
+$[0,1]^D$, to be transformed into $\bm{Q} = T^{-1}_{\bm{Q}}(\bm{U})$,
+which behaves as if it were drawn from the density $p_{\bm{Q}}$.  It is
 easy to generate pseudo-random samples from a uniform distribution,
 and the Rosenblatt transformation can then be used as a method for
 generating samples from arbitrary densities.
@@ -327,7 +334,7 @@ generating samples from arbitrary densities.
 
 The Rosenblatt transformation can be derived as follows.  Consider a
 probability decomposition, for example for a bivariate random variable
-$\bm Q=(Q_0, Q_1)$:
+$\bm{Q}=(Q_0, Q_1)$:
 
 !bt
 \begin{align}
@@ -343,7 +350,7 @@ will have the form
 
 !bt
 \begin{align}
-    p_{\bm{Q}}(\bm q) &=
+    p_{\bm{Q}}(\bm{q}) &=
     \prod_{d=0}^{D-1} p_{Q^{\prime}_d}(q^{\prime}_d),
     label{eq_decompostion}
 \end{align}
@@ -364,7 +371,7 @@ A forward Rosenblatt transformation can then be defined as
 !bt
 \begin{align}
 label{eq_forward}
-    T_{\bm Q}(\bm q) &=
+    T_{\bm{Q}}(\bm{q}) &=
     (F_{Q_0^{\prime}}(q_0^{\prime}),
     \dots,F_{Q_{D-1}^{\prime}}(q_{D-1}^{\prime})),
 \end{align}
@@ -376,12 +383,12 @@ where $F_{Q_d^{\prime}}$ is the cumulative distribution function:
     F_{Q_d^{\prime}}(q_d^{\prime}) &=
     \int_{-\infty}^{q_d} \!\!
     p_{Q_d^{\prime}}(r\mid q_0,\dots,q_{d-1})
-    \ud r.
+    {\rm d} r.
     label{eq_general_cdf}
 \end{align}
 !et
 This transformation is bijective, so it is always possible to define
-the inverse Rosenblatt transformation $T_{\bm Q}^{-1}$ in a similar
+the inverse Rosenblatt transformation $T_{\bm{Q}}^{-1}$ in a similar
 fashion.
 
 
@@ -389,8 +396,8 @@ fashion.
 label{sec:invRosenblatt}
 
 To implement the Rosenblatt transformation in practice, we need to
-identify the inverse transform $T_{\bm Q}^{-1}$.  Unfortunately,
-$T_{\bm Q}$ is often non-linear without a closed-form formula, making
+identify the inverse transform $T_{\bm{Q}}^{-1}$.  Unfortunately,
+$T_{\bm{Q}}$ is often non-linear without a closed-form formula, making
 analytical calculations of the transformation's inverse difficult.  In
 the scenario where we do not have a symbolic representation of the
 inverse transformation, a numerical scheme has to be employed.  To the
@@ -399,8 +406,8 @@ numerical scheme.  The following paragraphs therefore describe our
 proposed method for calculating the inverse transformation
 numerically.
 
-The problem of calculating the inverse transformation $T^{-1}_{\bm
-Q}$ can, by decomposing the definition of the forward Rosenblatt
+The problem of calculating the inverse transformation $T^{-1}_{\bm{Q}}$
+can, by decomposing the definition of the forward Rosenblatt
 transformation in (ref{eq_forward}), be reformulated as
 
 !bt
@@ -484,10 +491,10 @@ section.
 label{sec:variable}
 
 The backbone of distributions in Chaospy is the Rosenblatt
-transformation $T_{\bm Q}$.  The method, as described in the previous
-section, assumes that $p_{\bm Q}$ is known to be able to perform the
+transformation $T_{\bm{Q}}$.  The method, as described in the previous
+section, assumes that $p_{\bm{Q}}$ is known to be able to perform the
 transformation and its inverse.  In practice, however, we first need
-to construct $p_{\bm Q}$, before the transformation can be used.  This
+to construct $p_{\bm{Q}}$, before the transformation can be used.  This
 can be a challenging task, but in Chaospy a lot of effort has been put
 into constructing novel tools for making the process as flexible and
 painless as possible.  In essence, users can create their own custom
@@ -561,7 +568,7 @@ around.
 
 Another favorable feature in Chaospy is that multiple transformations
 can be stacked on top of each other.  For example, consider the
-example of a multivariate log-normal random variable $\bm Q$ with
+example of a multivariate log-normal random variable $\bm{Q}$ with
 three dependent components.  (Let us ignore for a moment the fact that
 Chaospy already offers such a distribution.) Trying to decompose this
 distribution is a very cumbersome task if performed manually.
@@ -571,10 +578,10 @@ distribution, for example, can be expressed as
 
 !bt
 \begin{align*}
-    \bm Q = e^{\bm Z L + \bm b},
+    \bm{Q} = e^{\bm{Z} L + \bm{b}},
 \end{align*}
 !et
-where $\bm Z$ are standard normal variables, and $L$ and $\bm b$
+where $\bm{Z}$ are standard normal variables, and $L$ and $\bm{b}$
 are predefined matrix and vector, respectively.
 To implement this particular transformation, we only
 have to write
@@ -584,7 +591,7 @@ have to write
 >>> Q = e**(Z*L + b)
 !ec
 The resulting distribution is fully functional multivariate
-log-normal, assuming $L$ and $\bm b$ are properly defined.
+log-normal, assuming $L$ and $\bm{b}$ are properly defined.
 
 One obvious prerequisite for using univariate distributions to create
 conditionals and multivariate distributions, is the availability of
@@ -600,7 +607,7 @@ has a collection of 26 distributions.
 
 |--------------------------------------|
 | _Distribution_          | D  | T | C |
-|--------------------------------------|
+|---------l-----------------c----c---c-|
 | Alpha                   | n  | n | y |
 | Anglit                  | n  | n | y |
 | Arcsinus                | n  | n | y |
@@ -748,16 +755,16 @@ It shows that Turns supports 7 methods, Chaospy
 label{sec:monte_carlo}
 
 As noted in the beginning of Section ref{sec:dist}, by generating
-samples $\{\bm Q_k\}_{k\in I_K}$ and evaluating the response function
+samples $\{\bm{Q}_k\}_{k\in I_K}$ and evaluating the response function
 $f$, it is possible to draw inference upon $Y$ without knowledge about
 $p_{Y}$, through Monte Carlo simulation.  Unfortunately, the number of
 samples $K$ to achieve reasonable accuracy can often be very high, so
 if $f$ is assumed to be computationally expensive, the number of
 samples needed frequently make Monte Carlo simulation infeasible for
 practical applications.  As a way to mitigate this problem, it is
-possible to modify $\{\bm Q_k\}_{k\in I_K}$ from traditional
+possible to modify $\{\bm{Q}_k\}_{k\in I_K}$ from traditional
 pseudo-random samples, so that the accuracy increases.  Schemes that
-select non-traditional samples for $\{\bm Q_k\}_{k\in I_K}$ to
+select non-traditional samples for $\{\bm{Q}_k\}_{k\in I_K}$ to
 increase accuracy are known as \emph{variance reduction techniques}.
 A list of such techniques are presented in the tables below,
 and they show that Dakota, Turns and Chaospy
@@ -787,7 +794,7 @@ support 4, 7, and 7 variance reduction techniques, respectively.
 
 One of the more popular variance reduction technique is the
 *quasi-Monte Carlo scheme* cite{rubinstein_simulation_2007}.  The
-method consists of selecting the samples $\{\bm Q_k\}_{k\in I_K}$ to
+method consists of selecting the samples $\{\bm{Q}_k\}_{k\in I_K}$ to
 be a low-discrepancy sequence instead of pseudo-random samples.  The
 idea is that samples placed with a given distance from each other
 increase the coverage over the sample space, requiring fewer samples
@@ -827,13 +834,13 @@ polynomial approximation can be defined as
 !bt
 \begin{align}
 label{eq_approx_poly}
-    \hat f(\bm x, t, \bm Q) &=
-    \sum_{n\in I_N} c_n(\bm x, t) \bm\Phi_n(\bm Q) \qquad
+    \hat f(\bm{x}, t, \bm{Q}) &=
+    \sum_{n\in I_N} c_n(\bm{x}, t) \bm{\Phi}_n(\bm{Q}) \qquad
     I_N = \{0,\dots,N\},
 \end{align}
 !et
 where $\{c_n\}_{n\in I_N}$ are coefficients (often known as Fourier coefficients)
-and $\{\bm\Phi_n\}_{n\in I_N}$ are polynomials.
+and $\{\bm{\Phi}_n\}_{n\in I_N}$ are polynomials.
 If $\hat f$ is a good approximation of $f$, it is possible to
 either infer statistical properties of $\hat f$ analytically
 or through cheap numerical computations where $\hat f$ is used
@@ -841,18 +848,18 @@ as a surrogate for $f$.
 
 A polynomial chaos expansion is defined as a polynomial approximation,
 as in (ref{eq_approx_poly}), where the polynomials
-$\{\bm\Phi_n\}_{n\in I_N}$ are orthogonal on a custom weighted
+$\{\bm{\Phi}_n\}_{n\in I_N}$ are orthogonal on a custom weighted
 function space $L_Q$:
 
 !bt
-\begin{align}
-    \inner{\bm\Phi_n,\bm\Phi_m} &=
-    \E{ \bm\Phi_n(\bm Q) \bm\Phi_m(\bm Q) } =
-    \idotsint \bm\Phi_n(\bm q) \bm\Phi_m(\bm q)
-        p_{\bm Q}(\bm q) \ud \bm q = 0 &
+\begin{equation}
+    \left\langle\bm{\Phi}_n,\bm{\Phi}_m\right\rangle =
+    \mathbb{E}\!\left[ \bm{\Phi}_n(\bm{Q}) \bm{\Phi}_m(\bm{Q}) \right] =
+    \int\cdots\int \bm{\Phi}_n(\bm{q}) \bm{\Phi}_m(\bm{q})
+        p_{\bm{Q}}(\bm{q}) {\rm d} \bm{q} = 0,\quad
     n\neq m.
     label{eq_orthogonal}
-\end{align}
+\end{equation}
 !et
 
 As a side note, it is worth noting that in parallel with polynomial
@@ -875,9 +882,9 @@ label{sec:orthogonal}
 
 From (ref{eq_orthogonal}) it follows that the orthogonality property
 is not in general transferable between distributions, since a new set
-of polynomials has to be constructed for each $p_{\bm Q}$.  The
+of polynomials has to be constructed for each $p_{\bm{Q}}$.  The
 easiest approach to construct orthogonal polynomials is to identify
-the probability density $p_{\bm Q}$ in the so-called Askey-Wilson
+the probability density $p_{\bm{Q}}$ in the so-called Askey-Wilson
 scheme cite{askey_basic_1985}.  The polynomials can then be picked
 from a list, or be built from analytical components.  The continuous
 distributions supported in the scheme include the standard normal,
@@ -898,7 +905,7 @@ respectively.
 
 |------------------------------------------------------------------------------------|
 | _Orthogonalization Method_                              | Dakota | Turns | Chaospy |
-|----------------------------r--------------------------------c--------c--------c----|
+|----------------------------l--------------------------------c--------c--------c----|
 | Askey-Wilson Scheme cite{askey_basic_1985}              | yes    | yes   | yes     |
 | Bertran recursion cite{bertran_note_1975}               | no     | no    | yes     |
 | Cholesky Decomposition cite{feinberg_multivariate_2015} | no     | no    | yes     |
@@ -915,7 +922,7 @@ it is the only truly numerically stable method for orthogonal
 polynomial construction.  It is based upon one-dimensional recursion
 coefficients that are estimated using numerical integration.
 Unfortunately, the method is only applicable in the multivariate case
-if the components of $p_{\bm Q}$ are stochastically independent.
+if the components of $p_{\bm{Q}}$ are stochastically independent.
 
 
 === Generalized Polynomial Chaos Expansions ===
@@ -931,21 +938,21 @@ as
 
 !bt
 \begin{align*}
-    f(\bm x, t, \bm Q) =
-    f(\bm x, t, T_{\bm Q}^{-1}(T_{\bm R}(\bm R))) &\approx
-    \hat f(\bm x, t, \bm R) =
-    \sum_{n\in I_N} c_n(\bm x, t)\bm \Phi_n(\bm R),
+    f(\bm{x}, t, \bm{Q}) =
+    f(\bm{x}, t, T_{\bm{Q}}^{-1}(T_{\bm{R}}(\bm{R}))) &\approx
+    \hat f(\bm{x}, t, \bm{R}) =
+    \sum_{n\in I_N} c_n(\bm{x}, t)\bm{\Phi}_n(\bm{R}),
 \end{align*}
 !et
-where $\bm R$ is any random variable drawn from $p_{\bm R}$, which
+where $\bm{R}$ is any random variable drawn from $p_{\bm{R}}$, which
 for simplicity is chosen to consists of independent components.
-Also, $\{\bm\Phi_n\}_{n\in I_N}$
-is constructed to be orthogonal with respect to $L_{\bm R}$, not
-$L_{\bm Q}$.
-In any case, $\bm R$ is either selected from the Askey-Wilson
+Also, $\{\bm{\Phi}_n\}_{n\in I_N}$
+is constructed to be orthogonal with respect to $L_{\bm{R}}$, not
+$L_{\bm{Q}}$.
+In any case, $\bm{R}$ is either selected from the Askey-Wilson
 scheme, or calculated using the discretized Stieltjes procedure.
 We remark that the accuracy of the approximation deteriorate if the
-transformation composition $T_{\bm Q}^{-1}\circ T_{\bm R}$ is not
+transformation composition $T_{\bm{Q}}^{-1}\circ T_{\bm{R}}$ is not
 smooth cite{xiu_stochastic_2002}.
 
 Dakota, Turns, and Chaospy all support generalized polynomial chaos
@@ -957,9 +964,9 @@ available for all densities.
 
 === The Direct Multivariate Approach ===
 
-Given that both the density $p_{\bm Q}$ has stochastically dependent
-components, and the transformation composition $T^{-1}_{\bm Q}\circ
-T_{\bm R}$ is not smooth, it is still possible to generate orthogonal
+Given that both the density $p_{\bm{Q}}$ has stochastically dependent
+components, and the transformation composition $T^{-1}_{\bm{Q}}\circ
+T_{\bm{R}}$ is not smooth, it is still possible to generate orthogonal
 polynomials numerically.  As noted above, most methods are numerically
 unstable, and the accuracy in the orthogonality can deteriorate with
 polynomial order, but the methods can still be useful
@@ -983,7 +990,7 @@ cite{askey_basic_1985}:
 
 !bt
 \begin{align*}
-    \left\{\bm\Phi_n\right\}_{n\in I_6} =
+    \left\{\bm{\Phi}_n\right\}_{n\in I_6} =
     \left\{ 1, Q_0, Q_1, Q_0^2-1, Q_0Q_1, Q_1^2-1 \right\}
 \end{align*}
 !et
@@ -1104,26 +1111,26 @@ practical, generic implementation of these two methods in Chaospy.
 ===== Integration Methods =====
 
 The pseudo-spectral projection method is based on a standard least
-squares minimization in the weighted function space $L_{\bm Q}$.
+squares minimization in the weighted function space $L_{\bm{Q}}$.
 Since the polynomials are orthogonal in this space, the associated
 linear system is diagonal, which allows a closed-form expression for
 the Fourier coefficients. The expression involves high-dimensional
-integrals in $L_{\bm Q}$. Numerical integration is then required,
+integrals in $L_{\bm{Q}}$. Numerical integration is then required,
 
 !bt
 \begin{align}
     label{eq_quadrature}
-    c_n &= \frac{\E{Y \bm\Phi_n}}{\E{\bm\Phi_n^2}} =
-    \frac{1}{\E{\bm\Phi_n^2}} \idotsint p_{\bm Q}(\bm q)
-    f(\bm x, t, \bm q) \bm\Phi_n(\bm q)\ud\bm q \\ \notag
-    &\approx \frac{1}{\E{\bm\Phi_n^2}}
-    \sum_{k\in I_K} w_k p_{\bm Q}(\bm q_k)
-    f(\bm x, t, \bm q_k)
-    \bm\Phi_n(\bm q_k) &
+    c_n &= \frac{\E{Y \bm{\Phi}_n}}{\E{\bm{\Phi}_n^2}} =
+    \frac{1}{\E{\bm{\Phi}_n^2}} \idotsint p_{\bm{Q}}(\bm{q})
+    f(\bm{x}, t, \bm{q}) \bm{\Phi}_n(\bm{q}){\rm d}\bm{q} \\ \notag
+    &\approx \frac{1}{\E{\bm{\Phi}_n^2}}
+    \sum_{k\in I_K} w_k p_{\bm{Q}}(\bm{q}_k)
+    f(\bm{x}, t, \bm{q}_k)
+    \bm{\Phi}_n(\bm{q}_k) &
     I_K &= \{0,\dots,K-1\},
 \end{align}
 !et
-where $w_k$ are weights and $\bm q_k$ nodes in a quadrature scheme.
+where $w_k$ are weights and $\bm{q}_k$ nodes in a quadrature scheme.
 Note that $f$ is only evaluated for the nodes $\bm{q}_k$, and these
 evaluations can be made once. Thereafter, one can experiment with the
 polynomial order since any $c_n$ depends on the same evaluations of $f$.
@@ -1231,7 +1238,7 @@ arguments: the set of orthogonal polynomials, quadrature nodes,
 quadrature weights, and the user's function for evaluating the forward
 model (to be executed at the quadrature nodes).  Note that in the case
 of the discretized Stieltjes method discussed in Section
-ref{sec:orthogonal}, the nominator $\E{\bm\Phi_n^2}$ in
+ref{sec:orthogonal}, the nominator $\E{\bm{\Phi}_n^2}$ in
 (ref{eq_quadrature}) can be calculated more accurately using
 recurrence coefficients cite{gautschi_orthogonal_2004}.  Special
 numerical features like this can be added by including optional
@@ -1244,7 +1251,7 @@ label{sec:ptcolloc}
 The other non-intrusive approach to estimate the coefficients
 $\{c_k\}_{k\in I_K}$ is the point collocation method.  One way of
 formulating the method is to require the polynomial expansion to equal
-the model evaluations at a set of collocation nodes $\{\bm q_k\}_{k\in
+the model evaluations at a set of collocation nodes $\{\bm{q}_k\}_{k\in
 I_K}$, resulting in an over-determined set of linear equations for the
 Fourier coefficients:
 
