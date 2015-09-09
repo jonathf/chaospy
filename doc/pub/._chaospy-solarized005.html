@@ -95,12 +95,6 @@ MathJax.Hub.Config({
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-<!-- newcommands_keep.tex -->
-$$
-\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
-$$
-
-
 
 
     
@@ -432,10 +426,11 @@ integrals in \( L_{\boldsymbol{Q}} \). Numerical integration is then required,
 $$
 \begin{align}
     \tag{12}
-    c_n &= \frac{\E{Y \boldsymbol{\Phi}_n}}{\E{\boldsymbol{\Phi}_n^2}} =
-    \frac{1}{\E{\boldsymbol{\Phi}_n^2}} \idotsint p_{\boldsymbol{Q}}(\boldsymbol{q})
-    f(\boldsymbol{x}, t, \boldsymbol{q}) \boldsymbol{\Phi}_n(\boldsymbol{q}){\rm d}\boldsymbol{q} \\ \notag
-    &\approx \frac{1}{\E{\boldsymbol{\Phi}_n^2}}
+    c_n &= \frac{\mathbb{E}\!\left[Y \boldsymbol{\Phi}_n\right]}{\mathbb{E}\!\left[\boldsymbol{\Phi}_n^2\right]} =
+    \frac{1}{\mathbb{E}\!\left[\boldsymbol{\Phi}_n^2\right]}\int\cdots\int
+    p_{\boldsymbol{Q}}(\boldsymbol{q})
+    f(\boldsymbol{x}, t, \boldsymbol{q}) \boldsymbol{\Phi}_n(\boldsymbol{q}){\rm d}\boldsymbol{q} \\ \nonumber
+    &\approx \frac{1}{\mathbb{E}\!\left[\boldsymbol{\Phi}_n^2\right]}
     \sum_{k\in I_K} w_k p_{\boldsymbol{Q}}(\boldsymbol{q}_k)
     f(\boldsymbol{x}, t, \boldsymbol{q}_k)
     \boldsymbol{\Phi}_n(\boldsymbol{q}_k) &
@@ -560,7 +555,7 @@ expansion, we use the <code>cp.fit_quadrature</code> function.  It takes four
 arguments: the set of orthogonal polynomials, quadrature nodes,
 quadrature weights, and the user's function for evaluating the forward
 model (to be executed at the quadrature nodes).  Note that in the case
-of the discretized Stieltjes method discussed in the section <a href="#sec:orthogonal">Orthogonal Polynomials Construction</a>, the nominator \( \E{\boldsymbol{\Phi}_n^2} \) in
+of the discretized Stieltjes method discussed in the section <a href="#sec:orthogonal">Orthogonal Polynomials Construction</a>, the nominator \( \mathbb{E}\!\left[{\boldsymbol{\Phi}_n^2}\right] \) in
 <a href="#mjx-eqn-12">(12)</a> can be calculated more accurately using
 recurrence coefficients <a href="._chaospy-solarized006.html#gautschi_orthogonal_2004">[32]</a>.  Special
 numerical features like this can be added by including optional
@@ -577,21 +572,21 @@ I_K} \), resulting in an over-determined set of linear equations for the
 Fourier coefficients:
 
 $$
-\begin{align}
+\begin{equation}
 \tag{13}
-    \begin{bmatrix}
+\left[\begin{array}{ccc}
         \Phi_0(\boldsymbol{q}_0) & \cdots & \Phi_N(\boldsymbol{q}_0) \\
         \vdots &  & \vdots \\
         \Phi_0(\boldsymbol{q}_{K-1}) & \cdots & \Phi_N(\boldsymbol{q}_{K-1})
-    \end{bmatrix}
-    \begin{bmatrix}
-        c_0 \\ \vdots \\ c_N
-    \end{bmatrix} &=
-    \begin{bmatrix}
+\end{array}\right]
+\left[\begin{array}{c}
+c_0 \\ \vdots \\ c_N
+\end{array}\right] =
+\left[\begin{array}{c}
         f(\boldsymbol{q}_0) \\ \vdots \\
         f(\boldsymbol{q}_{K-1})
-    \end{bmatrix},
-\end{align}
+\end{array}\right],
+\end{equation}
 $$
 
 <p>

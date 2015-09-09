@@ -87,12 +87,6 @@ MathJax.Hub.Config({
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-<!-- newcommands_keep.tex -->
-$$
-\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
-$$
-
-
 
 
     
@@ -290,12 +284,10 @@ error is calculated as the absolute difference between the true value
 and the estimated value integrated over the depth \( x \):
 
 $$
-\begin{align*}
-\varepsilon_{\mathbb E} &=
- \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x
- & \varepsilon_{\mathbb V} &=
+\varepsilon_{\mathbb E} =
+ \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x,\quad
+  \varepsilon_{\mathbb V} =
    \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | {\rm d} x
-\end{align*}
 $$
 
 <p>
@@ -317,7 +309,7 @@ projection, and is therefore only compared using point collocation.
 <center> <!-- figure -->
 <hr class="figure">
 <center><p class="caption">Figure 2:  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. <div id="fig_compare"></div> </p></center>
-<p><img src="fig/compare.png" align="bottom" width=800></p>
+<p><img src="fig/compare.png" align="bottom" width=650></p>
 </center>
 
 <p>
