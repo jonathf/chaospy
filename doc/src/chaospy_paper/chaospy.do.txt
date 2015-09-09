@@ -263,12 +263,12 @@ error is calculated as the absolute difference between the true value
 and the estimated value integrated over the depth $x$:
 
 !bt
-\begin{align*}
-\varepsilon_{\mathbb E} &=
- \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x
- & \varepsilon_{\mathbb V} &=
+\[
+\varepsilon_{\mathbb E} =
+ \int_0^1 | \mathbb E(u)-\mathbb E(u_{\mbox{approx}}) | {\rm d} x,\quad
+  \varepsilon_{\mathbb V} =
    \int_0^1 | \mathbb V(u)-\mathbb V(u_{\mbox{approx}}) | {\rm d} x
-\end{align*}
+\]
 !et
 
 Both the point collocation method and the pseudo-spectral projection
@@ -279,9 +279,9 @@ polynomial order.  Note that Turns does not support pseudo-spectral
 projection, and is therefore only compared using point collocation.
 
 
-FIGURE: [fig/ode.pdf, width=500 frac=1.0] Solution of a simple stochastic differential equation with uncertain coefficients. label{fig_sode}
+FIGURE: [fig/ode.pdf, width=500 frac=0.8] Solution of a simple stochastic differential equation with uncertain coefficients. label{fig_sode}
 
-FIGURE: [fig/compare.pdf, width=800 frac=1.0]  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. label{fig_compare}
+FIGURE: [fig/compare.pdf, width=650 frac=0.8]  The error in estimates of the mean and variance, computed by Dakota, Turns, and Chaospy using point collocation and pseudo-spectral projection, is almost identical. label{fig_compare}
 
 !split
 ======= Modelling Random Variables =======
@@ -463,17 +463,16 @@ bisection increment:
 In either case, the bounds are updated according to
 
 !bt
-\begin{align}
-    (lo_{k+1},up_{k+1}) &=
-    \begin{cases}
+\begin{equation}
+(lo_{k+1},up_{k+1}) =
+\left\lbrace\begin{array}{ll}
         (lo_{k}, r_{k+1}) &
-        F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u
-        \\
+        F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u \\
         (r_{k+1}, up_{k}) &
         F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) < u
-    \end{cases}
-    label{eq_bounds}
-\end{align}
+\end{array}\right.
+label{eq_bounds}
+\end{equation}
 !et
 The algorithm repeats the steps in (ref{eq_newton}),
 (ref{eq_bisection}) and (ref{eq_bounds}), until the residual
@@ -1120,10 +1119,11 @@ integrals in $L_{\bm{Q}}$. Numerical integration is then required,
 !bt
 \begin{align}
     label{eq_quadrature}
-    c_n &= \frac{\E{Y \bm{\Phi}_n}}{\E{\bm{\Phi}_n^2}} =
-    \frac{1}{\E{\bm{\Phi}_n^2}} \idotsint p_{\bm{Q}}(\bm{q})
-    f(\bm{x}, t, \bm{q}) \bm{\Phi}_n(\bm{q}){\rm d}\bm{q} \\ \notag
-    &\approx \frac{1}{\E{\bm{\Phi}_n^2}}
+    c_n &= \frac{\mathbb{E}\!\left[Y \bm{\Phi}_n\right]}{\mathbb{E}\!\left[\bm{\Phi}_n^2\right]} =
+    \frac{1}{\mathbb{E}\!\left[\bm{\Phi}_n^2\right]}\int\cdots\int
+    p_{\bm{Q}}(\bm{q})
+    f(\bm{x}, t, \bm{q}) \bm{\Phi}_n(\bm{q}){\rm d}\bm{q} \\ \nonumber
+    &\approx \frac{1}{\mathbb{E}\!\left[\bm{\Phi}_n^2\right]}
     \sum_{k\in I_K} w_k p_{\bm{Q}}(\bm{q}_k)
     f(\bm{x}, t, \bm{q}_k)
     \bm{\Phi}_n(\bm{q}_k) &
@@ -1238,7 +1238,7 @@ arguments: the set of orthogonal polynomials, quadrature nodes,
 quadrature weights, and the user's function for evaluating the forward
 model (to be executed at the quadrature nodes).  Note that in the case
 of the discretized Stieltjes method discussed in Section
-ref{sec:orthogonal}, the nominator $\E{\bm{\Phi}_n^2}$ in
+ref{sec:orthogonal}, the nominator $\mathbb{E}\!\left[{\bm{\Phi}_n^2}\right]$ in
 (ref{eq_quadrature}) can be calculated more accurately using
 recurrence coefficients cite{gautschi_orthogonal_2004}.  Special
 numerical features like this can be added by including optional
@@ -1256,21 +1256,21 @@ I_K}$, resulting in an over-determined set of linear equations for the
 Fourier coefficients:
 
 !bt
-\begin{align}
+\begin{equation}
 label{eq_pcm}
-    \begin{bmatrix}
+\left[\begin{array}{ccc}
         \Phi_0(\bm{q}_0) & \cdots & \Phi_N(\bm{q}_0) \\
         \vdots &  & \vdots \\
         \Phi_0(\bm{q}_{K-1}) & \cdots & \Phi_N(\bm{q}_{K-1})
-    \end{bmatrix}
-    \begin{bmatrix}
-        c_0 \\ \vdots \\ c_N
-    \end{bmatrix} &=
-    \begin{bmatrix}
+\end{array}\right]
+\left[\begin{array}{c}
+c_0 \\ \vdots \\ c_N
+\end{array}\right] =
+\left[\begin{array}{c}
         f(\bm{q}_0) \\ \vdots \\
         f(\bm{q}_{K-1})
-    \end{bmatrix},
-\end{align}
+\end{array}\right],
+\end{equation}
 !et
 
 Unlike pseudo spectral projection, the locations of the collocation

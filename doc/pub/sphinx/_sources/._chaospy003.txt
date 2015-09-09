@@ -201,24 +201,19 @@ bisection increment:
 
 In either case, the bounds are updated according to
 
-.. math::
-        
-            (lo_{k+1},up_{k+1}) =
-            \begin{cases}
-                (lo_{k}, r_{k+1}) 
-                F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u
-                
-        
-
 .. _Eq:eq_bounds:
 
 .. math::
    :label: eq_bounds
-         
-                (r_{k+1}, up_{k}) 
+        
+        (lo_{k+1},up_{k+1}) =
+        \left\lbrace\begin{array}{ll}
+                (lo_{k}, r_{k+1}) &
+                F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u \\
+                (r_{k+1}, up_{k}) &
                 F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) < u
-            \end{cases}
-            
+        \end{array}\right.
+        
         
 
 The algorithm repeats the steps in :eq:`eq_newton`,

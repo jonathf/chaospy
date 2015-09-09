@@ -87,12 +87,6 @@ MathJax.Hub.Config({
  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-<!-- newcommands_keep.tex -->
-$$
-\newcommand{\E}[1]{\mathbb{E}\!\left[#1\right]}
-$$
-
-
 
 
     
@@ -319,17 +313,16 @@ $$
 In either case, the bounds are updated according to
 
 $$
-\begin{align}
-    (lo_{k+1},up_{k+1}) &=
-    \begin{cases}
+\begin{equation}
+(lo_{k+1},up_{k+1}) =
+\left\lbrace\begin{array}{ll}
         (lo_{k}, r_{k+1}) &
-        F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u
-        \\
+        F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) > u \\
         (r_{k+1}, up_{k}) &
         F_{Q^\prime_d}(r_{k+1}\mid q_0,\dots,q_{d-1}) < u
-    \end{cases}
-    \tag{9}
-\end{align}
+\end{array}\right.
+\tag{9}
+\end{equation}
 $$
 
 The algorithm repeats the steps in <a href="#mjx-eqn-7">(7)</a>,

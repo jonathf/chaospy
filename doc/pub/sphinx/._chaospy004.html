@@ -444,12 +444,13 @@ linear system is diagonal, which allows a closed-form expression for
 the Fourier coefficients. The expression involves high-dimensional
 integrals in <span class="math">\(L_{\boldsymbol{Q}}\)</span>. Numerical integration is then required,</p>
 <div class="math" id="equation-eq_quadrature">
-<span id="eq-eq-quadrature"></span><span class="eqno">(3)</span>\[         c_n = \frac{{\mathbb{E}\!\left[Y \boldsymbol{\Phi\right]}_n}}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}} =
-         \frac{1}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}} \idotsint p_{\boldsymbol{Q}}(\boldsymbol{q})
+<span id="eq-eq-quadrature"></span><span class="eqno">(3)</span>\[         c_n = \frac{\mathbb{E}\!\left[Y \boldsymbol{\Phi}_n\right]}{\mathbb{E}\!\left[\boldsymbol{\Phi}_n^2\right]} =
+         \frac{1}{\mathbb{E}\!\left[\boldsymbol{\Phi}_n^2\right]}\int\cdots\int
+         p_{\boldsymbol{Q}}(\boldsymbol{q})
          f(\boldsymbol{x}, t, \boldsymbol{q}) \boldsymbol{\Phi}_n(\boldsymbol{q}){\rm d}\boldsymbol{q}\]</div>
 <div class="math">
-\[\notag
-  \approx \frac{1}{{\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}}
+\[\nonumber
+  \approx \frac{1}{\mathbb{E}\!\left[\boldsymbol{\Phi}_n^2\right]}
   \sum_{k\in I_K} w_k p_{\boldsymbol{Q}}(\boldsymbol{q}_k)
   f(\boldsymbol{x}, t, \boldsymbol{q}_k)
   \boldsymbol{\Phi}_n(\boldsymbol{q}_k)
@@ -592,7 +593,7 @@ expansion, we use the <code class="docutils literal"><span class="pre">cp.fit_qu
 arguments: the set of orthogonal polynomials, quadrature nodes,
 quadrature weights, and the user&#8217;s function for evaluating the forward
 model (to be executed at the quadrature nodes).  Note that in the case
-of the discretized Stieltjes method discussed in the section <a class="reference internal" href="#sec-orthogonal"><span class="std std-ref">Orthogonal Polynomials Construction</span></a>, the nominator <span class="math">\({\mathbb{E}\!\left[\boldsymbol{\Phi\right]}_n^2}\)</span> in
+of the discretized Stieltjes method discussed in the section <a class="reference internal" href="#sec-orthogonal"><span class="std std-ref">Orthogonal Polynomials Construction</span></a>, the nominator <span class="math">\(\mathbb{E}\!\left[{\boldsymbol{\Phi}_n^2}\right]\)</span> in
 <a href="#equation-eq_quadrature">(3)</a> can be calculated more accurately using
 recurrence coefficients <a class="reference internal" href="._chaospy005.html#ref32" id="id35">[Ref32]</a>.  Special
 numerical features like this can be added by including optional
@@ -607,27 +608,18 @@ the model evaluations at a set of collocation nodes <span class="math">\(\{\bold
 I_K}\)</span>, resulting in an over-determined set of linear equations for the
 Fourier coefficients:</p>
 <div class="math" id="equation-eq_pcm">
-<span id="eq-eq-pcm"></span><span class="eqno">(4)</span>\[         \begin{bmatrix}
-             \Phi_0(\boldsymbol{q}_0)  \cdots  \Phi_N(\boldsymbol{q}_0)\]</div>
-<div class="math">
-\[\vdots    \vdots\]</div>
-<div class="math">
-\[    \Phi_0(\boldsymbol{q}_{K-1})  \cdots  \Phi_N(\boldsymbol{q}_{K-1})
-\end{bmatrix}
-\begin{bmatrix}
-    c_0\]</div>
-<div class="math">
-\[\vdots\]</div>
-<div class="math">
-\[c_N
-  \end{bmatrix} =
-  \begin{bmatrix}
-      f(\boldsymbol{q}_0)\]</div>
-<div class="math">
-\[\vdots\]</div>
-<div class="math">
-\[    f(\boldsymbol{q}_{K-1})
-\end{bmatrix},\]</div>
+<span id="eq-eq-pcm"></span><span class="eqno">(4)</span>\[\begin{split}     \left[\begin{array}{ccc}
+             \Phi_0(\boldsymbol{q}_0) &amp; \cdots &amp; \Phi_N(\boldsymbol{q}_0) \\
+             \vdots &amp;  &amp; \vdots \\
+             \Phi_0(\boldsymbol{q}_{K-1}) &amp; \cdots &amp; \Phi_N(\boldsymbol{q}_{K-1})
+     \end{array}\right]
+     \left[\begin{array}{c}
+     c_0 \\ \vdots \\ c_N
+     \end{array}\right] =
+     \left[\begin{array}{c}
+             f(\boldsymbol{q}_0) \\ \vdots \\
+             f(\boldsymbol{q}_{K-1})
+     \end{array}\right],\end{split}\]</div>
 <p>Unlike pseudo spectral projection, the locations of the collocation
 nodes are not required to follow any integration rule.  Hosder
 <a class="reference internal" href="._chaospy005.html#ref41" id="id36">[Ref41]</a> showed that the solution using Hammersley
