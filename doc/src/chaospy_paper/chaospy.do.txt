@@ -281,7 +281,7 @@ FIGURE: [fig/compare.pdf, width=400 frac=1.0]  The error in estimates of the mea
 label{sec:dist}
 
 ===== Rosenblatt Transformation =====
-label{sec:rosenblatt} %
+label{sec:rosenblatt}
 
 Numerical methods for uncertainty quantification need to generate
 pseudo-random realizations

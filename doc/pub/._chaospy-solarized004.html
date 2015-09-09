@@ -219,7 +219,7 @@ coefficients that are estimated using numerical integration.
 Unfortunately, the method is only applicable in the multivariate case
 if the components of \( p_{\bm Q} \) are stochastically independent.
 
-<h3 id="___sec10">Generalized Polynomial Chaos Expansions </h3>
+<h3 id="___sec11">Generalized Polynomial Chaos Expansions </h3>
 
 <p>
 One approach to model densities with stochastically dependent
@@ -259,7 +259,7 @@ has the Rosenblatt transformation underlying the computational
 framework, generalized polynomial chaos expansions are in fact
 available for all densities.
 
-<h3 id="___sec11">The Direct Multivariate Approach </h3>
+<h3 id="___sec12">The Direct Multivariate Approach </h3>
 
 <p>
 Given that both the density \( p_{\bm Q} \) has stochastically dependent
@@ -275,7 +275,7 @@ orthogonalization <a href="._chaospy-solarized005.html#gautschi_orthogonal_2004"
 of orthogonal polynomials for multivariate dependent densities
 directly.
 
-<h3 id="___sec12">Custom Polynomial Expansions </h3>
+<h3 id="___sec13">Custom Polynomial Expansions </h3>
 
 <p>
 In the most extreme cases, an automated numerical method is
@@ -414,7 +414,7 @@ formulation.  Dakota and Chaospy support both methodologies, while
 Turns only supports point collocation.  We shall now discuss the
 practical, generic implementation of these two methods in Chaospy.
 
-<h2 id="___sec14">Integration Methods </h2>
+<h2 id="___sec15">Integration Methods </h2>
 
 <p>
 The pseudo-spectral projection method is based on a standard least
@@ -644,7 +644,7 @@ It takes the same arguments as <code>cp.fit_quadrature</code>, except that
 quadrature weights are omitted, and optional arguments
 define the rule used to optimize <a href="#mjx-eqn-13">(13)</a>.
 
-<h2 id="___sec16">Model Evaluations </h2>
+<h2 id="___sec17">Model Evaluations </h2>
 
 <p>
 Irrespectively of the method used to estimate the coefficients \( c_k \),
@@ -682,7 +682,7 @@ MPI in a distributed way on a cluster using the Python module like
 values, but the feature is embeded into the code, potentially limiting
 the customization options of the parallelization.
 
-<h2 id="___sec17">Extension of polynomial expansions </h2>
+<h2 id="___sec18">Extension of polynomial expansions </h2>
 
 <p>
 There is much literature that extends on the theory of polynomial

@@ -7,7 +7,8 @@ Modelling Random Variables
 
 .. _sec:rosenblatt:
 
-=====  Rosenblatt Transformation  ===== %
+Rosenblatt Transformation
+-------------------------
 
 Numerical methods for uncertainty quantification need to generate
 pseudo-random realizations
