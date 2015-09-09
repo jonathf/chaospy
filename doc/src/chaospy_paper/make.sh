@@ -29,7 +29,7 @@ cp ${name}.pdf ${name}-4print.pdf
 
 style=solarized
 system doconce format html $name --html_style=solarized3 --html_output=${name}-${style} --pygments_html_style=perldoc
-system doconce split_html ${name}-${style}.html
+system doconce split_html ${name}-${style}.html --nav_button=text
 
 style=bootstrap
 system doconce format html $name --html_style=bootswatch_readable --html_output=${name}-${style} --html_code_style=inherit
