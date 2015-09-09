@@ -47,5 +47,5 @@ cp ${name}-*.html ._${name}*.html $dest
 cp fig/* $dest/fig
 rm -rf $dest/sphinx
 cp -r sphinx-rootdir/_build/html $dest/sphinx
-doconce format html index --html_style=bootstrap
+doconce format html index --html_style=bootstrap --html_bootstrap_navbar=off
 cp index.html $dest
