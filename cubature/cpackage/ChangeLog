@@ -1,0 +1,311 @@
+Thu Feb 28 23:13:23 EST 2013  stevenj@alum.mit.edu
+  * dylib rules
+
+    M ./Makefile +14
+
+Thu Feb 28 23:05:04 EST 2013  stevenj@alum.mit.edu
+  * tarball directory no longer includes date
+
+    M ./Makefile -1 +1
+
+Thu Feb 28 22:49:41 EST 2013  stevenj@alum.mit.edu
+  * dll tweak
+
+    M ./Makefile -2 +2
+
+Thu Feb 28 21:21:25 EST 2013  stevenj@alum.mit.edu
+  * makefile updates
+
+    M ./Makefile -1 +17
+
+Thu Feb 28 16:07:47 EST 2013  stevenj@alum.mit.edu
+  * whoops, fix convergence test for negative integrals
+
+    M ./converged.h -2 +2
+
+Wed Feb 27 17:33:07 EST 2013  stevenj@alum.mit.edu
+  * comment fix
+
+    M ./cubature.h -1 +1
+
+Wed Feb 27 17:14:17 EST 2013  stevenj@alum.mit.edu
+  * check for integrand error in 0-dimensional case
+
+    M ./hcubature.c -1 +1
+    M ./pcubature.c -1 +1
+
+Wed Feb 27 16:51:32 EST 2013  stevenj@alum.mit.edu
+  * since I'm changing the API, take advantage and change a few parameters to size_t for 64-bit systems (although it still seems unlikely that > 2^32 points will ever be used for integration)
+
+    M ./README -1 +1
+    M ./cubature.h -8 +8
+    M ./hcubature.c -17 +19
+    M ./pcubature.c -18 +22
+    M ./vwrapper.h -1 +1
+
+Wed Feb 27 14:29:34 EST 2013  stevenj@alum.mit.edu
+  * increase max clencurt rule (scientific applications can afford a few MB of lookup table, especially since we access it in a cache-friendly way)
+
+    M ./Makefile -1 +1
+    M ./README -8 +9
+
+Tue Feb 26 14:31:19 EST 2013  stevenj@alum.mit.edu
+  * whoops, fix bug in 1d hcubature introduced by recent re-indexing
+
+    M ./hcubature.c -16 +17
+
+Tue Feb 26 13:49:53 EST 2013  stevenj@alum.mit.edu
+  * rename adapt_integrate -> cubature
+
+    M ./README -14 +14
+    M ./cubature.h -34 +32
+    M ./hcubature.c -24 +24
+    M ./pcubature.c -20 +20
+    M ./test.c -5 +5
+
+Tue Feb 26 13:48:04 EST 2013  stevenj@alum.mit.edu
+  * more updates for release
+
+    M ./Makefile -3 +3
+    M ./README -4 +16
+    M ./clencurt_gen.c +26
+    M ./cubature.h -1 +1
+    M ./hcubature.c -1 +1
+    M ./pcubature.c +20
+    M ./test.c -2 +2
+    M ./vwrapper.h -1 +1
+
+Tue Feb 26 13:17:23 EST 2013  stevenj@alum.mit.edu
+  * converged.c -> converged.h
+
+     ./converged.c -> ./converged.h
+    M ./hcubature.c -1 +1
+    M ./pcubature.c -1 +1
+
+Tue Feb 26 13:14:46 EST 2013  stevenj@alum.mit.edu
+  * make hcubature and pcubature use the same vectorized format (transpose the former)
+
+    M ./Makefile -2 +2
+    M ./README -3 +3
+    M ./hcubature.c -47 +25
+    M ./pcubature.c -16 +1
+    A ./vwrapper.h
+
+Tue Feb 26 12:35:47 EST 2013  stevenj@alum.mit.edu
+  * updated docs
+
+    M ./Makefile -4 +4
+    M ./README -45 +105
+    M ./hcubature.c +1
+    M ./pcubature.c +1
+
+Tue Feb 26 10:40:21 EST 2013  stevenj@alum.mit.edu
+  * rename adapt_integrate -> hadapt_integrate, support different error norms for vector integrands, support user termination of integration from the integrand function
+
+     ./cubature.c -> ./hcubature.c
+    M ./Makefile -8 +5
+    A ./converged.c
+    M ./cubature.h -28 +46
+    M ./hcubature.c -32 +45
+    M ./pcubature.c -47 +56
+    M ./test.c -7 +8
+
+Wed Feb 22 17:43:43 EST 2012  stevenj@alum.mit.edu
+  * whoops, handle > MAXDIM integrands
+
+    M ./pcubature.c -3 +6
+
+Wed Feb 22 16:07:59 EST 2012  stevenj@alum.mit.edu
+  * link -lm in pcubature test
+
+    M ./Makefile -2 +4
+
+Wed Feb 22 16:04:24 EST 2012  stevenj@alum.mit.edu
+  * allow pcubature_v_buf to take m[] as argument
+
+    M ./cubature.h +1
+    M ./pcubature.c -11 +15
+
+Wed Feb 22 15:59:01 EST 2012  stevenj@alum.mit.edu
+  * bug fix in pcubature
+
+    M ./pcubature.c -1 +1
+
+Mon Feb 13 13:12:01 EST 2012  stevenj@alum.mit.edu
+  * bug fixes in pcubature, now seems to work in >1d
+
+    M ./pcubature.c -6 +6
+
+Sun Feb 12 21:57:31 EST 2012  stevenj@alum.mit.edu
+  * initial stab at C-C pcubature (not working in > 1d yet)
+
+    M ./Makefile -2 +16
+    A ./clencurt_gen.c
+    M ./cubature.h +18
+    A ./pcubature.c
+    M ./test.c -1 +3
+
+Sun Oct 31 19:35:41 EDT 2010  stevenj@alum.mit.edu
+  * one byte per j (4 bits is only enough for j < 16, not 32, duh, and that's too small); another attempt at an error estimate (still not right)
+
+    M ./scubature.c -156 +154
+
+Sun Oct 31 14:36:20 EDT 2010  stevenj@alum.mit.edu
+  * turn off VERBOSE, don't evaluate endpoints in singular case
+
+    M ./test.c -4 +10
+
+Sun Oct 31 14:35:29 EDT 2010  stevenj@alum.mit.edu
+  * bug fixes in Jp_set and evaluation count
+
+    M ./scubature.c -10 +9
+
+Sun Oct 31 13:54:48 EDT 2010  stevenj@alum.mit.edu
+  * eval missing J -- tentatively looking good in > 1d!
+
+    M ./scubature.c -1 +4
+
+Sun Oct 31 13:50:32 EDT 2010  stevenj@alum.mit.edu
+  * some bugfixes, > 1d sort of works, but is not yet doing all the J's it should
+
+    M ./scubature.c -5 +5
+
+Sun Oct 31 13:44:57 EDT 2010  stevenj@alum.mit.edu
+  * various bugfixes in scubature; 1d case now seems to work, > 1d still untested
+
+    M ./scubature.c -12 +30
+    M ./test.c -1 +9
+
+Sun Oct 31 12:27:03 EDT 2010  stevenj@alum.mit.edu
+  * separate test program from cubature.c, add scubature API (untested)
+
+    M ./Makefile -3 +11
+    M ./cubature.c -268
+    M ./cubature.h +7
+    M ./scubature.c -36 +108
+    A ./test.c
+
+Sun Oct 31 11:40:53 EDT 2010  stevenj@alum.mit.edu
+  * always set N = |M|_\infty
+
+    M ./scubature.c -7 +7
+
+Sun Oct 31 11:38:29 EDT 2010  stevenj@alum.mit.edu
+  * make redblack.c a header file so users won't try to compile it alone
+
+     ./redblack.c -> ./redblack.h
+    M ./scubature.c -1 +1
+
+Sun Oct 31 03:27:38 EDT 2010  stevenj@alum.mit.edu
+  * first stab at sparse-grid cubature (not yet finishedd, lonly 1d C-C part is tested)
+
+    A ./redblack.c
+    A ./scubature.c
+
+Mon Oct 18 00:35:54 EDT 2010  stevenj@alum.mit.edu
+  * updated TODO etc.
+
+    M ./cubature.c -6 +6
+
+Sun Oct 17 22:10:01 EDT 2010  stevenj@alum.mit.edu
+  * make sure it compiles in pedantic ANSI mode
+
+    M ./Makefile -1 +1
+    M ./cubature.c -6 +10
+
+Sun Oct 17 20:58:49 EDT 2010  stevenj@alum.mit.edu
+  * more parallelism in adapt_integrate_v, using an algorithm by Gladstone
+
+    M ./README -1 +19
+    M ./cubature.c -88 +152
+
+Sun Oct 17 01:42:50 EDT 2010  stevenj@alum.mit.edu
+  * spelling
+
+    M ./cubature.c -1 +1
+
+Sat Oct 16 22:24:45 EDT 2010  stevenj@alum.mit.edu
+  * added ChangeLog to dist
+
+    M ./Makefile -2 +7
+
+Sat Oct 16 22:15:22 EDT 2010  stevenj@alum.mit.edu
+  * use SUCCESS/FAILURE return codes consistently
+
+    M ./cubature.c -42 +42
+
+Sat Oct 16 21:59:16 EDT 2010  stevenj@alum.mit.edu
+  * check for more malloc failures
+
+    M ./cubature.c -19 +22
+
+Sat Oct 16 21:50:10 EDT 2010  stevenj@alum.mit.edu
+  * expose a bit more parallelism by evaluating two regions at once (thanks to Alejandro Rodriguez for the suggestion); also, more extensive checking for out-of-memory situations
+
+    M ./cubature.c -177 +261
+
+Tue Oct 12 01:05:33 EDT 2010  stevenj@alum.mit.edu
+  * correct error return val for 0-dimensional integral with multiple integrands
+
+    M ./cubature.c -3 +3
+
+Mon Oct 11 22:03:12 EDT 2010  stevenj@alum.mit.edu
+  * documentation of new feature, acknowledgements
+
+    M ./README +37
+    M ./cubature.c +8
+
+Mon Oct 11 21:50:53 EDT 2010  stevenj@alum.mit.edu
+  * whoops, correct error estimation in 1d case; now matches old cod
+
+    M ./cubature.c -5 +15
+
+Mon Oct 11 21:30:07 EDT 2010  stevenj@alum.mit.edu
+  * bug fix in new vectorized code; now gives identical results to before
+
+    M ./cubature.c -6 +6
+
+Mon Oct 11 19:02:22 EDT 2010  stevenj@alum.mit.edu
+  * clean up where pts/vals are allocated
+
+    M ./cubature.c -49 +57
+
+Mon Oct 11 18:45:36 EDT 2010  stevenj@alum.mit.edu
+  * first stab at vectorized version (thanks to Dmitry Turbiner for hacking an initial prototype)
+
+    M ./Makefile -1 +3
+    M ./cubature.c -185 +225
+    M ./cubature.h +13
+
+Fri Oct  2 19:35:53 EDT 2009  stevenj@alum.mit.edu
+  * use .tgz, not .tar.gz
+
+    M ./Makefile -1 +1
+
+Fri Oct  2 19:25:53 EDT 2009  stevenj@alum.mit.edu
+  * tweak
+
+    M ./Makefile -1 +1
+
+Fri Oct  2 19:25:26 EDT 2009  stevenj@alum.mit.edu
+  * simple Makefile
+
+    A ./Makefile
+
+Fri Oct  2 19:19:35 EDT 2009  stevenj@alum.mit.edu
+  * document test program in README
+
+    M ./README +43
+
+Fri Oct  2 19:07:34 EDT 2009  stevenj@alum.mit.edu
+  * added web link
+
+    M ./README -4 +9
+
+Fri Oct  2 19:05:01 EDT 2009  stevenj@alum.mit.edu
+  * initial darcs import
+
+    A ./COPYING
+    A ./README
+    A ./cubature.c
+    A ./cubature.h
