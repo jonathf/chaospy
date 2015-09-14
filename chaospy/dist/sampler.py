@@ -95,7 +95,7 @@ antithetic : array_like, optional
         X = chebyshev_nested(dim, order)
     elif rule=="G":
         X = _gw(order-1,dist)[0]
-        trans = lambda x:x
+        trans = lambda x, verbose:x
     elif rule=="K":
         X = korobov(dim, order)
     elif rule=="R":
@@ -609,4 +609,3 @@ if __name__=="__main__":
     import __init__ as cp
     import doctest
     doctest.testmod()
-
