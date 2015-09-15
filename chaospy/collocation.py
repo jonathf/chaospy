@@ -914,6 +914,8 @@ Examples
         elif rule=="OMP":
             solver = lm.OrthogonalMatchingPursuit(**kws)
 
+        uhat = solver.fit(Q, u).coef_
+
     u = u.reshape(u.shape[0], *shape)
 
     R = po.sum((P*uhat.T), -1)
