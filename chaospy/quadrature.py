@@ -125,7 +125,9 @@ samplegen   Sample generator
                 func = lambda m: gauss_legendre(m, lo, up,
                         composite)
             elif rule=="J":
-                func = lambda m: leja(m, domain)
+                foo = [lambda m: leja(m, domain[i]) \
+                        for i in range(dim)]
+                func = rule_generator(*foo)
             elif rule=="Z":
                 func = rule_generator(*[gk16]*dim)
             elif rule=="P":
@@ -151,15 +153,15 @@ samplegen   Sample generator
                 x, w = gk16(order)
 
         if isdist:
-            w *= domain.pdf(x).flatten()
+
             W = np.sum(w)
 
             eps = 1e-5
             while (W-np.sum(w[w>eps]))>1e-15:
                 eps *= .1
 
-            valid = abs(w)>eps
-            x, w = x[:,valid], w[valid]
+            valid = w>eps
+            x, w = x[:, valid], w[valid]
             w /= np.sum(w)
 
     else:
