@@ -1,6 +1,6 @@
 # #if FORMAT == "sphinx"
 # Sphinx title cannot be longer than 63 chars...
-TITLE: Chaospy Documentation
+TITLE: Chaospy Introductory Paper
 # #else
 TITLE: Chaospy: An Open Source Tool for Designing Methods of Uncertainty Quantification
 # #endif
@@ -25,8 +25,8 @@ framework for computing Rosenblatt transformations and a new approach
 for creating polynomial chaos expansions with dependent stochastic
 variables.
 
-_Note:_ This paper is accepted in Journal of Computational Science and
-will be published as an Open Access paper.
+_Note:_ This paper is accepted in *Journal of Computational Science*, 2015,
+as an Open Access paper, "http://dx.doi.org/10.1016/j.jocs.2015.08.008".
 
 # #ifdef KEYWORDS
 === Keywords ===
