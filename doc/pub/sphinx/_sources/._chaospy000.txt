@@ -26,6 +26,6 @@ framework for computing Rosenblatt transformations and a new approach
 for creating polynomial chaos expansions with dependent stochastic
 variables.
 
-**Note:** This paper is accepted in *Journal of Computational Science*, 2015,
-as an Open Access paper, "http://dx.doi.org/10.1016/j.jocs.2015.08.008".
+**Note:** This document is published in *Journal of Computational Science*, 2015,
+as an Open Access paper, `<http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.
 
