@@ -1,8 +1,8 @@
 
 .. Master file automatically created by doconce sphinx_dir
 
-Chaospy Documentation
-=====================
+Chaospy Introductory Paper
+==========================
 
 Contents:
 
@@ -15,11 +15,3 @@ Contents:
    ._chaospy003
    ._chaospy004
    ._chaospy005
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
