@@ -130,7 +130,6 @@ samplegen   Sample generator
                 func = lambda m: gk(m, domain)
             elif rule=="P":
                 func = lambda m: gp(m, domain)
-
             order = np.ones(dim, dtype=int)*order
             m = np.min(order)
             skew = [o-m for o in order]
