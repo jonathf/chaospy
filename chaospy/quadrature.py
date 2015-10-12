@@ -19,7 +19,7 @@ import bertran as ber
 import poly as po
 from utils import combine, lazy_eval
 import dist as di
-from genz_keister import gk16
+from genz_keister import gk
 from gauss_patterson import gp
 
 
@@ -129,7 +129,7 @@ samplegen   Sample generator
                         for i in range(dim)]
                 func = rule_generator(*foo)
             elif rule=="Z":
-                func = rule_generator(*[gk16]*dim)
+                func = rule_generator(*[gk]*dim)
             elif rule=="P":
                 foo = [lambda m: gp(m, lo[i], up[i]) \
                         for i in range(dim)]
@@ -156,9 +156,9 @@ samplegen   Sample generator
 
             elif rule=="J":
                 x, w = leja(order, domain)
+
             elif rule=="Z":
-                x, w = gk16(order)
-                foo = gk16
+                x, w = gk(order, domain)
 
             if dim == 1:
                 x,w = foo(order)

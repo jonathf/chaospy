@@ -10,6 +10,8 @@ This code is distributed under the GNU LGPL license.
 """
 
 import numpy as np
+from scipy.special import ndtr
+from utils import combine
 
 def gk16(n):
     """
@@ -436,8 +438,12 @@ W : np.ndarray
       w[33] =   9.6599466278563243E-15;
       w[34] =   1.8684014894510604E-18;
 
-    w *= np.e**(x*x)
+    w /= np.sum(w)
+    x *= np.sqrt(2)
+
     return x,w
+
+
 
 def gk18 ( n ):
     """
@@ -557,7 +563,7 @@ Parameters:
         x[ 6] =  -1.2247448713915889E+00;
         x[ 7] =  -8.7004089535290285E-01;
         x[ 8] =  -5.2403354748695763E-01;
-        x[9] =   0.0000000000000000E+00;
+        x[ 9] =   0.0000000000000000E+00;
         x[10] =   5.2403354748695763E-01;
         x[11] =   8.7004089535290285E-01;
         x[12] =   1.2247448713915889E+00;
@@ -577,7 +583,7 @@ Parameters:
         w[ 6] =   1.1360729895748269E-01;
         w[ 7] =   1.0838861955003017E-01;
         w[ 8] =   3.6924643368920851E-01;
-        w[9] =   5.3788160700510168E-01;
+        w[ 9] =   5.3788160700510168E-01;
         w[10] =   3.6924643368920851E-01;
         w[11] =   1.0838861955003017E-01;
         w[12] =   1.1360729895748269E-01;
@@ -637,7 +643,7 @@ Parameters:
         w[ 6] = 0.295907520230744049E-06;
         w[ 7] = 0.330975870979203419E-05;
         w[ 8] = 0.32265185983739747E-04;
-        w[9] = 0.234940366465975222E-03;
+        w[ 9] = 0.234940366465975222E-03;
         w[10] = 0.985827582996483824E-03;
         w[11] = 0.176802225818295443E-02;
         w[12] = 0.43334988122723492E-02;
@@ -666,7 +672,9 @@ Parameters:
         w[35] = 0.187781893143728947E-16;
         w[36] = 0.19030350940130498E-20;
 
-    w *= np.e**(x*x)
+    w /= np.sum(w)
+    x *= np.sqrt(2)
+
     return x,w
 
 
@@ -903,7 +911,9 @@ Parameters:
         w[39] =   0.860427172512207236E-19;
         w[40] =   0.664195893812757801E-23;
 
-    w *= np.e**(x*x)
+    w /= np.sum(w)
+    x *= np.sqrt(2)
+
     return x,w
 
 
@@ -1145,6 +1155,38 @@ Parameters:
         w[41] =   0.87544909871323873E-23;
         w[42] =   0.546191947478318097E-37;
 
-    w *= np.e**(x*x)
+    w /= np.sum(w)
+    x *= np.sqrt(2)
+
     return x,w
+
+
+def gk(order, dist, rule=24):
+
+    assert isinstance(rule, int)
+
+    if len(dist) > 1:
+
+        if isinstance(order, int):
+            xw = [gk(order, d, rule) for d in dist]
+        else:
+            xw = [gk(order[i], dist[i], rule)
+                    for i in xrange(len(dist))]
+
+        x = [_[0][0] for _ in xw]
+        x = combine(x).T
+        w = [_[1] for _ in xw]
+        w = np.prod(combine(w), -1)
+
+        return x, w
+
+    foo = eval("gk"+str(rule))
+    x,w = foo(order)
+    x = dist.inv(ndtr(x))
+    x = x.reshape(1, x.size)
+
+    return x, w
+
+
+
 
