@@ -125,15 +125,11 @@ samplegen   Sample generator
                 func = lambda m: gauss_legendre(m, lo, up,
                         composite)
             elif rule=="J":
-                foo = [lambda m: leja(m, domain[i]) \
-                        for i in range(dim)]
-                func = rule_generator(*foo)
+                func = lambda m: leja(m, domain)
             elif rule=="Z":
-                func = rule_generator(*[gk]*dim)
+                func = lambda m: gk(m, domain)
             elif rule=="P":
-                foo = [lambda m: gp(m, lo[i], up[i]) \
-                        for i in range(dim)]
-                func = rule_generator(*foo)
+                func = lambda m: gp(m, domain)
 
             order = np.ones(dim, dtype=int)*order
             m = np.min(order)
