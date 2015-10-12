@@ -139,18 +139,33 @@ samplegen   Sample generator
             m = np.min(order)
             skew = [o-m for o in order]
             x, w = sparse_grid(func, m, dim, skew=skew)
+
         else:
             if rule=="C":
                 if growth is None:
                     growth = False
                 x, w = clenshaw_curtis(order, lo, up, growth=growth,
                         composite=composite)
+                # foo = [lambda o: clenshaw_curtis(o[i], lo[i], up[i],
+                #     growth=growth, composite=composite) for i in xrange(dim)]
+
             elif rule=="E":
                 x, w = gauss_legendre(order, lo, up, composite)
+                # foo = [lambda o: gauss_legendre(o[i], lo[i], up[i],
+                #     composite) for i in xrange(dim)]
+
             elif rule=="J":
                 x, w = leja(order, domain)
             elif rule=="Z":
                 x, w = gk16(order)
+                foo = gk16
+
+            if dim == 1:
+                x,w = foo(order)
+                x = x.reshape(1, x.size)
+
+        assert len(w) == x.shape[1]
+        assert len(x.shape) == 2
 
         if isdist:
 
@@ -378,6 +393,20 @@ def leja(order, dist):
 After paper by Narayan and Jakeman
     """
 
+    if len(dist) > 1:
+        if isinstance(order, int):
+            xw = [leja(order, d) for d in dist]
+        else:
+            xw = [leja(order[i], dist[i]) for i in xrange(len(dist))]
+
+        x = [_[0][0] for _ in xw]
+        w = [_[1] for _ in xw]
+        x = combine(x).T
+        w = combine(w)
+        w = np.prod(w, -1)
+
+        return x, w
+
     lo, up = dist.range()
     X = [lo, dist.mom(1), up]
     for o in xrange(order):
@@ -390,8 +419,9 @@ After paper by Narayan and Jakeman
         X.insert(index+1, opts[index])
 
     X = np.asfarray(X).flatten()[1:-1]
-
     W = weightgen(X, dist)
+    X = X.reshape(1, X.size)
+
     return np.array(X), np.array(W)
 
 
