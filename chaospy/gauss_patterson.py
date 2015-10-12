@@ -68,7 +68,7 @@ W : np.ndarray
         if isinstance(n, int):
             xw = [gp(n, d) for d in dist]
         else:
-            xw = [gp(n[i], dist[i]) for i in dist]
+            xw = [gp(n[i], dist[i]) for i in xrange(len(dist))]
 
         x = [_[0][0] for _ in xw]
         w = [_[1] for _ in xw]
