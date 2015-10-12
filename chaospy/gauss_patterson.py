@@ -10,8 +10,9 @@ This code is distributed under the GNU LGPL license.
 """
 
 import numpy as np
+from utils import combine
 
-def gp(n, lo, up):
+def gp(n, dist):
     """
 Generate sets abscissas and weights for Gauss-Patterson quadrature.
 
@@ -61,6 +62,21 @@ W : np.ndarray
     Weights
 
     """
+
+    if len(dist) > 1:
+
+        if isinstance(n, int):
+            xw = [gp(n, d) for d in dist]
+        else:
+            xw = [gp(n[i], dist[i]) for i in dist]
+
+        x = [_[0][0] for _ in xw]
+        w = [_[1] for _ in xw]
+        x = combine(x).T
+        w = np.prod(combine(w), -1)
+
+        return x, w
+
     n = [1,3,7,15,31,63,127,255,511][n]
     x = np.zeros(n)
     w = np.zeros(n)
@@ -2127,6 +2143,11 @@ W : np.ndarray
       w[509] = 0.345456507169149134898-05
       w[510] = 0.945715933950007048827-06
 
+    lo, up = dist.range()
+
     x = .5*(x*(up-lo)+up+lo)
-    w *= .5*(up-lo)
+    w *= dist.pdf(x)    
+    w /= np.sum(w)
+    x = x.reshape(1, x.size)
+
     return x, w
