@@ -893,7 +893,7 @@ def momgen(order, domain, acc=100, sparse=False, rule="C",
 
     _mom = lazy_eval(_mom, tuple)
 
-    def mom(self, K, **kws):
+    def mom(K, **kws):
         out = np.array([_mom(k) for k in K.T])
         return out
     return mom

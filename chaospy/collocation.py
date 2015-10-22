@@ -24,7 +24,7 @@ except:
 
 import poly as po
 import quadrature as qu
-from orthogonal import orth_select
+import orthogonal
 from dist import samplegen
 from utils import lazy_eval
 
@@ -140,7 +140,7 @@ samplegen       Generator for sampling schemes
         else:
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
-        orth = orth_select(orth, **kws)
+        orth = orthogonal.orth_select(orth, **kws)
     if not isinstance(orth, po.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
@@ -660,17 +660,21 @@ cross : bool
 
     if order==0:
         L = np.eye(l)
+
     elif order==1:
         L = np.zeros((l-1,l))
         L[:,:-1] -= np.eye(l-1)
         L[:,1:] += np.eye(l-1)
+
     elif order==2:
         L = np.zeros((l-2,l))
         L[:,:-2] += np.eye(l-2)
         L[:,1:-1] -= 2*np.eye(l-2)
         L[:,2:] += np.eye(l-2)
+
     elif order is None:
         L = np.zeros(1)
+
     else:
         L = np.array(order)
         assert L.shape[-1]==l or L.shape in ((), (1,))
@@ -689,11 +693,11 @@ cross : bool
             res2 = np.sum((np.dot(A,x)-b)**2)
             K = np.dot(A, A_)
             V = m*res2/np.trace(np.eye(m)-K)**2
-            mu2 = np.trace(np.dot(K,K))/m
+            mu2 = np.sum(K*K.T)/m
 
             return (gamma + (1-gamma)*mu2)*V
 
-        alphas = 10.**np.arange(-50,30)
+        alphas = 10.**np.arange(-50, 31, 5)
         rgcv = map(rgcv_error, alphas)
         alpha = alphas[np.argmin(rgcv)]
 
@@ -828,9 +832,9 @@ uhat : np.ndarray
 Examples
 --------
 >>> P = cp.Poly([1, x, y])
->>> x = [[-1,-1,1,1], [-1,1,-1,1]]
+>>> s = [[-1,-1,1,1], [-1,1,-1,1]]
 >>> u = [0,1,1,2]
->>> print fit_regression(P, x, u)
+>>> print fit_regression(P, s, u)
 0.5q1+0.5q0+1.0
 
     """
@@ -842,7 +846,7 @@ Examples
 
     Q = P(*x).T
     shape = u.shape[1:]
-    u = u.reshape(u.shape[0], np.prod(u.shape[1:]))
+    u = u.reshape(u.shape[0], int(np.prod(u.shape[1:])))
 
     rule = rule.upper()
 
@@ -883,7 +887,7 @@ Examples
             kws["fit_intercept"] = kws.get("fit_intercept", False)
             solver = lm.ElasticNetCV(**kws)
 
-        elif rule=="LA":
+        elif rule=="LA": # success
             kws["fit_intercept"] = kws.get("fit_intercept", False)
             solver = lm.Lars(**kws)
 
