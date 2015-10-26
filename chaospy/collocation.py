@@ -617,7 +617,7 @@ def lstsq_cv(A, b, order=1):
 
 
 
-def rlstsq(A, b, order=1, alpha=None, cross=False):
+def rlstsq(A, b, order=1, alpha=None, cross=False, retall=False):
     """
 Least Squares Minimization using Tikhonov regularization, and
 robust generalized cross-validation.
@@ -639,6 +639,8 @@ alpha : float, optional
     validation.
 cross : bool
     Use cross validation
+retall : bool
+    If True, return also estimated alpha-value
     """
 
     A = np.array(A)
@@ -703,6 +705,8 @@ cross : bool
 
     out = la.inv(np.dot(A.T,A) + alpha*np.dot(L.T, L))
     out = np.dot(out, np.dot(A.T, b))
+    if retall:
+        return out, alpha
     return out
 
 
@@ -855,8 +859,8 @@ Examples
         uhat = la.lstsq(Q, u)[0]
 
     elif rule=="T":
-        uhat = rlstsq(Q, u, kws.get("order",0),
-                kws.get("alpha", None), False)
+        uhat, alphas = rlstsq(Q, u, kws.get("order",0),
+                kws.get("alpha", None), False, True)
 
     elif rule=="TC":
         uhat = rlstsq(Q, u, kws.get("order",0),
@@ -928,6 +932,8 @@ Examples
     if retall==1:
         return R, uhat
     elif retall==2:
+        if rule=="T":
+            return R, uhat, Q, alphas
         return R, uhat, Q
     return R
 

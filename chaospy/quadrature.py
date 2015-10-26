@@ -156,7 +156,6 @@ samplegen   Sample generator
                 x, w = gk(order, domain)
 
             if dim == 1:
-                x,w = foo(order)
                 x = x.reshape(1, x.size)
 
         assert len(w) == x.shape[1]
@@ -240,23 +239,6 @@ Multivariate
             x, w = vals.real, vecs[0, :]**2
             indices = np.argsort(x)
             x, w = x[indices], w[indices]
-
-            # p = P[-1][d]
-            # dp = po.differential(p, po.basis(1,1,dim)[d])
-            #
-            # x = x - p(x)/dp(x)
-            # x = x - p(x)/dp(x) 
-            # x = x - p(x)/dp(x)
-            #
-            # z = np.arange(dim)
-            # arg = np.array([k*(z == d) for k in range(2*o[d]-3)])
-            # b_ = dist.mom(arg.T)
-            #
-            # X_, r = np.meshgrid(x, np.arange(2*o[d]-3))
-            # X_ = X_**r
-            # w = np.linalg.lstsq(X_, b_)[0].flatten()
-            # print "w", w.shape
-            # print np.linalg.lstsq(X_, b_)[0]
 
         else:
             x, w = np.array([a[d, 0]]), np.array([1.])
