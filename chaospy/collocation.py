@@ -11,6 +11,7 @@ rlstsq          Robust least squares solver
 
 import numpy as np
 from scipy import linalg as la
+from scipy import optimize as op
 
 try:
     from sklearn import linear_model as lm
@@ -686,6 +687,7 @@ retall : bool
         gamma = 0.1
 
         def rgcv_error(alpha):
+            if alpha<=0: return np.inf
             A_ = np.dot(A.T,A)+alpha*(np.dot(L.T,L))
             try:
                 A_ = np.dot(la.inv(A_), A.T)
@@ -699,9 +701,7 @@ retall : bool
 
             return (gamma + (1-gamma)*mu2)*V
 
-        alphas = 10.**np.arange(-50, 31, 5)
-        rgcv = map(rgcv_error, alphas)
-        alpha = alphas[np.argmin(rgcv)]
+        alpha = op.fmin(rgcv_error, 1, disp=0)
 
     out = la.inv(np.dot(A.T,A) + alpha*np.dot(L.T, L))
     out = np.dot(out, np.dot(A.T, b))
