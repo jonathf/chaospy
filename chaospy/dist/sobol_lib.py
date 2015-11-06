@@ -139,7 +139,7 @@ quasi : np.ndarray
     v[0,0:maxcol] = 1
 
     #Check parameters.
-    assert 0<dim_num<=dim_max, "dim_num in [1,40]"
+    assert 0<dim_num<dim_max, "dim_num in [1,40]"
 
     #Initialize the remaining rows of V.
     for i in xrange(1 , dim_num):

@@ -292,13 +292,6 @@ rule : str
     "H"     Halton              yes
     "M"     Hammersley          yes
 
-    Grided sampling schemes
-    Key     Name                Nested
-    ----    ----------------    ------
-    "C"     Chebyshev nodes     maybe
-    "G"     Gaussian quadrature no
-    "E"     Gauss-Legendre      no
-
 antithetic : bool, array_like
     If provided, will be used to setup antithetic variables.
     If array, defines the axes to mirror.

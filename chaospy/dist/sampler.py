@@ -13,7 +13,7 @@ from sobol_lib import sobol
 
 from chaospy.utils import combine
 from chaospy import bertran as be
-from chaospy.quadrature import golub_welsch as _gw
+from chaospy.quadrature import golub_welsch as _gw, gauss_legendre
 
 
 def samplegen(order, domain, rule="S", antithetic=None,
@@ -46,7 +46,7 @@ rule : str
     "R"     (Pseudo-)Random     no
     "RG"    Regular grid        no
     "NG"    Nested grid         yes
-    "LH"    Latin hypercube     no
+    "L"     Latin hypercube     no
     "S"     Sobol               yes
     "H"     Halton              yes
     "M"     Hammersley          yes
@@ -104,7 +104,7 @@ antithetic : array_like, optional
         X = regular_grid(dim, order)
     elif rule=="NG":
         X = regular_grid_nested(dim, order)
-    elif rule=="LH":
+    elif rule=="L":
         X = latin_hypercube(dim, order)
     elif rule=="S":
         X = sobol(dim, order)
