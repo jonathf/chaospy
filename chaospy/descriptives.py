@@ -666,6 +666,83 @@ Examples
     out = out.reshape(q.shape + shape)
     return out
 
+def QoI_Dist(poly, dist, sample=1e4, **kws):
+    """
+TODO: write the documentation, find a good name 
+
+Percentile function
+
+Parameters
+----------
+poly : Poly
+    Polynomial of interest.
+q : array_like
+    positions where percentiles are taken. Must be a number or an
+    array, where all values are on the interval `[0,100]`.
+dist : Dist
+    Defines the space where percentile is taken.
+sample : int
+    Number of samples used in estimation.
+**kws : optional
+    Extra keywords passed to dist.sample.
+
+Returns
+-------
+Q : ndarray
+    Percentiles of `poly` with `Q.shape=poly.shape+q.shape`.
+
+Examples
+--------
+>>> cp.seed(1000)
+>>> x,y = cp.variable(2)
+>>> poly = cp.Poly([x, x*y])
+>>> Z = cp.J(cp.Uniform(3,6), cp.Normal())
+>>> print cp.Perc(poly, [0, 50, 100], Z)
+[[  3.         -45.        ]
+ [  4.5080777   -0.05862173]
+ [  6.          45.        ]]
+    """
+    #sample from the input dist
+    samples = dist.sample(sample)
+    #samples.sort()
+    print "input dist: " + str(dist.range())
+    
+    #construct the kernel density estimator
+    dataset = poly[-1](samples)
+    kernel = gaussian_kde(dataset, bw_method="scott")
+    print "min: " + str(np.min(samples))
+    print "max: " + str(np.max(samples))
+    
+    #construct the QoI distribution
+    def eval_pdf(x, kernel):
+        y = kernel(x)
+        return y
+    
+    def eval_cdf(x, kernel):
+        #pdf_vals = kernel(x)
+        #y = np.cumsum(pdf_vals)
+        #return y
+        y = np.zeros(x.shape)
+        for i in range(0, len(x)):
+            yy = [kernel.integrate_box_1d(0, xx) for xx in x[i]]
+            y[i] = yy
+            # 
+        return y
+        #y = kernel(x)
+        
+    
+    def eval_bnd():
+        #return (np.min(dataset)-np.min(dataset)*.01, np.max(dataset)+np.max(dataset)*.01)
+        return (np.min(dataset), np.max(dataset))
+    
+    QoIDist = di.construct(
+        cdf=lambda self,x: eval_cdf(x, kernel),
+        bnd=lambda self: eval_bnd(),
+        pdf=lambda self,x: eval_pdf(x, kernel)
+    )
+    qoi_dist = QoIDist()
+    
+    return qoi_dist
 
 def E_cond(poly, freeze, dist, **kws):
 
@@ -979,7 +1056,7 @@ import numpy as np
 import poly as po
 import dist as di
 import quadrature as qu
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, gaussian_kde
 
 import collocation as co
 import orthogonal as ort
