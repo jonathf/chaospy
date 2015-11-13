@@ -322,7 +322,7 @@ distribution or polynomial.
 
 Parameters
 ----------
-P : Poly, Dist
+poly : Poly, Dist
     Input to take skewness on.
 dist : Dist
     Defines the space the skewness is taken on.
