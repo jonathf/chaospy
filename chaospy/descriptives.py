@@ -707,42 +707,54 @@ Examples
     #samples.sort()
     print "input dist: " + str(dist.range())
     
-    #construct the kernel density estimator
-    dataset = poly[-1](samples)
-    kernel = gaussian_kde(dataset, bw_method="scott")
-    print "min: " + str(np.min(samples))
-    print "max: " + str(np.max(samples))
-    
-    #construct the QoI distribution
-    def eval_pdf(x, kernel):
-        y = kernel(x)
-        return y
-    
-    def eval_cdf(x, kernel):
-        #pdf_vals = kernel(x)
-        #y = np.cumsum(pdf_vals)
-        #return y
-        y = np.zeros(x.shape)
-        for i in range(0, len(x)):
-            yy = [kernel.integrate_box_1d(0, xx) for xx in x[i]]
-            y[i] = yy
-            # 
-        return y
-        #y = kernel(x)
+    qoi_dists = []
+    numErrors = 0
+    for i in range(0, len(poly)):
+        #construct the kernel density estimator
+        dataset = poly[i](samples)
+        try:
+            kernel = gaussian_kde(dataset, bw_method="scott")
+            #print "min: " + str(np.min(samples))
+            #print "max: " + str(np.max(samples))
+            
+            #construct the QoI distribution
+            def eval_pdf(x, kernel):
+                y = kernel(x)
+                return y
+            
+            def eval_cdf(x, kernel):
+                #pdf_vals = kernel(x)
+                #y = np.cumsum(pdf_vals)
+                #return y
+                y = np.zeros(x.shape)
+                for i in range(0, len(x)):
+                    yy = [kernel.integrate_box_1d(0, xx) for xx in x[i]]
+                    y[i] = yy
+                    # 
+                return y
+                #y = kernel(x)
+                
+            
+            def eval_bnd():
+                #return (np.min(dataset)-np.min(dataset)*.01, np.max(dataset)+np.max(dataset)*.01)
+                return (np.min(dataset), np.max(dataset))
+            
+            QoIDist = di.construct(
+                cdf=lambda self,x: eval_cdf(x, kernel),
+                bnd=lambda self: eval_bnd(),
+                pdf=lambda self,x: eval_pdf(x, kernel)
+            )
+            qoi_dist = QoIDist()
+            
+        except np.linalg.LinAlgError:
+            qoi_dist = di.Uniform(lo=-np.inf, up=np.inf)
+            numErrors = numErrors + 1
         
+        qoi_dists.append(qoi_dist)
     
-    def eval_bnd():
-        #return (np.min(dataset)-np.min(dataset)*.01, np.max(dataset)+np.max(dataset)*.01)
-        return (np.min(dataset), np.max(dataset))
+    print "num errors: " + str(numErrors)
     
-    QoIDist = di.construct(
-        cdf=lambda self,x: eval_cdf(x, kernel),
-        bnd=lambda self: eval_bnd(),
-        pdf=lambda self,x: eval_pdf(x, kernel)
-    )
-    qoi_dist = QoIDist()
-    
-    return qoi_dist
+    return qoi_dists
 
 def E_cond(poly, freeze, dist, **kws):
 
