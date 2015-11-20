@@ -708,12 +708,15 @@ Examples
     print "input dist: " + str(dist.range())
     
     qoi_dists = []
+    kernels = [None]*len(poly)
     numErrors = 0
     for i in range(0, len(poly)):
         #construct the kernel density estimator
         dataset = poly[i](samples)
         try:
-            kernel = gaussian_kde(dataset, bw_method="scott")
+            kernels[i] = gaussian_kde(dataset, bw_method="scott")
+            kernel = kernels[i]
+            print kernel(np.linspace(0, 80, 20))
             #print "min: " + str(np.min(samples))
             #print "max: " + str(np.max(samples))
             
@@ -739,18 +742,25 @@ Examples
                 #return (np.min(dataset)-np.min(dataset)*.01, np.max(dataset)+np.max(dataset)*.01)
                 return (np.min(dataset), np.max(dataset))
             
+#             QoIDist = di.construct(
+#                 cdf=lambda self,x: eval_cdf(x, kernel),
+#                 bnd=lambda self: eval_bnd(),
+#                 pdf=lambda self,x: eval_pdf(x, kernel)
+#             )
             QoIDist = di.construct(
-                cdf=lambda self,x: eval_cdf(x, kernel),
-                bnd=lambda self: eval_bnd(),
-                pdf=lambda self,x: eval_pdf(x, kernel)
+                cdf=lambda self,x,i: eval_cdf(x, kernel),
+                bnd=lambda self,i: (np.min(dataset), np.max(dataset)),
+                pdf=lambda self,x,i: kernels[i](x)
             )
-            qoi_dist = QoIDist()
+            #qoi_dist = QoIDist()
+            qoi_dists.append(QoIDist(i=i))
             
         except np.linalg.LinAlgError:
-            qoi_dist = di.Uniform(lo=-np.inf, up=np.inf)
+            #qoi_dist = di.Uniform(lo=-np.inf, up=np.inf)
+            qoi_dists.append(di.Uniform(lo=-np.inf, up=np.inf))
             numErrors = numErrors + 1
         
-        qoi_dists.append(qoi_dist)
+        #qoi_dists.append(qoi_dist)
     
     print "num errors: " + str(numErrors)
     
