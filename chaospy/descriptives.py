@@ -704,65 +704,43 @@ Examples
     """
     #sample from the input dist
     samples = dist.sample(sample)
-    #samples.sort()
-    print "input dist: " + str(dist.range())
     
     qoi_dists = []
-    kernels = [None]*len(poly)
-    numErrors = 0
+    numKdeCreationFailures = 0
     for i in range(0, len(poly)):
-        #construct the kernel density estimator
+        #sample the polinomial solution
         dataset = poly[i](samples)
+        
         try:
-            kernels[i] = gaussian_kde(dataset, bw_method="scott")
-            kernel = kernels[i]
-            print kernel(np.linspace(0, 80, 20))
-            #print "min: " + str(np.min(samples))
-            #print "max: " + str(np.max(samples))
+            #construct the kernel density estimator
+            kernel = gaussian_kde(dataset, bw_method="scott")
             
             #construct the QoI distribution
-            def eval_pdf(x, kernel):
-                y = kernel(x)
-                return y
-            
             def eval_cdf(x, kernel):
-                #pdf_vals = kernel(x)
-                #y = np.cumsum(pdf_vals)
-                #return y
-                y = np.zeros(x.shape)
+                cdf_vals = np.zeros(x.shape)
                 for i in range(0, len(x)):
-                    yy = [kernel.integrate_box_1d(0, xx) for xx in x[i]]
-                    y[i] = yy
-                    # 
-                return y
-                #y = kernel(x)
-                
-            
-            def eval_bnd():
-                #return (np.min(dataset)-np.min(dataset)*.01, np.max(dataset)+np.max(dataset)*.01)
-                return (np.min(dataset), np.max(dataset))
-            
-#             QoIDist = di.construct(
-#                 cdf=lambda self,x: eval_cdf(x, kernel),
-#                 bnd=lambda self: eval_bnd(),
-#                 pdf=lambda self,x: eval_pdf(x, kernel)
-#             )
-            QoIDist = di.construct(
-                cdf=lambda self,x,i: eval_cdf(x, kernel),
-                bnd=lambda self,i: (np.min(dataset), np.max(dataset)),
-                pdf=lambda self,x,i: kernels[i](x)
-            )
-            #qoi_dist = QoIDist()
-            qoi_dists.append(QoIDist(i=i))
-            
-        except np.linalg.LinAlgError:
-            #qoi_dist = di.Uniform(lo=-np.inf, up=np.inf)
-            qoi_dists.append(di.Uniform(lo=-np.inf, up=np.inf))
-            numErrors = numErrors + 1
-        
-        #qoi_dists.append(qoi_dist)
+                    cdf_vals[i] = [kernel.integrate_box_1d(0, x_i) for x_i in x[i]]
     
-    print "num errors: " + str(numErrors)
+                return cdf_vals
+                
+            QoIDist = di.construct(
+                cdf=lambda self,x,lo,up,kernel: eval_cdf(x, kernel[0]),
+                bnd=lambda self,lo,up,kernel: (lo, up),
+                pdf=lambda self,x,lo,up,kernel: kernel[0](x)
+            )
+    
+            lo = np.min(dataset)
+            up = np.max(dataset)
+            qoi_dist = QoIDist(lo=lo, up=up, kernel=[kernel])
+            
+        except np.linalg.LinAlgError: #is raised by gaussian_kde if dataset is singular matrix
+            qoi_dist = di.Uniform(lo=-np.inf, up=np.inf)
+            numKdeCreationFailures = numKdeCreationFailures + 1
+        
+        qoi_dists.append(qoi_dist)
+    
+    if numKdeCreationFailures > 0:
+        warn("num kde creation failures: " + str(numKdeCreationFailures))
     
     return qoi_dists
 
@@ -1079,9 +1057,11 @@ import poly as po
 import dist as di
 import quadrature as qu
 from scipy.stats import spearmanr, gaussian_kde
+from warnings import warn
 
 import collocation as co
 import orthogonal as ort
+
 
 if __name__=="__main__":
     import __init__ as cp
