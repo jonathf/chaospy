@@ -668,30 +668,32 @@ Examples
 
 def QoI_Dist(poly, dist, sample=1e4, **kws):
     """
-TODO: write the documentation, find a good name 
+QoI_Dist function constructs distributions for the quantity of interest (QoI).
 
-Percentile function
+The function constructs a kernel density estimator (KDE) for each polynomial 
+(poly) by sampling it.
+With the KDEs, distributions (Dists) are constructed. The Dists can be used for 
+e.g. plotting probability density functions (PDF), or to make a second 
+uncertainty quantification simulation with that newly generated Dists. 
 
 Parameters
 ----------
 poly : Poly
     Polynomial of interest.
-q : array_like
-    positions where percentiles are taken. Must be a number or an
-    array, where all values are on the interval `[0,100]`.
 dist : Dist
-    Defines the space where percentile is taken.
+    Defines the space where the samples for the KDE is taken from the poly.
 sample : int
-    Number of samples used in estimation.
+    Number of samples used in estimation to construct the KDE.
 **kws : optional
     Extra keywords passed to dist.sample.
 
 Returns
 -------
-Q : ndarray
-    Percentiles of `poly` with `Q.shape=poly.shape+q.shape`.
+qoi_dists : ndarray
+    The constructed quantity of interest (QoI) distributions, where
+    `qoi_dists.shape==poly.shape`.
 
-Examples
+Examples (TODO:)
 --------
 >>> cp.seed(1000)
 >>> x,y = cp.variable(2)
@@ -702,13 +704,16 @@ Examples
  [  4.5080777   -0.05862173]
  [  6.          45.        ]]
     """
+    shape = poly.shape
+    poly = po.flatten(poly)
+    
     #sample from the input dist
-    samples = dist.sample(sample)
+    samples = dist.sample(sample, **kws)
     
     qoi_dists = []
     numKdeCreationFailures = 0
     for i in range(0, len(poly)):
-        #sample the polinomial solution
+        #sample the polynomial solution
         dataset = poly[i](samples)
         
         try:
@@ -742,6 +747,10 @@ Examples
     if numKdeCreationFailures > 0:
         warn("num kde creation failures: " + str(numKdeCreationFailures))
     
+    #reshape the qoi_dist to match the shape of the input poly
+    qoi_dists = np.array(qoi_dists)
+    qoi_dists = qoi_dists.reshape(shape) 
+        
     return qoi_dists
 
 def E_cond(poly, freeze, dist, **kws):
