@@ -668,7 +668,8 @@ Examples
 
 def QoI_Dist(poly, dist, sample=1e4, **kws):
     """
-QoI_Dist function constructs distributions for the quantity of interest (QoI).
+QoI_Dist constructs distributions for the quantity of interests (QoIs) that poly
+represents.
 
 The function constructs a kernel density estimator (KDE) for each polynomial 
 (poly) by sampling it.
