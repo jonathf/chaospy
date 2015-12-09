@@ -161,12 +161,12 @@ samplegen   Sample generator
         assert len(w) == x.shape[1]
         assert len(x.shape) == 2
 
-        if isdist:
+        if isdist and not sparse:
 
             W = np.sum(w)
 
-            eps = 1e-5
-            while (W-np.sum(w[w>eps]))>1e-15:
+            eps = 1
+            while (W-np.sum(w[w>eps]))>1e-18:
                 eps *= .1
 
             valid = w>eps
