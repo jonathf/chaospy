@@ -572,7 +572,8 @@ def sparse_grid(func, order, dim, skew=None):
     X = np.concatenate(X, 1)
     W = np.concatenate(W, 0)
 
-    order = np.lexsort(X)
+    X = np.around(X, 16)
+    order = np.lexsort(tuple(X))
     X = X.T[order].T
     W = W[order]
 
