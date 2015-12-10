@@ -697,61 +697,35 @@ qoi_dists : ndarray
 Examples (TODO:)
 --------
 >>> cp.seed(1000)
->>> x,y = cp.variable(2)
->>> poly = cp.Poly([x, x*y])
->>> Z = cp.J(cp.Uniform(3,6), cp.Normal())
->>> print cp.Perc(poly, [0, 50, 100], Z)
-[[  3.         -45.        ]
- [  4.5080777   -0.05862173]
- [  6.          45.        ]]
+>>> x = cp.variable(1)
+>>> poly = cp.Poly([x])
+>>> qoi_dist = cp.QoI_Dist(poly, dist)
+>>> print qoi_dist[0].pdf([-0.75, 0., 0.75])
+[  1.27794383e-123   3.99317083e+000   1.16692607e-100]
     """
     shape = poly.shape
     poly = po.flatten(poly)
     
     #sample from the input dist
     samples = dist.sample(sample, **kws)
+    samples.sort()
     
     qoi_dists = []
-    numKdeCreationFailures = 0
     for i in range(0, len(poly)):
         #sample the polynomial solution
         dataset = poly[i](samples)
         
-        try:
-            #construct the kernel density estimator
-            kernel = gaussian_kde(dataset, bw_method="scott")
-            
-            #construct the QoI distribution
-            def eval_cdf(x, kernel):
-                cdf_vals = np.zeros(x.shape)
-                for i in range(0, len(x)):
-                    cdf_vals[i] = [kernel.integrate_box_1d(0, x_i) for x_i in x[i]]
-    
-                return cdf_vals
-                
-            QoIDist = di.construct(
-                cdf=lambda self,x,lo,up,kernel: eval_cdf(x, kernel[0]),
-                bnd=lambda self,lo,up,kernel: (lo, up),
-                pdf=lambda self,x,lo,up,kernel: kernel[0](x)
-            )
-    
-            lo = np.min(dataset)
-            up = np.max(dataset)
-            qoi_dist = QoIDist(lo=lo, up=up, kernel=[kernel])
-            
-        except np.linalg.LinAlgError: #is raised by gaussian_kde if dataset is singular matrix
-            qoi_dist = di.Uniform(lo=-np.inf, up=np.inf)
-            numKdeCreationFailures = numKdeCreationFailures + 1
+        lo,up = dist.range()
+        lo = min(dataset.min(), lo)
+        up = max(dataset.max(), up)
         
+        qoi_dist = di.SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
     
-    if numKdeCreationFailures > 0:
-        warn("num kde creation failures: " + str(numKdeCreationFailures))
-    
-    #reshape the qoi_dist to match the shape of the input poly
-    qoi_dists = np.array(qoi_dists)
+    #reshape the qoi_dists to match the shape of the input poly
+    qoi_dists = np.array(qoi_dists, di.Dist)
     qoi_dists = qoi_dists.reshape(shape) 
-        
+
     return qoi_dists
 
 def E_cond(poly, freeze, dist, **kws):
@@ -1066,7 +1040,7 @@ import numpy as np
 import poly as po
 import dist as di
 import quadrature as qu
-from scipy.stats import spearmanr, gaussian_kde
+from scipy.stats import spearmanr
 from warnings import warn
 
 import collocation as co

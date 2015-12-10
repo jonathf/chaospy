@@ -6,7 +6,7 @@ dist.cores module.
 import cores as co
 import numpy as np
 from joint import J
-
+from scipy.stats import gaussian_kde
 
 def Alpha(shape=1, scale=1, shift=0):
     """
@@ -1293,7 +1293,36 @@ shift :  float, Dist
     dist.addattr(str="Wrapcauchy(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
+def SampleDist(samples, lo=None, up=None):
+    """
+Distribution based on samples
+Estimates a distribution from the given samples by constructing a kernel density 
+estimator (KDE).
 
+Parameters
+----------
+samples:
+    Sample values to construction of the KDE
+lo :  float
+    Location of lower threshold
+up :  float
+    Location of upper threshold
+    """
+    if lo is None:
+        lo = samples.min()
+        
+    if up is None:
+        up = samples.max()
+
+    try:
+        #construct the kernel density estimator
+        kernel = gaussian_kde(samples, bw_method="scott")
+        dist = co.kdedist(kernel, lo, up)
+        dist.addattr(str="SampleDist(%s,%s)" % (lo, up))
+    except np.linalg.LinAlgError: #is raised by gaussian_kde if dataset is singular matrix
+        dist = Uniform(lo=-np.inf, up=np.inf)
+
+    return dist
 
 if __name__=='__main__':
     import __init__ as cp

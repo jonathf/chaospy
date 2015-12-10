@@ -1405,3 +1405,52 @@ class rice(Dist):
 
     def _bnd(self, a):
         return 0, special.chndtrix(np.sqrt(1-1e-10), 2, a*a)
+
+class kdedist(Dist):
+    """
+A distribution that is based on a kernel density estimator (KDE). 
+    """
+    def __init__(self, kernel, lo, up):
+        self.kernel = kernel
+        super(kdedist, self).__init__(lo=lo, up=up)
+
+    def _cdf(self, x, lo, up):
+        cdf_vals = np.zeros(x.shape)
+        for i in range(0, len(x)):
+            cdf_vals[i] = [self.kernel.integrate_box_1d(0, x_i) for x_i in x[i]]
+        return cdf_vals
+
+    def _pdf(self, x, lo, up):
+        return self.kernel(x)
+
+    def _bnd(self, lo, up):
+        return (lo, up)
+    
+    def sample(self, size=(), rule="R", antithetic=None,
+            verbose=False, **kws):
+        """
+            Overwrite sample() function, because the constructed Dist that is
+            based on the KDE is only working with the random sampling that is 
+            given by the KDE itself.
+        """
+        
+        size_ = np.prod(size, dtype=int)
+        dim = len(self)
+        if dim>1:
+            if isinstance(size, (tuple,list,np.ndarray)):
+                shape = (dim,) + tuple(size)
+            else:
+                shape = (dim, size)
+        else:
+            shape = size
+
+        out = self.kernel.resample(size_)[0]
+        try:
+            out = out.reshape(shape)
+        except:
+            if len(self)==1:
+                out = out.flatten()
+            else:
+                out = out.reshape(dim, out.size/dim)
+
+        return out
