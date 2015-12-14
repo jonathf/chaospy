@@ -572,7 +572,7 @@ def sparse_grid(func, order, dim, skew=None):
     X = np.concatenate(X, 1)
     W = np.concatenate(W, 0)
 
-    X = np.around(X, 16)
+    X = np.around(X, 15)
     order = np.lexsort(tuple(X))
     X = X.T[order].T
     W = W[order]
@@ -780,13 +780,13 @@ mv_rule : callable
     def tensprod_rule(N, part=None):
 
         N = N*np.ones(dim, int)
-        q = [np.array(funcs[i](N[i])) \
+        q = [funcs[i](N[i]) \
                 for i in xrange(dim)]
 
-        x = [_[0] for _ in q]
+        x = [np.array(_[0]).flatten() for _ in q]
         x = combine(x, part=part).T
 
-        w = [_[1] for _ in q]
+        w = [np.array(_[1]).flatten() for _ in q]
         w = np.prod(combine(w, part=part), -1)
 
         return x, w
