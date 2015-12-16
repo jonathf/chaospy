@@ -1,5 +1,0 @@
-\frametitle{A different differential equation}
-  \begin{figure}
-  \includegraphics[width=0.85\textwidth]{solution8.png}
- \end{figure}
-\beamerclosesubstitutedenvironement {chaospy}
