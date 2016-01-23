@@ -1041,11 +1041,9 @@ import poly as po
 import dist as di
 import quadrature as qu
 from scipy.stats import spearmanr
-from warnings import warn
 
 import collocation as co
 import orthogonal as ort
-
 
 if __name__=="__main__":
     import __init__ as cp
