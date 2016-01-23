@@ -161,12 +161,12 @@ samplegen   Sample generator
         assert len(w) == x.shape[1]
         assert len(x.shape) == 2
 
-        if isdist:
+        if isdist and not sparse:
 
             W = np.sum(w)
 
-            eps = 1e-5
-            while (W-np.sum(w[w>eps]))>1e-15:
+            eps = 1
+            while (W-np.sum(w[w>eps]))>1e-18:
                 eps *= .1
 
             valid = w>eps
@@ -572,7 +572,8 @@ def sparse_grid(func, order, dim, skew=None):
     X = np.concatenate(X, 1)
     W = np.concatenate(W, 0)
 
-    order = np.lexsort(X)
+    X = np.around(X, 15)
+    order = np.lexsort(tuple(X))
     X = X.T[order].T
     W = W[order]
 
@@ -779,13 +780,13 @@ mv_rule : callable
     def tensprod_rule(N, part=None):
 
         N = N*np.ones(dim, int)
-        q = [np.array(funcs[i](N[i])) \
+        q = [funcs[i](N[i]) \
                 for i in xrange(dim)]
 
-        x = [_[0] for _ in q]
+        x = [np.array(_[0]).flatten() for _ in q]
         x = combine(x, part=part).T
 
-        w = [_[1] for _ in q]
+        w = [np.array(_[1]).flatten() for _ in q]
         w = np.prod(combine(w, part=part), -1)
 
         return x, w
