@@ -322,7 +322,7 @@ distribution or polynomial.
 
 Parameters
 ----------
-P : Poly, Dist
+poly : Poly, Dist
     Input to take skewness on.
 dist : Dist
     Defines the space the skewness is taken on.
@@ -666,6 +666,67 @@ Examples
     out = out.reshape(q.shape + shape)
     return out
 
+def QoI_Dist(poly, dist, sample=1e4, **kws):
+    """
+QoI_Dist constructs distributions for the quantity of interests (QoIs) that poly
+represents.
+
+The function constructs a kernel density estimator (KDE) for each polynomial 
+(poly) by sampling it.
+With the KDEs, distributions (Dists) are constructed. The Dists can be used for 
+e.g. plotting probability density functions (PDF), or to make a second 
+uncertainty quantification simulation with that newly generated Dists. 
+
+Parameters
+----------
+poly : Poly
+    Polynomial of interest.
+dist : Dist
+    Defines the space where the samples for the KDE is taken from the poly.
+sample : int
+    Number of samples used in estimation to construct the KDE.
+**kws : optional
+    Extra keywords passed to dist.sample.
+
+Returns
+-------
+qoi_dists : ndarray
+    The constructed quantity of interest (QoI) distributions, where
+    `qoi_dists.shape==poly.shape`.
+
+Examples (TODO:)
+--------
+>>> cp.seed(1000)
+>>> x = cp.variable(1)
+>>> poly = cp.Poly([x])
+>>> qoi_dist = cp.QoI_Dist(poly, dist)
+>>> print qoi_dist[0].pdf([-0.75, 0., 0.75])
+[  1.27794383e-123   3.99317083e+000   1.16692607e-100]
+    """
+    shape = poly.shape
+    poly = po.flatten(poly)
+    
+    #sample from the input dist
+    samples = dist.sample(sample, **kws)
+    samples.sort()
+    
+    qoi_dists = []
+    for i in range(0, len(poly)):
+        #sample the polynomial solution
+        dataset = poly[i](samples)
+        
+        lo,up = dist.range()
+        lo = min(dataset.min(), lo)
+        up = max(dataset.max(), up)
+        
+        qoi_dist = di.SampleDist(dataset, lo, up)
+        qoi_dists.append(qoi_dist)
+    
+    #reshape the qoi_dists to match the shape of the input poly
+    qoi_dists = np.array(qoi_dists, di.Dist)
+    qoi_dists = qoi_dists.reshape(shape) 
+
+    return qoi_dists
 
 def E_cond(poly, freeze, dist, **kws):
 
