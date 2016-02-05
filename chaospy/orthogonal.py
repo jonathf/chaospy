@@ -22,13 +22,13 @@ from utils import rlstsq
 from cholesky import chol_gko
 
 __all__ = [
-"orth_select",
+# "orth_select",
 "orth_gs",
-"orth_hybrid",
+# "orth_hybrid",
 "orth_ttr",
 "orth_chol",
-"orth_pcd",
-"orth_svd",
+# "orth_pcd",
+# "orth_svd",
 "orth_bert",
 "norm",
 ]
@@ -336,6 +336,7 @@ Examples
 #  >>> print cp.orth_pcd(2, Z)
 #  [1.0, q0^2-1.0, q0]
     """
+    raise DeprecationWarning("Obsolete. Use orth_chol instead.")
 
     dim = len(dist)
     basis = po.basis(1,order,dim)
@@ -391,6 +392,7 @@ Examples
 #  >>> print cp.orth_svd(2, Z)
 #  [1.0, q0^2-1.0, q0]
     """
+    raise DeprecationWarning("Obsolete")
 
     dim = len(dist)
     if isinstance(order, po.Poly):
@@ -462,6 +464,7 @@ Examples
 #  >>> print cp.orth_chol(3, Z)
 #  [1.0, q0, 0.707106781187q0^2-0.707106781187, 0.408248290464q0^3-1.22474487139q0]
     """
+    raise DeprecationWarning("Obsolete. Use orth_chol instead.")
 
     if order==1:
         return orth_svd(order, dist, eps, normed, **kws)
