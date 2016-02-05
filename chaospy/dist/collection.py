@@ -563,7 +563,7 @@ shift :  float, Dist
     return dist
 
 
-def Gumbel(scale=1, loc=0):
+def Logweibul(scale=1, loc=0):
     """
 Gumbel distribution
 Log-Weibull distribution
