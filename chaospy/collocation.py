@@ -233,18 +233,18 @@ y : np.ndarray
 
 #  Examples
 #  --------
-#  
+#
 #  Define function and distribution:
 #  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
 #  >>> dist = cp.J(cp.Uniform(), cp.Uniform())
-#  
+#
 #  Perform pcm:
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1)
 #  >>> print cp.around(q, 10)
 #  -q1^2+0.1q0
 #  >>> print len(w)
 #  9
-#  
+#
 #  With Smolyak sparsegrid
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
 #  >>> print cp.around(q, 10)
@@ -410,10 +410,10 @@ X : np.ndarray
 #  --------
 #  Define function:
 #  >>> func = lambda z: z[1]*z[0]
-#  
+#
 #  Define distribution:
 #  >>> dist = cp.J(cp.Normal(), cp.Normal())
-#  
+#
 #  Perform pcm:
 #  >>> p, x, w, y = cp.pcm_gq(func, 2, dist, acc=3, retall=True)
 #  >>> print cp.around(p, 10)
@@ -525,13 +525,13 @@ retall : bool
 
 #  Examples
 #  --------
-#  
+#
 #  Define function:
 #  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
-#  
+#
 #  Define distribution:
 #  >>> dist = cp.J(cp.Normal(), cp.Normal())
-#  
+#
 #  Perform pcm:
 #  >>> q, x, y = cp.pcm_lr(func, 2, dist, retall=True)
 #  >>> print cp.around(q, 10)
@@ -856,15 +856,17 @@ Examples
 
     # Local rules
     if rule=="LS":
-        uhat = la.lstsq(Q, u)[0]
+        uhat = la.lstsq(Q, u)[0].T
 
     elif rule=="T":
         uhat, alphas = rlstsq(Q, u, kws.get("order",0),
                 kws.get("alpha", None), False, True)
+        uhat = uhat.T
 
     elif rule=="TC":
         uhat = rlstsq(Q, u, kws.get("order",0),
                 kws.get("alpha", None), True)
+        uhat = uhat.T
 
     else:
 
@@ -926,7 +928,7 @@ Examples
 
     u = u.reshape(u.shape[0], *shape)
 
-    R = po.sum((P*uhat.T), -1)
+    R = po.sum((P*uhat), -1)
     R = po.reshape(R, shape)
 
     if retall==1:
@@ -946,7 +948,7 @@ def fit_lagrange(X, Y):
 
     if len(X.shape) == 1:
         X = X.reshape(1, X.size)
-    
+
     N, dim = X.shape
 
     basis = []
