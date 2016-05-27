@@ -694,7 +694,7 @@ qoi_dists : ndarray
     The constructed quantity of interest (QoI) distributions, where
     `qoi_dists.shape==poly.shape`.
 
-Examples (TODO:)
+Examples
 --------
 >>> cp.seed(1000)
 >>> x = cp.variable(1)
@@ -705,20 +705,23 @@ Examples (TODO:)
     """
     shape = poly.shape
     poly = po.flatten(poly)
+    dim = len(dist)
     
     #sample from the input dist
     samples = dist.sample(sample, **kws)
-    samples.sort()
     
     qoi_dists = []
     for i in range(0, len(poly)):
         #sample the polynomial solution
-        dataset = poly[i](samples)
+        if dim == 1:
+            dataset = poly[i](samples)
+        else:
+            dataset = poly[i](*samples)
         
-        lo,up = dist.range()
-        lo = min(dataset.min(), lo)
-        up = max(dataset.max(), up)
-        
+        lo = dataset.min()
+        up = dataset.max()
+
+        #creates qoi_dist
         qoi_dist = di.SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
     
