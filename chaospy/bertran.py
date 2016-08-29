@@ -41,9 +41,9 @@ Bertran addition
 
 Example
 -------
->>> print add(3, 3, 1)
+>>> print(add(3, 3, 1))
 6
->>> print add(3, 3, 2)
+>>> print(add(3, 3, 2))
 10
 """
     I = np.array(multi_index(i, dim))
@@ -91,7 +91,7 @@ I : tuple
 Examples
 --------
 >>> for i in range(5):
-...     print cp.multi_index(i,3)
+...     print(cp.multi_index(i,3))
 (0, 0, 0)
 (1, 0, 0)
 (0, 1, 0)
@@ -147,9 +147,9 @@ indices : list
 
 Examples
 --------
->>> print cp.bindex(0, 1, 3)
+>>> print(cp.bindex(0, 1, 3))
 [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)]
->>> print cp.bindex(2, 3, 2)
+>>> print(cp.bindex(2, 3, 2))
 [(2, 0), (1, 1), (0, 2), (3, 0), (2, 1), (1, 2), (0, 3)]
     """
 
@@ -217,7 +217,7 @@ i : int
 Examples
 --------
 >>> for i in range(3):
-...     print single_index(np.eye(3)[i])
+...     print(single_index(np.eye(3)[i]))
 1
 2
 3
@@ -301,9 +301,9 @@ j : int
 
 Examples
 --------
->>> print cp.child(4, 1, 0)
+>>> print(cp.child(4, 1, 0))
 5
->>> print cp.child(4, 2, 1)
+>>> print(cp.child(4, 2, 1))
 8
     """
     I = multi_index(i, dim)

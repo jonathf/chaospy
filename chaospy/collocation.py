@@ -118,7 +118,7 @@ Define function and distribution:
 
 Perform pcm:
 >>> q = cp.pcm(func, 2, dist)
->>> print cp.around(q, 10)
+>>> print(cp.around(q, 10))
 0.1q0-q1^2
 
 See also
@@ -240,16 +240,16 @@ y : np.ndarray
 #
 #  Perform pcm:
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(w)
+#  >>> print(len(w))
 #  9
 #
 #  With Smolyak sparsegrid
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(w)
+#  >>> print(len(w))
 #  13
     """
     if acc is None:
@@ -416,9 +416,9 @@ X : np.ndarray
 #
 #  Perform pcm:
 #  >>> p, x, w, y = cp.pcm_gq(func, 2, dist, acc=3, retall=True)
-#  >>> print cp.around(p, 10)
+#  >>> print(cp.around(p, 10))
 #  q0q1
-#  >>> print len(w)
+#  >>> print(len(w))
 #  16
 
     """
@@ -534,9 +534,9 @@ retall : bool
 #
 #  Perform pcm:
 #  >>> q, x, y = cp.pcm_lr(func, 2, dist, retall=True)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(x.T)
+#  >>> print(len(x.T))
 #  12
     """
 
@@ -838,7 +838,7 @@ Examples
 >>> P = cp.Poly([1, x, y])
 >>> s = [[-1,-1,1,1], [-1,1,-1,1]]
 >>> u = [0,1,1,2]
->>> print fit_regression(P, s, u)
+>>> print(fit_regression(P, s, u))
 0.5q1+0.5q0+1.0
 
     """
@@ -1058,7 +1058,7 @@ Examples
 >>> poly = cp.basis(0,2,2)
 >>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
 >>> res = cp.fit_adaptive(func, poly, dist, budget=100)
->>> print res
+>>> print(res)
     """
 
     if bufname:

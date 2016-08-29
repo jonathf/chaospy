@@ -45,7 +45,7 @@ A general uniform distribution with two parameters:
 ...         return "u(%s%s)" % (lo, up)
 ...
 >>> dist = Uniform(-3,3)
->>> print dist.fwd([-3,0,3])  # Forward Rosenblatt transformation
+>>> print(dist.fwd([-3,0,3])) # Forward Rosenblatt transformation
 [ 0.   0.5  1. ]
 
 See also
@@ -126,7 +126,7 @@ out : np.ndarray
         out = out.reshape((2,)+shape)
 
         if verbose>1:
-            print G
+            print(G)
 
         if retall:
             return out, G
@@ -163,7 +163,7 @@ out : ndarray
         out = np.where(x>bnd[1], 1, out)
 
         if verbose>1:
-            print G
+            print(G)
 
         out = out.reshape(shape)
         if retall:
@@ -210,8 +210,8 @@ out : ndarray
                            maxiter=maxiter, tol=tol, retall=True)
             if verbose:
                 diff = np.max(np.abs(q-q_))
-                print "approx %s.inv w/%d calls and eps=%g" \
-                        % (self, N, diff)
+                print("approx %s.inv w/%d calls and eps=%g" \
+                        % (self, N, diff))
 
         lo,up = self.G.run(out, "range")[0]
         out = np.where(out.T>up.T, up.T, out.T).T
@@ -258,12 +258,12 @@ out : ndarray
             tmp,G = pdf_full(self, x, step, retall=True)
             out[:,valids] = tmp[:,valids]
             if verbose:
-                print "approx %s.pdf"
+                print("approx %s.pdf")
         except IndexError:
             pass
 
         if verbose>1:
-            print self.G
+            print(self.G)
 
         out = out.reshape(shape)
         if dim>1:

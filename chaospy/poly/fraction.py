@@ -27,9 +27,9 @@ c : np.ndarray
 
 Examples
 --------
->>> print gcd(120, 6)
+>>> print(gcd(120, 6))
 6
->>> print gcd([0,1,2,3], 2)
+>>> print(gcd([0,1,2,3], 2))
 [2 1 2 1]
     """
 

@@ -63,7 +63,7 @@ Z : matrix of combinations with shape (np.prod(N), np.sum(M)).
 Examples
 --------
 >>> A, B = [1,2], [[4,4],[5,6]]
->>> print cp.combine([A, B])
+>>> print(cp.combine([A, B]))
 [[ 1.  4.  4.]
  [ 1.  5.  6.]
  [ 2.  4.  4.]
@@ -175,15 +175,15 @@ save        Save module to disk
 Example
 -------
 >>> def foo(*x):
-...     print "evaluating"
+...     print("evaluating")
 ...     return x
 >>> foo = lazy_eval(foo)
->>> print foo(4,5)
+>>> print(foo(4,5))
 evaluating
 (4, 5)
->>> print foo(4,5)
+>>> print(foo(4,5))
 (4, 5)
->>> print foo(5,6)
+>>> print(foo(5,6))
 evaluating
 (5, 6)
 
@@ -390,21 +390,20 @@ array([-0.0039152 , -0.00224043, -0.00282827,\
             break
 
         if verbose and iter % 10==0:
-            print fgbest
+            print(fgbest)
 
     t += clock()
 
     if verbose:
         if converged:
-            print 'Minimization terminated successfully.',
+            print('Minimization terminated successfully.',)
         else:
-            print 'Maximum iteration exited.',
-        print '''
+            print('Maximum iteration exited.',)
+        print('''
 x_opt:          %s
 func(x_opt):    %g
 iter:           %d
-time (sec):     %g''' % (xgbest, fgbest, iterations, t)
-    
+time (sec):     %g''' % (xgbest, fgbest, iterations, t))
     if retall:
         return xgbest, fgbest, converged, iterations, t
     return xgbest
@@ -462,7 +461,7 @@ Examples
 >>> cp.seed(1000)
 >>> foo = lambda x:x**3
 >>> dist = cp.Uniform()
->>> print cp.mci(foo, dist=dist)
+>>> print(cp.mci(foo, dist=dist))
 0.250923402627
     """
     x = dist.rnd(size=(len(dist), samples))

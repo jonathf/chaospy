@@ -29,20 +29,20 @@ The module contains the following submodules:
 Examples
 --------
 >>> X1 = cp.Normal(0,1)
->>> print X1.mom([1,2,3,4])
+>>> print(X1.mom([1,2,3,4]))
 [ 0.  1.  0.  3.]
 
 >>> X2 = cp.Uniform(0,4)
->>> print X2.fwd([2,3,4])
+>>> print(X2.fwd([2,3,4]))
 [ 0.5   0.75  1.  ]
 
 >>> X = cp.J(X1,X2)
->>> print X.sample(3)
+>>> print(X.sample(3))
 [[ 0.39502989 -1.20032309  1.64760248]
  [ 1.92876561  3.48989814  0.84933072]]
 
 >>> Y = cp.Iid(X1, 3)
->>> print cp.Cov(Y)
+>>> print(cp.Cov(Y))
 [[ 1.  0.  0.]
  [ 0.  1.  0.]
  [ 0.  0.  1.]]

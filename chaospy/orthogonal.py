@@ -63,7 +63,7 @@ P : Poly
 Examples
 --------
 >>> Z = cp.J(cp.Normal(), cp.Normal())
->>> print cp.orth_gs(2, Z)
+>>> print(cp.orth_gs(2, Z))
 [1.0, q1, q0, -1.0+q1^2, q0q1, q0^2-1.0]
     """
 
@@ -89,7 +89,7 @@ Examples
 
             g = E(P[-1]**2, dist, **kws)
             if g<=0:
-                print "Warning: Polynomial cutoff at term %d" % i
+                print("Warning: Polynomial cutoff at term %d" % i)
                 break
             basis[i] = basis[i]/np.sqrt(g)
             P.append(basis[i])
@@ -104,7 +104,7 @@ Examples
 
             G.append(E(P[-1]**2, dist, **kws))
             if G[-1]<=0:
-                print "Warning: Polynomial cutoff at term %d" % i
+                print("Warning: Polynomial cutoff at term %d" % i)
                 break
             P.append(basis[i])
 
@@ -148,7 +148,7 @@ norms : np.ndarray
 Examples
 --------
 >>> Z = cp.Normal()
->>> print cp.orth_ttr(4, Z)
+>>> print(cp.orth_ttr(4, Z))
 [1.0, q0, q0^2-1.0, q0^3-3.0q0, -6.0q0^2+3.0+q0^4]
     """
 
@@ -203,7 +203,7 @@ kws : optional
 Examples
 --------
 >>> Z = cp.Normal()
->>> print cp.orth_chol(3, Z)
+>>> print(cp.orth_chol(3, Z))
 [1.0, q0, 0.707106781187q0^2-0.707106781187, 0.408248290464q0^3-1.22474487139q0]
     """
 
@@ -259,7 +259,7 @@ Examples
 --------
 >>> Z = cp.MvNormal([0,0], [[1,.5],[.5,1]])
 >>> P = orth_bert(2, Z)
->>> print P
+>>> print(P)
 [1.0, q0, q1-0.5q0, q0^2-1.0, -0.5q0^2+q0q1, 0.25q0^2-0.75+q1^2-q0q1]
     """
     dim = len(dist)
@@ -333,7 +333,7 @@ normed : bool
 Examples
 --------
 #  >>> Z = cp.Normal()
-#  >>> print cp.orth_pcd(2, Z)
+#  >>> print(cp.orth_pcd(2, Z))
 #  [1.0, q0^2-1.0, q0]
     """
     raise DeprecationWarning("Obsolete. Use orth_chol instead.")
@@ -389,7 +389,7 @@ normed : bool
 Examples
 --------
 #  >>> Z = cp.Normal()
-#  >>> print cp.orth_svd(2, Z)
+#  >>> print(cp.orth_svd(2, Z))
 #  [1.0, q0^2-1.0, q0]
     """
     raise DeprecationWarning("Obsolete")
@@ -461,7 +461,7 @@ kws : optional
 Examples
 --------
 #  >>> Z = cp.Normal()
-#  >>> print cp.orth_chol(3, Z)
+#  >>> print(cp.orth_chol(3, Z))
 #  [1.0, q0, 0.707106781187q0^2-0.707106781187, 0.408248290464q0^3-1.22474487139q0]
     """
     raise DeprecationWarning("Obsolete. Use orth_chol instead.")
@@ -489,7 +489,7 @@ Examples
     if i==(len(C)-2):
         return orth_svd(order, dist, eps, normed, **kws)
     if i:
-        print "subset", i
+        print("subset", i)
 
     basis = basis[eig[i:]]
     N = len(basis)
@@ -573,7 +573,7 @@ orth_func : callable(order, dist, *args, **kws)
     args, kws : optinal
         Method specific values.
     """
-#      print "orth_select depricated"
+#      print("orth_select depricated")
 
     if isinstance(orth, str):
         orth = orth.lower()

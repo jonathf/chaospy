@@ -32,25 +32,25 @@ Examples
 Direct construction:
 
 >>> P = cp.Poly({(1,):np.array(1)})
->>> print P
+>>> print(P)
 q0
 
 Basic operators:
 
 >>> x,y = cp.variable(2)
->>> print x**2 + x*y + 2
+>>> print(x**2 + x*y + 2)
 q0q1+q0^2+2
 
 Evaluation:
 
 >>> g = -3*x+x**2
->>> print g([1,2,3], [1,2,3])
+>>> print(g([1,2,3], [1,2,3]))
 [-2 -2  0]
 
 Arrays:
 
 >>> P = cp.Poly([x*y, x, y])
->>> print P
+>>> print(P)
 [q0q1, q0, q1]
     """
 
@@ -315,7 +315,7 @@ dtype : type
     The type of the polynomial coefficients
         """
 
-        if V: print "\nConstruct poly out of:\n", A
+        if V: print("\nConstruct poly out of:\n", A)
 
         if isinstance(A, Poly):
 
@@ -377,18 +377,18 @@ dtype : type
             d = {}
             for i in xrange(len(A)): # i over list of polys
 
-                if V: print "Adding:", A[i], "(%d)" % i
+                if V: print("Adding:", A[i], "(%d)" % i)
                 for key in A[i].A: # key over exponents in each poly
 
                     if not d.has_key(key):
-                        if V: print "creating key", key
+                        if V: print("creating key", key)
                         if dtype_==f.frac:
                             d[key] = f.frac(np.zeros(shape_))
                         else:
                             d[key] = np.zeros(shape_, dtype=dtype_)
                     d[key][i] = A[i].A[key]
-                    if V: print "update", key, d[key]
-            if V: print "creating master dict:\n", d
+                    if V: print("update", key, d[key])
+            if V: print("creating master dict:\n", d)
 
             A = d
 
@@ -460,7 +460,7 @@ dtype : type
         self.dtype = dtype
         self.A = A
 
-        if V: print "result", A
+        if V: print("result", A)
 
     def __iter__(self):
         """x.__iter__() <==> iter(x)"""
@@ -586,7 +586,7 @@ dtype : type
 
             if not self.shape:
                 out = [self**n[i] for i in range(len(n))]
-                print "out", out
+                print("out", out)
                 return Poly(out, self.dim, None, None)
 
             return Poly([self[i]**n[i] \
@@ -869,7 +869,7 @@ Examples
 --------
 >>> x,y = cp.variable(2)
 >>> P = x*x-x*y
->>> print cp.setdim(P, 1)
+>>> print(cp.setdim(P, 1))
 q0^2
     """
 
@@ -926,11 +926,11 @@ Examples
 --------
 >>> q = cp.variable()
 >>> P = cp.Poly([q**2-1, 2])
->>> print P
+>>> print(P)
 [q0^2-1, 2]
->>> print cp.decompose(P)
+>>> print(cp.decompose(P))
 [[q0^2, 0], [-1, 2]]
->>> print cp.sum(cp.decompose(P), 0)
+>>> print(cp.sum(cp.decompose(P), 0))
 [q0^2-1, 2]
     """
 
@@ -964,9 +964,9 @@ Q : bool
 Examples
 --------
 >>> x,y = cp.variable(2)
->>> print cp.is_decomposed(cp.Poly([1,x,x*y]))
+>>> print(cp.is_decomposed(cp.Poly([1,x,x*y])))
 True
->>> print cp.is_decomposed(cp.Poly([x+1,x*y]))
+>>> print(cp.is_decomposed(cp.Poly([x+1,x*y])))
 False
     """
 
@@ -1001,9 +1001,9 @@ Examples
 >>> x,y = cp.variable(2)
 >>> P = cp.Poly([2, x*y, 2*x])
 >>> Q = cp.dimsplit(P)
->>> print Q
+>>> print(Q)
 [[2, 1, 2], [1, q0, q0], [1, q1, 1]]
->>> print cp.prod(Q, 0)
+>>> print(cp.prod(Q, 0))
 [2, q0q1, 2q0]
     """
 
@@ -1079,15 +1079,15 @@ Examples
 --------
 >>> x,y = cp.variable(2)
 >>> P = cp.Poly([y*y-1, y*x])
->>> print cp.substitute(P, y, x+1)
+>>> print(cp.substitute(P, y, x+1))
 [q0^2+2q0, q0^2+q0]
 
 With multiple substitutions:
->>> print cp.substitute(P, [x,y], [y,x])
+>>> print(cp.substitute(P, [x,y], [y,x]))
 [q0^2-1, q0q1]
     """
 
-    if V: print "Replace", x0, "with", x1, "in", P
+    if V: print("Replace", x0, "with", x1, "in", P)
     x0,x1 = map(Poly, [x0,x1])
     dim = np.max([p.dim for p in [P,x0,x1]])
     dtype = dtyping(P.dtype, x0.dtype, x1.dtype)
@@ -1125,7 +1125,7 @@ With multiple substitutions:
     shape = P.shape
     P = [p for p in flatten(P)]
 
-    if V: print "Apriori:\n", P
+    if V: print("Apriori:\n", P)
 
     for i in xrange(len(P)):
         for j in xrange(len(dims)):
@@ -1133,7 +1133,7 @@ With multiple substitutions:
                 P[i] = x1[j]**(P[i].keys[0][dims[j]])
                 break
 
-    if V: print "Aposteriori:\n", P
+    if V: print("Aposteriori:\n", P)
 
     P = Poly(P, dim, None, dtype)
     P = reshape(P, shape)

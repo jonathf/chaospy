@@ -44,7 +44,7 @@ or get all distributions as a list:
     G.dependencies()
 
 print the chaospy state of graph:
-    print G
+    print(G)
 
 Make a copy of chaospy state:
     G.copy()

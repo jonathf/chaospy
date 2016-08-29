@@ -56,9 +56,9 @@ Q : Poly
 
 Examples
 --------
->>> print cp.basis(4,4,2)
+>>> print(cp.basis(4,4,2))
 [q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
->>> print cp.basis([1,1],[2,2])
+>>> print(cp.basis([1,1],[2,2]))
 [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
     """
 
@@ -113,7 +113,7 @@ def lagrange(X):
         coefs[d] += np.eye(K)
     coefs = np.prod(coefs, -1)
 
-    print coefs
+    print(coefs)
 
 #  lagrange([(1,2,3),(2,3,4)])
 #  fail
@@ -145,11 +145,11 @@ Q : Poly
 Examples
 --------
 >>> P = prange(4,1)+prange(4,2)[::-1]
->>> print P
+>>> print(P)
 [q1^3+1, q1^2+q0, q0^2+q1, q0^3+1]
->>> print cutoff(P, 3)
+>>> print(cutoff(P, 3))
 [1, q1^2+q0, q0^2+q1, 1]
->>> print cutoff(P, 1, 3)
+>>> print(cutoff(P, 1, 3))
 [0, q1^2+q0, q0^2+q1, 0]
     """
 
@@ -246,10 +246,10 @@ def hessian(P):
 #  
 #  Examples
 #  --------
-#  >>> print prange(4)
+#  >>> print(prange(4))
 #  [1, q0, q0^2, q0^3]
 #  
-#  >>> print prange(4, dim=3)
+#  >>> print(prange(4, dim=3))
 #  [1, q2, q2^2, q2^3]
 #      """
 #      A = {}
@@ -282,9 +282,9 @@ Examples
 --------
 >>> x,y,z = variable(3)
 >>> P = x*x*x + y*y + z
->>> print P
+>>> print(P)
 q0^3+q1^2+q2
->>> print rolldim(P)
+>>> print(rolldim(P))
 q2^3+q0^2+q1
     """
 
@@ -314,9 +314,9 @@ Examples
 --------
 >>> x,y = variable(2)
 >>> P = x**4-y
->>> print P
+>>> print(P)
 q0^4-q1
->>> print swapdim(P)
+>>> print(swapdim(P))
 q1^4-q0
     """
     
@@ -388,9 +388,9 @@ Q : Poly
 
 Examples
 --------
->>> print variable()
+>>> print(variable())
 q0
->>> print variable(3)
+>>> print(variable(3))
 [q0, q1, q2]
     """
 
@@ -442,19 +442,19 @@ def order(P):
 # Find roots of polynomial
 # 
 # >>> x = variable()
-# >>> print roots(x*x-1)
+# >>> print(roots(x*x-1))
 # [-1.  1.]
 # 
 # Find polynomials from roots
-# >>> print roots([-1,1])
+# >>> print(roots([-1,1]))
 # x^2-1
 # 
 # Roots along an axis
 # >>> x,y = variable(2)
 # >>> P = (x*x-1)*(y-2)
-# >>> print roots(P)
+# >>> print(roots(P))
 # [ 1. -1.]
-# >>> print roots(P, ax=1, args=[2,0])
+# >>> print(roots(P, ax=1, args=[2,0]))
 # [ 2.]
 #     """
 # 

@@ -533,7 +533,7 @@ class mvlognormal(Dist):
         return out
 
     def _str(self, loc, C, **prm):
-        print "mvlognor(%s,%s)" % (loc, C)
+        print("mvlognor(%s,%s)" % (loc, C))
 
 class mvstudentt(Dist):
 
@@ -638,16 +638,16 @@ class mvstudentt(Dist):
 #  >>> cp.seed(1000)
 #  >>> f = cp.Dirichlet([1,2,3])
 #  >>> q = [[.3,.3,.7,.7],[.3,.7,.3,.7]]
-#  >>> print f.inv(q)
+#  >>> print(f.inv(q))
 #  [[ 0.06885008  0.06885008  0.21399691  0.21399691]
 #   [ 0.25363028  0.47340104  0.21409462  0.39960771]]
-#  >>> print f.fwd(f.inv(q))
+#  >>> print(f.fwd(f.inv(q)))
 #  [[ 0.3  0.3  0.7  0.7]
 #   [ 0.3  0.7  0.3  0.7]]
-#  >>> print f.sample(4)
+#  >>> print(f.sample(4))
 #  [[ 0.12507651  0.00904026  0.06508353  0.07888277]
 #   [ 0.29474152  0.26985323  0.69375006  0.30848838]]
-#  >>> print f.mom((1,1))
+#  >>> print(f.mom((1,1)))
 #  0.047619047619
 #      """
 #

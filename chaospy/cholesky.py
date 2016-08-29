@@ -74,9 +74,9 @@ Examples
 >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
 >>> P, L, e = chol_gmw(A)
 >>> P, L = np.matrix(P), np.matrix(L)
->>> print e
+>>> print(e)
 [ 0.     0.     3.008]
->>> print np.allclose(P.T*A*P, L*L.T-np.diag(e))
+>>> print(np.allclose(P.T*A*P, L*L.T-np.diag(e)))
 True
 
 Notes
@@ -195,9 +195,9 @@ Examples
 --------
 >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
 >>> L, e = chol_gk(A)
->>> print np.allclose(A+np.diag(e), np.dot(L, L.T))
+>>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
 True
->>> print e
+>>> print(e)
 [ 0.     0.     3.008]
 
 Notes
@@ -295,9 +295,9 @@ Examples
 --------
 >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
 >>> L, e = chol_gkc(A)
->>> print np.allclose(A+np.diag(e), np.dot(L, L.T))
+>>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
 True
->>> print e
+>>> print(e)
 [ 0.     0.     3.008]
 
 Notes
@@ -398,9 +398,9 @@ Examples
 --------
 >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
 >>> L, e = chol_gmo(A)
->>> print np.allclose(A+np.diag(e), np.dot(L, L.T))
+>>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
 True
->>> print e
+>>> print(e)
 [  0.00000000e+00   8.88178420e-16   3.00800000e+00]
 
 
@@ -496,9 +496,9 @@ Examples
 >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
 >>> P, L, e = chol_se(A)
 >>> P, L = np.matrix(P), np.matrix(L)
->>> print e
+>>> print(e)
 [ 0.          1.50402929  1.50402929]
->>> print np.allclose(P.T*A*P, L*L.T-np.diag(e))
+>>> print(np.allclose(P.T*A*P, L*L.T-np.diag(e)))
 True
 
 Notes
@@ -698,9 +698,9 @@ Examples
 >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
 >>> P, L, E = chol_bo(A)
 >>> P, L = np.matrix(P), np.matrix(L)
->>> print np.diag(E)
+>>> print(np.diag(E))
 [ -8.88178420e-16   0.00000000e+00   2.33733333e+00]
->>> print np.allclose(P.T*A*P, L*L.T-E)
+>>> print(np.allclose(P.T*A*P, L*L.T-E))
 True
 
 Notes

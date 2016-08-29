@@ -208,18 +208,18 @@ Examples
 --------
 >>> Z = cp.Normal()
 >>> x, w = cp.golub_welsch(3, Z)
->>> print x
+>>> print(x)
 [[-2.33441422 -0.74196378  0.74196378  2.33441422]]
->>> print w
+>>> print(w)
 [ 0.04587585  0.45412415  0.45412415  0.04587585]
 
 Multivariate
 >>> Z = cp.J(cp.Uniform(), cp.Uniform())
 >>> x, w = cp. golub_welsch(1, Z)
->>> print x
+>>> print(x)
 [[ 0.21132487  0.21132487  0.78867513  0.78867513]
  [ 0.21132487  0.78867513  0.21132487  0.78867513]]
->>> print w
+>>> print(w)
 [ 0.25  0.25  0.25  0.25]
     """
 
@@ -293,9 +293,9 @@ Examples
 --------
 >>> dist = cp.Uniform()
 >>> orth, norms, A, B = cp.stieltjes(dist, 2, retall=True)
->>> print orth[2]
+>>> print(orth[2])
 [q0^2-q0+0.166666666667]
->>> print norms
+>>> print(norms)
 [[ 1.          0.08333333  0.00555556]]
     """
 
@@ -667,9 +667,9 @@ Examples
 >>> dist = cp.Gamma()
 >>> func = lambda x: x**3-1
 >>> q, x, w, y = cp.quad(func, 1, dist, retall=True, rule="G")
->>> print q
+>>> print(q)
 [ 5.]
->>> print x
+>>> print(x)
 [[ 0.58578644  3.41421356]]
     """
     x,w = generate_quadrature(order, domain, acc=acc, sparse=sparse, rule=rule,

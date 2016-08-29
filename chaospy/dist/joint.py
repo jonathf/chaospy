@@ -187,13 +187,13 @@ Examples
 --------
 Independent
 >>> dist = cp.J(cp.Uniform(), cp.Normal())
->>> print dist.mom([[0,0,1], [0,2,2]])
+>>> print(dist.mom([[0,0,1], [0,2,2]]))
 [ 1.   1.   0.5]
 
 Dependent
 >>> d0 = cp.Uniform()
 >>> dist = cp.J(d0, d0+cp.Uniform())
->>> print dist.mom([[0,0,1], [0,1,1]])
+>>> print(dist.mom([[0,0,1], [0,1,1]]))
 [ 1.          1.          0.53469533]
     """
     out = []
@@ -218,7 +218,7 @@ Examples
 >>> X = cp.Normal()
 >>> Y = cp.Iid(X, 4)
 >>> cp.seed(1000)
->>> print Y.sample()
+>>> print(Y.sample())
 [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
     """
 

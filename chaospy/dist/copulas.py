@@ -11,7 +11,7 @@ Examples
 
 The resulting copula is then ready for use
 >>> cp.seed(1000)
->>> print copula.sample(5)
+>>> print(copula.sample(5))
 [[ 0.65358959  0.11500694  0.95028286  0.4821914   0.87247454]
  [ 0.02388273  0.10004972  0.00127477  0.10572619  0.4510529 ]]
 """
@@ -184,7 +184,7 @@ Examples
 --------
 >>> dist = cp.J(cp.Uniform(), cp.Normal())
 >>> copula = cp.Gumbel(dist, theta=2)
->>> print copula.sample(3, "S")
+>>> print(copula.sample(3, "S"))
 [[ 0.5         0.75        0.25      ]
  [ 0.07686128 -1.50814454  1.65112325]]
 """

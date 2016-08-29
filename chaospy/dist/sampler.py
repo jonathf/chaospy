@@ -168,7 +168,7 @@ sample_func : callable(M)
         Quadrature order
     """
 
-    print "Warning: sample_select is depricated. Use samplegen instead"
+    print("Warning: sample_select is depricated. Use samplegen instead")
 
     sample = sample.upper()
 
@@ -228,13 +228,13 @@ Examples
 
 Order 3 Gaussian quadrature
 >>> S = cp.Sampler(cp.Normal(), scheme=0)
->>> print S(3)
+>>> print(S(3))
 [-2.33441422 -0.74196378  0.74196378  2.33441422]
 
 Full tensor grid with Clenshaw-Curtis nodes
 >>> dist = cp.J(cp.Uniform(), cp.Uniform())
 >>> S = cp.Sampler(dist, scheme=2, edge=1)
->>> print S(1)
+>>> print(S(1))
 [[ 0.   0. ]
  [ 0.   0.5]
  [ 0.   1. ]
@@ -247,7 +247,7 @@ Full tensor grid with Clenshaw-Curtis nodes
 
 Smolyak sparse grid with Fejer nodes
 >>> S = cp.Sampler(dist, scheme=2, edge=0, sparse=2)
->>> print S(1)
+>>> print(S(1))
 [[ 0.5   0.5 ]
  [ 0.25  0.5 ]
  [ 0.75  0.5 ]
@@ -256,7 +256,7 @@ Smolyak sparse grid with Fejer nodes
 
 Stroud's cubature of order 3
 >>> S = cp.Sampler(dist, scheme=3)
->>> print S(3)
+>>> print(S(3))
 [[ 0.90824829  0.5       ]
  [ 0.5         0.90824829]
  [ 0.09175171  0.5       ]]
@@ -264,7 +264,7 @@ Stroud's cubature of order 3
 Latin Hypercube sampling
 >>> cp.seed(1000)
 >>> S = cp.Sampler(dist, scheme=4)
->>> print S(3)
+>>> print(S(3))
 [[ 0.6633974   0.46811863]
  [ 0.27875174  0.05308317]
  [ 0.98757072  0.51017741]
@@ -315,7 +315,7 @@ scheme : int
     8 : Sobol sampling, no edge or sparse
     9 : Korobov samples, no edge or sparse
         """
-        print "Warning: Sampler is depricated. Use samplegen instead"
+        print("Warning: Sampler is depricated. Use samplegen instead")
 
         self.dist = dist
         self.scheme = scheme
