@@ -706,10 +706,10 @@ Examples
     shape = poly.shape
     poly = po.flatten(poly)
     dim = len(dist)
-    
+
     #sample from the input dist
     samples = dist.sample(sample, **kws)
-    
+
     qoi_dists = []
     for i in range(0, len(poly)):
         #sample the polynomial solution
@@ -717,17 +717,21 @@ Examples
             dataset = poly[i](samples)
         else:
             dataset = poly[i](*samples)
-        
+
         lo = dataset.min()
         up = dataset.max()
 
         #creates qoi_dist
         qoi_dist = di.SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
-    
+
     #reshape the qoi_dists to match the shape of the input poly
     qoi_dists = np.array(qoi_dists, di.Dist)
-    qoi_dists = qoi_dists.reshape(shape) 
+
+    if shape:
+        qoi_dists = qoi_dists.reshape(shape)
+    else:
+        qoi_dists = qoi_dists.item()
 
     return qoi_dists
 
