@@ -10,7 +10,8 @@ This code is distributed under the GNU LGPL license.
 """
 
 import numpy as np
-from utils import combine
+from .utils import combine
+
 
 def gp(n, dist):
     """

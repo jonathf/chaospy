@@ -13,7 +13,7 @@ Perc        Percentile function
 Skew        Skewness operator
 Var         Variance function
 """
-__version__ = "1.0"
+
 
 def E(poly, dist=None, **kws):
     """

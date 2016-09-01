@@ -21,13 +21,13 @@ utils           Supporting function not fitting in anywhere else
 __version__ = "1.0"
 __author__ = "Jonathan Feinberg, jonathan@feinberg.no"
 
-from cholesky import *
-from dist import *
-from utils import *
-from bertran import *
-from descriptives import *
-from orthogonal import *
-from poly import *
-from collocation import *
-from quadrature import *
-from saltelli import *
+from .cholesky import *
+from .dist import *
+from .utils import *
+from .bertran import *
+from .descriptives import *
+from .orthogonal import *
+from .poly import *
+from .collocation import *
+from .quadrature import *
+from .saltelli import *

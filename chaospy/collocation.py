@@ -23,13 +23,11 @@ try:
 except:
     pass
 
-import poly as po
-import quadrature as qu
-import orthogonal
-from dist import samplegen
-from utils import lazy_eval
-
-__version__ = "1.0"
+import .poly as po
+import .quadrature as qu
+import .orthogonal
+from .dist import samplegen
+from .utils import lazy_eval
 
 __all__ = [
 "pcm", "fit_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"

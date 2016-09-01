@@ -14,12 +14,12 @@ PCD             Pivot Cholesky decomposition (for matrices)
 
 import numpy as np
 
-import bertran as ber
-import poly as po
-import quadrature as qu
-from descriptives import Cov, E, Var
-from utils import rlstsq
-from cholesky import chol_gko
+import .bertran as ber
+import .poly as po
+import .quadrature as qu
+from .descriptives import Cov, E, Var
+from .utils import rlstsq
+from .cholesky import chol_gko
 
 __all__ = [
 # "orth_select",

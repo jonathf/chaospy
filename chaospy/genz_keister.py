@@ -11,7 +11,8 @@ This code is distributed under the GNU LGPL license.
 
 import numpy as np
 from scipy.special import ndtr
-from utils import combine
+from .utils import combine
+
 
 def gk16(n):
     """
