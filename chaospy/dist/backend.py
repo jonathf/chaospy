@@ -53,12 +53,12 @@ See also
 For advanced variables, see dist.graph.
 """
 import numpy as np
-import new
+import types
 
-from approx import pdf_full, inv, mom, find_interior_point
+from .approx import pdf_full, inv, mom, find_interior_point
 
-from graph import Graph
-from sampler import samplegen
+from .graph import Graph
+from .sampler import samplegen
 
 string = str # will be overridden locally
 #operators imported at end
@@ -544,7 +544,7 @@ dep : vallable
             if key=="str" and isinstance(val, string):
                 val_ = val
                 val = lambda *a,**k: val_
-            setattr(self, "_"+key, new.instancemethod(val, self, None))
+            setattr(self, "_"+key, types.MethodType(val, self))
 
 
     def dependent(self, *args):
@@ -698,9 +698,9 @@ Custom random variable
 
 
 if __name__=='__main__':
-    import __init__ as cp
+    import chaospy as cp
     import numpy as np
     import doctest
     doctest.testmod()
 
-from operators import add, mul, neg, pow, trunk
+from .operators import add, mul, neg, pow, trunk

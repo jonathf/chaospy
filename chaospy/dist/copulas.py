@@ -17,8 +17,8 @@ The resulting copula is then ready for use
 """
 import numpy as np
 import scipy as sp
-from backend import Dist
-from cores import student_t, mvstudentt
+from .backend import Dist
+from .cores import student_t, mvstudentt
 
 
 class Copula(Dist):
@@ -319,7 +319,7 @@ def T_copula(dist, a, R):
 
 
 if __name__=="__main__":
-    import __init__ as cp
+    import chaospy as cp
     import numpy as np
     import doctest
     doctest.testmod()

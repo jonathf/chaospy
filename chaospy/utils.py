@@ -25,7 +25,7 @@ except:
     fm = None
 
 from time import clock
-import cPickle
+import pickle
 import os
 
 __all__ = [
@@ -75,7 +75,7 @@ Examples
         if len(x.shape)<=1:
             x = x.reshape(x.size, 1)
         elif len(x.shape)>2:
-            raise ValueError, "shapes must be smaller than 3"
+            raise ValueError("shapes must be smaller than 3")
         return x
 
     X = map(clean, X)
@@ -95,7 +95,7 @@ Examples
     size = np.prod(shapes, 0)[0]*np.sum(shapes, 0)[1]
 
     if size>10**9:
-        raise MemoryError, "Too large sets"
+        raise MemoryError("Too large sets")
 
     if len(X)==1:
         out = X[0]
@@ -133,7 +133,7 @@ def combine_bac(X, chunk=2):
         if len(shape)<=1:
             x = x.reshape(x.size, 1)
         elif len(shape)>2:
-            raise ValueError, "shapes must be smaller than 3"
+            raise ValueError("shapes must be smaller than 3")
         return x
     X = map(_clean, X)
 
@@ -234,7 +234,7 @@ name : str
         """
 
         f = open(name, "w")
-        cPickle.dump(self.container, f)
+        pickle.dump(self.container, f)
         f.close()
 
     def load(self, name):
@@ -247,7 +247,7 @@ name : str
     absolute or relative path to file
         """
         f = open(name, "r")
-        container = cPickle.load(f)
+        container = pickle.load(f)
         f.close()
         self.container.update(container)
 

@@ -11,8 +11,8 @@ import numpy as np
 import scipy as sp
 from scipy import special
 
-from backend import Dist
-import joint
+from .backend import Dist
+from . import joint
 
 
 class uniform(Dist):
@@ -362,7 +362,7 @@ class student_t(Dist):
 
     def _mom(self, k, a):
         if np.any(a<=k):
-            raise ValueError, "too high mom for student-t"
+            raise ValueError("too high mom for student-t")
         out = special.gamma(.5*k+.5)* \
                 special.gamma(.5*a-.5*k)*a**(.5*k)
         return np.where(k%2==0, out/(np.pi**.5*special.gamma(.5*a)), 0)

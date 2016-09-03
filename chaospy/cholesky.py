@@ -726,7 +726,7 @@ and A. O'Hagan, 2007
         if A[q, q] <= np.abs(a0*eps):
 
             if not k:
-                raise ValueError, "Purly negative definite"
+                raise ValueError("Purly negative definite")
 
             for j in xrange(k, n):
                 R[j, j] = R[j-1, j-1]/float(j)

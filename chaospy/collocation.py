@@ -23,9 +23,9 @@ try:
 except:
     pass
 
-import .poly as po
-import .quadrature as qu
-import .orthogonal
+from . import poly as po
+from . import quadrature as qu
+from . import orthogonal
 from .dist import samplegen
 from .utils import lazy_eval
 

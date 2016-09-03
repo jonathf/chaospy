@@ -14,9 +14,9 @@ PCD             Pivot Cholesky decomposition (for matrices)
 
 import numpy as np
 
-import .bertran as ber
-import .poly as po
-import .quadrature as qu
+from . import bertran as ber
+from . import poly as po
+from . import quadrature as qu
 from .descriptives import Cov, E, Var
 from .utils import rlstsq
 from .cholesky import chol_gko
@@ -612,7 +612,7 @@ X : array_like
     M = np.prod(X.T[s]**indices[t], -1)
     det = np.linalg.det(M)
     if det==0:
-        raise np.linalg.LinAlgError, "invertable matrix"
+        raise np.linalg.LinAlgError("invertable matrix")
 
     v = po.basis(1, order, dim, sort)[:size]
 

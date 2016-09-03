@@ -197,8 +197,7 @@ b : array_like
         b = np.array(b, dtype=object)
 
         if np.any(b==0):
-            raise ValueError, \
-                "frac devision by zero\n%s,%s" % (a, b)
+            raise ValueError("frac devision by zero\n%s,%s" % (a, b))
 
         # Sign
         if np.any(np.sign(b)==-1):
@@ -301,7 +300,7 @@ b : array_like
                 x = frac(x)
 
             if np.any(x.b!=1):
-                raise ValueError, "fraction exponent not supported"
+                raise ValueError("fraction exponent not supported")
 
             out = frac(self.a**x.a, self.b**x.a)
             return out
@@ -318,7 +317,7 @@ b : array_like
             x = frac(x)
 
         if np.any(self.b!=1):
-            raise ValueError, "fraction exponent not supported"
+            raise ValueError("fraction exponent not supported")
 
         return frac(x.a**self.a, x.b**self.a)
 

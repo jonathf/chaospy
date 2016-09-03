@@ -115,19 +115,19 @@ Wrapcauchy      Wraped Cauchy
 
 from numpy.random import seed
 
-from backend import *
-from graph import *
-from sampler import *
-from approx import *
+from .backend import *
+from .graph import *
+from .sampler import *
+from .approx import *
 
-from joint import *
-from cores import *
+from .joint import *
+from .cores import *
 
-from copulas import *
-from collection import *
-from operators import *
-from hyperbolic import *
-from trignometric import *
+from .copulas import *
+from .collection import *
+from .operators import *
+from .hyperbolic import *
+from .trignometric import *
 
 
 if __name__ == "__main__":

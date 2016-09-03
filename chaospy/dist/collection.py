@@ -3,10 +3,12 @@ Frontend for the collection distributions.
 This modules provides a wrapper with documentation for the
 dist.cores module.
 """
-import cores as co
 import numpy as np
-from joint import J
 from scipy.stats import gaussian_kde
+
+from .joint import J
+from . import cores as co
+
 
 def Alpha(shape=1, scale=1, shift=0):
     """

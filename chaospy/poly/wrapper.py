@@ -1,35 +1,36 @@
 import numpy as np
-import base as p
-import fraction as f
+
+from . import base as p
+from . import fraction as f
 pysum = sum
 
 __all__ = [
-"all",
-"any",
-"around",
-"asfloat",
-"asfrac",
-"asint",
-"cumprod",
-"cumsum",
-"diag",
-"dtyping",
-"flatten",
-"inner",
-"mean",
-"outer",
-"prod",
-"repeat",
-"reshape",
-"roll",
-"rollaxis",
-"std",
-"sum",
-"swapaxes",
-"toarray",
-"trace",
-"transpose",
-"var",
+    "all",
+    "any",
+    "around",
+    "asfloat",
+    "asfrac",
+    "asint",
+    "cumprod",
+    "cumsum",
+    "diag",
+    "dtyping",
+    "flatten",
+    "inner",
+    "mean",
+    "outer",
+    "prod",
+    "repeat",
+    "reshape",
+    "roll",
+    "rollaxis",
+    "std",
+    "sum",
+    "swapaxes",
+    "toarray",
+    "trace",
+    "transpose",
+    "var",
 ]
 __version__ = "1.0"
 

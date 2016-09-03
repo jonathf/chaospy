@@ -57,10 +57,10 @@ var             Sample variance
 
 """
 
-from base import *
-from collection import *
-from fraction import *
-from wrapper import *
+from .base import *
+from .collection import *
+from .fraction import *
+from .wrapper import *
 
 __version__ = "1.0"
 

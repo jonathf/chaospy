@@ -2,7 +2,7 @@
 Collection of hyerbolic operators
 """
 import numpy as np
-from backend import Dist
+from .backend import Dist
 
 class Sinh(Dist):
 

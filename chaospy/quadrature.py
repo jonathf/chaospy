@@ -15,12 +15,13 @@ import numpy as np
 from scipy.misc import comb
 from scipy.optimize import fminbound
 from scipy.linalg import eig_banded
-import bertran as ber
-import poly as po
-from utils import combine, lazy_eval
-import dist as di
-from genz_keister import gk
-from gauss_patterson import gp
+
+from . import bertran as ber
+from . import poly as po
+from .utils import combine, lazy_eval
+from . import dist as di
+from .genz_keister import gk
+from .gauss_patterson import gp
 
 
 def generate_quadrature(order, domain, acc=100, sparse=False, rule="C",

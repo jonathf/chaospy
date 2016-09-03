@@ -9,7 +9,7 @@ sample_select and Sampler are obsolete and only available as legacy
 """
 
 import numpy as np
-from sobol_lib import sobol
+from .sobol_lib import sobol
 
 from chaospy.utils import combine
 from chaospy import bertran as be
@@ -111,9 +111,9 @@ antithetic : array_like, optional
     elif rule=="H":
         X = halton(dim, order)
     elif rule=="M":
-        X = hammersley(dim,order)
+        X = hammersley(dim, order)
     else:
-        raise KeyError, "rule not recognised"
+        raise KeyError("rule not recognised")
 
     X = trans(X, verbose=verbose)
 

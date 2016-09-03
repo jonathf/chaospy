@@ -1,6 +1,7 @@
-from base import Poly, setdim, decompose, is_decomposed
 import numpy as np
 from scipy.misc import comb, factorial as fac
+
+from .base import Poly, setdim, decompose, is_decomposed
 from chaospy.bertran import terms, multi_index, bindex
 
 __all__ = [

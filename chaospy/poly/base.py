@@ -1,5 +1,5 @@
 import numpy as np
-import fraction as f
+from . import fraction as f
 pysum = sum
 
 __all__ = [
@@ -175,13 +175,12 @@ poly.call : equivalent method
                     continue
 
             else:
-                raise TypeError, \
-                    "Unexpeted keyword argument '%s'" % key
+                raise TypeError(
+                    "Unexpeted keyword argument '%s'" % key)
 
             if args[index] not in (np.nan, np.ma.masked):
-                raise TypeError, \
-                    "Multiple values for keyword argument '%s'" \
-                    % index
+                raise TypeError(
+                    "Multiple values for keyword argument '%s'" % index)
 
             args[index] = val
 
@@ -265,7 +264,7 @@ poly.call : equivalent method
 
         if isinstance(subkey, int):
             if not 0<=subkey<len(self.keys):
-                raise IndexError, "Index out of range"
+                raise IndexError("Index out of range")
 
             subkey = slice(subkey, subkey+1,None)
 
@@ -393,8 +392,8 @@ dtype : type
             A = d
 
         else:
-            raise TypeError, \
-                "Poly arg: 'A' is not a valid type " + repr(A)
+            raise TypeError(
+                "Poly arg: 'A' is not a valid type " + repr(A))
 
         if dtype is None:
             dtype = dtype_
@@ -565,8 +564,8 @@ dtype : type
         if isinstance(n, (int, float)):
 
             if abs(n-int(n))>1e-5:
-                raise ValueError, \
-                    "Power of Poly must be interger"
+                raise ValueError(
+                    "Power of Poly must be interger")
             n = int(n)
 
             if n==0:
@@ -643,11 +642,11 @@ dtype : type
 #              subset = I[:-1]
 #  
 #          else:
-#              raise IndexError, "Index out of range"
+#              raise IndexError("Index out of range")
 #  
 #          if isinstance(subkey, int):
 #              if not 0<=subkey<len(self.keys):
-#                  raise IndexError, "Index out of range"
+#                  raise IndexError("Index out of range")
 #  
 #              subkey = slice(subkey, subkey+1,None)
 #  
@@ -796,7 +795,7 @@ Q : Poly, np.array
     if len(args)<P.dim:
         args = args + [np.nan]*(P.dim-len(args))
     elif len(args)>P.dim:
-        raise ValueError, "too many arguments"
+        raise ValueError("too many arguments")
 
     # Find and perform substitutions, if any
     x0,x1 = [],[]
@@ -1010,7 +1009,7 @@ Examples
     P = P.copy()
 
     if not is_decomposed(P):
-        raise TypeError, "Polynomial not on component form."
+        raise TypeError("Polynomial not on component form.")
     A = []
 
     dim = P.dim
@@ -1173,7 +1172,7 @@ def dtyping(*args):
     if list in args: return list
     if tuple in args: return tuple
 
-    raise ValueError, "dtypes not recognised " + str(args)
+    raise ValueError("dtypes not recognised " + str(args))
 
 
 # Collection compliant functions
@@ -1482,6 +1481,6 @@ def asfloat(P):
 
 
 if __name__=='__main__':
-    import __init__ as cp
+    import chaospy as cp
     import doctest
     doctest.testmod()

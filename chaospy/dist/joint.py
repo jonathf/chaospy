@@ -12,7 +12,7 @@ It support __getitem__, __iter__.
 """
 import numpy as np
 from copy import copy
-from backend import Dist
+from .backend import Dist
 
 __all__ = ["J", "Iid"]
 
@@ -55,7 +55,7 @@ Parameters
     def _mom(self, K, G):
 
         if self.dependent():
-            raise NotImplementedError
+            raise NotImplementedError()
 
         dim,size = K.shape
         K = K.reshape(dim,1,size)
@@ -99,7 +99,7 @@ Parameters
     def _ttr(self, K, G):
 
         if self.dependent():
-            raise NotImplementedError, "dependency"
+            raise NotImplementedError("dependency")
 
         dim,size = K.shape
         K = K.reshape(dim,1,size)
@@ -154,7 +154,7 @@ Parameters
             i = "_%03d" % i
             if i in self.prm:
                 return self.prm[i]
-            raise IndexError
+            raise IndexError()
 
         if isinstance(i, slice):
             start, stop, step = i.start, i.stop, i.step
@@ -167,7 +167,7 @@ Parameters
                 out.append(prm["_%03d" % i])
             return J(*out)
 
-        raise NotImplementedError, "index not recogniced"
+        raise NotImplementedError("index not recogniced")
 
 def J(*args):
     """
@@ -260,7 +260,7 @@ N : int
         if isinstance(i, int):
             return self.prm["dist"]
 
-        raise NotImplementedError, "index not recogniced"
+        raise NotImplementedError("index not recogniced")
 
     def _dep(self, G):
         dist = G.D["dist"]
