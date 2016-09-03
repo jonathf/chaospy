@@ -796,6 +796,6 @@ alpha : float, optional
 
 
 if __name__=="__main__":
+    import chaospy as cp
     import doctest
-    import __init__ as cp
     doctest.testmod()

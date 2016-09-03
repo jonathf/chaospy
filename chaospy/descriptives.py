@@ -14,6 +14,11 @@ Skew        Skewness operator
 Var         Variance function
 """
 
+import numpy as np
+from scipy.stats import spearmanr
+
+import chaospy
+
 
 def E(poly, dist=None, **kws):
     """
@@ -54,16 +59,16 @@ For distributions:
 >>> print(cp.E(x**3, Z))
 0.25
     """
-    if not isinstance(poly, (di.Dist, po.Poly)):
+    if not isinstance(poly, (chaospy.dist.Dist, chaospy.poly.Poly)):
         print(type(poly))
         print("Approximating expected value...")
-        out = qu.quad(poly, dist, veceval=True, **kws)
+        out = chaospy.quadrature.quad(poly, dist, veceval=True, **kws)
         print("done")
         return out
 
-    if isinstance(poly, di.Dist):
+    if isinstance(poly, chaospy.dist.Dist):
         dist = poly
-        poly = po.variable(len(poly))
+        poly = chaospy.poly.variable(len(poly))
 
     if not poly.keys:
         return np.zeros(poly.shape, dtype=int)
@@ -72,10 +77,10 @@ For distributions:
         return [E(_, dist, **kws) for _ in poly]
 
     if poly.dim<len(dist):
-        poly = po.setdim(poly, len(dist))
+        poly = chaospy.poly.setdim(poly, len(dist))
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     keys = poly.keys
     mom = dist.mom(np.array(keys).T, **kws)
@@ -95,16 +100,16 @@ For distributions:
 
 def Var(poly, dist=None, **kws):
     """
-Variance, or element by element 2nd order statistics of a
-distribution or polynomial.
+Variance, or element by element 2nd order statistics of a distribution or
+polynomial.
 
 Parameters
 ----------
 poly : Poly, Dist
     Input to take variance on.
 dist : Dist
-    Defines the space the variance is taken on.
-    It is ignored if `poly` is a distribution.
+    Defines the space the variance is taken on. It is ignored if `poly` is
+    a distribution.
 **kws : optional
     Extra keywords passed to dist.mom.
 
@@ -132,18 +137,18 @@ Examples
 0.0803571428571
     """
 
-    if isinstance(poly, di.Dist):
-        x = po.variable(len(poly))
+    if isinstance(poly, chaospy.dist.Dist):
+        x = chaospy.poly.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = po.Poly(poly)
+        poly = chaospy.poly.Poly(poly)
 
     dim = len(dist)
     if poly.dim<dim:
-        po.setdim(poly, dim)
+        chaospy.poly.setdim(poly, dim)
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     keys = poly.keys
     N = len(keys)
@@ -157,7 +162,7 @@ Examples
         keys2 = np.empty((dim, N, N))
         for i in xrange(N):
             for j in xrange(N):
-                keys2[:,i,j] = keys1[:,i]+keys1[:,j]
+                keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = np.outer(*[dist.mom(keys1, **kws)]*2)
     m2 = dist.mom(keys2, **kws)
@@ -166,10 +171,10 @@ Examples
     out = np.zeros(poly.shape)
     for i in xrange(N):
         a = A[keys[i]]
-        out += a*a*mom[i,i]
+        out += a*a*mom[i, i]
         for j in xrange(i+1, N):
             b = A[keys[j]]
-            out += 2*a*b*mom[i,j]
+            out += 2*a*b*mom[i, j]
 
     out = out.reshape(shape)
     return out
@@ -213,18 +218,18 @@ Examples
 0.0803571428571
     """
 
-    if isinstance(poly, di.Dist):
-        x = po.variable(len(poly))
+    if isinstance(poly, chaospy.dist.Dist):
+        x = chaospy.poly.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = po.Poly(poly)
+        poly = chaospy.poly.Poly(poly)
 
     dim = len(dist)
     if poly.dim<dim:
-        po.setdim(poly, dim)
+        chaospy.poly.setdim(poly, dim)
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     keys = poly.keys
     N = len(keys)
@@ -238,7 +243,7 @@ Examples
         keys2 = np.empty((dim, N, N))
         for i in xrange(N):
             for j in xrange(N):
-                keys2[:,i,j] = keys1[:,i]+keys1[:,j]
+                keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = np.outer(*[dist.mom(keys1, **kws)]*2)
     m2 = dist.mom(keys2, **kws)
@@ -247,10 +252,10 @@ Examples
     out = np.zeros(poly.shape)
     for i in xrange(N):
         a = A[keys[i]]
-        out += a*a*mom[i,i]
+        out += a*a*mom[i, i]
         for j in xrange(i+1, N):
             b = A[keys[j]]
-            out += 2*a*b*mom[i,j]
+            out += 2*a*b*mom[i, j]
 
     out = out.reshape(shape)
     return np.sqrt(out)
@@ -259,8 +264,8 @@ Examples
 
 def Skew(poly, dist=None, **kws):
     """
-Skewness, or element by element 3rd order statistics of a
-distribution or polynomial.
+Skewness, or element by element 3rd order statistics of a distribution or
+polynomial.
 
 Parameters
 ----------
@@ -293,17 +298,17 @@ Examples
 >>> print(cp.Skew(Z))
 2.0
     """
-    if isinstance(poly, di.Dist):
-        x = po.variable(len(poly))
+    if isinstance(poly, chaospy.dist.Dist):
+        x = chaospy.poly.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = po.Poly(poly)
+        poly = chaospy.poly.Poly(poly)
 
     if poly.dim<len(dist):
-        po.setdim(poly, len(dist))
+        chaospy.poly.setdim(poly, len(dist))
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     m1 = E(poly, dist)
     m2 = E(poly**2, dist)
@@ -357,17 +362,17 @@ Examples
 >>> print(cp.Kurt(x, Z))
 4.4408920985e-16
     """
-    if isinstance(poly, di.Dist):
-        x = po.variable(len(poly))
+    if isinstance(poly, chaospy.dist.Dist):
+        x = chaospy.poly.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = po.Poly(poly)
+        poly = chaospy.poly.Poly(poly)
 
     if fisher: adjust = 3
     else: adjust = 0
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     m1 = E(poly, dist)
     m2 = E(poly**2, dist)
@@ -382,24 +387,22 @@ Examples
 
 def Cov(poly, dist=None, **kws):
     """
-Covariance matrix, or 2rd order statistics of a distribution or
-polynomial.
+Covariance matrix, or 2rd order statistics of a distribution or polynomial.
 
 Parameters
 ----------
 poly : Poly, Dist
     Input to take covariance on. Must have `len(poly)>=2`.
 dist : Dist
-    Defines the space the covariance is taken on.
-    It is ignored if `poly` is a distribution.
+    Defines the space the covariance is taken on.  It is ignored if `poly` is
+    a distribution.
 **kws : optional
     Extra keywords passed to dist.mom.
 
 Returns
 -------
 covariance : ndarray
-    Covariance matrix with
-    `covariance.shape==poly.shape+poly.shape`.
+    Covariance matrix with `covariance.shape==poly.shape+poly.shape`.
 
 See Also
 --------
@@ -411,7 +414,7 @@ Var         Variance operator
 
 Examples
 --------
->>> Z = cp.MvNormal([0,0], [[2,.5],[.5,1]])
+>>> Z = cp.MvNormal([0, 0], [[2, .5], [.5, 1]])
 >>> print(cp.Cov(Z))
 [[ 2.   0.5]
  [ 0.5  1. ]]
@@ -422,18 +425,18 @@ Examples
 [[ 1.  0.]
  [ 0.  2.]]
     """
-    if not isinstance(poly, (di.Dist, po.Poly)):
-        poly = po.Poly(poly)
+    if not isinstance(poly, (chaospy.dist.Dist, chaospy.poly.Poly)):
+        poly = chaospy.poly.Poly(poly)
 
-    if isinstance(poly, di.Dist):
-        x = po.variable(len(poly))
+    if isinstance(poly, chaospy.dist.Dist):
+        x = chaospy.poly.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = po.Poly(poly)
+        poly = chaospy.poly.Poly(poly)
 
     dim = len(dist)
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
     keys = poly.keys
     N = len(keys)
     A = poly.A
@@ -445,7 +448,7 @@ Examples
         keys2 = np.empty((dim, N, N))
         for i in xrange(N):
             for j in xrange(N):
-                keys2[:, i,j] = keys1[:,i]+keys1[:,j]
+                keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = dist.mom(keys1, **kws)
     m2 = dist.mom(keys2, **kws)
@@ -454,11 +457,11 @@ Examples
     out = np.zeros((len(poly), len(poly)))
     for i in xrange(len(keys)):
         a = A[keys[i]]
-        out += np.outer(a,a)*mom[i,i]
+        out += np.outer(a, a)*mom[i, i]
         for j in xrange(i+1, len(keys)):
             b = A[keys[j]]
-            ab = np.outer(a,b)
-            out += (ab+ab.T)*mom[i,j]
+            ab = np.outer(a, b)
+            out += (ab+ab.T)*mom[i, j]
 
     out = np.reshape(out, shape+shape)
     return out
@@ -474,16 +477,15 @@ Parameters
 poly : Poly, Dist
     Input to take correlation on. Must have `len(poly)>=2`.
 dist : Dist
-    Defines the space the correlation is taken on.
-    It is ignored if `poly` is a distribution.
+    Defines the space the correlation is taken on.  It is ignored if `poly` is
+    a distribution.
 **kws : optional
     Extra keywords passed to dist.mom.
 
 Returns
 -------
 correlation : ndarray
-    Correlation matrix with
-    `correlation.shape==poly.shape+poly.shape`.
+    Correlation matrix with `correlation.shape==poly.shape+poly.shape`.
 
 See Also
 --------
@@ -496,7 +498,7 @@ Var         Variance operator
 
 Examples
 --------
->>> Z = cp.MvNormal([3,4], [[2,.5],[.5,1]])
+>>> Z = cp.MvNormal([3, 4], [[2, .5], [.5, 1]])
 >>> print(cp.Corr(Z))
 [[ 1.          0.35355339]
  [ 0.35355339  1.        ]]
@@ -507,15 +509,15 @@ Examples
 [[ 1.  0.]
  [ 0.  1.]]
     """
-    if isinstance(poly, di.Dist):
-        x = po.variable(len(poly))
+    if isinstance(poly, chaospy.dist.Dist):
+        x = chaospy.poly.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = po.Poly(poly)
+        poly = chaospy.poly.Poly(poly)
 
     C = Cov(poly, dist, **kws)
     V = np.diag(C)
-    S = np.sqrt(np.outer(V,V))
+    S = np.sqrt(np.outer(V, V))
     return np.where(S>0, C/S, 0)
 
 
@@ -530,15 +532,14 @@ poly : Poly
 dist : Dist
     Defines the space the correlation is taken on.
 N : int, optional
-    The number of time steps appart included. If omited set to
-    `len(poly)/2+1`
+    The number of time steps appart included. If omited set to `len(poly)/2+1`.
 **kws : optional
     Extra keywords passed to dist.mom.
 
 Returns
 -------
 Q : ndarray
-    Auto-correlation of `poly` with `shape=(N,)`.
+    Auto-correlation of `poly` with `shape=(N, )`.
     Note that by definition `Q[0]=1`.
 
 See Also
@@ -594,7 +595,7 @@ p-value : float or ndarray
     dimension as rho.
     """
     samples = dist.sample(sample, **kws)
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
     Y = poly(*samples)
     if retall:
         return spearmanr(Y.T)
@@ -611,7 +612,7 @@ poly : Poly
     Polynomial of interest.
 q : array_like
     positions where percentiles are taken. Must be a number or an
-    array, where all values are on the interval `[0,100]`.
+    array, where all values are on the interval `[0, 100]`.
 dist : Dist
     Defines the space where percentile is taken.
 sample : int
@@ -627,9 +628,9 @@ Q : ndarray
 Examples
 --------
 >>> cp.seed(1000)
->>> x,y = cp.variable(2)
+>>> x, y = cp.variable(2)
 >>> poly = cp.Poly([x, x*y])
->>> Z = cp.J(cp.Uniform(3,6), cp.Normal())
+>>> Z = cp.J(cp.Uniform(3, 6), cp.Normal())
 >>> print(cp.Perc(poly, [0, 50, 100], Z))
 [[  3.         -45.        ]
  [  4.5080777   -0.05862173]
@@ -637,7 +638,7 @@ Examples
     """
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     q = np.array(q)/100.
     dim = len(dist)
@@ -646,20 +647,20 @@ Examples
     sample = kws.pop("sample", 1e4)
     Z = dist.sample(sample, **kws)
     if dim==1:
-        Z = (Z,)
+        Z = (Z, )
         q = np.array([q])
     poly1 = poly(*Z)
 
     # Min/max
-    mi, ma = dist.range().reshape(2,dim)
-    ext = np.mgrid[(slice(0,2,1),)*dim].reshape(dim, 2**dim).T
+    mi, ma = dist.range().reshape(2, dim)
+    ext = np.mgrid[(slice(0, 2, 1), )*dim].reshape(dim, 2**dim).T
     ext = np.where(ext, mi, ma).T
     poly2 = poly(*ext)
     poly2 = np.array([_ for _ in poly2.T if not np.any(np.isnan(_))]).T
 
     # Finish
     if poly2.shape:
-        poly1 = np.concatenate([poly1,poly2], -1)
+        poly1 = np.concatenate([poly1, poly2], -1)
     samples = poly1.shape[-1]
     poly1.sort()
     out = poly1.T[np.asarray(q*(samples-1), dtype=int)]
@@ -668,14 +669,14 @@ Examples
 
 def QoI_Dist(poly, dist, sample=1e4, **kws):
     """
-QoI_Dist constructs distributions for the quantity of interests (QoIs) that poly
-represents.
+QoI_Dist constructs distributions for the quantity of interests (QoIs) that
+poly represents.
 
-The function constructs a kernel density estimator (KDE) for each polynomial 
-(poly) by sampling it.
-With the KDEs, distributions (Dists) are constructed. The Dists can be used for 
-e.g. plotting probability density functions (PDF), or to make a second 
-uncertainty quantification simulation with that newly generated Dists. 
+The function constructs a kernel density estimator (KDE) for each polynomial
+(poly) by sampling it.  With the KDEs, distributions (Dists) are constructed.
+The Dists can be used for e.g. plotting probability density functions (PDF), or
+to make a second uncertainty quantification simulation with that newly
+generated Dists.
 
 Parameters
 ----------
@@ -704,12 +705,12 @@ Examples
 [  1.27794383e-123   3.99317083e+000   1.16692607e-100]
     """
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
     dim = len(dist)
-    
+
     #sample from the input dist
     samples = dist.sample(sample, **kws)
-    
+
     qoi_dists = []
     for i in range(0, len(poly)):
         #sample the polynomial solution
@@ -717,16 +718,16 @@ Examples
             dataset = poly[i](samples)
         else:
             dataset = poly[i](*samples)
-        
+
         lo = dataset.min()
         up = dataset.max()
 
         #creates qoi_dist
-        qoi_dist = di.SampleDist(dataset, lo, up)
+        qoi_dist = chaospy.dist.SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
-    
+
     #reshape the qoi_dists to match the shape of the input poly
-    qoi_dists = np.array(qoi_dists, di.Dist)
+    qoi_dists = np.array(qoi_dists, chaospy.dist.Dist)
     qoi_dists = qoi_dists.reshape(shape) 
 
     return qoi_dists
@@ -736,10 +737,10 @@ def E_cond(poly, freeze, dist, **kws):
     assert not dist.dependent()
 
     if poly.dim<len(dist):
-        poly = po.setdim(poly, len(dist))
+        poly = chaospy.poly.setdim(poly, len(dist))
 
-    freeze = po.Poly(freeze)
-    freeze = po.setdim(freeze, len(dist))
+    freeze = chaospy.poly.Poly(freeze)
+    freeze = chaospy.poly.setdim(freeze, len(dist))
     keys = freeze.A.keys()
     if len(keys)==1 and keys[0]==(0,)*len(dist):
         freeze = freeze.A.values()[0]
@@ -748,7 +749,7 @@ def E_cond(poly, freeze, dist, **kws):
     freeze = freeze.reshape(freeze.size/len(dist), len(dist))
 
     shape = poly.shape
-    poly = po.flatten(poly)
+    poly = chaospy.poly.flatten(poly)
 
     kmax = np.max(poly.keys, 0)+1
     keys = [i for i in np.ndindex(*kmax)]
@@ -767,7 +768,7 @@ def E_cond(poly, freeze, dist, **kws):
 
         for d in xrange(poly.dim):
             for j in xrange(len(freeze)):
-                if freeze[j,d]:
+                if freeze[j, d]:
                     key[d], zeros[d] = zeros[d], key[d]
                     break
 
@@ -779,14 +780,15 @@ def E_cond(poly, freeze, dist, **kws):
 
         for d in xrange(poly.dim):
             for j in xrange(len(freeze)):
-                if freeze[j,d]:
+                if freeze[j, d]:
                     key[d], zeros[d] = zeros[d], key[d]
                     break
 
-    out = po.Poly(out, poly.dim, poly.shape, float)
-    out = po.reshape(out, shape)
+    out = chaospy.poly.Poly(out, poly.dim, poly.shape, float)
+    out = chaospy.poly.reshape(out, shape)
 
     return out
+
 
 def Sens_m(poly, dist, **kws):
     """
@@ -798,14 +800,15 @@ First order sensitivity indices
 
     dim = len(dist)
     if poly.dim<dim:
-        poly = po.setdim(poly, len(dist))
+        poly = chaospy.poly.setdim(poly, len(dist))
 
     zero = [0]*dim
     out = np.zeros((dim,) + poly.shape)
     V = Var(poly, dist, **kws)
     for i in range(dim):
         zero[i] = 1
-        out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/(V+(V==0))*(V!=0)
+        out[i] = Var(E_cond(poly, zero, dist, **kws),
+                     dist, **kws)/(V+(V == 0))*(V != 0)
         zero[i] = 0
     return out
 
@@ -817,10 +820,9 @@ AKA Sobol' indices
 
 Second order sensitivity indices
     """
-
     dim = len(dist)
     if poly.dim<dim:
-        poly = po.setdim(poly, len(dist))
+        poly = chaospy.poly.setdim(poly, len(dist))
 
     zero = [0]*dim
     out = np.zeros((dim, dim) + poly.shape)
@@ -829,7 +831,8 @@ Second order sensitivity indices
         zero[i] = 1
         for j in range(dim):
             zero[j] = 1
-            out[i] = Var(E_cond(poly, zero, dist, **kws), dist, **kws)/(V+(V==0))*(V!=0)
+            out[i] = Var(E_cond(poly, zero, dist, **kws),
+                         dist, **kws)/(V+(V == 0))*(V != 0)
             zero[j] = 0
         zero[i] = 0
 
@@ -843,10 +846,9 @@ AKA Sobol' indices
 
 Total effect sensitivity index
     """
-
     dim = len(dist)
     if poly.dim<dim:
-        poly = po.setdim(poly, len(dist))
+        poly = chaospy.poly.setdim(poly, len(dist))
 
     zero = [1]*dim
     out = np.zeros((dim,) + poly.shape, dtype=float)
@@ -858,6 +860,7 @@ Total effect sensitivity index
         zero[i] = 1
     return out
 
+
 def Sens_m_nataf(order, dist, samples, vals, **kws):
     """
 Variance-based decomposition with dependent varibles thorugh the Nataf
@@ -868,15 +871,17 @@ First order sensitivity indices
 Args:
     order (int): polynomial order used `orth_ttr`.
     dist (Copula): Assumed to be Nataf with independent components
-    samples (array_like): Samples used for evaluation (typically generated from `dist`.)
+    samples (array_like): Samples used for evaluation (typically generated from
+            `dist`.)
     vals (array_like): Evaluations of the model for given samples.
 
-Kwrds: Passed to `E`, `E_cond` and `Var` as part of the method.
+Kwrds:
+    Passed to `E`, `E_cond` and `Var` as part of the method.
 
 Returns:
-        np.ndarray: Sensitivity indices with `shape==(len(dist),)+vals.shape[1:]`
+        np.ndarray: Sensitivity indices with
+                `shape==(len(dist),) + vals.shape[1:]`
     """
-
     assert dist.__class__.__name__ == "Copula"
     trans = dist.prm["trans"]
     assert trans.__class__.__name__ == "nataf"
@@ -888,20 +893,22 @@ Returns:
     marginal = dist.prm["dist"]
     dim = len(dist)
 
-    orth = ort.orth_ttr(order, marginal, sort="GR")
+    orth = chaospy.orthogonal.orth_ttr(order, marginal, sort="GR")
 
     r = range(dim)
 
     index = [1] + [0]*(dim-1)
 
-    nataf = di.Nataf(marginal, cov, r)
+    nataf = chaospy.dist.Nataf(marginal, cov, r)
     samples_ = marginal.inv( nataf.fwd( samples ) )
-    poly, coeffs = co.fit_regression(orth, samples_, vals, retall=1)
+    poly, coeffs = chaospy.collocation.fit_regression(
+        orth, samples_, vals, retall=1)
 
     V = Var(poly, marginal, **kws)
 
     out = np.zeros((dim,) + poly.shape)
-    out[0] = Var(E_cond(poly, index, marginal, **kws), marginal, **kws)/(V+(V==0))*(V!=0)
+    out[0] = Var(E_cond(poly, index, marginal, **kws),
+                 marginal, **kws)/(V+(V == 0))*(V != 0)
 
 
     for i in xrange(1, dim):
@@ -909,13 +916,16 @@ Returns:
         r = r[1:] + r[:1]
         index = index[-1:] + index[:-1]
 
-        nataf = di.Nataf(marginal, cov, r)
+        nataf = chaospy.dist.Nataf(marginal, cov, r)
         samples_ = marginal.inv( nataf.fwd( samples ) )
-        poly, coeffs = co.fit_regression(orth, samples_, vals, retall=1)
+        poly, coeffs = chaospy.collocation.fit_regression(
+            orth, samples_, vals, retall=1)
 
-        out[i] = Var(E_cond(poly, index, marginal, **kws), marginal, **kws)/(V+(V==0))*(V!=0)
+        out[i] = Var(E_cond(poly, index, marginal, **kws),
+                     marginal, **kws)/(V+(V == 0))*(V != 0)
 
     return out
+
 
 def Sens_t_nataf(order, dist, samples, vals, **kws):
     """
@@ -927,13 +937,15 @@ Total order sensitivity indices
 Args:
     order (int): polynomial order used `orth_ttr`.
     dist (Copula): Assumed to be Nataf with independent components
-    samples (array_like): Samples used for evaluation (typically generated from `dist`.)
+    samples (array_like): Samples used for evaluation (typically generated
+            from `dist`.)
     vals (array_like): Evaluations of the model for given samples.
 
 Kwrds: Passed to `E`, `E_cond` and `Var` as part of the method.
 
 Returns:
-        np.ndarray: Sensitivity indices with `shape==(len(dist),)+vals.shape[1:]`
+        np.ndarray: Sensitivity indices with
+                `shape==(len(dist),)+vals.shape[1:]`
     """
 
     assert dist.__class__.__name__ == "Copula"
@@ -947,34 +959,38 @@ Returns:
     marginal = dist.prm["dist"]
     dim = len(dist)
 
-    orth = ort.orth_ttr(order, marginal, sort="GR")
+    orth = chaospy.orthogonal.orth_ttr(order, marginal, sort="GR")
 
     r = range(dim)
 
     index = [0] + [1]*(dim-1)
 
-    nataf = di.Nataf(marginal, cov, r)
+    nataf = chaospy.dist.Nataf(marginal, cov, r)
     samples_ = marginal.inv( nataf.fwd( samples ) )
-    poly, coeffs = co.fit_regression(orth, samples_, vals, retall=1)
+    poly, coeffs = chaospy.collocation.fit_regression(
+        orth, samples_, vals, retall=1)
 
     V = Var(poly, marginal, **kws)
 
     out = np.zeros((dim,) + poly.shape)
-    out[0] = (V-Var(E_cond(poly, index, marginal, **kws), marginal, **kws))/(V+(V==0))**(V!=0)
-
+    out[0] = (V-Var(E_cond(poly, index, marginal, **kws),
+                    marginal, **kws))/(V+(V == 0))**(V != 0)
 
     for i in xrange(1, dim):
 
         r = r[1:] + r[:1]
         index = index[-1:] + index[:-1]
 
-        nataf = di.Nataf(marginal, cov, r)
+        nataf = chaospy.dist.Nataf(marginal, cov, r)
         samples_ = marginal.inv( nataf.fwd( samples ) )
-        poly, coeffs = co.fit_regression(orth, samples_, vals, retall=1)
+        poly, coeffs = chaospy.collocation.fit_regression(
+            orth, samples_, vals, retall=1)
 
-        out[i] = (V-Var(E_cond(poly, index, marginal, **kws), marginal, **kws))/(V+(V==0))*(V!=0)
+        out[i] = (V-Var(E_cond(poly, index, marginal, **kws),
+                        marginal, **kws))/(V+(V == 0))*(V != 0)
 
     return out
+
 
 def Sens_nataf(order, dist, samples, vals, **kws):
     """
@@ -986,14 +1002,16 @@ Main and total order sensitivity indices
 Args:
     order (int): polynomial order used `orth_ttr`.
     dist (Copula): Assumed to be Nataf with independent components
-    samples (array_like): Samples used for evaluation (typically generated from `dist`.)
+    samples (array_like): Samples used for evaluation (typically generated
+            from `dist`.)
     vals (array_like): Evaluations of the model for given samples.
 
 Kwrds: Passed to `E`, `E_cond` and `Var` as part of the method.
 
 Returns:
-        np.ndarray: Sensitivity indices with `shape==(2,len(dist),)+vals.shape[1:]`.
-        First component is main and second is total.
+        np.ndarray: Sensitivity indices with
+                `shape==(2, len(dist),)+vals.shape[1:]`. First component is
+                main and second is total.
     """
 
     assert dist.__class__.__name__ == "Copula"
@@ -1007,46 +1025,43 @@ Returns:
     marginal = dist.prm["dist"]
     dim = len(dist)
 
-    orth = ort.orth_ttr(order, marginal, sort="GR")
+    orth = chaospy.orthogonal.orth_ttr(order, marginal, sort="GR")
 
     r = range(dim)
 
     index0 = [0] + [1]*(dim-1)
     index1 = [1] + [0]*(dim-1)
 
-    nataf = di.Nataf(marginal, cov, r)
+    nataf = chaospy.dist.Nataf(marginal, cov, r)
     samples_ = marginal.inv( nataf.fwd( samples ) )
-    poly, coeffs = co.fit_regression(orth, samples_, vals, retall=1)
+    poly, coeffs = chaospy.collocation.fit_regression(
+        orth, samples_, vals, retall=1)
 
     V = Var(poly, marginal, **kws)
 
     out = np.zeros((2, dim,) + poly.shape)
-    out[0,0] = (V-Var(E_cond(poly, index0, marginal, **kws), marginal, **kws))/(V+(V==0))**(V!=0)
-    out[1,0] = Var(E_cond(poly, index1, marginal, **kws), marginal, **kws)/(V+(V==0))*(V!=0)
-
+    out[0, 0] = (V - Var(E_cond(poly, index0, marginal, **kws),
+                        marginal, **kws))/(V+(V == 0))**(V != 0)
+    out[1, 0] = Var(E_cond(poly, index1, marginal, **kws),
+                   marginal, **kws)/(V+(V == 0))*(V != 0)
 
     for i in xrange(1, dim):
 
         r = r[1:] + r[:1]
         index0 = index0[-1:] + index0[:-1]
 
-        nataf = di.Nataf(marginal, cov, r)
+        nataf = chaospy.dist.Nataf(marginal, cov, r)
         samples_ = marginal.inv( nataf.fwd( samples ) )
-        poly, coeffs = co.fit_regression(orth, samples_, vals, retall=1)
+        poly, coeffs = chaospy.collocation.fit_regression(
+            orth, samples_, vals, retall=1)
 
-        out[0,i] = (V-Var(E_cond(poly, index0, marginal, **kws), marginal, **kws))/(V+(V==0))*(V!=0)
-        out[1,i] = Var(E_cond(poly, index1, marginal, **kws), marginal, **kws)/(V+(V==0))*(V!=0)
+        out[0, i] = (V-Var(E_cond(poly, index0, marginal, **kws),
+                          marginal, **kws))/(V+(V == 0))*(V != 0)
+        out[1, i] = Var(E_cond(poly, index1, marginal, **kws),
+                       marginal, **kws)/(V+(V == 0))*(V != 0)
 
     return out[::-1]
 
-import numpy as np
-import poly as po
-import dist as di
-import quadrature as qu
-from scipy.stats import spearmanr
-
-import collocation as co
-import orthogonal as ort
 
 if __name__=="__main__":
     import __init__ as cp

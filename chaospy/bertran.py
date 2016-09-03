@@ -18,7 +18,7 @@ rank            Calculate the index rank
 
 import numpy as np
 from scipy.misc import comb
-from utils import lazy_eval
+from chaospy.utils import lazy_eval
 
 __version__ = "1.0"
 __all__ = [
@@ -487,7 +487,7 @@ j : int
 
 
 if __name__=="__main__":
-    import __init__ as cp
+    import chaospy as cp
     import doctest
     doctest.testmod()
 

@@ -11,7 +11,8 @@ This code is distributed under the GNU LGPL license.
 
 import numpy as np
 from scipy.special import ndtr
-from .utils import combine
+
+import chaospy
 
 
 def gk16(n):
@@ -1175,9 +1176,9 @@ def gk(order, dist, rule=24):
                     for i in xrange(len(dist))]
 
         x = [_[0][0] for _ in xw]
-        x = combine(x).T
+        x = chaospy.utils.combine(x).T
         w = [_[1] for _ in xw]
-        w = np.prod(combine(w), -1)
+        w = np.prod(chaospy.utils.combine(w), -1)
 
         return x, w
 

@@ -1,5 +1,5 @@
 """
-Gauss-Patterson quadrature rule
+Gauss-Patterson quadrature rule.
 
 Adapted from John Burkardt's implementation in Fortran
 
@@ -10,7 +10,8 @@ This code is distributed under the GNU LGPL license.
 """
 
 import numpy as np
-from .utils import combine
+
+import chaospy
 
 
 def gp(n, dist):
@@ -63,7 +64,6 @@ W : np.ndarray
     Weights
 
     """
-
     if len(dist) > 1:
 
         if isinstance(n, int):
@@ -73,8 +73,8 @@ W : np.ndarray
 
         x = [_[0][0] for _ in xw]
         w = [_[1] for _ in xw]
-        x = combine(x).T
-        w = np.prod(combine(w), -1)
+        x = chaospy.utils.combine(x).T
+        w = np.prod(chaospy.utils.combine(w), -1)
 
         return x, w
 
