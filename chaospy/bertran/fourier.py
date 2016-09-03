@@ -1,11 +1,7 @@
 """
 Use recursive method for calculating Fourier coefficients.
 """
-import numpy as np
-
-from chaospy.bertran.operators import (
-    add, multi_index, rank, parent, child
-)
+import chaospy
 
 
 class FourierRecursive(object):
@@ -31,15 +27,15 @@ class FourierRecursive(object):
         if idxi == idxk == 0 or idxi == idxj == 0:
             out = 0
 
-        elif add(idxi, idxk, self.dim) < idxj \
-                or add(idxi, idxj, self.dim) < idxk:
+        elif chaospy.bertran.add(idxi, idxk, self.dim) < idxj \
+                or chaospy.bertran.add(idxi, idxj, self.dim) < idxk:
             out = 0
 
-        elif add(idxi, idxj, self.dim) == idxk:
+        elif chaospy.bertran.add(idxi, idxj, self.dim) == idxk:
             out = 1
 
         elif idxj == idxk == 0:
-            out = self.dist.mom(multi_index(idxi, self.dim))
+            out = self.dist.mom(chaospy.bertran.multi_index(idxi, self.dim))
 
         elif idxk == 0:
             out = self.mom_110(idxi, idxj, idxk)
@@ -54,33 +50,38 @@ class FourierRecursive(object):
     def mom_110(self, idxi, idxj, idxk):
         """Backend moment for i, j, k == 1, 1, 1."""
         rank_ = min(
-            rank(idxi, self.dim),
-            rank(idxj, self.dim),
-            rank(idxk, self.dim)
+            chaospy.bertran.rank(idxi, self.dim),
+            chaospy.bertran.rank(idxj, self.dim),
+            chaospy.bertran.rank(idxk, self.dim)
         )
-        par, axis0 = parent(idxj, self.dim)
-        gpar, _ = parent(par, self.dim, axis0)
-        idxi_child = child(idxi, self.dim, axis0)
-        oneup = child(0, self.dim, axis0)
+        par, axis0 = chaospy.bertran.parent(idxj, self.dim)
+        gpar, _ = chaospy.bertran.parent(par, self.dim, axis0)
+        idxi_child = chaospy.bertran.child(idxi, self.dim, axis0)
+        oneup = chaospy.bertran.child(0, self.dim, axis0)
 
         out = self(idxi_child, par, 0)
         for k in range(gpar, idxj):
-            if rank(k, self.dim) >= rank_:
+            if chaospy.bertran.rank(k, self.dim) >= rank_:
                 out -= self.mom_111(oneup, par, k) * self.mom_111(idxi, k, 0)
         return out
 
     def mom_recurse(self, idxi, idxj, idxk):
         """Backend mement main loop."""
-        rank_ = min(rank(idxi, self.dim), rank(idxj, self.dim), rank(idxk, self.dim))
-        par, axis0 = parent(idxk, self.dim)
-        gpar, _ = parent(par, self.dim, axis0)
-        idxi_child = child(idxi, self.dim, axis0)
-        oneup = child(0, self.dim, axis0)
+        rank_ = min(
+            chaospy.bertran.rank(idxi, self.dim),
+            chaospy.bertran.rank(idxj, self.dim),
+            chaospy.bertran.rank(idxk, self.dim)
+        )
+        par, axis0 = chaospy.bertran.parent(idxk, self.dim)
+        gpar, _ = chaospy.bertran.parent(par, self.dim, axis0)
+        idxi_child = chaospy.bertran.child(idxi, self.dim, axis0)
+        oneup = chaospy.bertran.child(0, self.dim, axis0)
 
         out1 = self.mom_111(idxi_child, idxj, par)
-        out2 = self.mom_111(child(oneup, self.dim, axis0), par, par)
+        out2 = self.mom_111(
+            chaospy.bertran.child(oneup, self.dim, axis0), par, par)
         for k in range(gpar, idxk):
-            if rank(k, self.dim) >= rank_:
+            if chaospy.bertran.rank(k, self.dim) >= rank_:
                 out1 -= self.mom_111(oneup, k, par) \
                     * self.mom_111(idxi, idxj, k)
                 out2 -= self.mom_111(oneup, par, k) \

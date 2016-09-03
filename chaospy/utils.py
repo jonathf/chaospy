@@ -29,14 +29,15 @@ import pickle
 import os
 
 __all__ = [
-"combine",
-"lazy_eval",
-"hashable",
-"acf",
-"pso",
-"mlog10",
-"mci",
-"rlstsq",
+    "combine",
+    "lazy_eval",
+    "lazy",
+    "hashable",
+    "acf",
+    "pso",
+    "mlog10",
+    "mci",
+    "rlstsq",
 ]
 
 

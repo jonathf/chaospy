@@ -6,8 +6,6 @@ import functools
 import numpy as np
 from scipy.misc import comb
 
-from chaospy.utils import lazy
-
 __all__ = [
     "add", "terms", "multi_index", "bindex", "single_index", "rank",
     "child", "parent", "olindex"
@@ -224,7 +222,6 @@ def rank(idx, dim):
     return out
 
 
-@lazy(int)
 def parent(idx, dim, axis=None):
     """
     Parent node according to Bertran's notation.
@@ -262,7 +259,6 @@ def parent(idx, dim, axis=None):
     return single_index(out), axis
 
 
-@lazy(int)
 def child(idx, dim, axis):
     """
     Child node according to Bertran's notation.
@@ -302,9 +298,9 @@ def olindex(order, dim):
     --------
     >>> cp.olindex(3, 2)
     array([[0, 3],
-        [1, 2],
-        [2, 1],
-        [3, 0]])
+           [1, 2],
+           [2, 1],
+           [3, 0]])
     """
     idxm = [0]*dim
     out = []

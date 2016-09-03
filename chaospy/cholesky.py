@@ -33,8 +33,8 @@ J. Feinberg <jonathan@feinberg.no>
 """
 from __future__ import division
 
-import numpy as np
 from scipy import sparse
+import numpy as np
 from numpy.linalg import cholesky as chol_np
 
 _FINFO = np.finfo(float)
@@ -45,119 +45,120 @@ __all__ = ['chol_gmw', 'chol_gk', 'chol_gko',
     'chol_se', 'chol_bo', 'chol_np']
 
 
-def chol_gmw(A, eps=_EPS):
+def chol_gmw(mat, eps=_EPS):
     """
-Pivoting Modified Cholesky decomposition using the
-Gill-Murray-Wright algorithm
+    Gill-Murray-Wright algorithm for pivoting modified cholesky decomposition.
 
-Return `(P, L, e)` such that `P.T*A*P = L*L.T - diag(e)`.
+    Return `(perm, lowtri, error)` such that `perm.T*mat*perm = lowtri*lowtri.T - diag(error)`.
 
-Parameters
-----------
-A : array
-    Must be a non-singular and symmetric matrix
-eps : float
-    Error tolerance used in algorithm.
+    Parameters
+    ----------
+    mat : array
+        Must be a non-singular and symmetric matrix
+    eps : float
+        Error tolerance used in algorithm.
 
-Returns
--------
-P : 2d array
-    Permutation matrix used for pivoting.
-L : 2d array
-    Lower triangular factor
-e : 1d array
-    Positive diagonals of shift matrix `e`.
+    Returns
+    -------
+    perm : 2d array
+        Permutation matrix used for pivoting.
+    lowtri : 2d array
+        Lower triangular factor
+    error : 1d array
+        Positive diagonals of shift matrix `error`.
 
-Examples
---------
->>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
->>> P, L, e = chol_gmw(A)
->>> P, L = np.matrix(P), np.matrix(L)
->>> print(e)
-[ 0.     0.     3.008]
->>> print(np.allclose(P.T*A*P, L*L.T-np.diag(e)))
-True
+    Examples
+    --------
+    >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+    >>> perm, lowtri, error = chol_gmw(mat)
+    >>> perm, lowtri = np.matrix(perm), np.matrix(lowtri)
+    >>> print(error)
+    [ 0.     0.     3.008]
+    >>> print(np.allclose(perm.T*mat*perm, lowtri*lowtri.T-np.diag(error)))
+    True
 
-Notes
------
-The Gill, Murray, and Wright modified Cholesky algorithm.
+    Notes
+    -----
+    The Gill, Murray, and Wright modified Cholesky algorithm.
 
-Algorithm 6.5 from page 148 of 'Numerical Optimization' by Jorge
-Nocedal and Stephen J. Wright, 1999, 2nd ed.
+    Algorithm 6.5 from page 148 of 'Numerical Optimization' by Jorge
+    Nocedal and Stephen J. Wright, 1999, 2nd ed.
     """
-    A = np.asfarray(A)
-    n = A.shape[0]
+    mat = np.asfarray(mat)
+    size = mat.shape[0]
 
-    # Calculate gamma(A) and xi(A).
+    # Calculate gamma(mat) and xi(mat).
     gamma = 0.0
     xi = 0.0
-    for i in xrange(n):
-        gamma = max(abs(A[i, i]), gamma)
-        for j in xrange(i+1, n):
-            xi = max(abs(A[i, j]), xi)
+    for i in range(size):
+        gamma = max(abs(mat[i, i]), gamma)
+        for j in range(i+1, size):
+            xi = max(abs(mat[i, j]), xi)
 
     # Calculate delta and beta.
     delta = eps * max(gamma + xi, 1.0)
-    if n == 1:
+    if size == 1:
         beta = np.sqrt(max(gamma, eps))
     else:
-        beta = np.sqrt(max(gamma, xi / np.sqrt(n**2 - 1.0), eps))
+        beta = np.sqrt(max(gamma, xi / np.sqrt(size*size - 1.0), eps))
 
     # Initialise data structures.
-    a = 1.0 * A
-    r = 0.0 * A
-    e = np.zeros(n, dtype=float)
-    P = np.eye(n, dtype=float)
+    mat_a = 1.0 * mat
+    mat_r = 0.0 * mat
+    error = np.zeros(size, dtype=float)
+    perm = np.eye(size, dtype=float)
 
     # Main loop.
-    for j in xrange(n):
+    for j in range(size):
 
         # Row and column swapping, find the index > j of the largest
         # diagonal element.
-        q = j
-        for i in xrange(j+1, n):
-            if abs(a[i, i]) >= abs(a[q, q]):
-                q = i
+        dia = j
+        for i in range(j+1, size):
+            if abs(mat_a[i, i]) >= abs(mat_a[dia, dia]):
+                dia = i
 
-        # Interchange row and column j and q (if j != q).
-        if q != j:
+        # Interchange row and column j and dia (if j != dia).
+        if dia != j:
             # Temporary permutation matrix for swaping 2 rows or columns.
-            p = np.eye(n, dtype=float)
+            perm_new = np.eye(size, dtype=float)
 
-            # Modify the permutation matrix P by swaping columns.
-            row_P = 1.0*P[:, q]
-            P[:, q] = P[:, j]
-            P[:, j] = row_P
+            # Modify the permutation matrix perm by swaping columns.
+            perm_row = 1.0*perm[:, dia]
+            perm[:, dia] = perm[:, j]
+            perm[:, j] = perm_row
 
             # Modify the permutation matrix p by swaping rows (same as
             # columns because p = pT).
-            row_p = 1.0*p[q]
-            p[q] = p[j]
-            p[j] = row_p
+            row_p = 1.0 * perm_new[dia]
+            perm_new[dia] = perm_new[j]
+            perm_new[j] = row_p
 
-            # Permute a and r (p = pT).
-            a = np.dot(p, np.dot(a, p))
-            r = np.dot(r, p)
+            # Permute mat_a and r (p = pT).
+            mat_a = np.dot(perm_new, np.dot(mat_a, perm_new))
+            mat_r = np.dot(mat_r, perm_new)
 
-        # Calculate dj.
+        # Calculate a_pred.
         theta_j = 0.0
-        if j < n-1:
-            for i in xrange(j+1, n):
-                theta_j = max(theta_j, abs(a[j, i]))
-        dj = max(abs(a[j, j]), (theta_j/beta)**2, delta)
+        if j < size-1:
+            for i in range(j+1, size):
+                theta_j = max(theta_j, abs(mat_a[j, i]))
+        a_pred = max(abs(mat_a[j, j]), (theta_j/beta)**2, delta)
 
-        # Calculate e (not really needed!).
-        e[j] = dj - a[j, j]
+        # Calculate error (not really needed!).
+        error[j] = a_pred - mat_a[j, j]
 
         # Calculate row j of r and update a.
-        r[j, j] = np.sqrt(dj)     # Damned sqrt introduces roundoff error.
-        for i in xrange(j+1, n):
-            r[j, i] = a[j, i] / r[j, j]
-            for k in xrange(j+1, i+1):
-                a[i, k] = a[k, i] = a[k, i] - r[j, i] * r[j, k]     # Keep matrix a symmetric.
+        mat_r[j, j] = np.sqrt(a_pred) # Damned sqrt introduces roundoff error.
+        for i in range(j+1, size):
+            mat_r[j, i] = mat_a[j, i] / mat_r[j, j]
+            for k in range(j+1, i+1):
 
-    # The Cholesky factor of A.
-    return P, r.T, e
+                # Keep matrix a symmetric:
+                mat_a[i, k] = mat_a[k, i] = mat_a[k, i] - mat_r[j, i] * mat_r[j, k]
+
+    # The Cholesky factor of mat.
+    return perm, mat_r.T, error
 
 
 
