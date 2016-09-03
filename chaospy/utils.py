@@ -38,7 +38,6 @@ __all__ = [
 "mci",
 "rlstsq",
 ]
-__version__ = "1.0"
 
 
 def combine(X, part=None):
@@ -69,7 +68,6 @@ Examples
  [ 2.  4.  4.]
  [ 2.  5.  6.]]
 """
-    
     def clean(x):
         x = np.array(x)
         if len(x.shape)<=1:
@@ -256,6 +254,13 @@ name : str
 Number of unique function evaluations
         """
         return len(self.container)
+
+
+def lazy(convert, load=None):
+    def lazy_decorator(func):
+        return lazy_eval(func, convert, load)
+    return lazy_wrapper
+
 
 
 def acf(x, length=20):

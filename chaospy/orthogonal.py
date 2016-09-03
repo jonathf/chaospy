@@ -265,7 +265,7 @@ Examples
     x = chaospy.poly.basis(1,1,dim)
     if not ("R" in sort):
         x = x[::-1]
-    foo = chaospy.bertran.Fourier_recursive(dist)
+    foo = chaospy.bertran.fourier.FourierRecursive(dist)
 
     # Create order=0
     pool = [chaospy.poly.Poly(1, dim=dim, shape=())]
