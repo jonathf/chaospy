@@ -1,27 +1,5 @@
 """
-==============================
-Cholesky decomposition rutines
-==============================
-
-Rutines
-=======
-
-Pivoted
--------
-
-chol_bo         Bastos-O'Hagan, 2007
-chol_gmw        Gill-Murray-Wright, 1981
-chol_se         Scnabel-Eskow, 1999
-
-Non-pivoted
------------
-
-chol_gk         Gill-King, 2004
-chol_gkc        Gill-King, 2004, implemented in C
-chol_gko        Gill-King, 2004, vectorized implemention w/support
-                for sparse matrices by M. L. Overton
-chol_np         Classical implementation from numpy.linalg library
-
+Cholesky decomposition rutines.
 
 Notes
 =====
@@ -37,19 +15,22 @@ from scipy import sparse
 import numpy as np
 from numpy.linalg import cholesky as chol_np
 
-_FINFO = np.finfo(float)
-_EPS = _FINFO.eps
+EPS = np.finfo(float).eps
+
+__all__ = [
+    "gill_murray_wright",
+    "gill_king",
+    "scnabel_eskow",
+    "bastos_ohagen",
+]
 
 
-__all__ = ['chol_gmw', 'chol_gk', 'chol_gko',
-    'chol_se', 'chol_bo', 'chol_np']
-
-
-def chol_gmw(mat, eps=_EPS):
+def gill_murray_wright(mat, eps=EPS):
     """
-    Gill-Murray-Wright algorithm for pivoting modified cholesky decomposition.
+    Gill-Murray-Wright algorithm for pivoting modified Cholesky decomposition.
 
-    Return `(perm, lowtri, error)` such that `perm.T*mat*perm = lowtri*lowtri.T - diag(error)`.
+    Return `(perm, lowtri, error)` such that
+    `perm.T*mat*perm = lowtri*lowtri.T - diag(error)`.
 
     Parameters
     ----------
@@ -162,257 +143,46 @@ def chol_gmw(mat, eps=_EPS):
 
 
 
-def chol_gk(A, eps=_EPS):
+def gill_king(A, eps=EPS):
     """
-Modified Cholesky decomposition using the Gill-King rutine
+    Gill-King algorithm for modified cholesky decomposition.
 
-Return `(L, e)` such that `M = A + diag(e) = dot(L, L.T)` where
-
-1) `M` is safely symmetric positive definite (SPD) and well
-   conditioned.
-2) `e` is small (zero if `A` is already SPD and not much larger
-   than the most negative eigenvalue of `A`)
-
-.. math::
-   \mat{A} + \diag{e} = \mat{L}\mat{L}^{T}
-
-Parameters
-----------
-A : array
-    Must be a non-singular and symmetric matrix
-eps : float
-    Error tolerance used in algorithm.
-
-Returns
--------
-L : 2d array
-    Lower triangular Cholesky factor.
-e : 1d array
-    Diagonals of correction matrix `E`.
+    Parameters
+    ----------
+    A : array
+        Must be a non-singular and symmetric matrix
+        If sparse, the result will also be sparse.
+    eps : float
+        Error tolerance used in algorithm.
 
 
-Examples
---------
->>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
->>> L, e = chol_gk(A)
->>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
-True
->>> print(e)
-[ 0.     0.     3.008]
+    Return `(L, e)` such that `M = A + diag(e) = dot(L, L.T)` where
 
-Notes
------
-``What to do When Your Hessian is Not Invertable: Alternatives to
-Model Respecification in Nonlinear Estimation,''
-J. Gill and G. King
-Socialogical Methods and Research, Vol. 32, No. 1 (2004):54--87
-    """
+    Returns
+    -------
+    L : 2d array
+        Lower triangular Cholesky factor.
+    e : 1d array
+        Diagonals of correction matrix `E`.
 
-    # local i,j,k,n,sum,R,theta_j,norm_A,phi_j,delta,xi_j,gamm,E,beta_j;
-    A = np.asfarray(A)
-    n = A.shape[0]                        # n = rows(A);
-    R = np.eye(n, dtype=float)             # R = eye(n);
-    e = np.zeros(n, dtype=float)          # E = zeros(n, n);
-    norm_A = abs(A).sum(axis=0).max()     # norm_A = maxc(sumc(abs(A)));
-    gamm = abs(A.diagonal()).max()        # gamm = maxc(abs(diag(A))); 
-    delta = eps*max(1, norm_A)           # delta = maxc(maxc(__macheps*norm_A~__macheps));
-    for j in xrange(n):                   # for j (1, n, 1); 
-        theta_j = 0                       #    theta_j = 0;
-        for i in xrange(n):               #    for i (1, n, 1);
-            sum_ = 0                      #       sum = 0;
-            for k in xrange(i):           #       for k (1, (i-1), 1);	
-                sum_ += R[k, i]*R[k, j]     #          sum = sum + R[k, i]*R[k, j];
-                                          #       endfor;
-            R[i, j] = (A[i, j]
-                      - sum_)/R[i, i]      #       R[i, j] = (A[i, j] - sum)/R[i, i];
-            theta_j = max(theta_j,        #       if (A[i, j] -sum) > theta_j;
-                          A[i, j] - sum_)  #          theta_j = A[i, j] - sum;
-                                          #       endif;
-            if i > j:                     #       if i > j;
-                R[i, j] = 0                #          R[i, j] = 0;
-                                          #       endif;
-                                          #    endfor;
-        sum_ = 0                          #    sum = 0;
-        for k in xrange(j):               #    for k (1, (j-1), 1);	
-           sum_ += R[k, j]**2              #       sum = sum + R[k, j]^2;
-                                          #    endfor;
-        phi_j = A[j, j] - sum_             #    phi_j = A[j, j] - sum;
-        if j+1 < n:                       #    if (j+1) <= n;
-            xi_j = abs(A[j+1:, j]).max()   #       xi_j = maxc(abs(A[(j+1):n, j]));
-        else:                             #    else;
-            xi_j = abs(A[-1, j])           #       xi_j = maxc(abs(A[n, j]));
-                                          #    endif;
-        beta_j = np.sqrt(max(gamm,        #    beta_j = sqrt(maxc(maxc(gamm~(xi_j/n)~__macheps)));
-                             xi_j/n,
-                             eps))
-        if delta >= max(abs(phi_j),       #    if delta >= maxc(abs(phi_j)~((theta_j^2)/(beta_j^2)));
-                        (theta_j/beta_j)**2):
-            e[j] = delta - phi_j          #       E[j, j] = delta - phi_j;
-        elif abs(phi_j) >= max(delta,     #    elseif abs(phi_j) >= maxc(((delta^2)/(beta_j^2))~delta);
-                               (delta/beta_j)**2):
-            e[j] = abs(phi_j) - phi_j     #       E[j, j] = abs(phi_j) - phi_j;
-        elif (max(delta, abs(phi_j)) <    #    elseif ((theta_j^2)/(beta_j^2)) >= maxc(delta~abs(phi_j));
-              (theta_j/beta_j)**2):
-            e[j] = ((theta_j/beta_j)**2
-                    - phi_j)              #       E[j, j] = ((theta_j^2)/(beta_j^2)) - phi_j;
-                                          #    endif;
-        R[j, j] = np.sqrt(A[j, j]           #    R[j, j] = sqrt(A[j, j] - sum + E[j, j]);
-                         - sum_ + e[j])   
-                                          # endfor;
-    return (R.T, e)                       # retp(R'R);
+    Examples
+    --------
+    >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+    >>> L, e = chol_gmo(A)
+    >>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
+    True
+    >>> print(e)
+    [  0.00000000e+00   8.88178420e-16   3.00800000e+00]
 
+    Notes
+    -----
+    Algorithm 3.4 of 'Numerical Optimization' by Jorge Nocedal and
+    Stephen J. Wright
 
-# def chol_gkc(A, eps=_EPS):
-#     """
-# Modified Cholesky decomposition
-# using the Gill-King rutine written in C
-#
-# Return `(L, e)` such that `M = A + diag(e) = dot(L, L.T)` where
-#
-# 1) `M` is safely symmetric positive definite (SPD) and well
-#    conditioned.
-# 2) `e` is small (zero if `A` is already SPD and not much larger
-#    than the most negative eigenvalue of `A`)
-#
-# .. math::
-#    \mat{A} + \diag{e} = \mat{L}\mat{L}^{T}
-#
-# Parameters
-# ----------
-# A : array
-#     Must be a non-singular and symmetric matrix
-# eps : float
-#     Error tolerance used in algorithm.
-#
-# Returns
-# -------
-# L : 2d array
-#    Lower triangular Cholesky factor.
-# e : 1d array
-#    Diagonals of correction matrix `E`.
-#
-# Examples
-# --------
-# >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-# >>> L, e = chol_gkc(A)
-# >>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
-# True
-# >>> print(e)
-# [ 0.     0.     3.008]
-#
-# Notes
-# -----
-# ``What to do When Your Hessian is Not Invertable: Alternatives to
-# Model Respecification in Nonlinear Estimation,''
-# J. Gill and G. King
-# Socialogical Methods and Research, Vol. 32, No. 1 (2004):54--87
-#     """
-#     A = np.ascontiguousarray(A, dtype='d')
-#     n = A.shape[0]
-#     L = np.eye(n, dtype='d')
-#     e = np.zeros(n, dtype='d')
-#     norm_A = float(np.linalg.norm(A, np.inf))
-#     gamm = float(np.linalg.norm(A.diagonal(), np.inf))
-#     delta = float(eps*max(1, norm_A))
-#     code = r"""
-# int i, j, k;
-# double sum, tmp, theta_j2, phi_j, xi_j, beta_j2;
-#
-# for (j=0;j<n;++j) {
-#   theta_j2 = 0;
-#   for (i=0;i<n;++i) {
-#     sum = 0;
-#     for (k=0;k<i;++k){
-#       sum += L2(i, k)*L2(j, k);
-#     }
-#     if (i <= j) {
-#       L2(j, i) = (A2(i, j) - sum)/L2(i, i);
-#     }
-#     theta_j2 = std::max(theta_j2, A2(i, j) - sum);
-#   }
-#   theta_j2 *= theta_j2;
-#   sum = 0;
-#   for (k=0;k<j;++k) {
-#     sum += L2(j, k)*L2(j, k);
-#   }
-#
-#   phi_j = A2(j, j) - sum;
-#   if (j + 1 < n) {
-#     xi_j = 0;
-#     for (k=j+1;k<n;++k) {
-#        xi_j = std::max(tmp, fabs(A2(k, j)));
-#     }
-#   } else {
-#     xi_j = fabs(A2(n-1, j));
-#   }
-#
-#   beta_j2 = xi_j/n;
-#   beta_j2 = (beta_j2 < gamm)?gamm:beta_j2;
-#   beta_j2 = (beta_j2 < %(eps)d)?%(eps)d:beta_j2;
-#
-#   if (delta >= std::max(fabs(phi_j), theta_j2/beta_j2)) {
-#     e[j] = delta - phi_j;
-#   } else if (fabs(phi_j) >= std::max(delta, delta*delta/beta_j2)) {
-#     e[j] = fabs(phi_j) - phi_j;
-#   } else if (std::max(delta, fabs(phi_j)) < theta_j2/beta_j2) {
-#     e[j] = theta_j2/beta_j2 - phi_j;
-#   }
-#   L2(j, j) = sqrt(A2(j, j) - sum + e[j]);
-# }
-#     """ % dict(eps=eps)
-#     local_dict = dict(L=L, n=n, e=e, A=A, norm_A=norm_A,
-#                       gamm=gamm, delta=delta)
-#     headers = ['<math.h>', '<algorithm>']
-#     scipy.weave.inline(code,
-#                     local_dict.keys(),
-#                     local_dict=local_dict,
-#                     headers=headers)
-#     return (L, e)
-
-
-def chol_gko(A, eps=_EPS):
-    """
-Modified Cholesky decomposition
-using the Gill-King rutine
-Implemented by M. L. Overton
-
-Parameters
-----------
-A : array
-    Must be a non-singular and symmetric matrix
-    If sparse, the result will also be sparse.
-eps : float
-    Error tolerance used in algorithm.
-
-
-Return `(L, e)` such that `M = A + diag(e) = dot(L, L.T)` where
-
-Returns
--------
-L : 2d array
-    Lower triangular Cholesky factor.
-e : 1d array
-    Diagonals of correction matrix `E`.
-
-Examples
---------
->>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
->>> L, e = chol_gmo(A)
->>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
-True
->>> print(e)
-[  0.00000000e+00   8.88178420e-16   3.00800000e+00]
-
-
-Notes
------
-Algorithm 3.4 of 'Numerical Optimization' by Jorge Nocedal and
-Stephen J. Wright
-
-This is based on the MATLAB code from Michael
-L. Overton <overton@cs.nyu.edu>:
-http://cs.nyu.edu/overton/g22_opt/codes/cholmod.m
-Modified last 2005
+    This is based on the MATLAB code from Michael
+    L. Overton <overton@cs.nyu.edu>:
+    http://cs.nyu.edu/overton/g22_opt/codes/cholmod.m
+    Modified last 2005
     """
 
     if not sparse.issparse(A):
@@ -425,7 +195,6 @@ Modified last 2005
 
     delta = eps*max(gamma + xi, 1)
     beta = np.sqrt(max(gamma, xi/n, eps))
-#      indef = 0
 
     # initialize d and L
 
@@ -437,7 +206,6 @@ Modified last 2005
 
     # there are no inner for loops, everything implemented with
     # vector operations for a reasonable level of efficiency
-
     for j in xrange(n):
         if j == 0:
             K = []     # column index: all columns to left of diagonal
@@ -456,8 +224,6 @@ Modified last 2005
             L[I, j] = Ccol/d[j]
         else:
             d[j] = max(abs(djtemp), delta)
-#          if d[j] > djtemp:  # A was not sufficiently positive definite
-#              indef = True
 
     # convert to usual output format: replace L by L*sqrt(D) and transpose
     for j in xrange(n):
@@ -468,46 +234,44 @@ Modified last 2005
     return L, e
 
 
-def chol_se(A, eps=_EPS):
+def scnabel_eskow(A, eps=EPS):
     """
-A revised modified Cholesky factorisation algorithm.
+    Scnabel-Eskow algorithm for modified Cholesky factorisation algorithm.
 
-Parameters
-----------
-A : array
-    Must be a non-singular and symmetric matrix
-    If sparse, the result will also be sparse.
-eps : float
-    Error tolerance used in algorithm.
+    Parameters
+    ----------
+    A : array
+        Must be a non-singular and symmetric matrix
+        If sparse, the result will also be sparse.
+    eps : float
+        Error tolerance used in algorithm.
 
-Return `(P, L, e)` such that `P.T*A*P = L*L.T - diag(e)`.
+    Return `(P, L, e)` such that `P.T*A*P = L*L.T - diag(e)`.
 
-Returns
--------
-P : 2d array
-    Permutation matrix used for pivoting.
-L : 2d array
-    Lower triangular factor
-e : 1d array
-    Positive diagonals of shift matrix `e`.
+    Returns
+    -------
+    P : 2d array
+        Permutation matrix used for pivoting.
+    L : 2d array
+        Lower triangular factor
+    e : 1d array
+        Positive diagonals of shift matrix `e`.
 
-Examples
---------
->>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
->>> P, L, e = chol_se(A)
->>> P, L = np.matrix(P), np.matrix(L)
->>> print(e)
-[ 0.          1.50402929  1.50402929]
->>> print(np.allclose(P.T*A*P, L*L.T-np.diag(e)))
-True
+    Examples
+    --------
+    >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+    >>> P, L, e = chol_se(A)
+    >>> P, L = np.matrix(P), np.matrix(L)
+    >>> print(e)
+    [ 0.          1.50402929  1.50402929]
+    >>> print(np.allclose(P.T*A*P, L*L.T-np.diag(e)))
+    True
 
-Notes
------
-Schnabel, R. B. and Eskow, E. 1999, A revised modifed cholesky
-factorisation algorithm. SIAM J. Optim. 9, 1135-1148.
-
+    Notes
+    -----
+    Schnabel, R. B. and Eskow, E. 1999, A revised modifed cholesky
+    factorisation algorithm. SIAM J. Optim. 9, 1135-1148.
     """
-
     A = np.asfarray(A)
     tau = eps**(1/3)
     tau_bar = tau*tau
@@ -669,47 +433,45 @@ factorisation algorithm. SIAM J. Optim. 9, 1135-1148.
     return P, np.tril(A), e
 
 
-def chol_bo(A, eps=_EPS):
+def bastos_ohagen(A, eps=EPS):
     """
-Pivoting Cholesky Decompostion
-using algorithm by Bastos-O'Hagan
+    Bastos-O'Hagen algorithm for modified Cholesky decomposition.
 
-Parameters
-----------
-A : array_like
-    Input matrix.
-eps : float
-    Tollerence value for the eigen values. Values smaller than
-    tol*np.diag(A).max() are considered to be zero.
+    Parameters
+    ----------
+    A : array_like
+        Input matrix.
+    eps : float
+        Tollerence value for the eigen values. Values smaller than
+        tol*np.diag(A).max() are considered to be zero.
 
-Return `(P, L, E)` such that `P.T*A*P = L*L.T - E`.
+    Return `(P, L, E)` such that `P.T*A*P = L*L.T - E`.
 
-Returns
--------
-P : np.ndarray
-    Permutation matrix
-R : np.ndarray
-    Upper triangular decompostion
-E : np.ndarray
-    Error matrix
+    Returns
+    -------
+    P : np.ndarray
+        Permutation matrix
+    R : np.ndarray
+        Upper triangular decompostion
+    E : np.ndarray
+        Error matrix
 
-Examples
---------
->>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
->>> P, L, E = chol_bo(A)
->>> P, L = np.matrix(P), np.matrix(L)
->>> print(np.diag(E))
-[ -8.88178420e-16   0.00000000e+00   2.33733333e+00]
->>> print(np.allclose(P.T*A*P, L*L.T-E))
-True
+    Examples
+    --------
+    >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+    >>> P, L, E = chol_bo(A)
+    >>> P, L = np.matrix(P), np.matrix(L)
+    >>> print(np.diag(E))
+    [ -8.88178420e-16   0.00000000e+00   2.33733333e+00]
+    >>> print(np.allclose(P.T*A*P, L*L.T-E))
+    True
 
-Notes
------
-Algoritum 3 from ``Pivoting Cholesky Decomposition applied to
-Emulation and Validation of computer models'' by L.S. Bastos and
-and A. O'Hagan, 2007
+    Notes
+    -----
+    Algoritum 3 from ``Pivoting Cholesky Decomposition applied to
+    Emulation and Validation of computer models'' by L.S. Bastos and
+    and A. O'Hagan, 2007
     """
-
     A = np.asfarray(A).copy()
     B = np.asfarray(A).copy()
     a0 = np.diag(A).max()

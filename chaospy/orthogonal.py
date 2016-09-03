@@ -208,7 +208,7 @@ Examples
     C = chaospy.descriptives.Cov(basis, dist)
     N = len(basis)
 
-    L, e = chaospy.cholesky.chol_gko(C)
+    L, e = chaospy.cholesky.gill_king(C)
     Li = np.linalg.inv(L.T).T
     if not normed:
         Li /= np.repeat(np.diag(Li), len(Li)).reshape(Li.shape)
