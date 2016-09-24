@@ -3,3 +3,4 @@ pytest>=3.0.0
 pytest-runner>=2.9
 sphinx>=0.1.15
 sphinxcontrib-bibtex
+sphinx-autobuild
