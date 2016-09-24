@@ -23,17 +23,12 @@ try:
 except:
     pass
 
-import poly as po
-import quadrature as qu
-import orthogonal
-from dist import samplegen
-from utils import lazy_eval
-
-__version__ = "1.0"
+import chaospy as cp
 
 __all__ = [
 "pcm", "fit_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
 ]
+
 
 def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
         orth=None, orth_acc=100, quad_acc=100, sparse=False, composit=1,
@@ -118,7 +113,7 @@ Define function and distribution:
 
 Perform pcm:
 >>> q = cp.pcm(func, 2, dist)
->>> print cp.around(q, 10)
+>>> print(cp.around(q, 10))
 0.1q0-q1^2
 
 See also
@@ -141,8 +136,8 @@ samplegen       Generator for sampling schemes
         else:
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
-        orth = orthogonal.orth_select(orth, **kws)
-    if not isinstance(orth, po.Poly):
+        orth = cp.orthogonal.orth_select(orth, **kws)
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
     # Applying scheme
@@ -150,8 +145,9 @@ samplegen       Generator for sampling schemes
     if rule in "GEC":
         if sorder is None:
             sorder = porder+1
-        z,w = qu.generate_quadrature(sorder, dist, acc=quad_acc, sparse=sparse,
-                rule=rule, composit=composit, **kws)
+        z, w = cp.quadrature.generate_quadrature(
+            sorder, dist, acc=quad_acc, sparse=sparse, rule=rule,
+            composit=composit, **kws)
 
         x = trans(z)
         y = np.array(map(func, x.T))
@@ -240,29 +236,29 @@ y : np.ndarray
 #
 #  Perform pcm:
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(w)
+#  >>> print(len(w))
 #  9
 #
 #  With Smolyak sparsegrid
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(w)
+#  >>> print(len(w))
 #  13
     """
     if acc is None:
         acc = order+1
 
     if dist_in is None:
-        z,w = qu.generate_quadrature(acc, dist_out, 100, sparse=sparse,
-                rule="C")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_out, 100, sparse=sparse, rule="C")
         x = z
         dist = dist_out
     else:
-        z,w = qu.generate_quadrature(acc, dist_in, 100, sparse=sparse,
-                rule="C")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_in, 100, sparse=sparse, rule="C")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
 
@@ -273,7 +269,7 @@ y : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, po.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     y = np.array(map(func, x.T))
@@ -314,7 +310,7 @@ norms : array_like
     norms.shape==(len(orth),)
     """
 
-    orth = po.Poly(orth)
+    orth = cp.poly.Poly(orth)
     nodes = np.asfarray(nodes)
     weights = np.asfarray(weights)
 
@@ -337,7 +333,7 @@ norms : array_like
 
     coefs = (np.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])
-    Q = po.transpose(po.sum(orth*coefs.T, -1))
+    Q = cp.poly.transpose(cp.poly.sum(orth*coefs.T, -1))
 
     if retall:
         return Q, coefs
@@ -416,9 +412,9 @@ X : np.ndarray
 #
 #  Perform pcm:
 #  >>> p, x, w, y = cp.pcm_gq(func, 2, dist, acc=3, retall=True)
-#  >>> print cp.around(p, 10)
+#  >>> print(cp.around(p, 10))
 #  q0q1
-#  >>> print len(w)
+#  >>> print(len(w))
 #  16
 
     """
@@ -426,13 +422,13 @@ X : np.ndarray
         acc = order+1
 
     if dist_in is None:
-        z,w = qu.generate_quadrature(acc, dist_out, 100, sparse=sparse,
-                rule="G")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_out, 100, sparse=sparse, rule="G")
         x = z
         dist = dist_out
     else:
-        z,w = qu.generate_quadrature(acc, dist_in, 100, sparse=sparse,
-                rule="G")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_in, 100, sparse=sparse, rule="G")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
 
@@ -447,7 +443,7 @@ X : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, po.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     ovals = orth(*z)
@@ -456,7 +452,7 @@ X : np.ndarray
     coef = (np.sum(vals1, 1).T/np.sum(vals2, 1)).T
 
     coef = coef.reshape(len(coef), *shape[1:])
-    Q = po.transpose(po.sum(orth*coef.T, -1))
+    Q = cp.poly.transpose(cp.poly.sum(orth*coef.T, -1))
 
     if retall:
         return Q, x, w, y
@@ -534,9 +530,9 @@ retall : bool
 #
 #  Perform pcm:
 #  >>> q, x, y = cp.pcm_lr(func, 2, dist, retall=True)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(x.T)
+#  >>> print(len(x.T))
 #  12
     """
 
@@ -553,14 +549,14 @@ retall : bool
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, po.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     # sampling
     if sample is None:
         sample = 2*len(orth)
 
-    x = samplegen(sample, dist, rule)
+    x = cp.dist.samplegen(sample, dist, rule)
 
 
     # Rosenblatt
@@ -577,7 +573,7 @@ retall : bool
     else:
         R, y_ = fit_regression(orth, x, y, regression, retall=1)
 
-    R = po.reshape(R, shape)
+    R = cp.poly.reshape(R, shape)
 
     if retall:
         return R, x, y
@@ -835,11 +831,12 @@ uhat : np.ndarray
 
 Examples
 --------
+>>> x, y = cp.variable(2)
 >>> P = cp.Poly([1, x, y])
 >>> s = [[-1,-1,1,1], [-1,1,-1,1]]
 >>> u = [0,1,1,2]
->>> print fit_regression(P, s, u)
-0.5q1+0.5q0+1.0
+>>> print(fit_regression(P, s, u))
+0.5q0+0.5q1+1.0
 
     """
 
@@ -928,8 +925,8 @@ Examples
 
     u = u.reshape(u.shape[0], *shape)
 
-    R = po.sum((P*uhat), -1)
-    R = po.reshape(R, shape)
+    R = cp.poly.sum((P*uhat), -1)
+    R = cp.poly.reshape(R, shape)
 
     if retall==1:
         return R, uhat
@@ -954,7 +951,7 @@ def fit_lagrange(X, Y):
     basis = []
     n = 1
     while len(basis) < N:
-        basis = po.basis(0, n, dim)
+        basis = cp.poly.basis(0, n, dim)
         n += 1
 
     basis = basis[:N]
@@ -1054,15 +1051,15 @@ norm_error : np.ndarray
 
 Examples
 --------
->>> func = lambda q: q[0]*q[1]
->>> poly = cp.basis(0,2,2)
->>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
->>> res = cp.fit_adaptive(func, poly, dist, budget=100)
->>> print res
+# >>> func = lambda q: q[0]*q[1]
+# >>> poly = cp.basis(0,2,2)
+# >>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
+# >>> res = cp.fit_adaptive(func, poly, dist, budget=100)
+# >>> print(res)
     """
 
     if bufname:
-        func = lazy_eval(func, load=bufname)
+        func = cp.utils.lazy_eval(func, load=bufname)
 
     dim = len(dist)
     n = [0,0]
@@ -1107,20 +1104,8 @@ Examples
     shape = (dim1,)+val.shape
     val2 = val2.reshape(shape[::-1]).T
 
-    out = po.transpose(po.sum(poly*val2.T, -1))
+    out = cp.poly.transpose(cp.poly.sum(poly*val2.T, -1))
 
     if retall:
         return out, val2, val1, err2, err1
     return val2
-
-
-
-
-if __name__=="__main__":
-    import numpy as np
-    import __init__ as cp
-    import doctest
-    x, y = cp.variable(2)
-
-    doctest.testmod()
-

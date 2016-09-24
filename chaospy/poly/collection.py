@@ -1,67 +1,64 @@
-from base import Poly, setdim, decompose, is_decomposed
 import numpy as np
 from scipy.misc import comb, factorial as fac
+
+import chaospy as cp
+
+from .base import Poly, setdim, decompose, is_decomposed
 from chaospy.bertran import terms, multi_index, bindex
 
 __all__ = [
-"basis",
-"cutoff",
-"dot",
-"differential",
-"gradient",
-"hessian",
-"rolldim",
-"swapdim",
-"tril",
-"tricu",
-"variable",
-"order",
+    "basis",
+    "cutoff",
+    "dot",
+    "differential",
+    "gradient",
+    "hessian",
+    "rolldim",
+    "swapdim",
+    "tril",
+    "tricu",
+    "variable",
+    "order",
+    "prange",
 ]
-__version__ = "1.0"
 
 
 def basis(start, stop=None, dim=1, sort="G"):
     """
-Create an N-dimensional unit polynomial basis
+    Create an N-dimensional unit polynomial basis.
 
-Parameters
-----------
-start : int, array_like
-    the minimum polynomial to include.
-    If int is provided, set as lowest total order.
-    If array of int, set as lower order along each axis.
-stop : int, array_like, optional
-    the maximum shape included. If omitted:
-    stop <- start; start <- 0
-    If int is provided, set as largest total order.
-    If array of int, set as largest order along each axis.
-dim : int
-    dim of the basis.
-    Ignored if array is provided in either start or stop.
-sort : str
-    The polynomial ordering where the letters G, I and R can be
-    used to set grade, inverse and reverse to the ordering.
-    For `basis(0, 2, 2, order)` we get:
-    order       output
-    ""          [1 y y^2 x xy x^2]
-    "G"         [1 y x y^2 xy x^2]
-    "I"         [x^2 xy x y^2 y 1]
-    "R"         [1 x x^2 y xy y^2]
-    "GIR"       [y^2 xy x^2 y x 1]
+    Args:
+        start (int, array_like) : the minimum polynomial to include.  If int is
+                provided, set as lowest total order.  If array of int, set as
+                lower order along each axis.
+        stop (int, array_like, optional) : the maximum shape included. If
+                omitted: stop <- start; start <- 0 If int is provided, set as
+                largest total order.  If array of int, set as largest order
+                along each axis.
+        dim (int) : dim of the basis.  Ignored if array is provided in either
+                start or stop.
+        sort (str) : The polynomial ordering where the letters G, I and R can
+                be used to set grade, inverse and reverse to the ordering.  For
+                `basis(0, 2, 2, order)` we get:
+                ------  ------------------
+                order   output
+                ------  ------------------
+                ""      [1 y y^2 x xy x^2]
+                "G"     [1 y x y^2 xy x^2]
+                "I"     [x^2 xy x y^2 y 1]
+                "R"     [1 x x^2 y xy y^2]
+                "GIR"   [y^2 xy x^2 y x 1]
+                ------  ------------------
 
-Returns
--------
-Q : Poly
-    Polynomial array.
+    Returns:
+        (Poly) : Polynomial array.
 
-Examples
---------
->>> print cp.basis(4,4,2)
-[q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
->>> print cp.basis([1,1],[2,2])
-[q0q1, q0^2q1, q0q1^2, q0^2q1^2]
+    Examples:
+        >>> print(cp.basis(4,4,2))
+        [q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
+        >>> print(cp.basis([1,1],[2,2]))
+        [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
     """
-
     if stop==None:
         start, stop = 0, start
 
@@ -113,7 +110,7 @@ def lagrange(X):
         coefs[d] += np.eye(K)
     coefs = np.prod(coefs, -1)
 
-    print coefs
+    print(coefs)
 
 #  lagrange([(1,2,3),(2,3,4)])
 #  fail
@@ -121,38 +118,27 @@ def lagrange(X):
 
 def cutoff(P, *args):
     """
-Remove polynomial components with order outside a given
-interval.
+    Remove polynomial components with order outside a given interval.
 
-Parameters
-----------
-P, [low,] high
+    Args:
+        P (Poly) : Input data.
+        low (int, optional) : The lowest order that is allowed to be included.
+                Defaults to 0.
+        high (int) : The upper threshold for the cutoff range.
 
-P : Poly
-    Input data.
-low : int, optional
-    The lowest order that is allowed to be included. Defaults
-    to 0.
-high : int
-    The upper threshold for the cutoff range.
+    Returns:
+        (Poly) : The same as `P`, except that all terms that have a order not
+                within the bound `low<=order<high` are removed.
 
-Returns
--------
-Q : Poly
-    The same as `P`, except that all terms that have a order
-    not within the bound `low<=order<high` are removed.
-
-Examples
---------
->>> P = prange(4,1)+prange(4,2)[::-1]
->>> print P
-[q1^3+1, q1^2+q0, q0^2+q1, q0^3+1]
->>> print cutoff(P, 3)
-[1, q1^2+q0, q0^2+q1, 1]
->>> print cutoff(P, 1, 3)
-[0, q1^2+q0, q0^2+q1, 0]
+    Examples:
+        >>> P = prange(4, 1) + prange(4, 2)[::-1]
+        >>> print(P)
+        [q1^3+1, q0+q1^2, q0^2+q1, q0^3+1]
+        >>> print(cutoff(P, 3))
+        [1, q0+q1^2, q0^2+q1, 1]
+        >>> print(cutoff(P, 1, 3))
+        [0, q0+q1^2, q0^2+q1, 0]
     """
-
     if len(args)==1:
         low, high = 0, args[0]
     else:
@@ -177,15 +163,13 @@ def dot(P, Q):
 
 
 def differential(P, Q):
-    """Polynomial differential operator
+    """
+    Polynomial differential operator.
 
-Parameters
-----------
-P : Poly
-    Polynomial to be differentiated.
-Q : Poly
-    Polynomial to differentiate by. Must be decomposed. If
-    polynomial array, the output is the Jacobian matrix.
+    Args:
+        P (Poly) : Polynomial to be differentiated.
+        Q (Poly) : Polynomial to differentiate by. Must be decomposed. If
+                polynomial array, the output is the Jacobian matrix.
     """
     P, Q = Poly(P), Poly(Q)
 
@@ -226,102 +210,88 @@ def hessian(P):
     return gradient(gradient(P))
 
 
-#  def prange(N=1, dim=1):
-#      """
-#  Constructor to create a range of polynomials where the
-#  exponent vary.
-#  
-#  Parameters
-#  ----------
-#  N : int
-#      Number of polynomials in the array.
-#  dim : int
-#      The dimension the polynomial should span.
-#  
-#  Returns
-#  -------
-#  Q : Poly
-#      A polynomial array of length N containing simple
-#      polynomials with increasing exponent.
-#  
-#  Examples
-#  --------
-#  >>> print prange(4)
-#  [1, q0, q0^2, q0^3]
-#  
-#  >>> print prange(4, dim=3)
-#  [1, q2, q2^2, q2^3]
-#      """
-#      A = {}
-#      r = np.arange(N, dtype=int)
-#      key = np.zeros(dim, dtype=int)
-#      for i in xrange(N):
-#          key[-1] = i
-#          A[tuple(key)] = 1*(r==i)
-#  
-#      return Poly(A, dim, (N,), int)
+def prange(N=1, dim=1):
+    """
+    Constructor to create a range of polynomials where the exponent vary.
+
+    Args:
+        N (int) : Number of polynomials in the array.
+        dim (int) : The dimension the polynomial should span.
+
+    Returns:
+        (Poly) : A polynomial array of length N containing simple polynomials
+                with increasing exponent.
+
+    Examples:
+        >>> print(prange(4))
+        [1, q0, q0^2, q0^3]
+
+        >>> print(prange(4, dim=3))
+        [1, q2, q2^2, q2^3]
+    """
+    A = {}
+    r = np.arange(N, dtype=int)
+    key = np.zeros(dim, dtype=int)
+    for i in xrange(N):
+        key[-1] = i
+        A[tuple(key)] = 1*(r==i)
+
+    return Poly(A, dim, (N,), int)
 
 
 def rolldim(P, n=1):
     """
-Roll the axes
+    Roll the axes.
 
-Parameters
-----------
-P : Poly
-    Input polynomial.
-n : int
-    The axis that after rolling becomes the 0th axis.
+    Args:
+        P (Poly) : Input polynomial.
+        n (int) : The axis that after rolling becomes the 0th axis.
 
-Returns
--------
-Q : Poly
-    Polynomial with new axis configuration.
+    Returns:
+        (Poly) : Polynomial with new axis configuration.
 
-Examples
---------
->>> x,y,z = variable(3)
->>> P = x*x*x + y*y + z
->>> print P
-q0^3+q1^2+q2
->>> print rolldim(P)
-q2^3+q0^2+q1
+    Examples:
+        >>> x,y,z = variable(3)
+        >>> P = x*x*x + y*y + z
+        >>> print(P)
+        q0^3+q1^2+q2
+        >>> print(rolldim(P))
+        q0^2+q1+q2^3
     """
-
+    dim = P.dim
+    shape = P.shape
+    dtype = P.dtype
     A = dict(((key[n:]+key[:n],P.A[key]) for key in P.keys))
-    return Poly(A)
+    return Poly(A, dim, shape, dtype)
 
 
 def swapdim(P, dim1=1, dim2=0):
     """
-Swap the dim between two variables.
+    Swap the dim between two variables.
 
-Parameters
-----------
-P : Poly
-    Input polynomial.
-dim1 : int
-    First dim
-dim2 : int
-    Second dim.
+    Args:
+        P (Poly) : Input polynomial.
+        dim1 (int) : First dim
+        dim2 (int) : Second dim.
 
-Returns
--------
-Q : Poly
-    Polynomial with swapped dimensions.
+    Returns:
+        (Poly) : Polynomial with swapped dimensions.
 
-Examples
---------
->>> x,y = variable(2)
->>> P = x**4-y
->>> print P
-q0^4-q1
->>> print swapdim(P)
-q1^4-q0
+    Examples
+    --------
+        >>> x,y = variable(2)
+        >>> P = x**4-y
+        >>> print(P)
+        q0^4-q1
+        >>> print(swapdim(P))
+        -q0+q1^4
     """
-    
     if not isinstance(P, Poly):
         return np.swapaxes(P, dim1, dim2)
+
+    dim = P.dim
+    shape = P.shape
+    dtype = P.dtype
 
     if dim1==dim2:
         return P
@@ -339,13 +309,11 @@ q1^4-q0
         key[dim1], key[dim2] = key[dim2], key[dim1]
         A[tuple(key)] = val
 
-    return Poly(A)
+    return Poly(A, dim, shape, dtype)
 
 
 def tril(P, k=0):
-    """
-Lower triangle of coefficients
-    """
+    """Lower triangle of coefficients."""
     A = P.A.copy()
     for key in P.keys:
         A[key] = np.tril(P.A[key])
@@ -353,9 +321,7 @@ Lower triangle of coefficients
 
 
 def tricu(P, k=0):
-    """
-Cross-diagonal upper triangle
-    """
+    """Cross-diagonal upper triangle."""
     tri = np.sum(np.mgrid[[slice(0,_,1) for _ in P.shape]], 0)
     tri = tri<len(tri) + k
 
@@ -372,28 +338,20 @@ Cross-diagonal upper triangle
 
 def variable(dims=1):
     """
-Simple constructor to create single variables to create
-(multivariate) polynomials.
+    Simple constructor to create single variables to create polynomials.
 
-Parameters
-----------
+    Args:
+        dims (int) : Number of dimensions in the array.
 
-dims : int
-    Number of dimensions in the array.
+    Returns:
+        (Poly) : Polynomial array with unit components in each dimension.
 
-Returns
--------
-Q : Poly
-    Polynomial array with unit components in each dimension.
-
-Examples
---------
->>> print variable()
-q0
->>> print variable(3)
-[q0, q1, q2]
+    Examples:
+        >>> print(variable())
+        q0
+        >>> print(variable(3))
+        [q0, q1, q2]
     """
-
     if dims==1:
         return Poly({(1,):np.array(1)}, dim=1, shape=())
 
@@ -442,19 +400,19 @@ def order(P):
 # Find roots of polynomial
 # 
 # >>> x = variable()
-# >>> print roots(x*x-1)
+# >>> print(roots(x*x-1))
 # [-1.  1.]
 # 
 # Find polynomials from roots
-# >>> print roots([-1,1])
+# >>> print(roots([-1,1]))
 # x^2-1
 # 
 # Roots along an axis
 # >>> x,y = variable(2)
 # >>> P = (x*x-1)*(y-2)
-# >>> print roots(P)
+# >>> print(roots(P))
 # [ 1. -1.]
-# >>> print roots(P, ax=1, args=[2,0])
+# >>> print(roots(P, ax=1, args=[2,0]))
 # [ 2.]
 #     """
 # 

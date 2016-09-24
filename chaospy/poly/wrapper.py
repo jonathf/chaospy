@@ -1,42 +1,41 @@
 import numpy as np
-import base as p
-import fraction as f
-pysum = sum
+import chaospy as cp
+
+from . import base as p
+from . import fraction as f
+SUM = sum
 
 __all__ = [
-"all",
-"any",
-"around",
-"asfloat",
-"asfrac",
-"asint",
-"cumprod",
-"cumsum",
-"diag",
-"dtyping",
-"flatten",
-"inner",
-"mean",
-"outer",
-"prod",
-"repeat",
-"reshape",
-"roll",
-"rollaxis",
-"std",
-"sum",
-"swapaxes",
-"toarray",
-"trace",
-"transpose",
-"var",
+    "all",
+    "any",
+    "around",
+    "asfloat",
+    "asfrac",
+    "asint",
+    "cumprod",
+    "cumsum",
+    "diag",
+    "dtyping",
+    "flatten",
+    "inner",
+    "mean",
+    "outer",
+    "prod",
+    "repeat",
+    "reshape",
+    "roll",
+    "rollaxis",
+    "std",
+    "sum",
+    "swapaxes",
+    "toarray",
+    "trace",
+    "transpose",
+    "var",
 ]
-__version__ = "1.0"
 
 def all(A, ax=None):
-    """
-Test if all values in A evaluate to True
-    """
+    """ Test if all values in A evaluate to True """
 
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.all(A, ax)
@@ -55,9 +54,7 @@ Test if all values in A evaluate to True
     raise NotImplementedError
 
 def any(A, ax=None):
-    """
-Test if any values in A evaluate to True
-    """
+    """ Test if any values in A evaluate to True """
 
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.any(A, ax)
@@ -77,31 +74,25 @@ Test if any values in A evaluate to True
 
 def around(A, decimals=0):
     """
-Evenly round to the given number of decimals.
+    Evenly round to the given number of decimals.
 
-Parameters
-----------
-A : p.Poly, f.frac, array_like
-    Input data.
-decimals : int, optional
-    Number of decimal places to round to (default: 0).  If
-    decimals is negative, it specifies the number of positions to
-    the left of the decimal point.
+    Args:
+        A (p.Poly, f.frac, array_like) : Input data.
+        decimals (int, optional) : Number of decimal places to round to
+                (default: 0).  If decimals is negative, it specifies the number
+                of positions to the left of the decimal point.
 
-Returns
--------
-Q : p.Poly, f.frac, array_like
-    Same type as A.
+    Returns:
+        (p.Poly, f.frac, array_like) : Same type as A.
 
-Examples
---------
->>> P = cp.prange(3)*2**-np.arange(0, 6, 2, float)
->>> print P
-[1.0, 0.25q0, 0.0625q0^2]
->>> print cp.around(P)
-[1.0, 0.0, 0.0]
->>> print cp.around(P, 2)
-[1.0, 0.25q0, 0.06q0^2]
+    Examples:
+        >>> P = cp.prange(3)*2**-np.arange(0, 6, 2, float)
+        >>> print(P)
+        [1.0, 0.25q0, 0.0625q0^2]
+        >>> print(cp.around(P))
+        [1.0, 0.0, 0.0]
+        >>> print(cp.around(P, 2))
+        [1.0, 0.25q0, 0.06q0^2]
     """
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.around(A, decimals)
@@ -140,28 +131,22 @@ def asfloat(A):
 
 def reshape(a, shape):
     """
-Reshape the shape of a shapeable quantity
+    Reshape the shape of a shapeable quantity.
 
-Parameters
-----------
-a : Poly, frac, array_like
-    Shapeable input quantity
-shape : tuple
-    The polynomials new shape. Must be compatible with the
-    number of elements in `A`.
+    Args:
+        a (Poly, frac, array_like) : Shapeable input quantity
+        shape (tuple) : The polynomials new shape. Must be compatible with the
+                number of elements in `A`.
 
-Returns
--------
-Q : Poly, frac, array_like
-    Same type as `A`.
+    Returns:
+        (Poly, frac, array_like) : Same type as `A`.
 
-Examples
---------
->>> P = cp.prange(6)
->>> print P
-[1, q0, q0^2, q0^3, q0^4, q0^5]
->>> print cp.reshape(P, (2,3))
-[[1, q0, q0^2], [q0^3, q0^4, q0^5]]
+    Examples:
+        >>> P = cp.prange(6)
+        >>> print(P)
+        [1, q0, q0^2, q0^3, q0^4, q0^5]
+        >>> print(cp.reshape(P, (2,3)))
+        [[1, q0, q0^2], [q0^3, q0^4, q0^5]]
     """
     if isinstance(a, (np.ndarray, float, int, long)):
         return np.reshape(a, shape)
@@ -176,25 +161,20 @@ Examples
 
 def flatten(A):
     """
-Flatten a shapeable quantity
+    Flatten a shapeable quantity.
 
-Parameters
-----------
-A : Poly, frac, array_like
-    Shapeable input quantity
+    Args:
+        A (Poly, frac, array_like) : Shapeable input quantity.
 
-Returns
--------
-Q : Poly, frac, array_like
-    Same type as `A` with `len(Q.shape)==1`
+    Returns:
+        (Poly, frac, array_like) : Same type as `A` with `len(Q.shape)==1`.
 
-Examples
---------
->>> P = cp.reshape(cp.prange(4), (2,2))
->>> print P
-[[1, q0], [q0^2, q0^3]]
->>> print cp.flatten(P)
-[1, q0, q0^2, q0^3]
+    Examples:
+        >>> P = cp.reshape(cp.prange(4), (2,2))
+        >>> print(P)
+        [[1, q0], [q0^2, q0^3]]
+        >>> print(cp.flatten(P))
+        [1, q0, q0^2, q0^3]
     """
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.flatten(A)
@@ -209,30 +189,24 @@ Examples
 
 def sum(A, axis=None):
     """
-Sum the components of a shapeable quantity along a given axis.
+    Sum the components of a shapeable quantity along a given axis.
 
-Parameters
-----------
-A : Poly, frac, array_like
-    Input data.
-axis : int, optional
-    Axis over which the sum is taken. By default `axis` is
-    None, and all elements are summed.
+    Args:
+        A (Poly, frac, array_like) : Input data.
+        axis (int, optional) : Axis over which the sum is taken. By default
+                `axis` is None, and all elements are summed.
 
-Returns
--------
-Q : Poly, frac, array_like
-    Polynomial array with same shape as `P`, with the specified
-    axis removed. If `P` is an 0-d array, or `axis` is None, a
-    (non-iterable) component is returned.
+    Returns:
+        (Poly, frac, array_like) : Polynomial array with same shape as `P`,
+                with the specified axis removed. If `P` is an 0-d array, or
+                `axis` is None, a (non-iterable) component is returned.
 
-Examples
---------
->>> P = cp.prange(3)
->>> print P
-[1, q0, q0^2]
->>> print cp.sum(P)
-q0^2+q0+1
+    Examples:
+        >>> P = cp.prange(3)
+        >>> print(P)
+        [1, q0, q0^2]
+        >>> print(cp.sum(P))
+        q0^2+q0+1
     """
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.sum(A, axis)
@@ -248,32 +222,26 @@ q0^2+q0+1
 
 def prod(A, axis=None):
     """
-Perform the product of a shapeable quantity over a given axis.
+    Perform the product of a shapeable quantity over a given axis.
 
-Parameters
-----------
-P : p.Poly, f.frac, array_like
-    Input data.
-axis : int, optional
-    Axis over which the product is taken.  By default, the
-    product of all elements is calculated.
+    Args:
+        P (Poly, frac, array_like) : Input data.
+        axis (int, optional) : Axis over which the product is taken.  By
+                default, the product of all elements is calculated.
 
-Returns
--------
-Q : p.Poly
-    An array shaped as `A` but with the specified axis removed.
+    Returns:
+        (Poly) : An array shaped as `A` but with the specified axis removed.
 
-Examples
---------
->>> P = cp.reshape(cp.prange(8), (2,2,2))
->>> print P
-[[[1, q0], [q0^2, q0^3]], [[q0^4, q0^5], [q0^6, q0^7]]]
->>> print cp.prod(P)
-q0^28
->>> print cp.prod(P, 0)
-[[q0^4, q0^6], [q0^8, q0^10]]
->>> print cp.prod(P, -1)
-[[q0, q0^5], [q0^9, q0^13]]
+    Examples:
+        >>> P = cp.reshape(cp.prange(8), (2,2,2))
+        >>> print(P)
+        [[[1, q0], [q0^2, q0^3]], [[q0^4, q0^5], [q0^6, q0^7]]]
+        >>> print(cp.prod(P))
+        q0^28
+        >>> print(cp.prod(P, 0))
+        [[q0^4, q0^6], [q0^8, q0^10]]
+        >>> print(cp.prod(P, -1))
+        [[q0, q0^5], [q0^9, q0^13]]
     """
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.prod(A, axis)
@@ -315,23 +283,21 @@ def asint(A):
 
 def toarray(A):
     """
-Convert to a numpy.array object
+    Convert to a numpy.array object.
 
-Parameters
-----------
-A : p.Poly, f.frac, array_like
-    Input data.
+    Args:
+        A (p.Poly, f.frac, array_like) : Input data.
 
-Returns
--------
-Q : ndarray
-    A numpy.ndarray with `Q.shape==A.shape`.
+    Returns:
+        Q (ndarray) : A numpy.ndarray with `Q.shape==A.shape`.
 
-Examples
---------
->>> P = cp.prange(4)
->>> print repr(cp.toarray(P))
-array([1, q0, q0^2, q0^3], dtype=object)
+    Examples:
+        >>> P = cp.prange(4)
+        >>> Q = cp.toarray(P)
+        >>> print(isinstance(Q, np.ndarray))
+        True
+        >>> print(Q[1] == P[1])
+        True
     """
     if isinstance(A, (np.ndarray, float, int, long)):
         return np.array(A)
@@ -373,26 +339,21 @@ def var(A, ax=None):
 
 def transpose(A):
     """
-Transpose a shapeable quantety
+    Transpose a shapeable quantety.
 
-Parameters
-----------
-A : p.Poly, f.frac, array_like
-    Quantety of interest.
+    Args:
+        A (Poly, frac, array_like) : Quantety of interest.
 
-Returns
--------
-Q : p.Poly, f.frac, array_like
-    Same type as `A`.
+    Returns:
+        Q (Poly, frac, array_like) : Same type as `A`.
 
-Examples
---------
->>> P = cp.reshape(cp.prange(4), (2,2))
->>> print P
-[[1, q0], [q0^2, q0^3]]
+    Examples:
+        >>> P = cp.reshape(cp.prange(4), (2,2))
+        >>> print(P)
+        [[1, q0], [q0^2, q0^3]]
 
->>> print cp.transpose(P)
-[[1, q0^2], [q0, q0^3]]
+        >>> print(cp.transpose(P))
+        [[1, q0^2], [q0, q0^3]]
     """
 
     if isinstance(A, (int, long, float, np.ndarray)):
@@ -464,9 +425,7 @@ def cumprod(A, axis=None):
 
 
 def diag(A, k=0):
-    """
-Extract or construct a diagonal polynomial array.
-    """
+    """ Extract or construct a diagonal polynomial array.  """
 
     if isinstance(A, (int, long, float, np.ndarray)):
         return np.diag(A, k)
@@ -539,45 +498,29 @@ def dtyping(*args):
 
 def inner(*args):
     """
-Inner product of a polynomial set.
-If no p.Poly object provided, numpy.inner used.
+    Inner product of a polynomial set.
 
-Parameters
-----------
-arg0, arg1, [...]
+    If no p.Poly object provided, numpy.inner used.
 
-argX : p.Poly
-    The polynomials to perform inner product on.
+    Args:
+        arg0, arg1, [...] (Poly) : The polynomials to perform inner product on.
 
-Returns
--------
-Q : p.Poly
-    Resulting polynomial.
+    Returns:
+        (Poly) : Resulting polynomial.
 
-Examples
---------
-Normal use
-
->>> x,y = cp.variable(2)
->>> P = cp.Poly([x-1, y])
->>> Q = cp.Poly([x+1, x*y])
->>> print cp.inner(P, Q)
-q0q1^2+q0^2-1
-
-Backwards compatible
-
->>> x = np.arange(4)
->>> print cp.inner(x, x)
-14
-
-See also
---------
-numpy.inner
-poly.outer
+    Examples:
+        >>> x,y = cp.variable(2)
+        >>> P = cp.Poly([x-1, y])
+        >>> Q = cp.Poly([x+1, x*y])
+        >>> print(cp.inner(P, Q))
+        q0^2+q0q1^2-1
+        >>> x = np.arange(4)
+        >>> print(cp.inner(x, x))
+        14
     """
 
-    haspoly = pysum([isinstance(arg, p.Poly) for arg in args])
-    hasfrac = pysum([isinstance(arg, f.frac) for arg in args])
+    haspoly = SUM([isinstance(arg, p.Poly) for arg in args])
+    hasfrac = SUM([isinstance(arg, f.frac) for arg in args])
 
     # Numpy
     if not haspoly and not hasfrac:
@@ -594,32 +537,25 @@ poly.outer
 
 def outer(*args):
     """
-p.Polynomial outerproduct
+    Polynomial outerproduct.
 
-Parameters
-----------
-P1 : p.Poly, ndarray, int, float
-    First term in outer product
-P2 : p.Poly, array_like
-    Second term in outer product
+    Args:
+        P1 (Poly, ndarray, int, float) : First term in outer product
+        P2 (Poly, array_like) : Second term in outer product
 
-Returns
--------
-Q : p.Poly
-    p.Poly set with same dimensions as itter.
+    Returns:
+        (Poly) : Poly set with same dimensions as itter.
 
-Examples
---------
->>> x = cp.variable()
->>> P = cp.prange(3)
->>> print P
-[1, q0, q0^2]
->>> print cp.outer(x, P)
-[q0, q0^2, q0^3]
->>> print cp.outer(P, P)
-[[1, q0, q0^2], [q0, q0^2, q0^3], [q0^2, q0^3, q0^4]]
+    Examples:
+        >>> x = cp.variable()
+        >>> P = cp.prange(3)
+        >>> print(P)
+        [1, q0, q0^2]
+        >>> print(cp.outer(x, P))
+        [q0, q0^2, q0^3]
+        >>> print(cp.outer(P, P))
+        [[1, q0, q0^2], [q0, q0^2, q0^3], [q0^2, q0^3, q0^4]]
     """
-
     dtype = dtyping(*map(type, args))
 
     if dtype==p.Poly:
@@ -660,6 +596,5 @@ Examples
 
 
 if __name__=='__main__':
-    import __init__ as cp
     import doctest
     doctest.testmod()

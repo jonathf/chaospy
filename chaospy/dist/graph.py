@@ -44,7 +44,7 @@ or get all distributions as a list:
     G.dependencies()
 
 print the chaospy state of graph:
-    print G
+    print(G)
 
 Make a copy of chaospy state:
     G.copy()
@@ -74,7 +74,8 @@ defined as follows.
 import numpy as np
 
 import networkx as nx
-from approx import pdf, ppf, mom
+from .approx import pdf, ppf, mom
+
 
 class Graph():
     """
@@ -218,7 +219,7 @@ mode : str
         elif mode=="val":
             self.__call__ = self.val_call
         else:
-            raise ValueError, "unknown mode"
+            raise ValueError("unknown mode")
 
         if mode!="val":
             self.dist = self.root
@@ -421,7 +422,7 @@ mode : str
                 prm.update(self.K.build())
                 out[0],out[1] = dist._ttr(k, **prm)
         else:
-            raise NotImplementedError
+            raise NotImplementedError()
 
         graph.add_node(dist, val=out)
 
@@ -559,9 +560,9 @@ Identify the number of parameters available:
         "Graph module"
         self.G = G
     def __contains__(self, key):
-        raise NotImplementedError
+        raise NotImplementedError()
     def getitem(self, key):
-        raise NotImplementedError
+        raise NotImplementedError()
     def __getitem__(self, key):
         return self.getitem(key)
     def build(self):
@@ -585,7 +586,7 @@ class Dists(Container):
         return not isinstance(self.G.dist.prm[key], np.ndarray)
     def getitem(self, key):
         if not key in self:
-            raise KeyError
+            raise KeyError()
         return self.G.dist.prm[key]
 
 class Keys(Container):
@@ -612,7 +613,7 @@ substitutes of distributions"""
     def getitem(self, key):
 
         if not key in self:
-            raise KeyError
+            raise KeyError()
         val = self.G.dist.prm[key]
 
         if isinstance(val, np.ndarray):
@@ -629,5 +630,5 @@ class Vals(Container):
                 "val" in self.G.graph.node[out]
     def getitem(self, key):
         if not key in self:
-            raise KeyError
+            raise KeyError()
         return self.G.graph.node[self.G.dist.prm[key]]["val"]

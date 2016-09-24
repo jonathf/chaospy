@@ -11,8 +11,8 @@ import numpy as np
 import scipy as sp
 from scipy import special
 
-from backend import Dist
-import joint
+from .backend import Dist
+from . import joint
 
 
 class uniform(Dist):
@@ -362,7 +362,7 @@ class student_t(Dist):
 
     def _mom(self, k, a):
         if np.any(a<=k):
-            raise ValueError, "too high mom for student-t"
+            raise ValueError("too high mom for student-t")
         out = special.gamma(.5*k+.5)* \
                 special.gamma(.5*a-.5*k)*a**(.5*k)
         return np.where(k%2==0, out/(np.pi**.5*special.gamma(.5*a)), 0)
@@ -533,7 +533,7 @@ class mvlognormal(Dist):
         return out
 
     def _str(self, loc, C, **prm):
-        print "mvlognor(%s,%s)" % (loc, C)
+        print("mvlognor(%s,%s)" % (loc, C))
 
 class mvstudentt(Dist):
 
@@ -638,16 +638,16 @@ class mvstudentt(Dist):
 #  >>> cp.seed(1000)
 #  >>> f = cp.Dirichlet([1,2,3])
 #  >>> q = [[.3,.3,.7,.7],[.3,.7,.3,.7]]
-#  >>> print f.inv(q)
+#  >>> print(f.inv(q))
 #  [[ 0.06885008  0.06885008  0.21399691  0.21399691]
 #   [ 0.25363028  0.47340104  0.21409462  0.39960771]]
-#  >>> print f.fwd(f.inv(q))
+#  >>> print(f.fwd(f.inv(q)))
 #  [[ 0.3  0.3  0.7  0.7]
 #   [ 0.3  0.7  0.3  0.7]]
-#  >>> print f.sample(4)
+#  >>> print(f.sample(4))
 #  [[ 0.12507651  0.00904026  0.06508353  0.07888277]
 #   [ 0.29474152  0.26985323  0.69375006  0.30848838]]
-#  >>> print f.mom((1,1))
+#  >>> print(f.mom((1,1)))
 #  0.047619047619
 #      """
 #

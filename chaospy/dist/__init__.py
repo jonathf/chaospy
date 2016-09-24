@@ -29,20 +29,20 @@ The module contains the following submodules:
 Examples
 --------
 >>> X1 = cp.Normal(0,1)
->>> print X1.mom([1,2,3,4])
+>>> print(X1.mom([1,2,3,4]))
 [ 0.  1.  0.  3.]
 
 >>> X2 = cp.Uniform(0,4)
->>> print X2.fwd([2,3,4])
+>>> print(X2.fwd([2,3,4]))
 [ 0.5   0.75  1.  ]
 
 >>> X = cp.J(X1,X2)
->>> print X.sample(3)
+>>> print(X.sample(3))
 [[ 0.39502989 -1.20032309  1.64760248]
  [ 1.92876561  3.48989814  0.84933072]]
 
 >>> Y = cp.Iid(X1, 3)
->>> print cp.Cov(Y)
+>>> print(cp.Cov(Y))
 [[ 1.  0.  0.]
  [ 0.  1.  0.]
  [ 0.  0.  1.]]
@@ -113,21 +113,32 @@ Tukeylambda     Tukey-lambda
 Wrapcauchy      Wraped Cauchy
 """
 
+import chaospy.dist.backend
+from chaospy.dist.backend import *
+
+import chaospy.dist.graph
+import chaospy.dist.sampler
+import chaospy.dist.approx
+import chaospy.dist.joint
+import chaospy.dist.cores
+import chaospy.dist.copulas
+import chaospy.dist.collection
+import chaospy.dist.operators
+import chaospy.dist.hyperbolic
+import chaospy.dist.trignometric
+
+from chaospy.dist.graph import *
+from chaospy.dist.sampler import *
+from chaospy.dist.approx import *
+from chaospy.dist.joint import *
+from chaospy.dist.cores import *
+from chaospy.dist.copulas import *
+from chaospy.dist.collection import *
+from chaospy.dist.operators import *
+from chaospy.dist.hyperbolic import *
+from chaospy.dist.trignometric import *
+
 from numpy.random import seed
-
-from backend import *
-from graph import *
-from sampler import *
-from approx import *
-
-from joint import *
-from cores import *
-
-from copulas import *
-from collection import *
-from operators import *
-from hyperbolic import *
-from trignometric import *
 
 
 if __name__ == "__main__":

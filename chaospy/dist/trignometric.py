@@ -1,7 +1,7 @@
 """
 Collection of trigonometric operators
 """
-from backend import Dist
+from .backend import Dist
 import numpy as np
 
 
