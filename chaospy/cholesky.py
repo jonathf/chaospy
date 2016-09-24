@@ -51,7 +51,7 @@ def gill_murray_wright(mat, eps=EPS):
     Examples
     --------
     >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-    >>> perm, lowtri, error = chol_gmw(mat)
+    >>> perm, lowtri, error = gill_murray_wright(mat)
     >>> perm, lowtri = np.matrix(perm), np.matrix(lowtri)
     >>> print(error)
     [ 0.     0.     3.008]
@@ -168,7 +168,7 @@ def gill_king(A, eps=EPS):
     Examples
     --------
     >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-    >>> L, e = chol_gmo(A)
+    >>> L, e = gill_king(A)
     >>> print(np.allclose(A+np.diag(e), np.dot(L, L.T)))
     True
     >>> print(e)
@@ -234,7 +234,7 @@ def gill_king(A, eps=EPS):
     return L, e
 
 
-def scnabel_eskow(A, eps=EPS):
+def schnabel_eskow(A, eps=EPS):
     """
     Scnabel-Eskow algorithm for modified Cholesky factorisation algorithm.
 
@@ -260,7 +260,7 @@ def scnabel_eskow(A, eps=EPS):
     Examples
     --------
     >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-    >>> P, L, e = chol_se(A)
+    >>> P, L, e = schnabel_eskow(A)
     >>> P, L = np.matrix(P), np.matrix(L)
     >>> print(e)
     [ 0.          1.50402929  1.50402929]
@@ -459,7 +459,7 @@ def bastos_ohagen(A, eps=EPS):
     Examples
     --------
     >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-    >>> P, L, E = chol_bo(A)
+    >>> P, L, E = bastos_ohagen(A)
     >>> P, L = np.matrix(P), np.matrix(L)
     >>> print(np.diag(E))
     [ -8.88178420e-16   0.00000000e+00   2.33733333e+00]

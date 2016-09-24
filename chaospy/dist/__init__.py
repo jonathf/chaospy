@@ -113,21 +113,32 @@ Tukeylambda     Tukey-lambda
 Wrapcauchy      Wraped Cauchy
 """
 
+import chaospy.dist.backend
+from chaospy.dist.backend import *
+
+import chaospy.dist.graph
+import chaospy.dist.sampler
+import chaospy.dist.approx
+import chaospy.dist.joint
+import chaospy.dist.cores
+import chaospy.dist.copulas
+import chaospy.dist.collection
+import chaospy.dist.operators
+import chaospy.dist.hyperbolic
+import chaospy.dist.trignometric
+
+from chaospy.dist.graph import *
+from chaospy.dist.sampler import *
+from chaospy.dist.approx import *
+from chaospy.dist.joint import *
+from chaospy.dist.cores import *
+from chaospy.dist.copulas import *
+from chaospy.dist.collection import *
+from chaospy.dist.operators import *
+from chaospy.dist.hyperbolic import *
+from chaospy.dist.trignometric import *
+
 from numpy.random import seed
-
-from .backend import *
-from .graph import *
-from .sampler import *
-from .approx import *
-
-from .joint import *
-from .cores import *
-
-from .copulas import *
-from .collection import *
-from .operators import *
-from .hyperbolic import *
-from .trignometric import *
 
 
 if __name__ == "__main__":

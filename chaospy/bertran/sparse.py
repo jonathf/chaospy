@@ -2,6 +2,8 @@
 Use of Bertran to calculate sparse segments.
 """
 import numpy as np
+import chaospy as cp
+
 
 def sparse_segment(cords):
     r"""
@@ -48,9 +50,3 @@ def sparse_segment(cords):
     indices = grid.reshape(len(cords), np.prod(grid.shape[1:])).T
     sgrid = indices*2.**-cords
     return sgrid
-
-
-if __name__ == "__main__":
-    import chaospy as cp
-    import doctest
-    doctest.testmod()

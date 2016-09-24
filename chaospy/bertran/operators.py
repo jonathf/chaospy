@@ -6,6 +6,8 @@ import functools
 import numpy as np
 from scipy.misc import comb
 
+import chaospy as cp
+
 __all__ = [
     "add", "terms", "multi_index", "bindex", "single_index", "rank",
     "child", "parent", "olindex"
@@ -330,9 +332,3 @@ def olindex(order, dim):
 
     _olindex(0)
     return np.array(out)
-
-
-if __name__ == "__main__":
-    import chaospy as cp
-    import doctest
-    doctest.testmod()

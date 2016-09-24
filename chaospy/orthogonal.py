@@ -14,7 +14,7 @@ PCD             Pivot Cholesky decomposition (for matrices)
 
 import numpy as np
 
-import chaospy
+import chaospy as cp
 
 __all__ = [
 # "orth_select",
@@ -27,7 +27,6 @@ __all__ = [
 "orth_bert",
 "norm",
 ]
-__version__ = "1.0"
 
 def orth_gs(order, dist, normed=False, sort="GR", **kws):
     """
@@ -59,15 +58,15 @@ Examples
 --------
 >>> Z = cp.J(cp.Normal(), cp.Normal())
 >>> print(cp.orth_gs(2, Z))
-[1.0, q1, q0, -1.0+q1^2, q0q1, q0^2-1.0]
+[1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
     """
 
     dim = len(dist)
 
     if isinstance(order, int):
         if order==0:
-            return chaospy.poly.Poly(1, dim=dim)
-        basis = chaospy.poly.basis(0, order, dim, sort)
+            return cp.poly.Poly(1, dim=dim)
+        basis = cp.poly.basis(0, order, dim, sort)
     else:
         basis = order
 
@@ -79,10 +78,10 @@ Examples
         for i in xrange(1,len(basis)):
 
             for j in xrange(i):
-                tmp = P[j]*chaospy.descriptives.E(basis[i]*P[j], dist, **kws)
+                tmp = P[j]*cp.descriptives.E(basis[i]*P[j], dist, **kws)
                 basis[i] = basis[i] - tmp
 
-            g = chaospy.descriptives.E(P[-1]**2, dist, **kws)
+            g = cp.descriptives.E(P[-1]**2, dist, **kws)
             if g<=0:
                 print("Warning: Polynomial cutoff at term %d" % i)
                 break
@@ -94,16 +93,16 @@ Examples
         G = [1.]
         for i in xrange(1,len(basis)):
             for j in xrange(i):
-                tmp = P[j]*(chaospy.descriptives.E(basis[i]*P[j], dist, **kws) / G[j])
+                tmp = P[j]*(cp.descriptives.E(basis[i]*P[j], dist, **kws) / G[j])
                 basis[i] = basis[i] - tmp
 
-            G.append(chaospy.descriptives.E(P[-1]**2, dist, **kws))
+            G.append(cp.descriptives.E(P[-1]**2, dist, **kws))
             if G[-1]<=0:
                 print("Warning: Polynomial cutoff at term %d" % i)
                 break
             P.append(basis[i])
 
-    return chaospy.poly.Poly(P, dim=dim, shape=(len(P),))
+    return cp.poly.Poly(P, dim=dim, shape=(len(P),))
 
 
 def orth_ttr(order, dist, normed=False, sort="GR", retall=False, **kws):
@@ -144,10 +143,10 @@ Examples
 --------
 >>> Z = cp.Normal()
 >>> print(cp.orth_ttr(4, Z))
-[1.0, q0, q0^2-1.0, q0^3-3.0q0, -6.0q0^2+3.0+q0^4]
+[1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
 
-    P, norms, A, B = chaospy.quadrature.stieltjes(
+    P, norms, A, B = cp.quadrature.stieltjes(
         dist, order, retall=True, **kws)
 
     if normed:
@@ -158,7 +157,7 @@ Examples
     dim = len(dist)
     if dim>1:
         Q, G = [], []
-        indices = chaospy.bertran.bindex(0,order,dim,sort)
+        indices = cp.bertran.bindex(0,order,dim,sort)
         for I in indices:
             q = [P[I[i]][i] for i in xrange(dim)]
             q = reduce(lambda x,y: x*y, q)
@@ -171,7 +170,7 @@ Examples
     else:
         G = norms[0]
 
-    P = chaospy.poly.flatten(chaospy.poly.Poly(P))
+    P = cp.poly.flatten(cp.poly.Poly(P))
 
     if retall:
         return P, np.array(G)
@@ -204,15 +203,15 @@ Examples
     """
 
     dim = len(dist)
-    basis = chaospy.poly.basis(1,order,dim, sort)
-    C = chaospy.descriptives.Cov(basis, dist)
+    basis = cp.poly.basis(1,order,dim, sort)
+    C = cp.descriptives.Cov(basis, dist)
     N = len(basis)
 
-    L, e = chaospy.cholesky.gill_king(C)
+    L, e = cp.cholesky.gill_king(C)
     Li = np.linalg.inv(L.T).T
     if not normed:
         Li /= np.repeat(np.diag(Li), len(Li)).reshape(Li.shape)
-    E_ = -np.sum(Li*chaospy.descriptives.E(basis, dist, **kws), -1)
+    E_ = -np.sum(Li*cp.descriptives.E(basis, dist, **kws), -1)
     coefs = np.empty((N+1, N+1))
     coefs[1:,1:] = Li
     coefs[0,0] = 1
@@ -226,7 +225,7 @@ Examples
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
-    P = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
+    P = cp.poly.Poly(out, dim, coefs.shape[1:], float)
 
     return P
 
@@ -253,33 +252,33 @@ P : Poly
 
 Examples
 --------
->>> Z = cp.MvNormal([0,0], [[1,.5],[.5,1]])
->>> P = orth_bert(2, Z)
->>> print(P)
-[1.0, q0, q1-0.5q0, q0^2-1.0, -0.5q0^2+q0q1, 0.25q0^2-0.75+q1^2-q0q1]
+# >>> Z = cp.MvNormal([0,0], [[1,.5],[.5,1]])
+# >>> P = orth_bert(2, Z)
+# >>> print(P)
+# [1.0, q0, -0.5q0+q1, q0^2-1.0, -0.5q0^2+q0q1, 0.25q0^2+q1^2-q0q1-0.75]
     """
     dim = len(dist)
     sort = sort.upper()
 
     # Start orthogonalization
-    x = chaospy.poly.basis(1,1,dim)
+    x = cp.poly.basis(1,1,dim)
     if not ("R" in sort):
         x = x[::-1]
-    foo = chaospy.bertran.fourier.FourierRecursive(dist)
+    foo = cp.bertran.fourier.FourierRecursive(dist)
 
     # Create order=0
-    pool = [chaospy.poly.Poly(1, dim=dim, shape=())]
+    pool = [cp.poly.Poly(1, dim=dim, shape=())]
 
     # start loop
-    M = chaospy.bertran.terms(N,dim)
+    M = cp.bertran.terms(N,dim)
     for i in xrange(1, M):
 
-        par, ax0 = chaospy.bertran.parent(i, dim)
-        gpar, ax1 = chaospy.bertran.parent(par, dim)
-        oneup = chaospy.bertran.child(0, dim, ax0)
+        par, ax0 = cp.bertran.parent(i, dim)
+        gpar, ax1 = cp.bertran.parent(par, dim)
+        oneup = cp.bertran.child(0, dim, ax0)
 
         # calculate rank to cut some terms
-        rank = chaospy.bertran.multi_index(i, dim)
+        rank = cp.bertran.multi_index(i, dim)
         while rank[-1]==0: rank = rank[:-1]
         rank = dim - len(rank)
 
@@ -288,7 +287,7 @@ Examples
         for j in xrange(gpar, i):
 
             # cut irrelevant term
-            if rank and np.any(chaospy.bertran.multi_index(j, dim)[-rank:]):
+            if rank and np.any(cp.bertran.multi_index(j, dim)[-rank:]):
                 continue
 
             A = foo(oneup, par, j)
@@ -304,7 +303,7 @@ Examples
     if "I" in sort:
         pool = pool[::-1]
 
-    P = chaospy.poly.Poly([_.A for _ in pool], dim, (chaospy.bertran.terms(N, dim),))
+    P = cp.poly.Poly([_.A for _ in pool], dim, (cp.bertran.terms(N, dim),))
     return P
 
 
@@ -335,8 +334,8 @@ Examples
     raise DeprecationWarning("Obsolete. Use orth_chol instead.")
 
     dim = len(dist)
-    basis = chaospy.poly.basis(1,order,dim)
-    C = chaospy.descriptives.Cov(basis, dist)
+    basis = cp.poly.basis(1,order,dim)
+    C = cp.descriptives.Cov(basis, dist)
     N = len(basis)
 
     L, P = pcd(C, approx=1, pivot=1, tol=eps)
@@ -345,7 +344,7 @@ Examples
     if normed:
         for i in xrange(N):
             Li[:,i] /= np.sum(Li[:,i]*P[:,i])
-    E_ = -chaospy.poly.sum(chaospy.descriptives.E(basis, dist, **kws)*Li.T, -1)
+    E_ = -cp.poly.sum(cp.descriptives.E(basis, dist, **kws)*Li.T, -1)
 
     coefs = np.zeros((N+1, N+1))
     coefs[1:,1:] = Li
@@ -359,7 +358,7 @@ Examples
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
-    P = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
+    P = cp.poly.Poly(out, dim, coefs.shape[1:], float)
     return P
 
 
@@ -391,13 +390,13 @@ Examples
     raise DeprecationWarning("Obsolete")
 
     dim = len(dist)
-    if isinstance(order, chaospy.poly.Poly):
+    if isinstance(order, cp.poly.Poly):
         basis = order
     else:
-        basis = chaospy.poly.basis(1,order,dim)
+        basis = cp.poly.basis(1,order,dim)
 
     basis = list(basis)
-    C = chaospy.descriptives.Cov(basis, dist, **kws)
+    C = cp.descriptives.Cov(basis, dist, **kws)
     L, P = pcd(C, approx=0, pivot=1, tol=eps)
     N = L.shape[-1]
 
@@ -407,14 +406,14 @@ Examples
         for i in xrange(N):
             b_[i] = basis[I[i]]
         basis = b_
-        C = chaospy.descriptives.Cov(basis, dist, **kws)
+        C = cp.descriptives.Cov(basis, dist, **kws)
         L, P = pcd(C, approx=0, pivot=1, tol=eps)
         N = L.shape[-1]
 
-    basis = chaospy.poly.Poly(basis)
+    basis = cp.poly.Poly(basis)
 
-    Li = chaospy.utils.rlstsq(L, P, alpha=1.e-300).T
-    E_ = -chaospy.poly.sum(chaospy.descriptives.E(basis, dist, **kws)*Li.T, -1)
+    Li = cp.utils.rlstsq(L, P, alpha=1.e-300).T
+    E_ = -cp.poly.sum(cp.descriptives.E(basis, dist, **kws)*Li.T, -1)
 
     coefs = np.zeros((N+1, N+1))
     coefs[1:,1:] = Li
@@ -427,10 +426,10 @@ Examples
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
-    P = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
+    P = cp.poly.Poly(out, dim, coefs.shape[1:], float)
 
     if normed:
-        norm = np.sqrt(chaospy.descriptives.Var(P, dist, **kws))
+        norm = np.sqrt(cp.descriptives.Var(P, dist, **kws))
         norm[0] = 1
         P = P/norm
 
@@ -465,9 +464,9 @@ Examples
         return orth_svd(order, dist, eps, normed, **kws)
 
     dim = len(dist)
-    basis = chaospy.poly.basis(1,order,dim)
+    basis = cp.poly.basis(1,order,dim)
 
-    C = chaospy.descriptives.Cov(basis, dist)
+    C = cp.descriptives.Cov(basis, dist)
 
     L, P = pcd(C, approx=0, pivot=1, tol=eps)
     eig = np.array(np.sum(np.cumsum(P, 0), 0)-1, dtype=int)
@@ -491,7 +490,7 @@ Examples
 
     Li = np.linalg.inv(L.T).T
     Ln = Li/np.repeat(np.diag(Li), len(Li)).reshape(Li.shape)
-    E_ = -np.sum(Ln*chaospy.descriptives.E(basis, dist, **kws), -1)
+    E_ = -np.sum(Ln*cp.descriptives.E(basis, dist, **kws), -1)
     coefs = np.empty((N+1, N+1))
     coefs[1:,1:] = Ln
     coefs[0,0] = 1
@@ -505,10 +504,10 @@ Examples
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
-    P = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
+    P = cp.poly.Poly(out, dim, coefs.shape[1:], float)
 
     if normed:
-        norm = np.sqrt(chaospy.descriptives.Var(P, dist, **kws))
+        norm = np.sqrt(cp.descriptives.Var(P, dist, **kws))
         norm[0] = 1
         P = P/norm
 
@@ -520,7 +519,7 @@ def norm(order, dist, orth=None):
     try:
         if dim>1:
             norms = np.array([norm(order+1, D) for D in dist])
-            Is = chaospy.bertran.bindex(order, dim)
+            Is = cp.bertran.bindex(order, dim)
             out = np.ones(len(Is))
 
             for i in xrange(len(Is)):
@@ -538,7 +537,7 @@ def norm(order, dist, orth=None):
 
         if orth is None:
             orth = orth_chol(order, dist)
-        return chaospy.descriptives.E(orth**2, dist)
+        return cp.descriptives.E(orth**2, dist)
 
 def orth_select(orth):
     """
@@ -599,9 +598,9 @@ X : array_like
     dim,size = X.shape
 
     order = 1
-    while chaospy.bertran.terms(order, dim)<=size: order += 1
+    while cp.bertran.terms(order, dim)<=size: order += 1
 
-    indices = np.array(chaospy.bertran.bindex(1, order, dim, sort)[:size])
+    indices = np.array(cp.bertran.bindex(1, order, dim, sort)[:size])
     s,t = np.mgrid[:size, :size]
 
     M = np.prod(X.T[s]**indices[t], -1)
@@ -609,7 +608,7 @@ X : array_like
     if det==0:
         raise np.linalg.LinAlgError("invertable matrix")
 
-    v = chaospy.poly.basis(1, order, dim, sort)[:size]
+    v = cp.poly.basis(1, order, dim, sort)[:size]
 
     coeffs = np.zeros((size, size))
 
@@ -624,7 +623,7 @@ X : array_like
             M = np.roll(M, -1, axis=1)
         coeffs /= det
 
-    return chaospy.poly.sum(v*(coeffs.T), 1)
+    return cp.poly.sum(v*(coeffs.T), 1)
 
 
 if __name__=="__main__":

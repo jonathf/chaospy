@@ -1,0 +1,4 @@
+.. _distributions:
+
+Probability Distributions
+-------------------------

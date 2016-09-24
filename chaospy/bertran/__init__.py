@@ -10,5 +10,4 @@ import chaospy.bertran.fourier
 import chaospy.bertran.sparse
 
 from chaospy.bertran.operators import *
-__all__ = chaospy.bertran.operators.__all__
-
+from chaospy.bertran.sparse import sparse_segment

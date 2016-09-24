@@ -2,37 +2,31 @@ import numpy as np
 from copy import copy
 
 __all__ = [
-"frac",
-"gcd",
-"limit_denominator"]
-__version__ = "1.0"
+    "frac",
+    "gcd",
+    "limit_denominator"
+]
 
 
 def gcd(a, b):
     """
-Greates common denominator
+    Greates common denominator.
 
-Parameters
-----------
-a : array_like
-    Fraction denominator. Values must be either int or long.
-b : int, np.ndarray
-    Fraction numerator. Values must be either int or long.
-    Also `a` and `b` must have compatible shapes.
+    Args:
+        a (array_like) : Fraction denominator. Values must be either int or
+                long.
+        b (int, np.ndarray) : Fraction numerator. Values must be either int or
+                long.  Also `a` and `b` must have compatible shapes.
 
-Returns
--------
-c : np.ndarray
-    With `c.shape=a.shape`
+    Returns:
+        (np.ndarray) : With `c.shape=a.shape`
 
-Examples
---------
->>> print(gcd(120, 6))
-6
->>> print(gcd([0,1,2,3], 2))
-[2 1 2 1]
+    Examples:
+        >>> print(gcd(120, 6))
+        6
+        >>> print(gcd([0,1,2,3], 2))
+        [2 1 2 1]
     """
-
     if isinstance(a, (int, long)) and \
         isinstance(b, (int, long)):
         while b:
@@ -57,6 +51,7 @@ Examples
         b = np.where(b==0, b, b_)
     a = np.where(az, bz, a)
     return a
+
 
 def limit_denominator(a, b, max_b=10**6, index=None):
 
@@ -125,19 +120,14 @@ def limit_denominator(a, b, max_b=10**6, index=None):
 
 
 class frac(object):
-    """
-General fraction class
-    """
+    """General fraction class."""
 
     def __init__(self, a, b=1, limit=None):
         """
-a : array_like
-    denomiator
-b : array_like
-    nominator
-    dimensions must match a
+        Args:
+            a (array_like) : denomiator.
+            b (array_like) : nominator. Dimensions must match a.
         """
-
         a = np.array(a)
 
         # Numerator

@@ -16,7 +16,7 @@ from scipy.misc import comb
 from scipy.optimize import fminbound
 from scipy.linalg import eig_banded
 
-import chaospy
+import chaospy as cp
 
 
 def generate_quadrature(order, domain, acc=100, sparse=False, rule="C",
@@ -89,7 +89,7 @@ samplegen   Sample generator
 
     if rule == "G":
 
-        assert isinstance(domain, chaospy.dist.Dist)
+        assert isinstance(domain, cp.dist.Dist)
 
         if sparse:
             func = lambda m: golub_welsch(m, domain, acc)
@@ -123,9 +123,9 @@ samplegen   Sample generator
             elif rule=="J":
                 func = lambda m: leja(m, domain)
             elif rule=="Z":
-                func = lambda m: chaospy.genz_keister.gk(m, domain)
+                func = lambda m: cp.genz_keister.gk(m, domain)
             elif rule=="P":
-                func = lambda m: chaospy.gauss_patterson.gp(m, domain)
+                func = lambda m: cp.gauss_patterson.gp(m, domain)
             order = np.ones(dim, dtype=int)*order
             m = np.min(order)
             skew = [o-m for o in order]
@@ -149,7 +149,7 @@ samplegen   Sample generator
                 x, w = leja(order, domain)
 
             elif rule=="Z":
-                x, w = chaospy.genz_keister.gk(order, domain)
+                x, w = cp.genz_keister.gk(order, domain)
 
             if dim == 1:
                 x = x.reshape(1, x.size)
@@ -171,7 +171,7 @@ samplegen   Sample generator
 
     else:
 
-        x = chaospy.dist.samplegen(order, domain, rule, **kws)
+        x = cp.dist.samplegen(order, domain, rule, **kws)
         w = np.ones(x.shape[-1])/x.shape[-1]
 
     return x, w
@@ -246,8 +246,8 @@ Multivariate
         x = np.array(X).reshape(1,o[0])
         w = np.array(W).reshape(o[0])
     else:
-        x = chaospy.utils.combine(X).T
-        w = np.prod(chaospy.utils.combine(W), -1)
+        x = cp.utils.combine(X).T
+        w = np.prod(cp.utils.combine(W), -1)
 
     assert len(x)==dim
     assert len(w)==len(x.T)
@@ -303,7 +303,7 @@ Examples
         A,B = dist.ttr(K)
         B[:,0] = 1.
 
-        x = chaospy.poly.variable(dim)
+        x = cp.poly.variable(dim)
         if normed:
             orth = [x**0*np.ones(dim), (x-A[:,0])/np.sqrt(B[:,1])]
             for n in xrange(1,order):
@@ -325,7 +325,7 @@ Examples
         w = w*dist.pdf(q)
 
         dim = len(dist)
-        x = chaospy.poly.variable(dim)
+        x = cp.poly.variable(dim)
         orth = [x*0, x**0]
 
         inner = np.sum(q*w, -1)
@@ -356,7 +356,7 @@ Examples
 
 def weightgen(nodes, dist):
     poly = stieltjes(dist, len(nodes)-1, retall=True)[0]
-    poly = chaospy.poly.flatten(chaospy.poly.Poly(poly))
+    poly = cp.poly.flatten(cp.poly.Poly(poly))
     V = poly(nodes)
     Vi = np.linalg.inv(V)
     return Vi[:,0]
@@ -374,8 +374,8 @@ After paper by Narayan and Jakeman
 
         x = [_[0][0] for _ in xw]
         w = [_[1] for _ in xw]
-        x = chaospy.utils.combine(x).T
-        w = chaospy.utils.combine(w)
+        x = cp.utils.combine(x).T
+        w = cp.utils.combine(w)
         w = np.prod(w, -1)
 
         return x, w
@@ -469,8 +469,8 @@ quadrature
     x = [_[0] for _ in q]
     w = [_[1] for _ in q]
 
-    x = chaospy.utils.combine(x, part=part).T
-    w = chaospy.utils.combine(w, part=part)
+    x = cp.utils.combine(x, part=part).T
+    w = cp.utils.combine(w, part=part)
 
     x = ((up-lo)*x.T + lo).T
     w = np.prod(w*(up-lo), -1)
@@ -537,8 +537,8 @@ quadrature
     x = np.array([_[0] for _ in q])
     w = np.array([_[1] for _ in q])
 
-    x = chaospy.utils.combine(x)
-    w = chaospy.utils.combine(w)
+    x = cp.utils.combine(x)
+    w = cp.utils.combine(w)
 
     x = (up-lo)*x + lo
     w = np.prod(w*(up-lo), 1)
@@ -549,7 +549,7 @@ quadrature
 def sparse_grid(func, order, dim, skew=None):
 
     X, W = [], []
-    bindex = chaospy.bertran.bindex(order-dim+1, order, dim)
+    bindex = cp.bertran.bindex(order-dim+1, order, dim)
 
     if skew is None:
         skew = np.zeros(dim, dtype=int)
@@ -557,8 +557,8 @@ def sparse_grid(func, order, dim, skew=None):
         skew = np.array(skew, dtype=int)
         assert len(skew)==dim
 
-    for i in range(chaospy.bertran.terms(
-                order, dim) - chaospy.bertran.terms(order-dim, dim)):
+    for i in range(cp.bertran.terms(
+                order, dim) - cp.bertran.terms(order-dim, dim)):
 
         I = bindex[i]
         x,w = func(skew+I)
@@ -691,7 +691,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #      dim = len(dist)
 #      if isinstance(order, (int, long, float)):
 #          order = [order]*dim
-#      indices = chaospy.dist.sort(dist)
+#      indices = cp.dist.sort(dist)
 #      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]
 #      X = np.empty([dim,]+[order[i]+1 for i in indices])
 #      W = np.ones([order[i]+1 for i in indices])
@@ -702,7 +702,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #          i = len(I)
 #          j = indices[i]
 #
-#          Z = chaospy.dist.Subset(dist, j, vals)
+#          Z = cp.dist.Subset(dist, j, vals)
 #          x,w = Golub_Welsch(order[j], Z, acc)
 #          W[I] *= w[grid[(i,)+I]]
 #          X[(i,)+I] = x[grid[(i,)+I]]
@@ -781,13 +781,13 @@ mv_rule : callable
                 for i in xrange(dim)]
 
         x = [np.array(_[0]).flatten() for _ in q]
-        x = chaospy.utils.combine(x, part=part).T
+        x = cp.utils.combine(x, part=part).T
 
         w = [np.array(_[1]).flatten() for _ in q]
-        w = np.prod(chaospy.utils.combine(w, part=part), -1)
+        w = np.prod(cp.utils.combine(w, part=part), -1)
 
         return x, w
-    tensprod_rule = chaospy.utils.lazy_eval(tensprod_rule)
+    tensprod_rule = cp.utils.lazy_eval(tensprod_rule)
 
     def mv_rule(order, sparse=False, growth=None, part=None):
         """
@@ -830,7 +830,7 @@ weights : np.ndarray
 def momgen(order, domain, acc=100, sparse=False, rule="C",
         composite=1, part=None, trans=lambda x:x, **kws):
 
-    if isinstance(domain, chaospy.dist.Dist):
+    if isinstance(domain, cp.dist.Dist):
         dim = len(domain)
     else:
         dim = np.array(domain[0]).size
@@ -871,7 +871,7 @@ def momgen(order, domain, acc=100, sparse=False, rule="C",
                 out += np.sum(np.prod(Y[i].T**k, -1)*W[i], 0)
             return out
 
-    _mom = chaospy.utils.lazy_eval(_mom, tuple)
+    _mom = cp.utils.lazy_eval(_mom, tuple)
 
     def mom(K, **kws):
         out = np.array([_mom(k) for k in K.T])

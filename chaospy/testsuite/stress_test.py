@@ -3,9 +3,9 @@ import numpy as np
 from scipy import special
 
 dim = 3  # <100
-samples = 10**2  # <10**6
-order = 4 # <20
-size = 10**2 # <10**5
+samples = 20  # <10**6
+order = 2 # <20
+size = 20 # <10**5
 
 
 class normal(cp.Dist):
@@ -57,9 +57,7 @@ def test_orthogonals():
 
 def test_approx_orthogonals():
     dist = cp.Iid(normal(), dim)
-    cp.orth_gs(order, dist)
     cp.orth_ttr(order, dist)
-    cp.orth_chol(order, dist)
 
 
 def test_quadrature():
@@ -77,11 +75,6 @@ def test_approx_quadrature():
     dist = cp.Iid(normal(), dim)
     gq = cp.generate_quadrature
     nodes, weights = gq(order, dist, rule="C")
-    nodes, weights = gq(order, dist, rule="E")
-    nodes, weights = gq(order, dist, rule="G")
-    nodes, weights = gq(order, dist, rule="C", sparse=True)
-    nodes, weights = gq(order, dist, rule="E", sparse=True)
-    nodes, weights = gq(order, dist, rule="G", sparse=True)
 
 
 def test_integration():
@@ -89,7 +82,7 @@ def test_integration():
     orth, norms = cp.orth_ttr(order, dist, retall=1)
     gq = cp.generate_quadrature
     nodes, weights = gq(order, dist, rule="C")
-    vals = np.empty((len(weights), size))
+    vals = np.zeros((len(weights), size))
     cp.fit_quadrature(orth, nodes, weights, vals, norms=norms)
 
 
@@ -97,7 +90,7 @@ def test_regression():
     dist = cp.Iid(cp.Normal(), dim)
     orth, norms = cp.orth_ttr(order, dist, retall=1)
     data = dist.sample(samples)
-    vals = np.empty((samples, size))
+    vals = np.zeros((samples, size))
     cp.fit_regression(orth, data, vals, "LS")
     cp.fit_regression(orth, data, vals, "T", order=0)
     cp.fit_regression(orth, data, vals, "TC", order=0)

@@ -1,0 +1,4 @@
+.. _spectral:
+
+Spectral Projection
+-------------------

@@ -1,0 +1,4 @@
+.. _quadrature:
+
+Quadrature methods
+------------------

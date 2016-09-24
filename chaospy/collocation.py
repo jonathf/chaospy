@@ -23,7 +23,7 @@ try:
 except:
     pass
 
-import chaospy
+import chaospy as cp
 
 __all__ = [
 "pcm", "fit_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
@@ -136,8 +136,8 @@ samplegen       Generator for sampling schemes
         else:
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
-        orth = chaospy.orthogonal.orth_select(orth, **kws)
-    if not isinstance(orth, chaospy.poly.Poly):
+        orth = cp.orthogonal.orth_select(orth, **kws)
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
     # Applying scheme
@@ -145,7 +145,7 @@ samplegen       Generator for sampling schemes
     if rule in "GEC":
         if sorder is None:
             sorder = porder+1
-        z, w = chaospy.quadrature.generate_quadrature(
+        z, w = cp.quadrature.generate_quadrature(
             sorder, dist, acc=quad_acc, sparse=sparse, rule=rule,
             composit=composit, **kws)
 
@@ -252,12 +252,12 @@ y : np.ndarray
         acc = order+1
 
     if dist_in is None:
-        z, w = chaospy.quadrature.generate_quadrature(
+        z, w = cp.quadrature.generate_quadrature(
             acc, dist_out, 100, sparse=sparse, rule="C")
         x = z
         dist = dist_out
     else:
-        z, w = chaospy.quadrature.generate_quadrature(
+        z, w = cp.quadrature.generate_quadrature(
             acc, dist_in, 100, sparse=sparse, rule="C")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
@@ -269,7 +269,7 @@ y : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, chaospy.poly.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     y = np.array(map(func, x.T))
@@ -310,7 +310,7 @@ norms : array_like
     norms.shape==(len(orth),)
     """
 
-    orth = chaospy.poly.Poly(orth)
+    orth = cp.poly.Poly(orth)
     nodes = np.asfarray(nodes)
     weights = np.asfarray(weights)
 
@@ -333,7 +333,7 @@ norms : array_like
 
     coefs = (np.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])
-    Q = chaospy.poly.transpose(chaospy.poly.sum(orth*coefs.T, -1))
+    Q = cp.poly.transpose(cp.poly.sum(orth*coefs.T, -1))
 
     if retall:
         return Q, coefs
@@ -422,12 +422,12 @@ X : np.ndarray
         acc = order+1
 
     if dist_in is None:
-        z, w = chaospy.quadrature.generate_quadrature(
+        z, w = cp.quadrature.generate_quadrature(
             acc, dist_out, 100, sparse=sparse, rule="G")
         x = z
         dist = dist_out
     else:
-        z, w = chaospy.quadrature.generate_quadrature(
+        z, w = cp.quadrature.generate_quadrature(
             acc, dist_in, 100, sparse=sparse, rule="G")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
@@ -443,7 +443,7 @@ X : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, chaospy.poly.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     ovals = orth(*z)
@@ -452,7 +452,7 @@ X : np.ndarray
     coef = (np.sum(vals1, 1).T/np.sum(vals2, 1)).T
 
     coef = coef.reshape(len(coef), *shape[1:])
-    Q = chaospy.poly.transpose(chaospy.poly.sum(orth*coef.T, -1))
+    Q = cp.poly.transpose(cp.poly.sum(orth*coef.T, -1))
 
     if retall:
         return Q, x, w, y
@@ -549,14 +549,14 @@ retall : bool
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, chaospy.poly.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     # sampling
     if sample is None:
         sample = 2*len(orth)
 
-    x = chaospy.dist.samplegen(sample, dist, rule)
+    x = cp.dist.samplegen(sample, dist, rule)
 
 
     # Rosenblatt
@@ -573,7 +573,7 @@ retall : bool
     else:
         R, y_ = fit_regression(orth, x, y, regression, retall=1)
 
-    R = chaospy.poly.reshape(R, shape)
+    R = cp.poly.reshape(R, shape)
 
     if retall:
         return R, x, y
@@ -831,11 +831,12 @@ uhat : np.ndarray
 
 Examples
 --------
+>>> x, y = cp.variable(2)
 >>> P = cp.Poly([1, x, y])
 >>> s = [[-1,-1,1,1], [-1,1,-1,1]]
 >>> u = [0,1,1,2]
 >>> print(fit_regression(P, s, u))
-0.5q1+0.5q0+1.0
+0.5q0+0.5q1+1.0
 
     """
 
@@ -924,8 +925,8 @@ Examples
 
     u = u.reshape(u.shape[0], *shape)
 
-    R = chaospy.poly.sum((P*uhat), -1)
-    R = chaospy.poly.reshape(R, shape)
+    R = cp.poly.sum((P*uhat), -1)
+    R = cp.poly.reshape(R, shape)
 
     if retall==1:
         return R, uhat
@@ -950,7 +951,7 @@ def fit_lagrange(X, Y):
     basis = []
     n = 1
     while len(basis) < N:
-        basis = chaospy.poly.basis(0, n, dim)
+        basis = cp.poly.basis(0, n, dim)
         n += 1
 
     basis = basis[:N]
@@ -1050,15 +1051,15 @@ norm_error : np.ndarray
 
 Examples
 --------
->>> func = lambda q: q[0]*q[1]
->>> poly = cp.basis(0,2,2)
->>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
->>> res = cp.fit_adaptive(func, poly, dist, budget=100)
->>> print(res)
+# >>> func = lambda q: q[0]*q[1]
+# >>> poly = cp.basis(0,2,2)
+# >>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
+# >>> res = cp.fit_adaptive(func, poly, dist, budget=100)
+# >>> print(res)
     """
 
     if bufname:
-        func = chaospy.utils.lazy_eval(func, load=bufname)
+        func = cp.utils.lazy_eval(func, load=bufname)
 
     dim = len(dist)
     n = [0,0]
@@ -1103,19 +1104,8 @@ Examples
     shape = (dim1,)+val.shape
     val2 = val2.reshape(shape[::-1]).T
 
-    out = chaospy.poly.transpose(chaospy.poly.sum(poly*val2.T, -1))
+    out = cp.poly.transpose(cp.poly.sum(poly*val2.T, -1))
 
     if retall:
         return out, val2, val1, err2, err1
     return val2
-
-
-
-
-if __name__=="__main__":
-    import chaospy as cp
-    import doctest
-    x, y = cp.variable(2)
-
-    doctest.testmod()
-

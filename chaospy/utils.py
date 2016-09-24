@@ -28,6 +28,8 @@ from time import clock
 import pickle
 import os
 
+import chaospy as cp
+
 __all__ = [
     "combine",
     "lazy_eval",
@@ -470,7 +472,7 @@ Examples
 >>> print(cp.mci(foo, dist=dist))
 0.250923402627
     """
-    x = dist.rnd(size=(len(dist), samples))
+    x = dist.sample(size=(len(dist), samples))
     return sum(func(*x))/samples
 
 
