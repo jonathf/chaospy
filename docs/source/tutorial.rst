@@ -22,7 +22,7 @@ Here ``coord`` are temporal coordinates in one dimensions, and ``param`` consist
 of two model parameters that defines the shape of the solution. We furthermore
 assume that the ``coord`` defined on the interval ``(0, 1)``::
 
-    >>> coords = np.linspace(0, 10, 200)
+    >>> coord = np.linspace(0, 10, 200)
 
 And assume that ``param`` is unknown, but can be described through a joint
 probability distribution::
@@ -36,7 +36,7 @@ To visualize the variability in the model we generate 10 samples from the
 distribution which we then use to evaluate the model::
 
     >>> samples = distribution.sample(50)
-    >>> evals = [foo(coord, sample) for sample in samples]
+    >>> evals = [foo(coord, sample) for sample in samples.T]
 
 .. figure:: fig/demonstration.png
 
@@ -64,7 +64,7 @@ samples like e.g. ``Hammersley``, a flag in ``sample`` can be issued to indicate
 the type of sample. For example::
 
     >>> samples = distribution.sample(1000, "H")
-    >>> evals = [foo(coord, sample) for sample in samples]
+    >>> evals = [foo(coord, sample) for sample in samples.T]
 
 These samples can then be used to do analysis using tools from the standard
 ``numpy`` library::
@@ -136,7 +136,7 @@ method::
 
 These can then be used to create an polynomial approximation as follows::
 
-    >>> evals = [foo(coord, val) for val in absissas]
+    >>> evals = [foo(coord, val) for val in absissas.T]
     >>> foo_approx = cp.fit_quadrature(
     ...     polynomial_expansion, absissas, weights, evals)
 

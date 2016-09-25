@@ -176,7 +176,6 @@ samplegen   Sample generator
 
     return x, w
 
-__version__ = "2.0"
 
 def golub_welsch(order, dist, acc=100, **kws):
     """
@@ -919,11 +918,3 @@ def probabilistic_collocation(order, dist, subset=.1):
     X = X.T[alpha].T
     W = W[alpha]
     return X, W
-
-
-
-if __name__=="__main__":
-    import __init__ as cp
-    x,y = cp.variable(2)
-    import doctest
-    doctest.testmod()
