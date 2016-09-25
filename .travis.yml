@@ -17,3 +17,5 @@ before_install:
 install:
   - pip install -r requirements-dev.txt
 script: python setup.py test
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

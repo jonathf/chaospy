@@ -1,12 +1,8 @@
 Welcome to chaospy's documentation!
 ===================================
 
-.. include:: ../../README.rst
-
-.. _toc:
-
-Table of content
-----------------
+Chaospy is a numerical tool for performing uncertainty quantification using
+polynomial chaos expansions and advanced Monte Carlo methods.
 
 .. toctree::
    :maxdepth: 2
