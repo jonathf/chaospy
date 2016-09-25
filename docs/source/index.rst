@@ -3,6 +3,8 @@ Welcome to chaospy's documentation!
 
 .. include:: ../../README.rst
 
+.. _toc:
+
 Table of content
 ----------------
 
@@ -21,3 +23,10 @@ Table of content
    rosenblatt
    copulas
    spectral
+
+.. _bibliography:
+
+Bibliography
+------------
+
+.. bibliography:: bibliography.bib
