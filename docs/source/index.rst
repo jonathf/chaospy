@@ -13,11 +13,13 @@ Table of content
 
    tutorial
    montecarlo
-   regression
-   quadrature
+   collocation
+   pseudospectral
 
    distributions
    polynomials
+   regression
+   quadrature
    orthogonality
    descriptives
    rosenblatt
