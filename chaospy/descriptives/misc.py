@@ -149,6 +149,7 @@ def QoI_Dist(poly, dist, sample=1e4, **kws):
                 where `qoi_dists.shape==poly.shape`.
 
     # Examples:
+    #     >>> dist = cp.Normal(0, 1)
     #     >>> cp.seed(1000)
     #     >>> x = cp.variable(1)
     #     >>> poly = cp.Poly([x])
