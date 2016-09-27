@@ -141,8 +141,8 @@ if __name__ == "__main__":
     dist = cp.Iid(cp.Normal(), 2)
     dist_dep = cp.MvNormal([0,0], [[1, rho], [rho, 1]])
 
-    print poly
-    print "md\n", Sens_m_sample(poly, dist_dep, 10**6)
-    print "m2d\n", Sens_m2_sample(poly, dist_dep, 10**6)[0,1]
-    print "td\n", Sens_t_sample(poly, dist_dep, 10**6)
-    print [[0,1,0,1,1/(1+rho*rho),0], [0,0,1,0,1/(1+rho*rho),1]]
+    print(poly)
+    print("md\n", Sens_m_sample(poly, dist_dep, 10**6))
+    print("m2d\n", Sens_m2_sample(poly, dist_dep, 10**6)[0,1])
+    print("td\n", Sens_t_sample(poly, dist_dep, 10**6))
+    print([[0,1,0,1,1/(1+rho*rho),0], [0,0,1,0,1/(1+rho*rho),1]])

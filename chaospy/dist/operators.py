@@ -11,9 +11,10 @@ Collection of standard operators. They include:
 They are all advanced variables, so take a look as dist.graph for
 details on their implementation.
 """
-from backend import Dist
 import numpy as np
 from scipy.misc import comb
+
+from .backend import Dist
 
 __all__ = [
 "log", "log10", "logn",
@@ -72,7 +73,7 @@ class Add(Dist):
 
     def _mom(self, k, G):
         if len(G.D)==2 and G.D["A"].dependent(G.D["B"]):
-            raise NotImplementedError, "dependency"
+            raise NotImplementedError("dependency")
 
         dim = len(self)
         kmax = np.max(k, 1)+1
@@ -192,7 +193,7 @@ class Mul(Dist):
     def _mom(self, k, G):
 
         if len(G.D)==2 and G.D["A"].dependent(G.D["B"]):
-            raise NotImplementedError, "dependency"
+            raise NotImplementedError("dependency")
 
         A = []
         if "A" in G.D:  A.append(G(k, G.D["A"]))
@@ -301,7 +302,7 @@ class Div(Dist):
     def _mom(self, k, G):
 
         if len(G.D)==2 and G.D["A"].dependent(G.D["B"]):
-            raise NotImplementedError, "dependency"
+            raise NotImplementedError("dependency")
 
         A = []
         if "A" in G.D:  A.append(G(k, G.D["A"]))
@@ -779,7 +780,7 @@ class Pow(Dist):
         if "B" in G.K and not np.any(G.K["B"] % 1):
             out = G(k*np.array(G.K["B"], dtype=int), G.D["A"])
         else:
-            raise NotImplementedError
+            raise NotImplementedError()
         return out
 
     def _val(self, G):

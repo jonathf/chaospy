@@ -1,6 +1,8 @@
 import numpy as np
-import fraction as f
-pysum = sum
+
+import chaospy as cp
+from . import fraction as f
+SUM = sum
 
 __all__ = [
 "Poly",
@@ -13,7 +15,6 @@ __all__ = [
 "substitute",
 "setvarname",
 ]
-__version__ = "1.0"
 
 
 # Name of variables
@@ -24,34 +25,30 @@ def setvarname(name):
 
 class Poly(object):
     """
-Polynomial representation in variable dimensions.
-Can also represent sets of polynomials.
+    Polynomial representation in variable dimensions.
 
-Examples
---------
-Direct construction:
+    Can also represent sets of polynomials.
 
->>> P = cp.Poly({(1,):np.array(1)})
->>> print P
-q0
+    Examples:
+        Direct construction:
+        >>> P = cp.Poly({(1,):np.array(1)})
+        >>> print(P)
+        q0
 
-Basic operators:
+        Basic operators:
+        >>> x,y = cp.variable(2)
+        >>> print(x**2 + x*y + 2)
+        q0^2+q0q1+2
 
->>> x,y = cp.variable(2)
->>> print x**2 + x*y + 2
-q0q1+q0^2+2
+        Evaluation:
+        >>> g = -3*x+x**2
+        >>> print(g([1,2,3], [1,2,3]))
+        [-2 -2  0]
 
-Evaluation:
-
->>> g = -3*x+x**2
->>> print g([1,2,3], [1,2,3])
-[-2 -2  0]
-
-Arrays:
-
->>> P = cp.Poly([x*y, x, y])
->>> print P
-[q0q1, q0, q1]
+        Arrays:
+        >>> P = cp.Poly([x*y, x, y])
+        >>> print(P)
+        [q0q1, q0, q1]
     """
 
     def __abs__(self):
@@ -62,7 +59,6 @@ Arrays:
         vals = map(lambda key: abs(A[key]), keys)
         return Poly(dict(zip(keys, vals)), \
             self.dim, self.shape, self.dtype)
-
 
     def __add__(self, y):
         """x.__add__(y) <==> x+y"""
@@ -116,13 +112,13 @@ Arrays:
             dtype = dtyping(self.dtype, y.dtype)
 
             zero = (0,)*self.dim
-            if isinstance(y, f.frac):
-                d[zero] = y+d.get(zero, np.zeros(self.shape, dtype=int))
-            else:
-                d[zero] = y+d.get(zero, np.zeros(self.shape,\
-                    dtype=int))
 
-            if np.prod(y.shape)>np.prod(self.shape):
+            if zero not in d:
+                d[zero] = np.zeros(self.shape, dtype=int)
+
+            d[zero] = d[zero] + y
+
+            if np.prod(y.shape) > np.prod(self.shape):
 
                 ones = np.ones(y.shape, dtype=dtype)
                 for key in d.keys():
@@ -135,30 +131,22 @@ Arrays:
 
     def __call__(self, *args, **kws):
         """
-Evaluate a polynomial.
+        Evaluate a polynomial.
 
-Parameters
-----------
-args : array_like, Poly
-    Arguments to evaluate. Masked values and np.nan will not be
-    evaluated. If instance is Poly, substitution on the variable
-    is performed.
-kws : array_like, Poly
-    Same as args, but the keys referred to the variables names. If
-    the number of dimensions are <=3, 'x', 'y' and 'z' respectably
-    refer to the axes. Otherwise, the keys are on the form 'x%d'
-    where %d is an interger representing the dimension.
+        Args:
+            args (array_like, Poly) : Arguments to evaluate. Masked values and
+                    np.nan will not be evaluated. If instance is Poly,
+                    substitution on the variable is performed.
+            kws (array_like, Poly) : Same as args, but the keys referred to the
+                    variables names. If the number of dimensions are <=3, 'x',
+                    'y' and 'z' respectably refer to the axes. Otherwise, the
+                    keys are on the form 'x%d' where %d is an interger
+                    representing the dimension.
 
-Returns
--------
-output : ndarray, Poly
-    If masked values are included in args, a Poly is
-    returned where the masked variables are retained.
-    Otherwise an array is returned.
-
-See Also
---------
-poly.call : equivalent method
+        Returns:
+            (ndarray, Poly) : If masked values are included in args, a Poly is
+                    returned where the masked variables are retained.
+                    Otherwise an array is returned.
         """
 
         if len(args)>self.dim:
@@ -175,13 +163,12 @@ poly.call : equivalent method
                     continue
 
             else:
-                raise TypeError, \
-                    "Unexpeted keyword argument '%s'" % key
+                raise TypeError(
+                    "Unexpeted keyword argument '%s'" % key)
 
             if args[index] not in (np.nan, np.ma.masked):
-                raise TypeError, \
-                    "Multiple values for keyword argument '%s'" \
-                    % index
+                raise TypeError(
+                    "Multiple values for keyword argument '%s'" % index)
 
             args[index] = val
 
@@ -265,7 +252,7 @@ poly.call : equivalent method
 
         if isinstance(subkey, int):
             if not 0<=subkey<len(self.keys):
-                raise IndexError, "Index out of range"
+                raise IndexError("Index out of range")
 
             subkey = slice(subkey, subkey+1,None)
 
@@ -279,7 +266,7 @@ poly.call : equivalent method
         keys = A0.keys()
         dim = self.dim
         def _cmp(x, y):
-            out = cmp(pysum(x), pysum(y))
+            out = cmp(SUM(x), SUM(y))
             if out!=0:
                 return out
             def __cmp(x,y):
@@ -296,26 +283,20 @@ poly.call : equivalent method
         return Poly(A1, dim, shape, self.dtype)
 
 
-    def __init__(self, A=None, dim=None, shape=None,
-        dtype=None, V=0):
+    def __init__(self, A=None, dim=None, shape=None, dtype=None, V=0):
         """
-Parameters
-----------
-A : array_like, dict, Poly
-    The polynomial coefficient Tensor.
-    Where A[(i,j,k)] corresponds to a_{ijk} x^i y^j z^k
-    (A[i][j][k] for list and tuple)
-dim : int
-    the dimensionality of the polynomial.
-    Automatically set if A contains a value.
-shape : tuple
-    the number of polynomials represented.
-    Automatically set if A contains a value.
-dtype : type
-    The type of the polynomial coefficients
+        Args:
+            A (array_like, dict, Poly) : The polynomial coefficient Tensor.
+                    Where A[(i,j,k)] corresponds to a_{ijk} x^i y^j z^k
+                    (A[i][j][k] for list and tuple)
+            dim (int) : the dimensionality of the polynomial.  Automatically
+                    set if A contains a value.
+            shape (tuple) : the number of polynomials represented.
+                    Automatically set if A contains a value.
+            dtype (type) : The type of the polynomial coefficients
         """
 
-        if V: print "\nConstruct poly out of:\n", A
+        if V: print("\nConstruct poly out of:\n", A)
 
         if isinstance(A, Poly):
 
@@ -377,24 +358,24 @@ dtype : type
             d = {}
             for i in xrange(len(A)): # i over list of polys
 
-                if V: print "Adding:", A[i], "(%d)" % i
+                if V: print("Adding:", A[i], "(%d)" % i)
                 for key in A[i].A: # key over exponents in each poly
 
                     if not d.has_key(key):
-                        if V: print "creating key", key
+                        if V: print("creating key", key)
                         if dtype_==f.frac:
                             d[key] = f.frac(np.zeros(shape_))
                         else:
                             d[key] = np.zeros(shape_, dtype=dtype_)
                     d[key][i] = A[i].A[key]
-                    if V: print "update", key, d[key]
-            if V: print "creating master dict:\n", d
+                    if V: print("update", key, d[key])
+            if V: print("creating master dict:\n", d)
 
             A = d
 
         else:
-            raise TypeError, \
-                "Poly arg: 'A' is not a valid type " + repr(A)
+            raise TypeError(
+                "Poly arg: 'A' is not a valid type " + repr(A))
 
         if dtype is None:
             dtype = dtype_
@@ -460,7 +441,7 @@ dtype : type
         self.dtype = dtype
         self.A = A
 
-        if V: print "result", A
+        if V: print("result", A)
 
     def __iter__(self):
         """x.__iter__() <==> iter(x)"""
@@ -469,7 +450,7 @@ dtype : type
         A = self.A
         Pset = []
 
-        for i in xrange(self.shape[0]):
+        for i in range(self.shape[0]):
 
             out = {}
             for key in self.keys:
@@ -477,12 +458,12 @@ dtype : type
                 if np.any(A[key][i]):
                     out[key] = A[key][i]
 
-            if len(self.shape) == 1:
-                for key in out.keys():
-                    out[key] = np.array([out[key]])
-
-            Pset.append( Poly(out, self.dim, self.shape[1:],
-                self.dtype) )
+            # if len(self.shape) == 1:
+            #     for key in out.keys():
+            #         out[key] = np.array([out[key]])
+            #
+            Pset.append(Poly(out, self.dim, self.shape[1:],
+                self.dtype))
 
         return Pset.__iter__()
 
@@ -565,8 +546,8 @@ dtype : type
         if isinstance(n, (int, float)):
 
             if abs(n-int(n))>1e-5:
-                raise ValueError, \
-                    "Power of Poly must be interger"
+                raise ValueError(
+                    "Power of Poly must be interger")
             n = int(n)
 
             if n==0:
@@ -586,7 +567,7 @@ dtype : type
 
             if not self.shape:
                 out = [self**n[i] for i in range(len(n))]
-                print "out", out
+                print("out", out)
                 return Poly(out, self.dim, None, None)
 
             return Poly([self[i]**n[i] \
@@ -643,11 +624,11 @@ dtype : type
 #              subset = I[:-1]
 #  
 #          else:
-#              raise IndexError, "Index out of range"
+#              raise IndexError("Index out of range")
 #  
 #          if isinstance(subkey, int):
 #              if not 0<=subkey<len(self.keys):
-#                  raise IndexError, "Index out of range"
+#                  raise IndexError("Index out of range")
 #  
 #              subkey = slice(subkey, subkey+1,None)
 #  
@@ -668,8 +649,8 @@ dtype : type
 #  
 #              A[key][subset] = A[key][subset] + y.A[key][:]
 #  
-#          self.keys.sort(key=lambda x: pysum(x)**self.dim +\
-#                  pysum(x*self.dim**np.arange(self.dim)),reverse=1)
+#          self.keys.sort(key=lambda x: SUM(x)**self.dim +\
+#                  SUM(x*self.dim**np.arange(self.dim)),reverse=1)
 
 
     def __str__(self):
@@ -692,7 +673,7 @@ dtype : type
 
 #          # Single entity
 #          def _cmp(x, y):
-#              out = cmp(pysum(x), pysum(y))
+#              out = cmp(SUM(x), SUM(y))
 #              if out!=0:
 #                  return out
 #              def __cmp(x,y):
@@ -708,7 +689,8 @@ dtype : type
             basename = list(VARNAME)
 
         out = []
-        for key in self.keys:
+        keys = sorted(self.keys)[::-1]
+        for key in keys:
 
             o = ""
             coef = self.A[key]
@@ -747,7 +729,7 @@ dtype : type
 
         if isinstance(y, Poly):
             return self.__add__(y.__neg__())
-        return self.__add__(-np.array(y))
+        return self.__add__(-y)
 
 
     def copy(self):
@@ -773,30 +755,24 @@ dtype : type
 
 def call(P, args):
     """
-Evaluate a polynomial along specified axes.
+    Evaluate a polynomial along specified axes.
 
-Parameters
-----------
-P : Poly
-    Input polynomial.
-args : array_like, masked
-    Argument to be evalutated.
-    Masked values keeps the variable intact.
+    Args:
+        P (Poly) : Input polynomial.
+        args (array_like, masked) : Argument to be evalutated.
+                Masked values keeps the variable intact.
 
-Returns
--------
-Q : Poly, np.array
-    If masked values are used the Poly is returned. Else an
-    numpy array matching the polynomial's shape is returned.
+    Returns:
+        (Poly, np.array) : If masked values are used the Poly is returned. Else
+                an numpy array matching the polynomial's shape is returned.
     """
-
     args = list(args)
 
     # expand args to match dim
     if len(args)<P.dim:
         args = args + [np.nan]*(P.dim-len(args))
     elif len(args)>P.dim:
-        raise ValueError, "too many arguments"
+        raise ValueError("too many arguments")
 
     # Find and perform substitutions, if any
     x0,x1 = [],[]
@@ -851,28 +827,23 @@ Q : Poly, np.array
 
 def setdim(P, dim=None):
     """
-Adjust the dimensions of a polynomial.
-
-Parameters
-----------
-P : Poly
-    Input polynomial
-dim : int
-    The dimensions of the output polynomial. If omitted,
-    increase polynomial with one dimension. If the new dim is
-    smaller then P's dimensions, variables with cut
-    components are all cut.
+    Adjust the dimensions of a polynomial.
 
     Output the results into Poly object
 
-Examples
---------
->>> x,y = cp.variable(2)
->>> P = x*x-x*y
->>> print cp.setdim(P, 1)
-q0^2
-    """
+    Args:
+        P (Poly) : Input polynomial
+        dim (int) : The dimensions of the output polynomial. If omitted,
+                increase polynomial with one dimension. If the new dim is
+                smaller then P's dimensions, variables with cut components are
+                all cut.
 
+    Examples:
+        >>> x,y = cp.variable(2)
+        >>> P = x*x-x*y
+        >>> print(cp.setdim(P, 1))
+        q0^2
+    """
     P = P.copy()
 
     ldim = P.dim
@@ -894,7 +865,7 @@ q0^2
 
         key = np.zeros(dim, dtype=int)
         for lkey in P.keys:
-            if not pysum(lkey[ldim-1:]) or not pysum(lkey):
+            if not SUM(lkey[ldim-1:]) or not SUM(lkey):
                 P.A[lkey[:dim]] = P.A.pop(lkey)
             else:
                 del P.A[lkey]
@@ -903,37 +874,30 @@ q0^2
     return P
 
 
-
 def decompose(P):
     """
-Decompose a polynomial to component form.
+    Decompose a polynomial to component form.
 
-In array missing values are padded with 0 to make decomposition
-compatible with `cp.sum(Q, 0)`.
+    In array missing values are padded with 0 to make decomposition compatible
+    with `cp.sum(Q, 0)`.
 
-Parameters
-----------
-P : Poly
-    Input data.
+    Args:
+        P (Poly) : Input data.
 
-Returns
--------
-Q : Poly
-    Decomposed polynomial with `P.shape==(M,)+Q.shape` where
-    `M` is the number of components in `P`.
+    Returns:
+        (Poly) : Decomposed polynomial with `P.shape==(M,)+Q.shape` where
+                `M` is the number of components in `P`.
 
-Examples
---------
->>> q = cp.variable()
->>> P = cp.Poly([q**2-1, 2])
->>> print P
-[q0^2-1, 2]
->>> print cp.decompose(P)
-[[q0^2, 0], [-1, 2]]
->>> print cp.sum(cp.decompose(P), 0)
-[q0^2-1, 2]
+    Examples:
+        >>> q = cp.variable()
+        >>> P = cp.Poly([q**2-1, 2])
+        >>> print(P)
+        [q0^2-1, 2]
+        >>> print(cp.decompose(P))
+        [[q0^2, 0], [-1, 2]]
+        >>> print(cp.sum(cp.decompose(P), 0))
+        [q0^2-1, 2]
     """
-
     P = P.copy()
 
     if not P:
@@ -949,25 +913,20 @@ Examples
 
 def is_decomposed(P):
     """
-Check if a polynomial (array) is on component form.
+    Check if a polynomial (array) is on component form.
 
-Parameters
-----------
-P : Poly
-    Input data.
+    Args:
+        P (Poly) : Input data.
 
-Returns
--------
-Q : bool
-    True if all polynomials in `P` are on component form.
+    Returns:
+        (bool) : True if all polynomials in `P` are on component form.
 
-Examples
---------
->>> x,y = cp.variable(2)
->>> print cp.is_decomposed(cp.Poly([1,x,x*y]))
-True
->>> print cp.is_decomposed(cp.Poly([x+1,x*y]))
-False
+    Examples:
+        >>> x,y = cp.variable(2)
+        >>> print(cp.is_decomposed(cp.Poly([1,x,x*y])))
+        True
+        >>> print(cp.is_decomposed(cp.Poly([x+1,x*y])))
+        False
     """
 
     if P.shape:
@@ -977,40 +936,33 @@ False
 
 def dimsplit(P):
     """
-Segmentize a polynomial (on decomposed form) into it's
-dimensions.
+    Segmentize a polynomial (on decomposed form) into it's dimensions.
 
-In array missing values are padded with 1 to make dimsplit
-compatible with `poly.prod(Q, 0)`.
+    In array missing values are padded with 1 to make dimsplit compatible with
+    `poly.prod(Q, 0)`.
 
 
-Parameters
-----------
-P : Poly
-    Input polynomial.
+    Args:
+        P (Poly) : Input polynomial.
 
-Returns
--------
-Q : Poly
-    Segmentet polynomial array where
-    `Q.shape==P.shape+(P.dim+1,)`. The surplus element in
-    `P.dim+1` is used for coeficients.
+    Returns:
+        (Poly) : Segmentet polynomial array where
+                `Q.shape==P.shape+(P.dim+1,)`. The surplus element in `P.dim+1`
+                is used for coeficients.
 
-Examples
---------
->>> x,y = cp.variable(2)
->>> P = cp.Poly([2, x*y, 2*x])
->>> Q = cp.dimsplit(P)
->>> print Q
-[[2, 1, 2], [1, q0, q0], [1, q1, 1]]
->>> print cp.prod(Q, 0)
-[2, q0q1, 2q0]
+    Examples:
+        >>> x,y = cp.variable(2)
+        >>> P = cp.Poly([2, x*y, 2*x])
+        >>> Q = cp.dimsplit(P)
+        >>> print(Q)
+        [[2, 1, 2], [1, q0, q0], [1, q1, 1]]
+        >>> print(cp.prod(Q, 0))
+        [2, q0q1, 2q0]
     """
-
     P = P.copy()
 
     if not is_decomposed(P):
-        raise TypeError, "Polynomial not on component form."
+        raise TypeError("Polynomial not on component form.")
     A = []
 
     dim = P.dim
@@ -1054,40 +1006,32 @@ Examples
 
 def substitute(P, x0, x1, V=0):
     """
-Substitute a variable in a polynomial array.
+    Substitute a variable in a polynomial array.
 
-Parameters
-----------
-P : Poly
-    Input data.
-x0 : Poly, int
-    The variable to substitute. Indicated with either unit
-    variable, e.g. `x`, `y`, `z`, etc. or through an integer
-    matching the unit variables dimension, e.g. `x==0`,
-    `y==1`, `z==2`, etc.
-x1 : Poly
-    Simple polynomial to substitute `x0` in `P`. If `x1` is an
-    polynomial array, an error will be raised.
+    Args:
+        P (Poly) : Input data.
+        x0 (Poly, int) : The variable to substitute. Indicated with either unit
+                variable, e.g. `x`, `y`, `z`, etc. or through an integer
+                matching the unit variables dimension, e.g. `x==0`, `y==1`,
+                `z==2`, etc.
+        x1 (Poly) : Simple polynomial to substitute `x0` in `P`. If `x1` is an
+                polynomial array, an error will be raised.
 
-Returns
--------
-Q : Poly
-    The resulting polynomial (array) where `x0` is replaced
-    with `x1`.
+    Returns:
+        (Poly) : The resulting polynomial (array) where `x0` is replaced with
+                `x1`.
 
-Examples
---------
->>> x,y = cp.variable(2)
->>> P = cp.Poly([y*y-1, y*x])
->>> print cp.substitute(P, y, x+1)
-[q0^2+2q0, q0^2+q0]
+    Examples:
+        >>> x,y = cp.variable(2)
+        >>> P = cp.Poly([y*y-1, y*x])
+        >>> print(cp.substitute(P, y, x+1))
+        [q0^2+2q0, q0^2+q0]
 
-With multiple substitutions:
->>> print cp.substitute(P, [x,y], [y,x])
-[q0^2-1, q0q1]
+        With multiple substitutions:
+        >>> print(cp.substitute(P, [x,y], [y,x]))
+        [q0^2-1, q0q1]
     """
-
-    if V: print "Replace", x0, "with", x1, "in", P
+    if V: print("Replace", x0, "with", x1, "in", P)
     x0,x1 = map(Poly, [x0,x1])
     dim = np.max([p.dim for p in [P,x0,x1]])
     dtype = dtyping(P.dtype, x0.dtype, x1.dtype)
@@ -1125,7 +1069,7 @@ With multiple substitutions:
     shape = P.shape
     P = [p for p in flatten(P)]
 
-    if V: print "Apriori:\n", P
+    if V: print("Apriori:\n", P)
 
     for i in xrange(len(P)):
         for j in xrange(len(dims)):
@@ -1133,7 +1077,7 @@ With multiple substitutions:
                 P[i] = x1[j]**(P[i].keys[0][dims[j]])
                 break
 
-    if V: print "Aposteriori:\n", P
+    if V: print("Aposteriori:\n", P)
 
     P = Poly(P, dim, None, dtype)
     P = reshape(P, shape)
@@ -1147,7 +1091,7 @@ With multiple substitutions:
 
 
 def dtyping(*args):
-    """Find least common denominator dtype"""
+    """Find least common denominator dtype."""
     args = list(args)
 
     for i in xrange(len(args)):
@@ -1173,7 +1117,7 @@ def dtyping(*args):
     if list in args: return list
     if tuple in args: return tuple
 
-    raise ValueError, "dtypes not recognised " + str(args)
+    raise ValueError("dtypes not recognised " + str(args))
 
 
 # Collection compliant functions
@@ -1482,6 +1426,6 @@ def asfloat(P):
 
 
 if __name__=='__main__':
-    import __init__ as cp
+    import chaospy as cp
     import doctest
     doctest.testmod()

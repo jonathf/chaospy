@@ -15,12 +15,8 @@ import numpy as np
 from scipy.misc import comb
 from scipy.optimize import fminbound
 from scipy.linalg import eig_banded
-import bertran as ber
-import poly as po
-from utils import combine, lazy_eval
-import dist as di
-from genz_keister import gk
-from gauss_patterson import gp
+
+import chaospy as cp
 
 
 def generate_quadrature(order, domain, acc=100, sparse=False, rule="C",
@@ -93,7 +89,7 @@ samplegen   Sample generator
 
     if rule == "G":
 
-        assert isinstance(domain, di.Dist)
+        assert isinstance(domain, cp.dist.Dist)
 
         if sparse:
             func = lambda m: golub_welsch(m, domain, acc)
@@ -127,9 +123,9 @@ samplegen   Sample generator
             elif rule=="J":
                 func = lambda m: leja(m, domain)
             elif rule=="Z":
-                func = lambda m: gk(m, domain)
+                func = lambda m: cp.genz_keister.gk(m, domain)
             elif rule=="P":
-                func = lambda m: gp(m, domain)
+                func = lambda m: cp.gauss_patterson.gp(m, domain)
             order = np.ones(dim, dtype=int)*order
             m = np.min(order)
             skew = [o-m for o in order]
@@ -153,7 +149,7 @@ samplegen   Sample generator
                 x, w = leja(order, domain)
 
             elif rule=="Z":
-                x, w = gk(order, domain)
+                x, w = cp.genz_keister.gk(order, domain)
 
             if dim == 1:
                 x = x.reshape(1, x.size)
@@ -175,12 +171,11 @@ samplegen   Sample generator
 
     else:
 
-        x = di.samplegen(order, domain, rule, **kws)
+        x = cp.dist.samplegen(order, domain, rule, **kws)
         w = np.ones(x.shape[-1])/x.shape[-1]
 
     return x, w
 
-__version__ = "2.0"
 
 def golub_welsch(order, dist, acc=100, **kws):
     """
@@ -208,18 +203,18 @@ Examples
 --------
 >>> Z = cp.Normal()
 >>> x, w = cp.golub_welsch(3, Z)
->>> print x
+>>> print(x)
 [[-2.33441422 -0.74196378  0.74196378  2.33441422]]
->>> print w
+>>> print(w)
 [ 0.04587585  0.45412415  0.45412415  0.04587585]
 
 Multivariate
 >>> Z = cp.J(cp.Uniform(), cp.Uniform())
 >>> x, w = cp. golub_welsch(1, Z)
->>> print x
+>>> print(x)
 [[ 0.21132487  0.21132487  0.78867513  0.78867513]
  [ 0.21132487  0.78867513  0.21132487  0.78867513]]
->>> print w
+>>> print(w)
 [ 0.25  0.25  0.25  0.25]
     """
 
@@ -250,8 +245,8 @@ Multivariate
         x = np.array(X).reshape(1,o[0])
         w = np.array(W).reshape(o[0])
     else:
-        x = combine(X).T
-        w = np.prod(combine(W), -1)
+        x = cp.utils.combine(X).T
+        w = np.prod(cp.utils.combine(W), -1)
 
     assert len(x)==dim
     assert len(w)==len(x.T)
@@ -293,9 +288,9 @@ Examples
 --------
 >>> dist = cp.Uniform()
 >>> orth, norms, A, B = cp.stieltjes(dist, 2, retall=True)
->>> print orth[2]
+>>> print(orth[2])
 [q0^2-q0+0.166666666667]
->>> print norms
+>>> print(norms)
 [[ 1.          0.08333333  0.00555556]]
     """
 
@@ -307,7 +302,7 @@ Examples
         A,B = dist.ttr(K)
         B[:,0] = 1.
 
-        x = po.variable(dim)
+        x = cp.poly.variable(dim)
         if normed:
             orth = [x**0*np.ones(dim), (x-A[:,0])/np.sqrt(B[:,1])]
             for n in xrange(1,order):
@@ -329,7 +324,7 @@ Examples
         w = w*dist.pdf(q)
 
         dim = len(dist)
-        x = po.variable(dim)
+        x = cp.poly.variable(dim)
         orth = [x*0, x**0]
 
         inner = np.sum(q*w, -1)
@@ -360,7 +355,7 @@ Examples
 
 def weightgen(nodes, dist):
     poly = stieltjes(dist, len(nodes)-1, retall=True)[0]
-    poly = po.flatten(po.Poly(poly))
+    poly = cp.poly.flatten(cp.poly.Poly(poly))
     V = poly(nodes)
     Vi = np.linalg.inv(V)
     return Vi[:,0]
@@ -378,8 +373,8 @@ After paper by Narayan and Jakeman
 
         x = [_[0][0] for _ in xw]
         w = [_[1] for _ in xw]
-        x = combine(x).T
-        w = combine(w)
+        x = cp.utils.combine(x).T
+        w = cp.utils.combine(w)
         w = np.prod(w, -1)
 
         return x, w
@@ -473,8 +468,8 @@ quadrature
     x = [_[0] for _ in q]
     w = [_[1] for _ in q]
 
-    x = combine(x, part=part).T
-    w = combine(w, part=part)
+    x = cp.utils.combine(x, part=part).T
+    w = cp.utils.combine(w, part=part)
 
     x = ((up-lo)*x.T + lo).T
     w = np.prod(w*(up-lo), -1)
@@ -541,8 +536,8 @@ quadrature
     x = np.array([_[0] for _ in q])
     w = np.array([_[1] for _ in q])
 
-    x = combine(x)
-    w = combine(w)
+    x = cp.utils.combine(x)
+    w = cp.utils.combine(w)
 
     x = (up-lo)*x + lo
     w = np.prod(w*(up-lo), 1)
@@ -553,7 +548,7 @@ quadrature
 def sparse_grid(func, order, dim, skew=None):
 
     X, W = [], []
-    bindex = ber.bindex(order-dim+1, order, dim)
+    bindex = cp.bertran.bindex(order-dim+1, order, dim)
 
     if skew is None:
         skew = np.zeros(dim, dtype=int)
@@ -561,11 +556,12 @@ def sparse_grid(func, order, dim, skew=None):
         skew = np.array(skew, dtype=int)
         assert len(skew)==dim
 
-    for i in xrange(ber.terms(order, dim)-ber.terms(order-dim, dim)):
+    for i in range(cp.bertran.terms(
+                order, dim) - cp.bertran.terms(order-dim, dim)):
 
         I = bindex[i]
         x,w = func(skew+I)
-        w *= (-1)**(order-sum(I))*comb(dim-1,order-sum(I))
+        w *= (-1)**(order-sum(I)) * comb(dim-1, order-sum(I))
         X.append(x)
         W.append(w)
 
@@ -667,9 +663,9 @@ Examples
 >>> dist = cp.Gamma()
 >>> func = lambda x: x**3-1
 >>> q, x, w, y = cp.quad(func, 1, dist, retall=True, rule="G")
->>> print q
+>>> print(q)
 [ 5.]
->>> print x
+>>> print(x)
 [[ 0.58578644  3.41421356]]
     """
     x,w = generate_quadrature(order, domain, acc=acc, sparse=sparse, rule=rule,
@@ -694,7 +690,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #      dim = len(dist)
 #      if isinstance(order, (int, long, float)):
 #          order = [order]*dim
-#      indices = di.sort(dist)
+#      indices = cp.dist.sort(dist)
 #      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]
 #      X = np.empty([dim,]+[order[i]+1 for i in indices])
 #      W = np.ones([order[i]+1 for i in indices])
@@ -705,7 +701,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #          i = len(I)
 #          j = indices[i]
 #
-#          Z = di.Subset(dist, j, vals)
+#          Z = cp.dist.Subset(dist, j, vals)
 #          x,w = Golub_Welsch(order[j], Z, acc)
 #          W[I] *= w[grid[(i,)+I]]
 #          X[(i,)+I] = x[grid[(i,)+I]]
@@ -784,13 +780,13 @@ mv_rule : callable
                 for i in xrange(dim)]
 
         x = [np.array(_[0]).flatten() for _ in q]
-        x = combine(x, part=part).T
+        x = cp.utils.combine(x, part=part).T
 
         w = [np.array(_[1]).flatten() for _ in q]
-        w = np.prod(combine(w, part=part), -1)
+        w = np.prod(cp.utils.combine(w, part=part), -1)
 
         return x, w
-    tensprod_rule = lazy_eval(tensprod_rule)
+    tensprod_rule = cp.utils.lazy_eval(tensprod_rule)
 
     def mv_rule(order, sparse=False, growth=None, part=None):
         """
@@ -833,7 +829,7 @@ weights : np.ndarray
 def momgen(order, domain, acc=100, sparse=False, rule="C",
         composite=1, part=None, trans=lambda x:x, **kws):
 
-    if isinstance(domain, di.Dist):
+    if isinstance(domain, cp.dist.Dist):
         dim = len(domain)
     else:
         dim = np.array(domain[0]).size
@@ -874,7 +870,7 @@ def momgen(order, domain, acc=100, sparse=False, rule="C",
                 out += np.sum(np.prod(Y[i].T**k, -1)*W[i], 0)
             return out
 
-    _mom = lazy_eval(_mom, tuple)
+    _mom = cp.utils.lazy_eval(_mom, tuple)
 
     def mom(K, **kws):
         out = np.array([_mom(k) for k in K.T])
@@ -922,11 +918,3 @@ def probabilistic_collocation(order, dist, subset=.1):
     X = X.T[alpha].T
     W = W[alpha]
     return X, W
-
-
-
-if __name__=="__main__":
-    import __init__ as cp
-    x,y = cp.variable(2)
-    import doctest
-    doctest.testmod()

@@ -25,20 +25,22 @@ except:
     fm = None
 
 from time import clock
-import cPickle
+import pickle
 import os
 
+import chaospy as cp
+
 __all__ = [
-"combine",
-"lazy_eval",
-"hashable",
-"acf",
-"pso",
-"mlog10",
-"mci",
-"rlstsq",
+    "combine",
+    "lazy_eval",
+    "lazy",
+    "hashable",
+    "acf",
+    "pso",
+    "mlog10",
+    "mci",
+    "rlstsq",
 ]
-__version__ = "1.0"
 
 
 def combine(X, part=None):
@@ -63,19 +65,18 @@ Z : matrix of combinations with shape (np.prod(N), np.sum(M)).
 Examples
 --------
 >>> A, B = [1,2], [[4,4],[5,6]]
->>> print cp.combine([A, B])
+>>> print(cp.combine([A, B]))
 [[ 1.  4.  4.]
  [ 1.  5.  6.]
  [ 2.  4.  4.]
  [ 2.  5.  6.]]
 """
-    
     def clean(x):
         x = np.array(x)
         if len(x.shape)<=1:
             x = x.reshape(x.size, 1)
         elif len(x.shape)>2:
-            raise ValueError, "shapes must be smaller than 3"
+            raise ValueError("shapes must be smaller than 3")
         return x
 
     X = map(clean, X)
@@ -95,7 +96,7 @@ Examples
     size = np.prod(shapes, 0)[0]*np.sum(shapes, 0)[1]
 
     if size>10**9:
-        raise MemoryError, "Too large sets"
+        raise MemoryError("Too large sets")
 
     if len(X)==1:
         out = X[0]
@@ -133,7 +134,7 @@ def combine_bac(X, chunk=2):
         if len(shape)<=1:
             x = x.reshape(x.size, 1)
         elif len(shape)>2:
-            raise ValueError, "shapes must be smaller than 3"
+            raise ValueError("shapes must be smaller than 3")
         return x
     X = map(_clean, X)
 
@@ -175,15 +176,15 @@ save        Save module to disk
 Example
 -------
 >>> def foo(*x):
-...     print "evaluating"
+...     print("evaluating")
 ...     return x
 >>> foo = lazy_eval(foo)
->>> print foo(4,5)
+>>> print(foo(4,5))
 evaluating
 (4, 5)
->>> print foo(4,5)
+>>> print(foo(4,5))
 (4, 5)
->>> print foo(5,6)
+>>> print(foo(5,6))
 evaluating
 (5, 6)
 
@@ -234,7 +235,7 @@ name : str
         """
 
         f = open(name, "w")
-        cPickle.dump(self.container, f)
+        pickle.dump(self.container, f)
         f.close()
 
     def load(self, name):
@@ -247,7 +248,7 @@ name : str
     absolute or relative path to file
         """
         f = open(name, "r")
-        container = cPickle.load(f)
+        container = pickle.load(f)
         f.close()
         self.container.update(container)
 
@@ -256,6 +257,13 @@ name : str
 Number of unique function evaluations
         """
         return len(self.container)
+
+
+def lazy(convert, load=None):
+    def lazy_decorator(func):
+        return lazy_eval(func, convert, load)
+    return lazy_wrapper
+
 
 
 def acf(x, length=20):
@@ -390,21 +398,20 @@ array([-0.0039152 , -0.00224043, -0.00282827,\
             break
 
         if verbose and iter % 10==0:
-            print fgbest
+            print(fgbest)
 
     t += clock()
 
     if verbose:
         if converged:
-            print 'Minimization terminated successfully.',
+            print('Minimization terminated successfully.',)
         else:
-            print 'Maximum iteration exited.',
-        print '''
+            print('Maximum iteration exited.',)
+        print('''
 x_opt:          %s
 func(x_opt):    %g
 iter:           %d
-time (sec):     %g''' % (xgbest, fgbest, iterations, t)
-    
+time (sec):     %g''' % (xgbest, fgbest, iterations, t))
     if retall:
         return xgbest, fgbest, converged, iterations, t
     return xgbest
@@ -462,10 +469,10 @@ Examples
 >>> cp.seed(1000)
 >>> foo = lambda x:x**3
 >>> dist = cp.Uniform()
->>> print cp.mci(foo, dist=dist)
+>>> print(cp.mci(foo, dist=dist))
 0.250923402627
     """
-    x = dist.rnd(size=(len(dist), samples))
+    x = dist.sample(size=(len(dist), samples))
     return sum(func(*x))/samples
 
 
@@ -797,6 +804,6 @@ alpha : float, optional
 
 
 if __name__=="__main__":
+    import chaospy as cp
     import doctest
-    import __init__ as cp
     doctest.testmod()

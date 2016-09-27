@@ -3,10 +3,12 @@ Frontend for the collection distributions.
 This modules provides a wrapper with documentation for the
 dist.cores module.
 """
-import cores as co
 import numpy as np
-from joint import J
 from scipy.stats import gaussian_kde
+
+from .joint import J
+from . import cores as co
+
 
 def Alpha(shape=1, scale=1, shift=0):
     """
@@ -80,13 +82,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Beta(2, 2, 2, 3)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 2.28714073  2.43293108  2.56706892  2.71285927]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 2.60388804  2.21123197  2.86505298  2.48812537]
->>> print f.mom(1)
+>>> print(f.mom(1))
 2.5
     """
     dist = co.beta(a, b)*(up-lo) + lo
@@ -238,13 +240,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Exponential(1)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 0.22314355  0.51082562  0.91629073  1.60943791]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 1.06013104  0.12217548  3.00140562  0.65814961]
->>> print f.mom(1)
+>>> print(f.mom(1))
 1.0
     """
     dist = co.expon()*scale + shift
@@ -426,13 +428,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Gamma(1, 1)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 0.22314355  0.51082562  0.91629073  1.60943791]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 1.06013104  0.12217548  3.00140562  0.65814961]
->>> print f.mom(1)
+>>> print(f.mom(1))
 1.0
     """
     dist = co.gamma(shape)*scale + shift
@@ -631,13 +633,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Laplace(2, 2)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 0.16741854  1.5537129   2.4462871   3.83258146]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 2.73396771 -0.93923119  6.61651689  1.92746607]
->>> print f.mom(1)
+>>> print(f.mom(1))
 2.0
     """
     dist = co.laplace()*scale + mu
@@ -736,13 +738,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Lognormal(0, 1)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 0.43101119  0.77619841  1.28833038  2.32012539]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 1.48442856  0.30109692  5.19451094  0.95632796]
->>> print f.mom(1)
+>>> print(f.mom(1))
 1.6487212707
     """
     dist = co.lognormal(sigma)*scale*np.e**mu + shift
@@ -839,16 +841,16 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.MvNormal([0,0], [[1,.5],[.5,1]])
 >>> q = [[.4,.5,.6],[.4,.5,.6]]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [[-0.2533471   0.          0.2533471 ]
  [-0.34607858  0.          0.34607858]]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [[ 0.4  0.5  0.6]
  [ 0.4  0.5  0.6]]
->>> print f.sample(3)
+>>> print(f.sample(3))
 [[ 0.39502989 -1.20032309  1.64760248]
  [ 0.15884312  0.38551963  0.1324068 ]]
->>> print f.mom((1,1))
+>>> print(f.mom((1,1)))
 0.5
     """
     if np.all((np.diag(np.diag(scale))-scale)==0):
@@ -910,13 +912,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Normal(2, 2)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 0.31675753  1.49330579  2.50669421  3.68324247]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 2.79005978 -0.40064618  5.29520496  1.91069125]
->>> print f.mom(1)
+>>> print(f.mom(1))
 2.0
     """
     dist = co.normal()*sigma + mu
@@ -1111,13 +1113,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Triangle(2, 3, 4)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 2.63245553  2.89442719  3.10557281  3.36754447]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 3.16764141  2.47959763  3.684668    2.98202994]
->>> print f.mom(1)
+>>> print(f.mom(1))
 3.0
     """
     dist = co.triangle((mid-lo)*1./(up-lo))*(up-lo) + lo
@@ -1197,13 +1199,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Uniform(2, 4)
 >>> q = np.linspace(0,1,5)
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 2.   2.5  3.   3.5  4. ]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.    0.25  0.5   0.75  1.  ]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 3.30717917  2.23001389  3.90056573  2.9643828 ]
->>> print f.mom(1)
+>>> print(f.mom(1))
 3.0
     """
 
@@ -1248,13 +1250,13 @@ Examples
 >>> cp.seed(1000)
 >>> f = cp.Weibull(2)
 >>> q = np.linspace(0,1,6)[1:-1]
->>> print f.inv(q)
+>>> print(f.inv(q))
 [ 0.47238073  0.71472066  0.95723076  1.26863624]
->>> print f.fwd(f.inv(q))
+>>> print(f.fwd(f.inv(q)))
 [ 0.2  0.4  0.6  0.8]
->>> print f.sample(4)
+>>> print(f.sample(4))
 [ 1.02962665  0.34953609  1.73245653  0.8112642 ]
->>> print f.mom(1)
+>>> print(f.mom(1))
 0.886226925453
     """
     dist = co.weibull(shape)*scale + shift

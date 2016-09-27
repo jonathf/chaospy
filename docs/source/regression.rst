@@ -1,0 +1,4 @@
+.. _regression:
+
+Regression Methods
+------------------

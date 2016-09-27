@@ -6,34 +6,21 @@ fit_adaptive    Fit an adaptive spectral projection
 fit_regression  Fit a point collocation together
 fit_quadrature  Fit a spectral projection together
 lstsq_cv        Cross-validated least squares solver
-rlstsq          Robust least squares solver
 """
 
 import numpy as np
-from scipy import linalg as la
-from scipy import optimize as op
-
-try:
-    from sklearn import linear_model as lm
-except:
-    pass
 
 try:
     from cubature._cubature import _cubature
 except:
     pass
 
-import poly as po
-import quadrature as qu
-import orthogonal
-from dist import samplegen
-from utils import lazy_eval
-
-__version__ = "1.0"
+import chaospy as cp
 
 __all__ = [
-"pcm", "fit_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
+"pcm", "fit_adaptive", "fit_quadrature"
 ]
+
 
 def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
         orth=None, orth_acc=100, quad_acc=100, sparse=False, composit=1,
@@ -118,7 +105,7 @@ Define function and distribution:
 
 Perform pcm:
 >>> q = cp.pcm(func, 2, dist)
->>> print cp.around(q, 10)
+>>> print(cp.around(q, 10))
 0.1q0-q1^2
 
 See also
@@ -141,8 +128,8 @@ samplegen       Generator for sampling schemes
         else:
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
-        orth = orthogonal.orth_select(orth, **kws)
-    if not isinstance(orth, po.Poly):
+        orth = cp.orthogonal.orth_select(orth, **kws)
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
     # Applying scheme
@@ -150,8 +137,9 @@ samplegen       Generator for sampling schemes
     if rule in "GEC":
         if sorder is None:
             sorder = porder+1
-        z,w = qu.generate_quadrature(sorder, dist, acc=quad_acc, sparse=sparse,
-                rule=rule, composit=composit, **kws)
+        z, w = cp.quadrature.generate_quadrature(
+            sorder, dist, acc=quad_acc, sparse=sparse, rule=rule,
+            composit=composit, **kws)
 
         x = trans(z)
         y = np.array(map(func, x.T))
@@ -240,29 +228,29 @@ y : np.ndarray
 #
 #  Perform pcm:
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(w)
+#  >>> print(len(w))
 #  9
 #
 #  With Smolyak sparsegrid
 #  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(w)
+#  >>> print(len(w))
 #  13
     """
     if acc is None:
         acc = order+1
 
     if dist_in is None:
-        z,w = qu.generate_quadrature(acc, dist_out, 100, sparse=sparse,
-                rule="C")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_out, 100, sparse=sparse, rule="C")
         x = z
         dist = dist_out
     else:
-        z,w = qu.generate_quadrature(acc, dist_in, 100, sparse=sparse,
-                rule="C")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_in, 100, sparse=sparse, rule="C")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
 
@@ -273,7 +261,7 @@ y : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, po.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     y = np.array(map(func, x.T))
@@ -314,7 +302,7 @@ norms : array_like
     norms.shape==(len(orth),)
     """
 
-    orth = po.Poly(orth)
+    orth = cp.poly.Poly(orth)
     nodes = np.asfarray(nodes)
     weights = np.asfarray(weights)
 
@@ -337,7 +325,7 @@ norms : array_like
 
     coefs = (np.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])
-    Q = po.transpose(po.sum(orth*coefs.T, -1))
+    Q = cp.poly.transpose(cp.poly.sum(orth*coefs.T, -1))
 
     if retall:
         return Q, coefs
@@ -416,9 +404,9 @@ X : np.ndarray
 #
 #  Perform pcm:
 #  >>> p, x, w, y = cp.pcm_gq(func, 2, dist, acc=3, retall=True)
-#  >>> print cp.around(p, 10)
+#  >>> print(cp.around(p, 10))
 #  q0q1
-#  >>> print len(w)
+#  >>> print(len(w))
 #  16
 
     """
@@ -426,13 +414,13 @@ X : np.ndarray
         acc = order+1
 
     if dist_in is None:
-        z,w = qu.generate_quadrature(acc, dist_out, 100, sparse=sparse,
-                rule="G")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_out, 100, sparse=sparse, rule="G")
         x = z
         dist = dist_out
     else:
-        z,w = qu.generate_quadrature(acc, dist_in, 100, sparse=sparse,
-                rule="G")
+        z, w = cp.quadrature.generate_quadrature(
+            acc, dist_in, 100, sparse=sparse, rule="G")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
 
@@ -447,7 +435,7 @@ X : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, po.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     ovals = orth(*z)
@@ -456,7 +444,7 @@ X : np.ndarray
     coef = (np.sum(vals1, 1).T/np.sum(vals2, 1)).T
 
     coef = coef.reshape(len(coef), *shape[1:])
-    Q = po.transpose(po.sum(orth*coef.T, -1))
+    Q = cp.poly.transpose(cp.poly.sum(orth*coef.T, -1))
 
     if retall:
         return Q, x, w, y
@@ -534,9 +522,9 @@ retall : bool
 #
 #  Perform pcm:
 #  >>> q, x, y = cp.pcm_lr(func, 2, dist, retall=True)
-#  >>> print cp.around(q, 10)
+#  >>> print(cp.around(q, 10))
 #  -q1^2+0.1q0
-#  >>> print len(x.T)
+#  >>> print(len(x.T))
 #  12
     """
 
@@ -553,14 +541,14 @@ retall : bool
             orth = "ttr"
     if isinstance(orth, (str, int, long)):
         orth = orth_select(orth)
-    if not isinstance(orth, po.Poly):
+    if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
 
     # sampling
     if sample is None:
         sample = 2*len(orth)
 
-    x = samplegen(sample, dist, rule)
+    x = cp.dist.samplegen(sample, dist, rule)
 
 
     # Rosenblatt
@@ -577,367 +565,14 @@ retall : bool
     else:
         R, y_ = fit_regression(orth, x, y, regression, retall=1)
 
-    R = po.reshape(R, shape)
+    R = cp.poly.reshape(R, shape)
 
     if retall:
         return R, x, y
     return R
 
-def lstsq_cv(A, b, order=1):
-    A = np.array(A)
-    b = np.array(b)
-    m,l = A.shape
 
-    if order==0:
-        L = np.eye(l)
-    elif order==1:
-        L = np.zeros((l-1,l))
-        L[:,:-1] -= np.eye(l-1)
-        L[:,1:] += np.eye(l-1)
-    elif order==2:
-        L = np.zeros((l-2,l))
-        L[:,:-2] += np.eye(l-2)
-        L[:,1:-1] -= 2*np.eye(l-2)
-        L[:,2:] += np.eye(l-2)
-    elif order is None:
-        L = np.zeros(1)
-    else:
-        L = np.array(order)
-        assert L.shape[-1]==l or L.shape in ((), (1,))
 
-#      def cross(alpha):
-#          out = 0.
-#          for k in range(l):
-#              valid = np.arange(l)==k
-#              A_ = A[:,valid]
-#              b_ = b[valid]
-#              _ = la.inv(np.dot(A_.T,A_) + alpha*np.dot(L.T, L))
-#              out += np.dot(_, np.dot(A_.T, b_))
-
-    return la.lstsq(A, b)
-
-
-
-def rlstsq(A, b, order=1, alpha=None, cross=False, retall=False):
-    """
-Least Squares Minimization using Tikhonov regularization, and
-robust generalized cross-validation.
-
-Parameters
-----------
-A : array_like, shape (M,N)
-    "Coefficient" matrix.
-b : array_like, shape (M,) or (M, K)
-    Ordinate or "dependent variable" values. If `b` is
-    two-dimensional, the least-squares solution is calculated for
-    each of the `K` columns of `b`.
-order : int, array_like
-    If int, it is the order of Tikhonov regularization.
-    If array_like, it will be used as regularization matrix.
-alpha : float, optional
-    Lower threshold for the dampening parameter.
-    The real value is calculated using generalised cross
-    validation.
-cross : bool
-    Use cross validation
-retall : bool
-    If True, return also estimated alpha-value
-    """
-
-    A = np.array(A)
-    b = np.array(b)
-    m,l = A.shape
-
-    if cross:
-        out = np.empty((m,l) + b.shape[1:])
-        A_ = np.empty((m-1,l))
-        b_ = np.empty((m-1,) + b.shape[1:])
-        for i in xrange(m):
-            A_[:i] = A[:i]
-            A_[i:] = A[i+1:]
-            b_[:i] = b[:i]
-            b_[i:] = b[i+1:]
-            out[i] = rlstsq(A_, b_, order, alpha, False)
-
-        return np.median(out, 0)
-
-    if order==0:
-        L = np.eye(l)
-
-    elif order==1:
-        L = np.zeros((l-1,l))
-        L[:,:-1] -= np.eye(l-1)
-        L[:,1:] += np.eye(l-1)
-
-    elif order==2:
-        L = np.zeros((l-2,l))
-        L[:,:-2] += np.eye(l-2)
-        L[:,1:-1] -= 2*np.eye(l-2)
-        L[:,2:] += np.eye(l-2)
-
-    elif order is None:
-        L = np.zeros(1)
-
-    else:
-        L = np.array(order)
-        assert L.shape[-1]==l or L.shape in ((), (1,))
-
-    if alpha is None and not (order is None):
-
-        gamma = 0.1
-
-        def rgcv_error(alpha):
-            if alpha<=0: return np.inf
-            A_ = np.dot(A.T,A)+alpha*(np.dot(L.T,L))
-            try:
-                A_ = np.dot(la.inv(A_), A.T)
-            except la.LinAlgError:
-                return np.inf
-            x = np.dot(A_, b)
-            res2 = np.sum((np.dot(A,x)-b)**2)
-            K = np.dot(A, A_)
-            V = m*res2/np.trace(np.eye(m)-K)**2
-            mu2 = np.sum(K*K.T)/m
-
-            return (gamma + (1-gamma)*mu2)*V
-
-        alpha = op.fmin(rgcv_error, 1, disp=0)
-
-    out = la.inv(np.dot(A.T,A) + alpha*np.dot(L.T, L))
-    out = np.dot(out, np.dot(A.T, b))
-    if retall:
-        return out, alpha
-    return out
-
-
-def fit_regression(P, x, u, rule="LS", retall=False, **kws):
-    """
-Fit a polynomial chaos expansion using linear regression.
-
-Parameters
-----------
-P : Poly
-    Polynomial chaos expansion with `P.shape=(M,)` and `P.dim=D`.
-x : array_like
-    Collocation nodes with `x.shape=(D,K)`.
-u : array_like
-    Model evaluations with `len(u)=K`.
-retall : bool
-    If True return uhat in addition to R
-rule : str
-    Regression method used.
-
-    The follwong methods uses scikits-learn as backend.
-    See `sklearn.linear_model` for more details.
-
-    Key     Scikit-learn    Description
-    ---     ------------    -----------
-        Parameters      Description
-        ----------      -----------
-
-    "BARD"  ARDRegression   Bayesian ARD Regression
-        n_iter=300      Maximum iterations
-        tol=1e-3        Optimization tolerance
-        alpha_1=1e-6    Gamma scale parameter
-        alpha_2=1e-6    Gamma inverse scale parameter
-        lambda_1=1e-6   Gamma shape parameter
-        lambda_2=1e-6   Gamma inverse scale parameter
-        threshold_lambda=1e-4   Upper pruning threshold
-
-    "BR"    BayesianRidge   Bayesian Ridge Regression
-        n_iter=300      Maximum iterations
-        tol=1e-3        Optimization tolerance
-        alpha_1=1e-6    Gamma scale parameter
-        alpha_2=1e-6    Gamma inverse scale parameter
-        lambda_1=1e-6   Gamma shape parameter
-        lambda_2=1e-6   Gamma inverse scale parameter
-
-    "EN"    ElastiNet       Elastic Net
-        alpha=1.0       Dampening parameter
-        rho             Mixing parameter in [0,1]
-        max_iter=300    Maximum iterations
-        tol             Optimization tolerance
-
-    "ENC"   ElasticNetCV    EN w/Cross Validation
-        rho             Dampening parameter(s)
-        eps=1e-3        min(alpha)/max(alpha)
-        n_alphas        Number of alphas
-        alphas          List of alphas
-        max_iter        Maximum iterations
-        tol             Optimization tolerance
-        cv=3            Cross validation folds
-
-    "LA"    Lars            Least Angle Regression
-        n_nonzero_coefs Number of non-zero coefficients
-        eps             Cholesky regularization
-
-    "LAC"   LarsCV          LAR w/Cross Validation
-        max_iter        Maximum iterations
-        cv=5            Cross validation folds
-        max_n_alphas    Max points for residuals in cv
-
-    "LAS"   Lasso           Least Absolute Shrinkage and
-                            Selection Operator
-        alpha=1.0       Dampening parameter
-        max_iter        Maximum iterations
-        tol             Optimization tolerance
-
-    "LASC"  LassoCV         LAS w/Cross Validation
-        eps=1e-3        min(alpha)/max(alpha)
-        n_alphas        Number of alphas
-        alphas          List of alphas
-        max_iter        Maximum iterations
-        tol             Optimization tolerance
-        cv=3            Cross validation folds
-
-    "LL"    LassoLars       Lasso and Lars model
-        max_iter        Maximum iterations
-        eps             Cholesky regularization
-
-    "LLC"   LassoLarsCV     LL w/Cross Validation
-        max_iter        Maximum iterations
-        cv=5            Cross validation folds
-        max_n_alphas    Max points for residuals in cv
-        eps             Cholesky regularization
-
-    "LLIC"  LassoLarsIC     LL w/AIC or BIC
-        criterion       "AIC" or "BIC" criterion
-        max_iter        Maximum iterations
-        eps             Cholesky regularization
-
-    "OMP"   OrthogonalMatchingPursuit
-        n_nonzero_coefs Number of non-zero coefficients
-        tol             Max residual norm (instead of non-zero coef)
-
-    Local methods
-
-    Key     Description
-    ---     -----------
-    "LS"    Ordenary Least Squares
-
-    "T"     Ridge Regression/Tikhonov Regularization
-        order           Order of regularization (or custom matrix)
-        alpha           Dampning parameter (else estimated from gcv)
-
-    "TC"    T w/Cross Validation
-        order           Order of regularization (or custom matrix)
-        alpha           Dampning parameter (else estimated from gcv)
-
-
-Returns
--------
-R[, uhat]
-
-R : Poly
-    Fitted polynomial with `R.shape=u.shape[1:]` and `R.dim=D`.
-uhat : np.ndarray
-    The Fourier coefficients in the estimation.
-
-Examples
---------
->>> P = cp.Poly([1, x, y])
->>> s = [[-1,-1,1,1], [-1,1,-1,1]]
->>> u = [0,1,1,2]
->>> print fit_regression(P, s, u)
-0.5q1+0.5q0+1.0
-
-    """
-
-    x = np.array(x)
-    if len(x.shape)==1:
-        x = x.reshape(1, *x.shape)
-    u = np.array(u)
-
-    Q = P(*x).T
-    shape = u.shape[1:]
-    u = u.reshape(u.shape[0], int(np.prod(u.shape[1:])))
-
-    rule = rule.upper()
-
-    # Local rules
-    if rule=="LS":
-        uhat = la.lstsq(Q, u)[0].T
-
-    elif rule=="T":
-        uhat, alphas = rlstsq(Q, u, kws.get("order",0),
-                kws.get("alpha", None), False, True)
-        uhat = uhat.T
-
-    elif rule=="TC":
-        uhat = rlstsq(Q, u, kws.get("order",0),
-                kws.get("alpha", None), True)
-        uhat = uhat.T
-
-    else:
-
-        # Scikit-learn wrapper
-        try:
-            _ = lm
-        except:
-            raise NotImplementedError(
-                    "sklearn not installed")
-
-        if rule=="BARD":
-            solver = lm.ARDRegression(fit_intercept=False,
-                    copy_X=False, **kws)
-
-        elif rule=="BR":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.BayesianRidge(**kws)
-
-        elif rule=="EN":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.ElasticNet(**kws)
-
-        elif rule=="ENC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.ElasticNetCV(**kws)
-
-        elif rule=="LA": # success
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.Lars(**kws)
-
-        elif rule=="LAC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LarsCV(**kws)
-
-        elif rule=="LAS":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.Lasso(**kws)
-
-        elif rule=="LASC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoCV(**kws)
-
-        elif rule=="LL":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoLars(**kws)
-
-        elif rule=="LLC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoLarsCV(**kws)
-
-        elif rule=="LLIC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoLarsIC(**kws)
-
-        elif rule=="OMP":
-            solver = lm.OrthogonalMatchingPursuit(**kws)
-
-        uhat = solver.fit(Q, u).coef_
-
-    u = u.reshape(u.shape[0], *shape)
-
-    R = po.sum((P*uhat), -1)
-    R = po.reshape(R, shape)
-
-    if retall==1:
-        return R, uhat
-    elif retall==2:
-        if rule=="T":
-            return R, uhat, Q, alphas
-        return R, uhat, Q
-    return R
 
 def fit_lagrange(X, Y):
     """Simple lagrange method"""
@@ -954,7 +589,7 @@ def fit_lagrange(X, Y):
     basis = []
     n = 1
     while len(basis) < N:
-        basis = po.basis(0, n, dim)
+        basis = cp.poly.basis(0, n, dim)
         n += 1
 
     basis = basis[:N]
@@ -1054,15 +689,15 @@ norm_error : np.ndarray
 
 Examples
 --------
->>> func = lambda q: q[0]*q[1]
->>> poly = cp.basis(0,2,2)
->>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
->>> res = cp.fit_adaptive(func, poly, dist, budget=100)
->>> print res
+# >>> func = lambda q: q[0]*q[1]
+# >>> poly = cp.basis(0,2,2)
+# >>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
+# >>> res = cp.fit_adaptive(func, poly, dist, budget=100)
+# >>> print(res)
     """
 
     if bufname:
-        func = lazy_eval(func, load=bufname)
+        func = cp.utils.lazy_eval(func, load=bufname)
 
     dim = len(dist)
     n = [0,0]
@@ -1107,20 +742,9 @@ Examples
     shape = (dim1,)+val.shape
     val2 = val2.reshape(shape[::-1]).T
 
-    out = po.transpose(po.sum(poly*val2.T, -1))
+    out = cp.poly.transpose(cp.poly.sum(poly*val2.T, -1))
 
     if retall:
         return out, val2, val1, err2, err1
     return val2
-
-
-
-
-if __name__=="__main__":
-    import numpy as np
-    import __init__ as cp
-    import doctest
-    x, y = cp.variable(2)
-
-    doctest.testmod()
 
