@@ -20,9 +20,9 @@ def Var(poly, dist=None, **kws):
         >>> x = cp.variable()
         >>> Z = cp.Uniform()
         >>> print(cp.Var(Z))
-        0.0833333333333
+        0.08333333333333331
         >>> print(cp.Var(x**3, Z))
-        0.0803571428571
+        0.08035714285714285
     """
     if isinstance(poly, cp.dist.Dist):
         x = cp.poly.variable(len(poly))
@@ -47,8 +47,8 @@ def Var(poly, dist=None, **kws):
         keys2 = sum(np.meshgrid(keys, keys))
     else:
         keys2 = np.empty((dim, N, N))
-        for i in xrange(N):
-            for j in xrange(N):
+        for i in range(N):
+            for j in range(N):
                 keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = np.outer(*[dist.mom(keys1, **kws)]*2)
@@ -56,10 +56,10 @@ def Var(poly, dist=None, **kws):
     mom = m2-m1
 
     out = np.zeros(poly.shape)
-    for i in xrange(N):
+    for i in range(N):
         a = A[keys[i]]
         out += a*a*mom[i, i]
-        for j in xrange(i+1, N):
+        for j in range(i+1, N):
             b = A[keys[j]]
             out += 2*a*b*mom[i, j]
 
@@ -85,9 +85,9 @@ def Std(poly, dist=None, **kws):
         >>> x = cp.variable()
         >>> Z = cp.Uniform()
         >>> print(cp.Var(Z))
-        0.0833333333333
+        0.08333333333333331
         >>> print(cp.Var(x**3, Z))
-        0.0803571428571
+        0.08035714285714285
     """
 
     if isinstance(poly, cp.dist.Dist):
@@ -113,8 +113,8 @@ def Std(poly, dist=None, **kws):
         keys2 = sum(np.meshgrid(keys, keys))
     else:
         keys2 = np.empty((dim, N, N))
-        for i in xrange(N):
-            for j in xrange(N):
+        for i in range(N):
+            for j in range(N):
                 keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = np.outer(*[dist.mom(keys1, **kws)]*2)
@@ -122,10 +122,10 @@ def Std(poly, dist=None, **kws):
     mom = m2-m1
 
     out = np.zeros(poly.shape)
-    for i in xrange(N):
+    for i in range(N):
         a = A[keys[i]]
         out += a*a*mom[i, i]
-        for j in xrange(i+1, N):
+        for j in range(i+1, N):
             b = A[keys[j]]
             out += 2*a*b*mom[i, j]
 

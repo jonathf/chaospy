@@ -62,7 +62,7 @@ for example 1: ``n_nonzero_coefs=1``. In practice::
    ...     orthogonal_expansion, absissas, solves,
    ...     rule="OMP", n_nonzero_coefs=1)
    >>> print(approx_model)
-   [q0q1, 2.27638496012q0]
+   [q0q1, 2.2763849601172854q0]
 
 Except for least squares, Tikhonov regularization with and without cross
 validation, all the method listed is taken from ``sklearn`` software. All
@@ -203,7 +203,7 @@ def fit_regression(P, x, u, rule="LS", retall=False, **kws):
         >>> P = cp.Poly([1, x, y])
         >>> s = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> u = [0,1,1,2]
-        >>> print(fit_regression(P, s, u))
+        >>> print(cp.around(fit_regression(P, s, u), 14))
         0.5q0+0.5q1+1.0
     """
     x = np.array(x)
@@ -333,7 +333,7 @@ def rlstsq(A, b, order=1, alpha=None, cross=False, retall=False):
         out = np.empty((m,l) + b.shape[1:])
         A_ = np.empty((m-1,l))
         b_ = np.empty((m-1,) + b.shape[1:])
-        for i in xrange(m):
+        for i in range(m):
             A_[:i] = A[:i]
             A_[i:] = A[i+1:]
             b_[:i] = b[:i]

@@ -437,9 +437,9 @@ See graph for advanced distributions."""
         if len(self)==1:
             out = [set([self])]
         else:
-            out = [set([]) for _ in xrange(len(self))]
+            out = [set([]) for _ in range(len(self))]
         for s in sets:
-            for i in xrange(len(self)):
+            for i in range(len(self)):
                 out[i].update(s[i])
 
         return out
@@ -566,14 +566,26 @@ out : bool
         sets, G = self.G.run(None, "dep")
 
         if args:
-            sets = [reduce(lambda x,y: x.union(y), sets)]
-            for arg in args:
-                sets.append(reduce(lambda x,y: \
-                        x.union(y), arg.G.run(None, "dep")))
 
-        as_seperated = sum(map(len, sets))
-        as_joined = len(reduce(lambda x,y: x.union(y), sets))
-        return as_seperated!=as_joined
+            sets_ = set()
+            for set_ in sets:
+                sets_ = sets_.union(set_)
+            sets = [sets_]
+
+            for arg in args:
+                sets_ = set()
+                for set_ in arg.G.run(None, "dep"):
+                    sets_ = sets_.union(set_)
+                sets.append(sets_)
+
+        as_seperated = sum([len(set_) for set_ in sets])
+
+        as_joined = set()
+        for set_ in sets:
+            as_joined = as_joined.union(set_)
+        as_joined = len(as_joined)
+
+        return as_seperated != as_joined
 
 
 def construct(cdf, bnd, parent=None, pdf=None, ppf=None, mom=None,

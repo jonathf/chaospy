@@ -141,7 +141,7 @@ quasi : np.ndarray
     assert 0<dim_num<dim_max, "dim_num in [1,40]"
 
     #Initialize the remaining rows of V.
-    for i in xrange(1 , dim_num):
+    for i in range(1 , dim_num):
 
         #The bits of the integer POLY(I) gives the form of polynomial I.
         #Find the degree of polynomial I from binary encoding.
@@ -156,17 +156,17 @@ quasi : np.ndarray
         #Expand this bit pattern to separate components of the logical array INCLUD.
         j = poly[i]
         includ=np.zeros(m, dtype=bool)
-        for k in xrange(m, 0, -1):
+        for k in range(m, 0, -1):
             j2 = j/2
             includ[k-1] =  j!=2*j2
             j = j2
 
         #Calculate the remaining elements of row I as explained
         #in Bratley and Fox, section 2.
-        for j in xrange( m+1, maxcol+1 ):
+        for j in range( m+1, maxcol+1 ):
             newv = v[i,j-m-1].item()
             l = 1
-            for k in xrange(1, m+1):
+            for k in range(1, m+1):
                 l = 2 * l
                 if includ[k-1]:
                     newv = newv ^ l*v[i,j-k-1].item()
@@ -178,7 +178,7 @@ quasi : np.ndarray
 
     #Multiply columns of V by appropriate power of 2.
     l = 1
-    for j in xrange(maxcol-1, -1, -1):
+    for j in range(maxcol-1, -1, -1):
         l = 2 * l
         v[:,j] = v[:,j] * l
 
@@ -190,12 +190,12 @@ quasi : np.ndarray
     if seed < 1:
         seed = 1
 
-    for seed_ in xrange(seed):
+    for seed_ in range(seed):
         lastq[:] = lastq ^ v[:,bit_lo(seed_)-1]
 
     #Calculate the new components of QUASI.
     quasi=np.empty((dim_num, N))
-    for j in xrange(N):
+    for j in range(N):
         quasi[:, j] = lastq * recipd
         lastq[:] = lastq ^ v[:,bit_lo(seed+j)-1]
 

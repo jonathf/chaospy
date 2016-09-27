@@ -104,7 +104,7 @@ def lagrange(X):
     dim, K = X.shape
 
     coefs = np.zeros((dim, K, K))
-    for d in xrange(dim):
+    for d in range(dim):
         s,t = np.mgrid[:K,:K]
         coefs[d] = X[d,s]-X[d,t]
         coefs[d] += np.eye(K)
@@ -196,7 +196,7 @@ def differential(P, Q):
 
         A[tuple(newkey)] = P.A[key]*np.prod([fac(key[i], \
             exact=True)/fac(newkey[i], exact=True) \
-            for i in xrange(P.dim)])
+            for i in range(P.dim)])
 
     return Poly(A, P.dim, None)
 
@@ -232,7 +232,7 @@ def prange(N=1, dim=1):
     A = {}
     r = np.arange(N, dtype=int)
     key = np.zeros(dim, dtype=int)
-    for i in xrange(N):
+    for i in range(N):
         key[-1] = i
         A[tuple(key)] = 1*(r==i)
 
@@ -357,7 +357,7 @@ def variable(dims=1):
 
     r = np.arange(dims, dtype=int)
     A = {}
-    for i in xrange(dims):
+    for i in range(dims):
         A[tuple(1*(r==i))] = 1*(r==i)
 
     return Poly(A, dim=dims, shape=(dims,))
@@ -419,7 +419,7 @@ def order(P):
 #     if not isinstance(P, Poly):
 #         A = {}
 #         coefs = np.poly(P)[::-1]
-#         for i in xrange(len(coefs)):
+#         for i in range(len(coefs)):
 #             if coefs[i]:
 #                 A[(i,)] = np.array(coefs[i])
 #         return Poly(A)

@@ -51,6 +51,168 @@ class Poly(object):
         [q0q1, q0, q1]
     """
 
+    def __init__(self, A=None, dim=None, shape=None, dtype=None, V=0):
+        """
+        Args:
+            A (array_like, dict, Poly) : The polynomial coefficient Tensor.
+                    Where A[(i,j,k)] corresponds to a_{ijk} x^i y^j z^k
+                    (A[i][j][k] for list and tuple)
+            dim (int) : the dimensionality of the polynomial.  Automatically
+                    set if A contains a value.
+            shape (tuple) : the number of polynomials represented.
+                    Automatically set if A contains a value.
+            dtype (type) : The type of the polynomial coefficients
+        """
+
+        if V: print("\nConstruct poly out of:\n", A)
+
+        if isinstance(A, Poly):
+
+            dtype_ = A.dtype
+            shape_ = A.shape
+            dim_ = A.dim
+            A = A.A.copy()
+
+        elif isinstance(A, np.ndarray):
+
+            dtype_ = A.dtype
+            shape_ = A.shape
+            dim_ = 1
+            A = {(0,):A}
+
+        elif isinstance(A, (int, float)):
+
+            dtype_ = type(A)
+            shape_ = ()
+            dim_ = 1
+            A = {(0,):np.array(A)}
+
+        elif isinstance(A, dict):
+
+            A = A.copy()
+
+            if not A:
+                dtype_ = int
+                dim_ = 1
+                shape_ = ()
+
+            else:
+                key = sorted(A.keys())[0]
+                shape_ = np.array(A[key]).shape
+                dim_ = len(key)
+                dtype_ = dtyping(A[key])
+
+        elif isinstance(A, f.frac):
+
+            dtype_ = f.frac
+            shape_ = A.shape
+            dim_ = 1
+            if isinstance(A.a, int):
+                A = f.frac(np.array(A.a), np.array(A.b))
+            A = {(0,): A}
+
+        elif isinstance(A, (np.ndarray, list, tuple)):
+
+            A = [Poly(a) for a in A]
+            shape_ = (len(A),) + A[0].shape
+
+            dtype_ = dtyping(*[_.dtype for _ in A])
+
+            dims = np.array([a.dim for a in A])
+            dim_ = np.max(dims)
+            if dim_!=np.min(dims):
+                A = [setdim(a, dim_) for a in A]
+
+            d = {}
+            for i in range(len(A)): # i over list of polys
+
+                if V: print("Adding:", A[i], "(%d)" % i)
+                for key in A[i].A: # key over exponents in each poly
+
+                    if not key in d:
+                        if V: print("creating key", key)
+                        if dtype_==f.frac:
+                            d[key] = f.frac(np.zeros(shape_))
+                        else:
+                            d[key] = np.zeros(shape_, dtype=dtype_)
+                    d[key][i] = A[i].A[key]
+                    if V: print("update", key, d[key])
+            if V: print("creating master dict:\n", d)
+
+            A = d
+
+        else:
+            raise TypeError(
+                "Poly arg: 'A' is not a valid type " + repr(A))
+
+        if dtype is None:
+            dtype = dtype_
+
+        if dtype == int:
+
+            func1 = asint
+            if shape is None:
+                shape = shape_
+            elif np.any(np.array(shape)!=shape_):
+                ones = np.ones(shape, dtype=int)
+                func1 = lambda x: asint(x*ones)
+
+        elif dtype==f.frac:
+
+            func1 = f.frac
+            if shape is None:
+                shape = shape_
+            elif np.any(np.array(shape)!=shape_):
+                ones = np.ones(shape, dtype=int)
+                func1 = lambda x: f.frac(x*ones)
+
+        else:
+
+            func1 = lambda x:np.array(x, dtype=dtype)
+            if shape is None:
+                shape = shape_
+            elif np.any(np.array(shape)!=shape_):
+                ones = np.ones(shape, dtype=int)
+                func1 = lambda x: 1.*x*ones
+
+        func2 = lambda x:x
+        if dim is None:
+            dim = dim_
+        elif dim<dim_:
+            func2 = lambda x:x[:dim]
+        elif dim>dim_:
+            func2 = lambda x:x + (0,)*(dim-dim_)
+
+        d = {}
+        for key, val in A.items():
+            d[func2(key)] = func1(val)
+        A = d
+
+        if isinstance(shape, int):
+            shape = (shape,)
+
+        # Remove empty elements
+        for key in list(A.keys()):
+            if np.all(A[key] == 0):
+                del A[key]
+
+        # assert non-empty container
+        if not A:
+            if dtype==float:
+                dt = float
+            else:
+                dt = int
+            A = {(0,)*dim: np.zeros(shape, dtype=dt)}
+
+        self.keys = list(A.keys())
+        self.dim = dim
+        self.shape = shape
+        self.dtype = dtype
+        self.A = A
+
+        if V: print("result", A)
+
+
     def __abs__(self):
         """x.__abs__() <==> abs(x)"""
 
@@ -95,7 +257,7 @@ class Poly(object):
                 out = d1
             else:
                 for I in d1:
-                    if d2.has_key(I):
+                    if I in d2:
                         d2[I] = d2[I] + d1[I]
                     else:
                         d2[I] = d1[I]
@@ -263,18 +425,11 @@ class Poly(object):
             if not np.all(tmp==0):
                 A0[key] = tmp
 
-        keys = A0.keys()
+        def _key(val):
+            return np.sum(max(val)**np.arange(len(val)-1, -1, -1)*val)
+
+        keys = sorted(A0.keys(), key=_key)
         dim = self.dim
-        def _cmp(x, y):
-            out = cmp(SUM(x), SUM(y))
-            if out!=0:
-                return out
-            def __cmp(x,y):
-                if x:
-                    return cmp(x[0],y[0]) or __cmp(x[1:], y[1:])
-                return 0
-            return __cmp(x, y)
-        keys.sort(cmp=_cmp)
 
         A1 = {}
         for key in keys[subkey]:
@@ -282,173 +437,13 @@ class Poly(object):
 
         return Poly(A1, dim, shape, self.dtype)
 
-
-    def __init__(self, A=None, dim=None, shape=None, dtype=None, V=0):
-        """
-        Args:
-            A (array_like, dict, Poly) : The polynomial coefficient Tensor.
-                    Where A[(i,j,k)] corresponds to a_{ijk} x^i y^j z^k
-                    (A[i][j][k] for list and tuple)
-            dim (int) : the dimensionality of the polynomial.  Automatically
-                    set if A contains a value.
-            shape (tuple) : the number of polynomials represented.
-                    Automatically set if A contains a value.
-            dtype (type) : The type of the polynomial coefficients
-        """
-
-        if V: print("\nConstruct poly out of:\n", A)
-
-        if isinstance(A, Poly):
-
-            dtype_ = A.dtype
-            shape_ = A.shape
-            dim_ = A.dim
-            A = A.A.copy()
-
-        elif isinstance(A, np.ndarray):
-
-            dtype_ = A.dtype
-            shape_ = A.shape
-            dim_ = 1
-            A = {(0,):A}
-
-        elif isinstance(A, (int, long, float)):
-
-            dtype_ = type(A)
-            shape_ = ()
-            dim_ = 1
-            A = {(0,):np.array(A)}
-
-        elif isinstance(A, dict):
-
-            A = A.copy()
-
-            if not A:
-                dtype_ = int
-                dim_ = 1
-                shape_ = ()
-
-            else:
-                key = A.keys()[0]
-                shape_ = np.array(A[key]).shape
-                dim_ = len(key)
-                dtype_ = dtyping(A[key])
-
-        elif isinstance(A, f.frac):
-
-            dtype_ = f.frac
-            shape_ = A.shape
-            dim_ = 1
-            if isinstance(A.a, int):
-                A = f.frac(np.array(A.a), np.array(A.b))
-            A = {(0,): A}
-
-        elif isinstance(A, (np.ndarray, list, tuple)):
-
-            A = [Poly(a) for a in A]
-            shape_ = (len(A),) + A[0].shape
-
-            dtype_ = dtyping(*[_.dtype for _ in A])
-
-            dims = np.array([a.dim for a in A])
-            dim_ = np.max(dims)
-            if dim_!=np.min(dims):
-                A = [setdim(a, dim_) for a in A]
-
-            d = {}
-            for i in xrange(len(A)): # i over list of polys
-
-                if V: print("Adding:", A[i], "(%d)" % i)
-                for key in A[i].A: # key over exponents in each poly
-
-                    if not d.has_key(key):
-                        if V: print("creating key", key)
-                        if dtype_==f.frac:
-                            d[key] = f.frac(np.zeros(shape_))
-                        else:
-                            d[key] = np.zeros(shape_, dtype=dtype_)
-                    d[key][i] = A[i].A[key]
-                    if V: print("update", key, d[key])
-            if V: print("creating master dict:\n", d)
-
-            A = d
-
-        else:
-            raise TypeError(
-                "Poly arg: 'A' is not a valid type " + repr(A))
-
-        if dtype is None:
-            dtype = dtype_
-        if dtype in (int, long):
-
-            func1 = asint
-            if shape is None:
-                shape = shape_
-            elif np.any(np.array(shape)!=shape_):
-                ones = np.ones(shape, dtype=int)
-                func1 = lambda x: asint(x*ones)
-
-        elif dtype==f.frac:
-
-            func1 = f.frac
-            if shape is None:
-                shape = shape_
-            elif np.any(np.array(shape)!=shape_):
-                ones = np.ones(shape, dtype=int)
-                func1 = lambda x: f.frac(x*ones)
-
-        else:
-
-            func1 = lambda x:np.array(x, dtype=dtype)
-            if shape is None:
-                shape = shape_
-            elif np.any(np.array(shape)!=shape_):
-                ones = np.ones(shape, dtype=int)
-                func1 = lambda x: 1.*x*ones
-
-        func2 = lambda x:x
-        if dim is None:
-            dim = dim_
-        elif dim<dim_:
-            func2 = lambda x:x[:dim]
-        elif dim>dim_:
-            func2 = lambda x:x + (0,)*(dim-dim_)
-
-        d = {}
-        for key, val in A.items():
-            d[func2(key)] = func1(val)
-        A = d
-
-        if isinstance(shape, int):
-            shape = (shape,)
-
-        # Remove empty elements
-        for key in A.keys()[:]:
-            if np.all(A[key]==0):
-                del A[key]
-
-        # assert non-empty container
-        if not A:
-            if dtype==float:
-                dt = float
-            else:
-                dt = int
-            A = {(0,)*dim: np.zeros(shape, dtype=dt)}
-
-        self.keys = A.keys()
-        self.dim = dim
-        self.shape = shape
-        self.dtype = dtype
-        self.A = A
-
-        if V: print("result", A)
-
     def __iter__(self):
         """x.__iter__() <==> iter(x)"""
-
-
         A = self.A
         Pset = []
+
+        if not self.shape:
+            raise ValueError("not iterable")
 
         for i in range(self.shape[0]):
 
@@ -458,10 +453,6 @@ class Poly(object):
                 if np.any(A[key][i]):
                     out[key] = A[key][i]
 
-            # if len(self.shape) == 1:
-            #     for key in out.keys():
-            #         out[key] = np.array([out[key]])
-            #
             Pset.append(Poly(out, self.dim, self.shape[1:],
                 self.dtype))
 
@@ -532,7 +523,7 @@ class Poly(object):
                 K = tuple(np.array(I)+np.array(J))
                 d[K] = d.get(K,0) + y.A[I]*self.A[J]
 
-        for K in d.keys():
+        for K in list(d.keys()):
             if np.all(d[K]==0):
                 del d[K]
 
@@ -550,18 +541,16 @@ class Poly(object):
                     "Power of Poly must be interger")
             n = int(n)
 
-            if n==0:
+            if n == 0:
                 return Poly(
                     {(0,)*self.dim: np.ones(self.shape, dtype=int)},
                     self.dim, self.shape, None)
-            if n==1:
-                return self.copy()
-            if n%2==0:
-                A = self**(n/2)
-                return A*A
-            else:
-                A = self**(n/2)
-                return A*A*self
+
+            self = self.copy()
+            out = self
+            for poly in range(1, n):
+                out = out * self
+            return out
 
         elif isinstance(n, (np.ndarray, list, tuple)):
 
@@ -684,7 +673,7 @@ class Poly(object):
 
 
         if isinstance(VARNAME, str):
-            basename = map(lambda d: '%s%d' % (VARNAME, d), range(self.dim))
+            basename = ["%s%d" % (VARNAME, d) for d in range(self.dim)]
         else:
             basename = list(VARNAME)
 
@@ -776,7 +765,7 @@ def call(P, args):
 
     # Find and perform substitutions, if any
     x0,x1 = [],[]
-    for i in xrange(len(args)):
+    for i in range(len(args)):
 
         if isinstance(args[i], Poly):
 
@@ -789,7 +778,7 @@ def call(P, args):
 
     # Create masks
     masks = np.zeros(len(args), dtype=bool)
-    for i in xrange(len(args)):
+    for i in range(len(args)):
         if np.ma.is_masked(args[i]) \
             or np.any(args[i]!=args[i]):
             masks[i] = True
@@ -980,7 +969,7 @@ def dimsplit(P):
     for key in P.keys:
         P.A[key] = (P.A[key]!=0)
 
-    for i in xrange(dim):
+    for i in range(dim):
 
         A.append({})
         ones[i] = np.nan
@@ -998,7 +987,7 @@ def dimsplit(P):
             val = Q[key]
             A[-1][key] = val
 
-    A = map(Poly, A)
+    A = [Poly(a, dim, None, P.dtype) for a in A]
     P = Poly(A, dim, None, P.dtype)
     P = P + 1*(P(*(1,)*dim)==0)*M
 
@@ -1071,8 +1060,8 @@ def substitute(P, x0, x1, V=0):
 
     if V: print("Apriori:\n", P)
 
-    for i in xrange(len(P)):
-        for j in xrange(len(dims)):
+    for i in range(len(P)):
+        for j in range(len(dims)):
             if P[i].keys and P[i].keys[0][dims[j]]:
                 P[i] = x1[j]**(P[i].keys[0][dims[j]])
                 break
@@ -1094,12 +1083,12 @@ def dtyping(*args):
     """Find least common denominator dtype."""
     args = list(args)
 
-    for i in xrange(len(args)):
+    for i in range(len(args)):
 
         if isinstance(args[i], np.ndarray):
             args[i] = args[i].dtype
         elif isinstance(args[i],
-            (float, f.frac, int, long)):
+            (float, f.frac, int)):
             args[i] = type(args[i])
 
     if Poly in args: return Poly
@@ -1110,7 +1099,6 @@ def dtyping(*args):
     if object in args: return object
     if f.frac in args: return f.frac
 
-    if long in args: return int
     if int in args: return int
     if np.dtype(int) in args: return int
 
@@ -1191,8 +1179,10 @@ def prod(P, axis=None):
         P = flatten(P)
         axis = 0
 
-    Q = rollaxis(P, axis)
-    Q = reduce(lambda x,y:x*y, Q)
+    P = rollaxis(P, axis)
+    Q = P[0]
+    for p in P[1:]:
+        Q = Q*p
     Q = Poly(Q, P.dim, None, P.dtype)
     return Q
 
@@ -1206,11 +1196,10 @@ def asfrac(P, limit=None):
 
 def asint(P):
 
-    if isinstance(P, (int, long, float, np.ndarray)):
-        return np.array(P, dtype=int)
-
     if isinstance(P, f.frac):
         return P.a//P.b
+    else:
+        return np.array(P, dtype=int)
 
     B = P.A.copy()
     if P.dtype==f.frac:
@@ -1220,7 +1209,7 @@ def asint(P):
         for key in P.keys:
             B[key] = np.array(B[key], dtype=int)
 
-    out = Poly(B, P.dim, P.shape, f.frac)
+    out = Poly(B, P.dim, P.shape, int)
     return out
 
 
@@ -1228,18 +1217,18 @@ def asint(P):
 def toarray(P):
     shape = P.shape
     out = np.array([{} \
-        for _ in xrange(np.prod(shape))], dtype=object)
+        for _ in range(np.prod(shape))], dtype=object)
     A = P.A.copy()
     for key in A.keys():
 
         A[key] = A[key].flatten()
 
-        for i in xrange(np.prod(shape)):
+        for i in range(np.prod(shape)):
 
             if not np.all(A[key][i]==0):
                 out[i][key] = A[key][i]
 
-    for i in xrange(np.prod(shape)):
+    for i in range(np.prod(shape)):
         out[i] = Poly(out[i], P.dim, (), P.dtype)
 
     return out
@@ -1359,8 +1348,10 @@ def trace(P, offset=0, ax1=0, ax2=1):
     return Poly(A, P.dim, None, P.dtype)
 
 def inner(*args):
-    P = reduce(lambda x,y: x*y, args)
-    return sum(P)
+    out = args[0]
+    for arg in args[1:]:
+        out = out * arg
+    return sum(out)
 
 def outer(*args):
 
@@ -1386,10 +1377,10 @@ def outer(*args):
         out = reshape(Poly(out), shape)
         return out
 
-    if isinstance(P1, (int, long, float, list, tuple)):
+    if isinstance(P1, (int, float, list, tuple)):
         P1 = np.array(P1)
 
-    if isinstance(P2, (int, long, float, list, tuple)):
+    if isinstance(P2, (int, float, list, tuple)):
         P2 = np.array(P2)
 
     if isinstance(P1, Poly):

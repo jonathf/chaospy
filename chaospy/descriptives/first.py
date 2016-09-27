@@ -62,7 +62,7 @@ def E(poly, dist=None, **kws):
         mom = mom[0]
 
     out = np.zeros(poly.shape)
-    for i in xrange(len(keys)):
+    for i in range(len(keys)):
         out += A[keys[i]]*mom[i]
 
     out = np.reshape(out, shape)
@@ -98,13 +98,13 @@ def E_cond(poly, freeze, dist, **kws):
 
     out = {}
     zeros = [0]*poly.dim
-    for i in xrange(len(keys)):
+    for i in range(len(keys)):
 
         key = list(keys[i])
         a = A[tuple(key)]
 
-        for d in xrange(poly.dim):
-            for j in xrange(len(freeze)):
+        for d in range(poly.dim):
+            for j in range(len(freeze)):
                 if freeze[j, d]:
                     key[d], zeros[d] = zeros[d], key[d]
                     break
@@ -115,8 +115,8 @@ def E_cond(poly, freeze, dist, **kws):
         else:
             out[tuple(zeros)] = tmp
 
-        for d in xrange(poly.dim):
-            for j in xrange(len(freeze)):
+        for d in range(poly.dim):
+            for j in range(len(freeze)):
                 if freeze[j, d]:
                     key[d], zeros[d] = zeros[d], key[d]
                     break

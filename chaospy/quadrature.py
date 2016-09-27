@@ -138,12 +138,12 @@ samplegen   Sample generator
                 x, w = clenshaw_curtis(order, lo, up, growth=growth,
                         composite=composite)
                 # foo = [lambda o: clenshaw_curtis(o[i], lo[i], up[i],
-                #     growth=growth, composite=composite) for i in xrange(dim)]
+                #     growth=growth, composite=composite) for i in range(dim)]
 
             elif rule=="E":
                 x, w = gauss_legendre(order, lo, up, composite)
                 # foo = [lambda o: gauss_legendre(o[i], lo[i], up[i],
-                #     composite) for i in xrange(dim)]
+                #     composite) for i in range(dim)]
 
             elif rule=="J":
                 x, w = leja(order, domain)
@@ -224,7 +224,7 @@ Multivariate
     X, W = [], []
     dim = len(dist)
 
-    for d in xrange(dim):
+    for d in range(dim):
         if o[d]:
             A = np.empty((2, o[d]))
             A[0] = a[d, :o[d]]
@@ -289,7 +289,7 @@ Examples
 >>> dist = cp.Uniform()
 >>> orth, norms, A, B = cp.stieltjes(dist, 2, retall=True)
 >>> print(orth[2])
-[q0^2-q0+0.166666666667]
+[q0^2-q0+0.16666666666666669]
 >>> print(norms)
 [[ 1.          0.08333333  0.00555556]]
     """
@@ -305,12 +305,12 @@ Examples
         x = cp.poly.variable(dim)
         if normed:
             orth = [x**0*np.ones(dim), (x-A[:,0])/np.sqrt(B[:,1])]
-            for n in xrange(1,order):
+            for n in range(1,order):
                 orth.append((orth[-1]*(x-A[:,n]) - orth[-2]*np.sqrt(B[:,n]))/np.sqrt(B[:,n+1]))
             norms = np.ones(B.shape)
         else:
             orth = [x-x, x**0*np.ones(dim)]
-            for n in xrange(order):
+            for n in range(order):
                 orth.append(orth[-1]*(x-A[:,n]) - orth[-2]*B[:,n])
             orth = orth[1:]
             norms = np.cumprod(B, 1)
@@ -331,7 +331,7 @@ Examples
         norms = [np.ones(dim), np.ones(dim)]
         A,B = [],[]
 
-        for n in xrange(order):
+        for n in range(order):
 
             A.append(inner/norms[-1])
             B.append(norms[-1]/norms[-2])
@@ -369,7 +369,7 @@ After paper by Narayan and Jakeman
         if isinstance(order, int):
             xw = [leja(order, d) for d in dist]
         else:
-            xw = [leja(order[i], dist[i]) for i in xrange(len(dist))]
+            xw = [leja(order[i], dist[i]) for i in range(len(dist))]
 
         x = [_[0][0] for _ in xw]
         w = [_[1] for _ in xw]
@@ -381,12 +381,12 @@ After paper by Narayan and Jakeman
 
     lo, up = dist.range()
     X = [lo, dist.mom(1), up]
-    for o in xrange(order):
+    for o in range(order):
 
         X_ = np.array(X[1:-1])
         obj = lambda x:-np.sqrt(dist.pdf(x))*np.prod(np.abs(X_-x))
         opts, vals = zip(*[fminbound(obj, X[i], X[i+1],
-            full_output=1)[:2] for i in xrange(len(X)-1)])
+            full_output=1)[:2] for i in range(len(X)-1)])
         index = np.argmin(vals)
         X.insert(index+1, opts[index])
 
@@ -431,7 +431,7 @@ def _clenshaw_curtis(N, composite=[]):
 
     X = np.zeros((M-1)*(len(composite)-1)+1)
     W = np.zeros((M-1)*(len(composite)-1)+1)
-    for d in xrange(len(composite)-1):
+    for d in range(len(composite)-1):
         X[d*M-d:(d+1)*M-d] = \
                 x*(composite[d+1]-composite[d]) + composite[d]
         W[d*M-d:(d+1)*M-d] += w*(composite[d+1]-composite[d])
@@ -461,9 +461,9 @@ quadrature
 
     if growth:
         q = [_clenshaw_curtis(2**N[i]-1*(N[i]==0), composite[i]) \
-                for i in xrange(dim)]
+                for i in range(dim)]
     else:
-        q = [_clenshaw_curtis(N[i], composite[i]) for i in xrange(dim)]
+        q = [_clenshaw_curtis(N[i], composite[i]) for i in range(dim)]
 
     x = [_[0] for _ in q]
     w = [_[1] for _ in q]
@@ -502,7 +502,7 @@ def _gauss_legendre(N, composite=1):
 
     X = np.empty(M*(len(composite)-1))
     W = np.empty(M*(len(composite)-1))
-    for d in xrange(len(composite)-1):
+    for d in range(len(composite)-1):
         X[d*M:(d+1)*M] = \
                 x*(composite[d+1]-composite[d]) + composite[d]
         W[d*M:(d+1)*M] = w*(composite[d+1]-composite[d])
@@ -532,7 +532,7 @@ quadrature
         composite = ((composite.T-lo)/(up-lo)).T
 
 
-    q = [_gauss_legendre(N[i], composite[i]) for i in xrange(dim)]
+    q = [_gauss_legendre(N[i], composite[i]) for i in range(dim)]
     x = np.array([_[0] for _ in q])
     w = np.array([_[1] for _ in q])
 
@@ -668,9 +668,9 @@ Examples
 >>> print(x)
 [[ 0.58578644  3.41421356]]
     """
-    x,w = generate_quadrature(order, domain, acc=acc, sparse=sparse, rule=rule,
-            composite=composite)
-    y = np.array(map(func, x.T))
+    x, w = generate_quadrature(
+        order, domain, acc=acc, sparse=sparse, rule=rule, composite=composite)
+    y = np.array([func(_) for _ in x.T])
     q = np.sum((y.T*w).T, 0)
     if retall:
         return q, x, w, y
@@ -688,7 +688,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #      args=(), kws={}, veceval=False, retall=False):
 #
 #      dim = len(dist)
-#      if isinstance(order, (int, long, float)):
+#      if isinstance(order, (int, float)):
 #          order = [order]*dim
 #      indices = cp.dist.sort(dist)
 #      grid = np.mgrid[[slice(0,order[i]+1,1) for i in indices]]
@@ -709,7 +709,7 @@ def dep_golub_welsch(dist, order, acc=100):
 #          if i==dim-1:
 #              return X, W
 #
-#          for k in xrange(order[j]+1):
+#          for k in range(order[j]+1):
 #              vals[j] = x[k]
 #              X, W = _dep_quad(I+(k,), order, dist, X, W, grid, vals)
 #
@@ -777,7 +777,7 @@ mv_rule : callable
 
         N = N*np.ones(dim, int)
         q = [funcs[i](N[i]) \
-                for i in xrange(dim)]
+                for i in range(dim)]
 
         x = [np.array(_[0]).flatten() for _ in q]
         x = cp.utils.combine(x, part=part).T
@@ -866,7 +866,7 @@ def momgen(order, domain, acc=100, sparse=False, rule="C",
 
         def _mom(k):
             out = 0.
-            for i in xrange(len(X)):
+            for i in range(len(X)):
                 out += np.sum(np.prod(Y[i].T**k, -1)*W[i], 0)
             return out
 

@@ -87,7 +87,7 @@ class Archimedean(Dist):
 
     def _ppf(self, x, th, eps):
 
-        for i in xrange(1, len(x)):
+        for i in range(1, len(x)):
 
             q = x[:i+1].copy()
             lo, up = 0,1
@@ -127,7 +127,7 @@ class Archimedean(Dist):
     def _cdf(self, x, th, eps):
         out = np.zeros(x.shape)
         out[0] = x[0]
-        for i in xrange(1,len(x)):
+        for i in range(1,len(x)):
             out[i][x[i]==1] = 1
             out[i] = self._diff(x[:i+1], th, eps)
 
@@ -136,7 +136,7 @@ class Archimedean(Dist):
     def _pdf(self, x, th, eps):
         out = np.ones(x.shape)
         sign = 1-2*(x>.5)
-        for i in xrange(1,len(x)):
+        for i in range(1,len(x)):
             x[i] += eps*sign[i]
             out[i] = self._diff(x[:i+1], th, eps)
             x[i] -= eps*sign[i]

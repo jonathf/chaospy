@@ -69,10 +69,10 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         >>> x = cp.variable()
         >>> Z = cp.Uniform()
         >>> print(cp.Kurt(Z))
-        -1.2
+        -1.1999999999999993
         >>> Z = cp.Normal()
         >>> print(cp.Kurt(x, Z))
-        4.4408920985e-16
+        4.440892098500626e-16
     """
     if isinstance(poly, cp.dist.Dist):
         x = cp.poly.variable(len(poly))

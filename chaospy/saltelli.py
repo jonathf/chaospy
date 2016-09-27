@@ -23,7 +23,7 @@ class Saltelli:
             return getattr(self, key)
 
         new = np.empty(self.samples1.shape)
-        for i in xrange(len(indices)):
+        for i in range(len(indices)):
             if indices[i]:
                 new[i] = self.samples1[i]
             else:
@@ -56,7 +56,7 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
     yz -= mean
 
     out = []
-    for d in xrange(dim):
+    for d in range(dim):
 
         index[d] = 1
 
@@ -89,14 +89,14 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
     yz -= mean
 
     out = np.empty((dim,dim)+poly.shape)
-    for d1 in xrange(dim):
+    for d1 in range(dim):
 
         index[d1] = 1
         yi = Y[index]-mean
         s = np.mean(yo*(yi-yz), -1) / (V+(V==0))*(V!=0)
         out[d1,d1] = s
 
-        for d2 in xrange(d1+1, dim):
+        for d2 in range(d1+1, dim):
 
             index[d2] = 1
 
@@ -123,7 +123,7 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
     V = np.var(Y[zeros], -1)
 
     out = []
-    for d in xrange(dim):
+    for d in range(dim):
 
         index[d] = 0
         s = 1-np.mean((Y[index]-Y[zeros])**2, -1) / (2*V+(V==0))*(V!=0)

@@ -75,9 +75,9 @@ Examples
     P = [basis[0]]
 
     if normed:
-        for i in xrange(1,len(basis)):
+        for i in range(1,len(basis)):
 
-            for j in xrange(i):
+            for j in range(i):
                 tmp = P[j]*cp.descriptives.E(basis[i]*P[j], dist, **kws)
                 basis[i] = basis[i] - tmp
 
@@ -91,8 +91,8 @@ Examples
     else:
 
         G = [1.]
-        for i in xrange(1,len(basis)):
-            for j in xrange(i):
+        for i in range(1,len(basis)):
+            for j in range(i):
                 tmp = P[j]*(cp.descriptives.E(basis[i]*P[j], dist, **kws) / G[j])
                 basis[i] = basis[i] - tmp
 
@@ -150,23 +150,26 @@ Examples
         dist, order, retall=True, **kws)
 
     if normed:
-        for i in xrange(len(P)):
+        for i in range(len(P)):
             P[i] = P[i]/np.sqrt(norms[:,i])
         norms = norms**0
 
     dim = len(dist)
-    if dim>1:
+    if dim > 1:
         Q, G = [], []
         indices = cp.bertran.bindex(0,order,dim,sort)
         for I in indices:
-            q = [P[I[i]][i] for i in xrange(dim)]
-            q = reduce(lambda x,y: x*y, q)
+            q = P[I[0]][0]
+            for i in range(1, dim):
+                q = q * P[I[i]][i]
             Q.append(q)
+
         if retall:
             for I in indices:
-                g = [norms[i,I[i]] for i in xrange(dim)]
+                g = [norms[i,I[i]] for i in range(dim)]
                 G.append(np.prod(g))
         P = Q
+
     else:
         G = norms[0]
 
@@ -198,8 +201,8 @@ kws : optional
 Examples
 --------
 >>> Z = cp.Normal()
->>> print(cp.orth_chol(3, Z))
-[1.0, q0, 0.707106781187q0^2-0.707106781187, 0.408248290464q0^3-1.22474487139q0]
+>>> print(cp.around(cp.orth_chol(3, Z), 4))
+[1.0, q0, 0.7071q0^2-0.7071, 0.4082q0^3-1.2247q0]
     """
 
     dim = len(dist)
@@ -221,7 +224,7 @@ Examples
 
     out = {}
     out[(0,)*dim] = coefs[0]
-    for i in xrange(N):
+    for i in range(N):
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
@@ -271,7 +274,7 @@ Examples
 
     # start loop
     M = cp.bertran.terms(N,dim)
-    for i in xrange(1, M):
+    for i in range(1, M):
 
         par, ax0 = cp.bertran.parent(i, dim)
         gpar, ax1 = cp.bertran.parent(par, dim)
@@ -284,7 +287,7 @@ Examples
 
         candi = x[ax0]*pool[par]
 
-        for j in xrange(gpar, i):
+        for j in range(gpar, i):
 
             # cut irrelevant term
             if rank and np.any(cp.bertran.multi_index(j, dim)[-rank:]):
@@ -342,7 +345,7 @@ Examples
     Li = np.dot(P, np.linalg.inv(L.T))
 
     if normed:
-        for i in xrange(N):
+        for i in range(N):
             Li[:,i] /= np.sum(Li[:,i]*P[:,i])
     E_ = -cp.poly.sum(cp.descriptives.E(basis, dist, **kws)*Li.T, -1)
 
@@ -354,7 +357,7 @@ Examples
     out = {}
     out[(0,)*dim] = coefs[0]
     basis = list(basis)
-    for i in xrange(N):
+    for i in range(N):
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
@@ -403,7 +406,7 @@ Examples
     if len(L)!=N:
         I = [_.tolist().index(1) for _ in P]
         b_ = [0]*N
-        for i in xrange(N):
+        for i in range(N):
             b_[i] = basis[I[i]]
         basis = b_
         C = cp.descriptives.Cov(basis, dist, **kws)
@@ -422,7 +425,7 @@ Examples
 
     out = {}
     out[(0,)*dim] = coefs[0]
-    for i in xrange(N):
+    for i in range(N):
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
@@ -500,7 +503,7 @@ Examples
 
     out = {}
     out[(0,)*dim] = coefs[0]
-    for i in xrange(N):
+    for i in range(N):
         I = basis[i].keys[0]
         out[I] = coefs[i+1]
 
@@ -522,9 +525,9 @@ def norm(order, dist, orth=None):
             Is = cp.bertran.bindex(order, dim)
             out = np.ones(len(Is))
 
-            for i in xrange(len(Is)):
+            for i in range(len(Is)):
                 I = Is[i]
-                for j in xrange(dim):
+                for j in range(dim):
                     if I[j]:
                         out[i] *= norms[j, I[j]]
             return out
@@ -616,8 +619,8 @@ X : array_like
         coeffs = np.linalg.inv(M)
 
     else:
-        for i in xrange(size):
-            for j in xrange(size):
+        for i in range(size):
+            for j in range(size):
                 coeffs[i,j] += np.linalg.det(M[1:,1:])
                 M = np.roll(M, -1, axis=0)
             M = np.roll(M, -1, axis=1)

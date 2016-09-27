@@ -119,7 +119,12 @@ dist : Dist
         self.K = Keys(self)
         self.V = Vals(self)
 
-        self.__call__ = None
+        self._call = None
+
+
+    def __call__(self, *args, **kwargs):
+        return self._call(*args, **kwargs)
+
 
     def __str__(self):
         graph = self.graph
@@ -155,7 +160,7 @@ Shallow copy of graph. Distribution stays the same.
 
         G.size = self.size
         G.meta = self.meta
-        G.__call__ = self.__call__
+        G._call = self._call
 
         return G
 
@@ -199,25 +204,25 @@ mode : str
             graph.add_edges_from(graph_source.edges())
             graph, self.graph = self.graph, graph
 
-        call = self.__call__
+        call = self._call
         if mode=="fwd":
-            self.__call__ = self.fwd_call
+            self._call = self.fwd_call
         elif mode=="pdf":
-            self.__call__ = self.pdf_call
+            self._call = self.pdf_call
         elif mode=="inv":
-            self.__call__ = self.inv_call
+            self._call = self.inv_call
         elif mode=="range":
-            self.__call__ = self.range_call
+            self._call = self.range_call
         elif mode=="ttr":
-            self.__call__ = self.ttr_call
+            self._call = self.ttr_call
         elif mode=="mom":
-            self.__call__ = self.mom_call
+            self._call = self.mom_call
         elif mode=="dep":
-            self.__call__ = self.dep_call
+            self._call = self.dep_call
         elif mode=="rnd":
-            self.__call__ = self.rnd_call
+            self._call = self.rnd_call
         elif mode=="val":
-            self.__call__ = self.val_call
+            self._call = self.val_call
         else:
             raise ValueError("unknown mode")
 
@@ -240,7 +245,7 @@ mode : str
             graph = self.graph
         else:
             graph, self.graph = self.graph, graph
-        self.__call__ = call
+        self._call = call
         self.meta = meta
         self.N = 0
 
@@ -331,11 +336,11 @@ mode : str
         graph.add_edges_from(graph_source.edges())
         graph, self.graph = self.graph, graph
 
-        self.__call__ = self.fwd_call
+        self._call = self.fwd_call
         out = self(x, dist)
 
         graph, self.graph = self.graph, graph
-        self.__call__ = self.pdf_call
+        self._call = self.pdf_call
 
         return out
 

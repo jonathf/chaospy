@@ -212,7 +212,7 @@ def tri_ttr(k, a):
     norms = [1., 1.]
     A,B = [],[]
 
-    for n in xrange(k):
+    for n in range(k):
         A.append(inner/norms[-1])
         B.append(norms[-1]/norms[-2])
         orth.append((x-A[-1])*orth[-1]-orth[-2]*B[-1])
@@ -449,7 +449,7 @@ class mvnormal(Dist):
             out = np.zeros(k.shape[1:])
             out[:] = np.where(np.choose(i,k),
                     (np.choose(i,k)-1)*scale[i,i]*mom(k-2*(ra==i)), 1)
-            for x in xrange(1, dim):
+            for x in range(1, dim):
                 out += \
                 (np.choose(i,k)!=0)*(x>i)*k[x]*scale[i,x]*mom(k-(ra==i)-(ra==x))
 
@@ -461,7 +461,7 @@ class mvnormal(Dist):
         M = mom(K)
 
         out = np.zeros(k.shape[1])
-        for i in xrange(len(M)):
+        for i in range(len(M)):
             coef = np.prod(sp.misc.comb(k.T, K[:,i]).T, 0)
             diff = k.T - K[:,i]
             pos = diff>=0
@@ -474,7 +474,7 @@ class mvnormal(Dist):
 
     def _dep(self, G):
         n = normal()
-        out = [set([n]) for _ in xrange(len(self))]
+        out = [set([n]) for _ in range(len(self))]
         return out
 
     def _str(self, C, loc, **prm):
@@ -523,11 +523,11 @@ class mvlognormal(Dist):
 
         dist = G.D["dist"]
         S = G(dist)
-        out = [set([]) for _ in xrange(len(self))]
+        out = [set([]) for _ in range(len(self))]
         C = G.K["C"]
 
-        for i in xrange(len(self)):
-            for j in xrange(len(self)):
+        for i in range(len(self)):
+            for j in range(len(self)):
                 if C[i,j]:
                     out[i].update(S[j])
         return out
@@ -591,7 +591,7 @@ class mvstudentt(Dist):
 #              out = np.zeros(k.shape[1:])
 #              out[:] = np.where(np.choose(i,k),
 #                      (np.choose(i,k)-1)*scale[i,i]*mom(k-2*(ra==i)), 1)
-#              for x in xrange(1, dim):
+#              for x in range(1, dim):
 #                  out += \
 #                  (np.choose(i,k)!=0)*(x>i)*k[x]*scale[i,x]*mom(k-(ra==i)-(ra==x))
 #
@@ -603,7 +603,7 @@ class mvstudentt(Dist):
 #          M = mom(K)
 #
 #          out = np.zeros(k.shape[1])
-#          for i in xrange(len(M)):
+#          for i in range(len(M)):
 #              coef = np.prod(sp.misc.comb(k.T, K[:,i]).T, 0)
 #              diff = k.T - K[:,i]
 #              pos = diff>=0
@@ -616,7 +616,7 @@ class mvstudentt(Dist):
 
     def _dep(self, G):
         n = student_t()
-        out = [set([n]) for _ in xrange(len(self))]
+        out = [set([n]) for _ in range(len(self))]
         return out
 
     def _str(self, a, loc, C, **prm):
@@ -653,7 +653,7 @@ class mvstudentt(Dist):
 #
 #      def __init__(self, alpha=[1,1,1]):
 #
-#          dists = [co.beta() for _ in xrange(len(alpha)-1)]
+#          dists = [co.beta() for _ in range(len(alpha)-1)]
 #          ba.Dist.__init__(self, _dists=dists, alpha=alpha, _name="D")
 #
 #      def _upd(self, alpha, **prm):
@@ -666,7 +666,7 @@ class mvstudentt(Dist):
 #
 #          _dists[0].upd(a=alpha[0], b=np.sum(alpha[1:], 0))
 #          out[0] = _dists[0]
-#          for i in xrange(1, dim):
+#          for i in range(1, dim):
 #              _dists[i].upd(a=alpha[i], b=np.sum(alpha[i+1:], 0))
 #              out[i] = _dists[i]*(1-cum)
 #              cum = cum+out[i]

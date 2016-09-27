@@ -127,7 +127,7 @@ samplegen       Generator for sampling schemes
             orth = "svd"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = cp.orthogonal.orth_select(orth, **kws)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
@@ -259,7 +259,7 @@ y : np.ndarray
             orth = "chol"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = orth_select(orth)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
@@ -433,7 +433,7 @@ X : np.ndarray
             orth = "chol"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = orth_select(orth)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
@@ -539,7 +539,7 @@ retall : bool
             orth = "chol"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = orth_select(orth)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
@@ -622,7 +622,7 @@ folds : int,optional
         folds = K
     R = np.random.randint(0, folds, K)
 
-    for fold in xrange(folds):
+    for fold in range(folds):
 
         infold = R==fold
         x = X[:, True-infold]

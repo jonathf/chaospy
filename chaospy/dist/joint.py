@@ -138,13 +138,13 @@ Parameters
 
     def _str(self, **prm):
         dists = [prm["_%03d" % i] \
-                for i in xrange(self.length)]
+                for i in range(self.length)]
         dists = ",".join(map(str, dists))
         return "J(" + dists + ")"
 
     def _dep(self, G):
         dists = [self.prm["_%03d" % i] \
-                for i in xrange(len(self))]
+                for i in range(len(self))]
         sets = [G(dist)[0] for dist in dists]
         return sets
 
@@ -163,7 +163,7 @@ Parameters
             if step is None: step = 1
             out = []
             prm = self.prm
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 out.append(prm["_%03d" % i])
             return J(*out)
 

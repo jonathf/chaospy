@@ -34,7 +34,7 @@ def Acf(poly, dist, N=None, **kws):
     corr = cp.descriptives.Corr(poly, dist, **kws)
     out = np.empty(N)
 
-    for n in xrange(N):
+    for n in range(N):
         out[n] = np.mean(corr.diagonal(n), 0)
 
     return out

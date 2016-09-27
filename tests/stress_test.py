@@ -20,7 +20,7 @@ class normal(cp.Dist):
 
 def test_dist():
     dist = [cp.Normal()]
-    for d in xrange(dim-1):
+    for d in range(dim-1):
         dist.append(cp.Normal(dist[-1]))
     dist = cp.J(*dist)
     out = dist.sample(samples)
@@ -30,7 +30,7 @@ def test_dist():
 
 def test_quasimc():
     dist = [cp.Normal()]
-    for d in xrange(dim-1):
+    for d in range(dim-1):
         dist.append(cp.Normal(dist[-1]))
     dist = cp.J(*dist)
     dist.sample(samples, "H")
@@ -40,7 +40,7 @@ def test_quasimc():
 
 def test_approx_dist():
     dist = [normal()]
-    for d in xrange(dim-1):
+    for d in range(dim-1):
         dist.append(normal() + dist[-1])
     dist = cp.J(*dist)
     out = dist.sample(samples)

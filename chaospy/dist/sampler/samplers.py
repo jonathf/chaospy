@@ -51,9 +51,12 @@ Van der Corput sampling
 
 def primes(n):
     """Generate primes using sieve of Eratosthenes."""
-    if n==2: return [2]
-    elif n<2: return []
-    s=range(3,n+1,2)
+    if n==2:
+        return [2]
+    elif n<2:
+        return []
+
+    s=list(range(3,n+1,2))
     mroot = n ** 0.5
     half=(n+1)/2-1
     i=0
@@ -110,7 +113,7 @@ def korobov(dim, n, a=17797):
 
     z = np.empty(dim)
     z[0] = 1
-    for i in xrange(1,dim):
+    for i in range(1,dim):
         z[i] = a*z[i-1] % (n+1)
 
     grid = np.mgrid[:dim,:n+1]
@@ -123,7 +126,7 @@ def korobov(dim, n, a=17797):
 def latin_hypercube(dim, n):
     """Latin Hypercube sampling."""
     R = np.random.random(n*dim).reshape((dim, n))
-    for d in xrange(dim):
+    for d in range(dim):
         perm = np.random.permutation(n)
         R[d] = (perm + R[d])/n
     return R
