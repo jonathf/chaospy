@@ -73,7 +73,7 @@ def E_cond(poly, freeze, dist, **kws):
 
     assert not dist.dependent()
 
-    if poly.dim<len(dist):
+    if poly.dim < len(dist):
         poly = cp.poly.setdim(poly, len(dist))
 
     freeze = cp.poly.Poly(freeze)
@@ -89,6 +89,7 @@ def E_cond(poly, freeze, dist, **kws):
     poly = cp.poly.flatten(poly)
 
     kmax = np.max(poly.keys, 0)+1
+    # TODO: swap ndindex with cp.bertran.olindex iterator
     keys = [i for i in np.ndindex(*kmax)]
     vals = dist.mom(np.array(keys).T, **kws).T
     mom = dict(zip(keys, vals))

@@ -2,6 +2,9 @@ import numpy as np
 
 import chaospy
 
+from .second1d import Var
+from .first import E_cond
+
 def Sens_m(poly, dist, **kws):
     """
     Variance-based decomposition
