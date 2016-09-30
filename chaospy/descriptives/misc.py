@@ -148,13 +148,15 @@ def QoI_Dist(poly, dist, sample=1e4, **kws):
         (ndarray) : The constructed quantity of interest (QoI) distributions,
                 where `qoi_dists.shape==poly.shape`.
 
-    # Examples:
-    #     >>> cp.seed(1000)
-    #     >>> x = cp.variable(1)
-    #     >>> poly = cp.Poly([x])
-    #     >>> qoi_dist = cp.QoI_Dist(poly, dist)
-    #     >>> print(qoi_dist[0].pdf([-0.75, 0., 0.75]))
-    #     [  1.27794383e-123   3.99317083e+000   1.16692607e-100]
+    Examples:
+        >>> cp.seed(1000)
+        >>> dist = cp.Normal(0, 1)
+        >>> x = cp.variable(1)
+        >>> poly = cp.Poly([x])
+        >>> qoi_dist = cp.QoI_Dist(poly, dist)
+        >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
+        >>> print(np.around(values, 8))
+        [ 0.29143037  0.39931708  0.29536329]
     """
     shape = poly.shape
     poly = cp.poly.flatten(poly)
