@@ -7,5 +7,3 @@ Regression Methods
 
 .. autofunction:: chaospy.regression.fit_regression
 .. autofunction:: chaospy.regression.rlstsq
-
-.. bibliography:: bibliography.bib

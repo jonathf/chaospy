@@ -1,7 +1,7 @@
 """
 Point collcation method, or regression based polynomial chaos expansion builds
 open the idea of fitting a polynomial chaos expansion to a set of generated
-samples and evaluations. The experiement can be done as follows::
+samples and evaluations. The experiement can be done as follows:
 
 - Select a :ref:`distribution`::
 
@@ -13,26 +13,32 @@ samples and evaluations. The experiement can be done as follows::
       >>> print(orthogonal_expansion)
       [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
 
-- Generate samples using :ref:`montecarlo` (or alternative àbsissas from
-  :ref`quadrature`)::
+- Generate samples using :ref:`montecarlo` (or alternative absissas from
+  :ref:`quadrature`)::
 
       >>> samples = distribution.sample(
-      ...     2*len(orthogonal_expansion), rule="H")
-      >>> print(samples[:10])
+      ...     2*len(orthogonal_expansion), rule="M")
+      >>> print(samples[:, :4])
+      [[-1.42607687 -1.02007623 -0.73631592 -0.50240222]
+       [ 0.         -0.67448975  0.67448975 -1.15034938]]
 
 - A function evaluated using the nodes generated in the second step::
 
       >>> def model_solver(param):
       ...     return [param[0]*param[1], param[0]*np.e**-param[1]+1]
       >>> solves = [model_solver(sample) for sample in samples.T]
-      >>> print(solves[:10])
+      >>> print(np.around(solves[:4], 8))
+      [[-0.         -0.42607687]
+       [ 0.68803096 -1.00244135]
+       [-0.49663754  0.62490868]
+       [ 0.57793809 -0.58723759]]
 
 - Bring it all together using `~chaospy.collocation.fit_regression`::
 
       >>> approx_model = cp.fit_regression(
       ...      orthogonal_expansion, samples, solves)
       >>> print(cp.around(approx_model, 5))
-      [q0q1, -1.58059q0q1+2.27638q0+1.0]
+      [q0q1, 0.15275q0^2-1.23005q0q1+0.16104q1^2+1.214q0+0.044q1+0.86842]
 
 In this example, the number of collocation points is selected to be twice the
 number of unknown coefficients :math:`N+1`. This
@@ -52,10 +58,10 @@ keyword ``rule="OMP"``, and to force the number of coefficients to be
 for example 1: ``n_nonzero_coefs=1``. In practice::
 
    >>> approx_model = cp.fit_regression(
-   ...     orthogonal_expansion, absissas, solves,
+   ...     orthogonal_expansion, samples, solves,
    ...     rule="OMP", n_nonzero_coefs=1)
    >>> print(cp.around(approx_model, 8))
-   [q0q1, 2.27638496q0]
+   [q0q1, 1.52536468q0]
 
 Except for least squares, Tikhonov regularization with and without cross
 validation, all the method listed is taken from ``sklearn`` software. All

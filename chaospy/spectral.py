@@ -1,14 +1,13 @@
-"""
-To perform point collocaiton method in practice, we need the following
-four components:
+r"""
+In practice the following four components are needed to perform psuedo-spectral
+projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
-- A distribution for the unknown function parameters as described in
-  :ref:`distributions`::
+-  A distribution for the unknown function parameters (as described in
+   section :ref:`distributions`). For example::
 
       >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
 
-- Collocation nodes as described in either :ref:`montecarlo` or
-  :ref:`quadrature`. For example for the latter::
+-  Create integration absissas and weights (as described in :ref`quadrature`)::
 
       >>> absissas, weights = cp.generate_quadrature(
       ...     2, distribution, rule="G")
@@ -17,29 +16,67 @@ four components:
          1.73205081  1.73205081  1.73205081]
        [-1.73205081  0.          1.73205081 -1.73205081  0.          1.73205081
         -1.73205081  0.          1.73205081]]
+      >>> print(weights)
+      [ 0.02777778  0.11111111  0.02777778  0.11111111  0.44444444  0.11111111
+        0.02777778  0.11111111  0.02777778]
 
-  Example of the former can be observed in :ref:`tutorial`.
-
-- An orthogonal polynomial expansion as described in :ref:`orthogonality`
-  where the weight function is the distribution in the first step::
+- An orthogonal polynomial expansion (as described in section
+  :ref:`orthogonality`) where the weight function is the distribution in the
+  first step::
 
       >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
       >>> print(orthogonal_expansion)
       [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
 
-- A function evaluated using the nodes generated in the second step::
+- A function evaluated using the nodes generated in the second step.
+  For example::
 
-      >>> def model_solver(param):
-      ...     return [param[0]*param[1], param[0]*np.e**-param[1]+1]
-      >>> solves = [model_solver(node) for node in absissas.T]
+      >>> def model_solver(q):
+      ...     return [q[0]*q[1], q[0]*np.e**-q[1]+1]
+      >>> solves = [model_solver(absissa) for absissa in absissas.T]
+      >>> print(np.around(solves[:4], 8))
+      [[ 3.         -8.7899559 ]
+       [-0.         -0.73205081]
+       [-3.          0.69356348]
+       [-0.          1.        ]]
 
-To bring it together, expansion, nodes and solves are used as arguments
-to create approximation::
+- To bring it together, expansion, absissas, weights and solves are used as
+  arguments to create approximation::
 
-   >>> approx_model = cp.fit_regression(
-   ...      orthogonal_expansion, absissas, solves)
-   >>> print(cp.around(approx_model, 5))
-   [q0q1, -1.58059q0q1+2.27638q0+1.0]
+      >>> approx = cp.fit_quadrature(
+      ...     orthogonal_expansion, absissas, weights, solves)
+      >>> print(cp.around(approx, 8))
+      [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
+
+Note that in this case the function output is
+bivariate. The software is designed to create an approximation of any
+discretized model as long as it is compatible with ``numpy`` shapes.
+
+As mentioned in section :ref:`orthogonality`, moment based construction of
+polynomials can be unstable. This might also be the case for the
+denominator :math:`\E{\bm\Phi_n^2}`. So when using three terms
+recursion, it is common to use the recurrence coefficients to estimated
+the denominator.
+
+One cavat with using psuedo-spectral projection is that the calculations of the
+norms of the polynomials becomes unstable. To mittigate, recurrence
+coefficients can be used to calculate them instead with more stability.
+To include these stable norms in the calculations, the following change in code
+can be added::
+
+   >>> orthogonal_expansion, norms = cp.orth_ttr(2, distribution, retall=True)
+   >>> approx2 = cp.fit_quadrature(
+   ...     orthogonal_expansion, absissas, weights, solves, norms=norms)
+   >>> print(cp.around(approx2, 8))
+   [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
+
+Note that at low polynomial order, the error is very small. For example the
+largest coefficient between the two approximation::
+
+   >>> print(np.max(abs(approx-approx2).coeffs(), -1) < 1e-12)
+   [ True  True]
+
+The ``coeffs`` function returns all the polynomial coefficients.
 """
 
 import numpy as np

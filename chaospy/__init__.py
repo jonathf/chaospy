@@ -13,7 +13,7 @@ import chaospy.dist
 import chaospy.utils
 import chaospy.orthogonal
 import chaospy.poly
-import chaospy.collocation
+import chaospy.spectral
 import chaospy.quadrature
 import chaospy.saltelli
 import chaospy.regression
@@ -23,7 +23,7 @@ from chaospy.dist import *
 from chaospy.utils import *
 from chaospy.orthogonal import *
 from chaospy.poly import *
-from chaospy.collocation import *
+from chaospy.spectral import *
 from chaospy.quadrature import *
 from chaospy.saltelli import *
 from chaospy.descriptives import *

@@ -41,16 +41,22 @@ Van der Corput sampling
     k += 1
     out = 0.
     p_base = p
-    while k>0:
+    while k > 0:
         a = k % p_base
-        out += int(a*1./p)
+        out += a*1./p
         k = int(k / p_base)
         p *= p_base
     return out
 
 
 def primes(n):
-    """Generate primes using sieve of Eratosthenes."""
+    """
+    Generate primes using sieve of Eratosthenes.
+
+    Examples:
+        >>> print(primes(20))
+        [2, 3, 5, 7, 11, 13, 17, 19]
+    """
     if n == 2:
         return [2]
 
@@ -76,7 +82,14 @@ def primes(n):
 
 
 def hammersley(dim, n):
-    "Hammersley sequence"
+    """
+    Hammersley sequence.
+
+    Examples:
+        >>> print(hammersley(2, 4))
+        [[ 0.2    0.4    0.6    0.8  ]
+         [ 0.5    0.25   0.75   0.125]]
+    """
     p = []
     m = 10
     while len(p)<dim:
@@ -84,16 +97,23 @@ def hammersley(dim, n):
         m *= 2
     p = p[:dim]
 
-    out = np.empty((dim, n))
+    out = np.zeros((dim, n))
     out[0] = np.arange(1, n+1)*1./(n+1)
-    for i in range(1,dim):
+    for i in range(1, dim):
         for j in range(n):
             out[i,j] = corput(p[i-1], j)
     return out
 
 
 def halton(dim, n):
-    "Halton sequence"
+    """
+    Halton sequence.
+
+    Examples:
+        >>> print(halton(2, 4))
+        [[ 0.125       0.625       0.375       0.875     ]
+         [ 0.44444444  0.77777778  0.22222222  0.55555556]]
+    """
     p = []
     m = 10
     while len(p) < dim:
@@ -111,8 +131,14 @@ def halton(dim, n):
 
 
 def korobov(dim, n, a=17797):
-    "Korobov set"
+    """
+    Korobov set.
 
+    Examples:
+        >>> print(korobov(2, 4))
+        [[ 0.2  0.4  0.6  0.8]
+         [ 0.4  0.8  0.2  0.6]]
+    """
     z = np.empty(dim)
     z[0] = 1
     for i in range(1,dim):
@@ -126,9 +152,22 @@ def korobov(dim, n, a=17797):
 
 
 def latin_hypercube(dim, n):
-    """Latin Hypercube sampling."""
+    """
+    Latin Hypercube sampling.
+
+    Examples:
+        >>> cp.seed(1000)
+        >>> print(cp.latin_hypercube(2, 4))
+        [[ 0.6633974   0.27875174  0.98757072  0.12054785]
+         [ 0.46811863  0.05308317  0.51017741  0.84929862]]
+    """
     R = np.random.random(n*dim).reshape((dim, n))
     for d in range(dim):
         perm = np.random.permutation(n)
         R[d] = (perm + R[d])/n
     return R
+
+if __name__ == "__main__":
+    import chaospy as cp
+    import doctest
+    doctest.testmod()
