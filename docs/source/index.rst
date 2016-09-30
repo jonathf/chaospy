@@ -18,8 +18,8 @@ Table of contents
    spectral
 
    distributions
+   listdist
    polynomials
-   regression
    quadrature
    moments
    orthogonality
@@ -28,9 +28,4 @@ Table of contents
    copulas
    galerkin
 
-.. _bibliography:
-
-Bibliography
-------------
-
-.. bibliography:: bibliography.bib
+   bibliography
