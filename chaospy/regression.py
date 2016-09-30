@@ -3,7 +3,7 @@ Point collcation method, or regression based polynomial chaos expansion builds
 open the idea of fitting a polynomial chaos expansion to a set of generated
 samples and evaluations. The experiement can be done as follows:
 
-- Select a :ref:`distribution`::
+- Select a :ref:`distributions`::
 
       >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
 

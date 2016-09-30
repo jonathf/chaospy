@@ -21,6 +21,7 @@ Table of contents
    polynomials
    regression
    quadrature
+   moments
    orthogonality
    descriptives
    rosenblatt

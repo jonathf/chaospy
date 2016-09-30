@@ -97,94 +97,49 @@ def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
         orth=None, orth_acc=100, quad_acc=100, sparse=False, composit=1,
         antithetic=None, lr="LS", **kws):
     """
-Probabilistic Collocation Method
+Probabilistic Collocation Method.
 
-Parameters
-----------
-Required arguments
+Args:
+    func (callable) : The model to be approximated.  Must accept arguments on
+            the form `func(z, *args, **kws)` where `z` is an 1-dimensional
+            array with `len(z)==len(dist)`.
+    porder (int) : The order of the polynomial approximation.
+    dist (Dist) : Distributions for models parameter.
+    rule (str) : The rule for estimating the Fourier coefficients.  For
+            spectral projection/quadrature rules, see generate_quadrature.
+            For point collocation/nummerical sampling, see samplegen.
 
-func : callable
-    The model to be approximated.
-    Must accept arguments on the form `func(z, *args, **kws)`
-    where `z` is an 1-dimensional array with `len(z)==len(dist)`.
-porder : int
-    The order of the polynomial approximation
-dist_out : Dist
-    Distributions for models parameter
-rule : str
-    The rule for estimating the Fourier coefficients.
-    For spectral projection/quadrature rules, see generate_quadrature.
-    For point collocation/nummerical sampling, see samplegen.
+Kwargs:
+    proxy_dist (Dist) : If included, the expansion will be created in
+            proxy_dist and values will be mapped to dist using a double
+            Rosenblatt transformation.
+    sorder (float) : The order of the sample scheme used.  If omited, default
+            values will be used.
+    orth (callable, Poly) : Orthogonal polynomial generation.
+            If callable, the return of orth(order, dist) will be used. If Poly
+            is provided, it will be used directly. If omited, orthogonal
+            polynomial will be `orth_ttr` or `orth_chol` depending on if
+            `dist` is stochastically independent of not.
+    orth_acc (int) : Accuracy used in the estimation of polynomial expansion.
+    sparse (bool) : If True, Smolyak sparsegrid will be used instead of full
+            tensorgrid.
+    composit (int) : Use composit rule. Note that the number of evaluations
+            may grow quickly.
+    antithetic (bool, array_like) : Use of antithetic variable
+    lr (str) : Linear regresion method.
+    lr_kws (dict) : Extra keyword arguments passed to fit_regression.
 
-Optional arguments
+Returns:
+    q : Poly
+        Polynomial approximation of a given a model.
 
-proxy_dist : Dist
-    If included, the expansion will be created in proxy_dist and
-    values will be mapped to dist using a double Rosenblatt
-    transformation.
-sorder : float
-    The order of the sample scheme used.
-    If omited, default values will be used.
-orth : int, str, callable, Poly
-    Orthogonal polynomial generation.
-
-    int, str :
-        orth will be passed to orth_select
-        for selection of orthogonalization.
-        See orth_select doc for more details.
-
-    callable :
-        the return of orth(order, dist) will be used.
-
-    Poly :
-        it will be used directly.
-        All polynomials must be orthogonal for method to work
-        properly if spectral projection is used.
-orth_acc : int
-    Accuracy used in the estimation of polynomial expansion.
-
-Spectral projection arguments
-
-sparse : bool
-    If True, Smolyak sparsegrid will be used instead of full
-    tensorgrid.
-composit : int
-    Use composit rule. Note that the number of evaluations may grow
-    quickly.
-
-Point collocation arguments
-
-antithetic : bool, array_like
-    Use of antithetic variable
-lr : str
-    Linear regresion method.
-    See fit_regression for more details.
-lr_kws : dict
-    Extra keyword arguments passed to fit_regression.
-
-Returns
--------
-q : Poly
-    Polynomial approximation of a given a model.
-
-Examples
---------
-
-Define function and distribution:
->>> func = lambda z: -z[1]**2 + 0.1*z[0]
->>> dist = cp.J(cp.Uniform(), cp.Uniform())
-
-Perform pcm:
->>> q = cp.pcm(func, 2, dist)
->>> print(cp.around(q, 10))
--q1^2+0.1q0
-
-See also
---------
-generate_quadrature         Generator for quadrature rules
-samplegen       Generator for sampling schemes
+Examples:
+    >>> func = lambda z: -z[1]**2 + 0.1*z[0]
+    >>> dist = cp.J(cp.Uniform(), cp.Uniform())
+    >>> q = cp.pcm(func, 2, dist)
+    >>> print(cp.around(q, 10))
+    -q1^2+0.1q0
     """
-
     # Proxy variable
     if proxy_dist is None:
         trans = lambda x:x
@@ -195,11 +150,9 @@ samplegen       Generator for sampling schemes
     # The polynomial expansion
     if orth is None:
         if dist.dependent():
-            orth = "svd"
+            orth = cp.orthogonal.orth_chol
         else:
-            orth = "ttr"
-    if isinstance(orth, (str, int)):
-        orth = cp.orthogonal.orth_select(orth, **kws)
+            orth = cp.orthogonal.orth_ttr
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
@@ -647,7 +600,6 @@ retall : bool
 
 def fit_lagrange(X, Y):
     """Simple lagrange method"""
-
     X = np.array(X)
     Y = np.array(Y)
     assert X.shape[0] == Y.shape[0]

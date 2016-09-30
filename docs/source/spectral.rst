@@ -5,4 +5,4 @@ Pseudo-spectral Projection Method
 
 .. automodule:: chaospy.spectral
 
-.. autofunc:: chaospy.spectral.fit_quadrature
+.. autofunction:: chaospy.spectral.fit_quadrature
