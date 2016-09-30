@@ -61,8 +61,8 @@ for example 1: ``n_nonzero_coefs=1``. In practice::
    >>> approx_model = cp.fit_regression(
    ...     orthogonal_expansion, absissas, solves,
    ...     rule="OMP", n_nonzero_coefs=1)
-   >>> print(approx_model)
-   [q0q1, 2.2763849601172854q0]
+   >>> print(cp.around(approx_model, 8))
+   [q0q1, 2.27638496q0]
 
 Except for least squares, Tikhonov regularization with and without cross
 validation, all the method listed is taken from ``sklearn`` software. All

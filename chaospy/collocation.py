@@ -106,7 +106,7 @@ Define function and distribution:
 Perform pcm:
 >>> q = cp.pcm(func, 2, dist)
 >>> print(cp.around(q, 10))
-0.1q0-q1^2
+-q1^2+0.1q0
 
 See also
 --------
@@ -142,7 +142,7 @@ samplegen       Generator for sampling schemes
             composit=composit, **kws)
 
         x = trans(z)
-        y = np.array(map(func, x.T))
+        y = np.array([func(_) for _ in x.T])
         Q = fit_quadrature(orth, x, w, y, **kws)
 
     else:

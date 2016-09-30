@@ -58,7 +58,7 @@ Examples
 --------
 >>> Z = cp.J(cp.Normal(), cp.Normal())
 >>> print(cp.orth_gs(2, Z))
-[1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+[1, q1, q0, q1^2-1, q0q1, q0^2-1]
     """
 
     dim = len(dist)

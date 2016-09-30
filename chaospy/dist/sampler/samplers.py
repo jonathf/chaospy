@@ -43,34 +43,36 @@ Van der Corput sampling
     p_base = p
     while k>0:
         a = k % p_base
-        out += a*1./p
-        k /= p_base
+        out += int(a*1./p)
+        k = int(k / p_base)
         p *= p_base
     return out
 
 
 def primes(n):
     """Generate primes using sieve of Eratosthenes."""
-    if n==2:
+    if n == 2:
         return [2]
-    elif n<2:
+
+    elif n < 2:
         return []
 
-    s=list(range(3,n+1,2))
+    s = list(range(3, n+1, 2))
     mroot = n ** 0.5
-    half=(n+1)/2-1
-    i=0
-    m=3
+    half = int((n+1)/2-1)
+    i = 0
+    m = 3
     while m <= mroot:
         if s[i]:
-            j=(m*m-3)/2
-            s[j]=0
-            while j<half:
-                s[j]=0
-                j+=m
-        i=i+1
-        m=2*i+3
-    return [2]+[x for x in s if x]
+            j = int((m*m-3)/2)
+            s[j] = 0
+            while j < half:
+                s[j] = 0
+                j += m
+        i = i+1
+        m = 2*i+3
+    out = [2] + [x for x in s if x]
+    return out
 
 
 def hammersley(dim, n):
@@ -90,11 +92,11 @@ def hammersley(dim, n):
     return out
 
 
-def halton(dim,n):
+def halton(dim, n):
     "Halton sequence"
     p = []
     m = 10
-    while len(p)<dim:
+    while len(p) < dim:
         p = primes(m)
         m *= 2
 

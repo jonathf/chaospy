@@ -66,6 +66,9 @@ class Poly(object):
 
         if V: print("\nConstruct poly out of:\n", A)
 
+        if isinstance(A, (int, float)):
+            A = np.array(A)
+
         if isinstance(A, Poly):
 
             dtype_ = A.dtype
@@ -73,19 +76,12 @@ class Poly(object):
             dim_ = A.dim
             A = A.A.copy()
 
-        elif isinstance(A, np.ndarray):
+        elif isinstance(A, np.ndarray) and not A.shape:
 
             dtype_ = A.dtype
-            shape_ = A.shape
-            dim_ = 1
-            A = {(0,):A}
-
-        elif isinstance(A, (int, float)):
-
-            dtype_ = type(A)
             shape_ = ()
             dim_ = 1
-            A = {(0,):np.array(A)}
+            A = {(0,):A}
 
         elif isinstance(A, dict):
 
@@ -97,7 +93,7 @@ class Poly(object):
                 shape_ = ()
 
             else:
-                key = sorted(A.keys())[0]
+                key = sorted(A.keys(), key=sort_key)[0]
                 shape_ = np.array(A[key]).shape
                 dim_ = len(key)
                 dtype_ = dtyping(A[key])
@@ -204,7 +200,7 @@ class Poly(object):
                 dt = int
             A = {(0,)*dim: np.zeros(shape, dtype=dt)}
 
-        self.keys = list(A.keys())
+        self.keys = sorted(A.keys(), key=sort_key)
         self.dim = dim
         self.shape = shape
         self.dtype = dtype
@@ -216,11 +212,8 @@ class Poly(object):
     def __abs__(self):
         """x.__abs__() <==> abs(x)"""
 
-        A = self.A
-        keys = A.keys()
-        vals = map(lambda key: abs(A[key]), keys)
-        return Poly(dict(zip(keys, vals)), \
-            self.dim, self.shape, self.dtype)
+        A = {key: abs(val) for key, val in self.A.items()}
+        return Poly(A, self.dim, self.shape, self.dtype)
 
     def __add__(self, y):
         """x.__add__(y) <==> x+y"""
@@ -358,8 +351,24 @@ class Poly(object):
 
     def __div__(self, y):
         """x.__div__(y) <==> x/y"""
+        print(repr(y))
+        if isinstance(y, (float, int, f.frac)):
+            return self.__mul__(y**-1)
+        if isinstance(y, np.ndarray):
+            y = np.asfarray(y)
+            return self.__mul__(y**-1)
+        print(123)
+        return NotImplemented
 
-        if isinstance(y, (float, int, f.frac, np.ndarray)):
+    def __truediv__(self, y):
+        return self.__div__(y)
+
+    def __floordiv__(self, y):
+        """x.__idiv__(y) <==> x//y"""
+        if isinstance(y, f.frac):
+            return self.__mul__(y**-1)
+        if isinstance(y, (float, int, np.ndarray)):
+            y = np.asfarray(np.array(y, dtype=int))
             return self.__mul__(y**-1)
 
         return NotImplemented
@@ -425,10 +434,7 @@ class Poly(object):
             if not np.all(tmp==0):
                 A0[key] = tmp
 
-        def _key(val):
-            return np.sum(max(val)**np.arange(len(val)-1, -1, -1)*val)
-
-        keys = sorted(A0.keys(), key=_key)
+        keys = sorted(A0.keys(), key=sort_key)
         dim = self.dim
 
         A1 = {}
@@ -474,7 +480,6 @@ class Poly(object):
             A[key] = -A[key]
         return Poly(A, self.dim, self.shape, self.dtype)
 
-
     def __pos__(self):
         return Poly(self.A, self.dim, self.shape, self.dtype)
 
@@ -488,13 +493,22 @@ class Poly(object):
 
     def __mul__(self, y):
         """x.__mul__(y) <==> x*y"""
-
-
         if not isinstance(y, Poly):
+
+            if isinstance(y, (float, int)):
+                y = np.array(y)
+
+            if not y.shape:
+                A = self.A.copy()
+                for key in self.keys:
+                    A[key] = A[key]*y
+                return Poly(A, self.dim, self.shape, self.dtype)
+
             y = Poly(y)
 
-        if y.dim>self.dim:
+        if y.dim > self.dim:
             self = setdim(self, y.dim)
+
         elif y.dim<self.dim:
             y = setdim(y, self.dim)
 
@@ -502,7 +516,7 @@ class Poly(object):
             np.prod(self.shape)])].shape
 
         dtype = dtyping(self.dtype, y.dtype)
-        if self.dtype!=y.dtype:
+        if self.dtype != y.dtype:
 
             if self.dtype==dtype:
                 if dtype==f.frac:
@@ -533,12 +547,14 @@ class Poly(object):
 
     def __pow__(self, n):
         """x.__pow__(y) <==> x**y"""
+        if isinstance(n, (int, float, np.generic)):
+            n = np.array(n)
+            assert isinstance(n, np.ndarray)
 
-        if isinstance(n, (int, float)):
+        if isinstance(n, np.ndarray) and not n.shape:
 
             if abs(n-int(n))>1e-5:
-                raise ValueError(
-                    "Power of Poly must be interger")
+                raise ValueError("Power of Poly must be interger")
             n = int(n)
 
             if n == 0:
@@ -555,13 +571,13 @@ class Poly(object):
         elif isinstance(n, (np.ndarray, list, tuple)):
 
             if not self.shape:
-                out = [self**n[i] for i in range(len(n))]
-                print("out", out)
+                out = [self.__pow__(n[i]) for i in range(len(n))]
                 return Poly(out, self.dim, None, None)
 
-            return Poly([self[i]**n[i] \
+            return Poly([self[i].__pow__(n[i])
                 for i in range(len(n))], self.dim, None, None)
 
+        raise ValueError("unknown type %s (%s)" % (str(n), type(n)))
         return NotImplemented
 
     def __radd__(self, y):
@@ -638,8 +654,6 @@ class Poly(object):
 #  
 #              A[key][subset] = A[key][subset] + y.A[key][:]
 #  
-#          self.keys.sort(key=lambda x: SUM(x)**self.dim +\
-#                  SUM(x*self.dim**np.arange(self.dim)),reverse=1)
 
 
     def __str__(self):
@@ -660,26 +674,13 @@ class Poly(object):
             out = "".join(out.split("'"))
             return out
 
-#          # Single entity
-#          def _cmp(x, y):
-#              out = cmp(SUM(x), SUM(y))
-#              if out!=0:
-#                  return out
-#              def __cmp(x,y):
-#                  if x:
-#                      return cmp(x[0],y[0]) or __cmp(x[1:], y[1:])
-#                  return 0
-#          self.keys.sort(cmp=_cmp)
-
-
         if isinstance(VARNAME, str):
             basename = ["%s%d" % (VARNAME, d) for d in range(self.dim)]
         else:
             basename = list(VARNAME)
 
         out = []
-        keys = sorted(self.keys)[::-1]
-        for key in keys:
+        for key in self.keys[::-1]:
 
             o = ""
             coef = self.A[key]
@@ -728,18 +729,9 @@ class Poly(object):
             self.dtype)
 
     def coeffs(self):
-        keys = self.expons()
-        out = np.array([self.A[key] for key in keys])
+        out = np.array([self.A[key] for key in self.keys])
         out = np.rollaxis(out, -1)
         return out
-
-    def expons(self):
-        def _cmp(i,j):
-            if not np.any(i): return 0
-            return cmp(i[-1], j[-1]) or _cmp(i[:-1], j[:-1])
-        keys = self.A.keys()
-        keys.sort(cmp=_cmp)
-        return keys
 
 
 def call(P, args):
@@ -859,7 +851,7 @@ def setdim(P, dim=None):
             else:
                 del P.A[lkey]
 
-    P.keys = P.A.keys()
+    P.keys = sorted(P.A.keys(), key=sort_key)
     return P
 
 
@@ -883,7 +875,7 @@ def decompose(P):
         >>> print(P)
         [q0^2-1, 2]
         >>> print(cp.decompose(P))
-        [[q0^2, 0], [-1, 2]]
+        [[-1, 2], [q0^2, 0]]
         >>> print(cp.sum(cp.decompose(P), 0))
         [q0^2-1, 2]
     """
@@ -892,11 +884,7 @@ def decompose(P):
     if not P:
         return P
 
-    keys = P.keys[:]
-    keys.sort(key=lambda x: np.sum(x)**P.dim +\
-            np.sum(x*P.dim**np.arange(P.dim)),reverse=1)
-
-    out = [Poly({key:P.A[key]}) for key in keys]
+    out = [Poly({key:P.A[key]}) for key in P.keys]
     return Poly(out, None, None, None)
 
 
@@ -1063,7 +1051,7 @@ def substitute(P, x0, x1, V=0):
     for i in range(len(P)):
         for j in range(len(dims)):
             if P[i].keys and P[i].keys[0][dims[j]]:
-                P[i] = x1[j]**(P[i].keys[0][dims[j]])
+                P[i] = x1[j].__pow__(P[i].keys[0][dims[j]])
                 break
 
     if V: print("Aposteriori:\n", P)
@@ -1414,6 +1402,11 @@ def asfloat(P):
     A = P.A.copy()
     for key in P.keys: A[key] = A[key]*1.
     return Poly(A, P.dim, P.shape, float)
+
+
+def sort_key(val):
+    """Sort key for sorting keys in grevlex order."""
+    return np.sum(max(val)**np.arange(len(val)-1, -1, -1)*val)
 
 
 if __name__=='__main__':

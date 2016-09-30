@@ -133,11 +133,11 @@ def cutoff(P, *args):
     Examples:
         >>> P = prange(4, 1) + prange(4, 2)[::-1]
         >>> print(P)
-        [q1^3+1, q0+q1^2, q0^2+q1, q0^3+1]
+        [q1^3+1, q1^2+q0, q0^2+q1, q0^3+1]
         >>> print(cutoff(P, 3))
-        [1, q0+q1^2, q0^2+q1, 1]
+        [1, q1^2+q0, q0^2+q1, 1]
         >>> print(cutoff(P, 1, 3))
-        [0, q0+q1^2, q0^2+q1, 0]
+        [0, q1^2+q0, q0^2+q1, 0]
     """
     if len(args)==1:
         low, high = 0, args[0]
@@ -256,7 +256,7 @@ def rolldim(P, n=1):
         >>> print(P)
         q0^3+q1^2+q2
         >>> print(rolldim(P))
-        q0^2+q1+q2^3
+        q0^2+q2^3+q1
     """
     dim = P.dim
     shape = P.shape
@@ -284,7 +284,7 @@ def swapdim(P, dim1=1, dim2=0):
         >>> print(P)
         q0^4-q1
         >>> print(swapdim(P))
-        -q0+q1^4
+        q1^4-q0
     """
     if not isinstance(P, Poly):
         return np.swapaxes(P, dim1, dim2)

@@ -288,8 +288,8 @@ Examples
 --------
 >>> dist = cp.Uniform()
 >>> orth, norms, A, B = cp.stieltjes(dist, 2, retall=True)
->>> print(orth[2])
-[q0^2-q0+0.16666666666666669]
+>>> print(cp.around(orth[2], 8))
+[q0^2-q0+0.16666667]
 >>> print(norms)
 [[ 1.          0.08333333  0.00555556]]
     """

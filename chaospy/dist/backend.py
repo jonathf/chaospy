@@ -384,7 +384,7 @@ out : ndarray
         if dim > 1:
             shape = shape[1:]
 
-        size = K.size/dim
+        size = int(K.size/dim)
         K = K.reshape(dim, size)
 
         try:

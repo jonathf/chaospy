@@ -78,12 +78,12 @@ def E_cond(poly, freeze, dist, **kws):
 
     freeze = cp.poly.Poly(freeze)
     freeze = cp.poly.setdim(freeze, len(dist))
-    keys = freeze.A.keys()
+    keys = freeze.keys
     if len(keys)==1 and keys[0]==(0,)*len(dist):
-        freeze = freeze.A.values()[0]
+        freeze = list(freeze.A.values())[0]
     else:
         freeze = np.array(keys)
-    freeze = freeze.reshape(freeze.size/len(dist), len(dist))
+    freeze = freeze.reshape(int(freeze.size/len(dist)), len(dist))
 
     shape = poly.shape
     poly = cp.poly.flatten(poly)
@@ -95,7 +95,7 @@ def E_cond(poly, freeze, dist, **kws):
     mom = dict(zip(keys, vals))
 
     A = poly.A.copy()
-    keys = A.keys()
+    keys = poly.keys
 
     out = {}
     zeros = [0]*poly.dim

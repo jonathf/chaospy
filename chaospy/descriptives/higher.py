@@ -68,11 +68,11 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     Examples:
         >>> x = cp.variable()
         >>> Z = cp.Uniform()
-        >>> print(cp.Kurt(Z))
-        -1.1999999999999993
+        >>> print(np.around(cp.Kurt(Z), 8))
+        -1.2
         >>> Z = cp.Normal()
-        >>> print(cp.Kurt(x, Z))
-        4.440892098500626e-16
+        >>> print(np.around(cp.Kurt(x, Z), 8))
+        0.0
     """
     if isinstance(poly, cp.dist.Dist):
         x = cp.poly.variable(len(poly))

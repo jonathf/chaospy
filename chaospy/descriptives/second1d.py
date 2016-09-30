@@ -19,10 +19,10 @@ def Var(poly, dist=None, **kws):
     Examples:
         >>> x = cp.variable()
         >>> Z = cp.Uniform()
-        >>> print(cp.Var(Z))
-        0.08333333333333331
-        >>> print(cp.Var(x**3, Z))
-        0.08035714285714285
+        >>> print(np.around(cp.Var(Z), 8))
+        0.08333333
+        >>> print(np.around(cp.Var(x**3, Z), 8))
+        0.08035714
     """
     if isinstance(poly, cp.dist.Dist):
         x = cp.poly.variable(len(poly))
@@ -84,10 +84,10 @@ def Std(poly, dist=None, **kws):
     Examples:
         >>> x = cp.variable()
         >>> Z = cp.Uniform()
-        >>> print(cp.Var(Z))
-        0.08333333333333331
-        >>> print(cp.Var(x**3, Z))
-        0.08035714285714285
+        >>> print(np.around(cp.Var(Z), 8))
+        0.08333333
+        >>> print(np.around(cp.Var(x**3, Z), 8))
+        0.08035714
     """
 
     if isinstance(poly, cp.dist.Dist):
