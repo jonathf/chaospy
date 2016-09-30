@@ -1,48 +1,41 @@
 """
-To perform point collocaiton method in practice, we need the following
-four components:
+Point collcation method, or regression based polynomial chaos expansion builds
+open the idea of fitting a polynomial chaos expansion to a set of generated
+samples and evaluations. The experiement can be done as follows::
 
-- A distribution for the unknown function parameters as described in
-  :ref:`distributions`::
+- Select a :ref:`distribution`::
 
       >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
 
-- Collocation nodes as described in either :ref:`montecarlo` or
-  :ref:`quadrature`. For example for the latter::
-
-      >>> absissas, weights = cp.generate_quadrature(
-      ...     2, distribution, rule="G")
-      >>> print(np.around(absissas, 15))
-      [[-1.73205081 -1.73205081 -1.73205081  0.          0.          0.
-         1.73205081  1.73205081  1.73205081]
-       [-1.73205081  0.          1.73205081 -1.73205081  0.          1.73205081
-        -1.73205081  0.          1.73205081]]
-
-  Example of the former can be observed in :ref:`tutorial`.
-
-- An orthogonal polynomial expansion as described in :ref:`orthogonality`
-  where the weight function is the distribution in the first step::
+- Generate :ref:`orthogonality`::
 
       >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
       >>> print(orthogonal_expansion)
       [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
 
+- Generate samples using :ref:`montecarlo` (or alternative àbsissas from
+  :ref`quadrature`)::
+
+      >>> samples = distribution.sample(
+      ...     2*len(orthogonal_expansion), rule="H")
+      >>> print(samples[:10])
+
 - A function evaluated using the nodes generated in the second step::
 
       >>> def model_solver(param):
       ...     return [param[0]*param[1], param[0]*np.e**-param[1]+1]
-      >>> solves = [model_solver(node) for node in absissas.T]
+      >>> solves = [model_solver(sample) for sample in samples.T]
+      >>> print(solves[:10])
 
-To bring it together, expansion, nodes and solves are used as arguments
-to create approximation::
+- Bring it all together using `~chaospy.collocation.fit_regression`::
 
-   >>> approx_model = cp.fit_regression(
-   ...      orthogonal_expansion, absissas, solves)
-   >>> print(cp.around(approx_model, 5))
-   [q0q1, -1.58059q0q1+2.27638q0+1.0]
+      >>> approx_model = cp.fit_regression(
+      ...      orthogonal_expansion, samples, solves)
+      >>> print(cp.around(approx_model, 5))
+      [q0q1, -1.58059q0q1+2.27638q0+1.0]
 
-In the example described above, the number of collocation points :math:`K` is
-selected to be twice the number of unknown coefficients :math:`N+1`. This
+In this example, the number of collocation points is selected to be twice the
+number of unknown coefficients :math:`N+1`. This
 follows the default outlined in :cite:`hosder_efficient_2007`. Changing this is
 obviously possible. When the number of parameter is equal the number of
 unknown, the, the polynomial approximation becomes an interpolation method and
@@ -68,7 +61,6 @@ Except for least squares, Tikhonov regularization with and without cross
 validation, all the method listed is taken from ``sklearn`` software. All
 optional arguments for various methods is covered in both
 ``sklearn.linear_model`` and in ``cp.fit_regression``.
-
 
 The follwong methods uses scikits-learn as backend.
 See `sklearn.linear_model` for more details.

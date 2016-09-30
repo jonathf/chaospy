@@ -48,7 +48,7 @@ a blackbox evaluation function of ``foo`` available. For this tutorial, let us
 only focus on expected value :func:`~chaospy.descriptives.E` and standard
 deviation :func:`~chaospy.descriptives.Std`.  In ``chaospy`` there are three
 classes of methods available for performing this task: :ref:`montecarlo`,
-:ref:`collocation` and :ref:`spectral`.
+:ref:`regression` and :ref:`spectral`.
 
 .. seealso::
     :ref:`descriptives`,
@@ -77,7 +77,7 @@ These samples can then be used to do analysis using tools from the standard
     Expected value plus/minus standard deviation.
 
 .. seealso::
-    :ref:`montecarlo`
+    :ref:`montecarlo`,
     :ref:`distributions`
 
 Point Collocation method

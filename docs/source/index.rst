@@ -9,8 +9,8 @@ polynomial chaos expansions and advanced Monte Carlo methods.
 
    tutorial
    montecarlo
-   collocation
-   pseudospectral
+   regression
+   spectral
 
    distributions
    polynomials
@@ -20,11 +20,4 @@ polynomial chaos expansions and advanced Monte Carlo methods.
    descriptives
    rosenblatt
    copulas
-   spectral
-
-.. _bibliography:
-
-Bibliography
-------------
-
-.. bibliography:: bibliography.bib
+   galerkin

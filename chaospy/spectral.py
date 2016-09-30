@@ -1,11 +1,45 @@
 """
-Tools for performing Probabilistic Collocation Method (PCM)
+To perform point collocaiton method in practice, we need the following
+four components:
 
-pcm             Front-end function for PCM
-fit_adaptive    Fit an adaptive spectral projection
-fit_regression  Fit a point collocation together
-fit_quadrature  Fit a spectral projection together
-lstsq_cv        Cross-validated least squares solver
+- A distribution for the unknown function parameters as described in
+  :ref:`distributions`::
+
+      >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
+
+- Collocation nodes as described in either :ref:`montecarlo` or
+  :ref:`quadrature`. For example for the latter::
+
+      >>> absissas, weights = cp.generate_quadrature(
+      ...     2, distribution, rule="G")
+      >>> print(np.around(absissas, 15))
+      [[-1.73205081 -1.73205081 -1.73205081  0.          0.          0.
+         1.73205081  1.73205081  1.73205081]
+       [-1.73205081  0.          1.73205081 -1.73205081  0.          1.73205081
+        -1.73205081  0.          1.73205081]]
+
+  Example of the former can be observed in :ref:`tutorial`.
+
+- An orthogonal polynomial expansion as described in :ref:`orthogonality`
+  where the weight function is the distribution in the first step::
+
+      >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
+      >>> print(orthogonal_expansion)
+      [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+
+- A function evaluated using the nodes generated in the second step::
+
+      >>> def model_solver(param):
+      ...     return [param[0]*param[1], param[0]*np.e**-param[1]+1]
+      >>> solves = [model_solver(node) for node in absissas.T]
+
+To bring it together, expansion, nodes and solves are used as arguments
+to create approximation::
+
+   >>> approx_model = cp.fit_regression(
+   ...      orthogonal_expansion, absissas, solves)
+   >>> print(cp.around(approx_model, 5))
+   [q0q1, -1.58059q0q1+2.27638q0+1.0]
 """
 
 import numpy as np
