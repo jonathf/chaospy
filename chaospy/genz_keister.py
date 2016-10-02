@@ -1173,7 +1173,7 @@ def gk(order, dist, rule=24):
             xw = [gk(order, d, rule) for d in dist]
         else:
             xw = [gk(order[i], dist[i], rule)
-                    for i in xrange(len(dist))]
+                    for i in range(len(dist))]
 
         x = [_[0][0] for _ in xw]
         x = chaospy.utils.combine(x).T

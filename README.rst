@@ -1,4 +1,17 @@
-.. image: logo.jpg
+Chaospy
+=======
+
+|travis| |codecov| |pypi|
+
+|logo|
+
+.. |logo| image:: logo.jpg
+.. |travis| image:: https://img.shields.io/travis/jonathf/chaospy.svg
+    :target: https://travis-ci.org/jonathf/chaospy
+.. |codecov| image:: https://img.shields.io/codecov/c/github/jonathf/chaospy.svg
+    :target: https://codecov.io/gh/jonathf/chaospy
+.. |pypi| image:: https://img.shields.io/pypi/v/chaospy.svg
+    :target: https://pypi.python.org/pypi/chaospy
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods.

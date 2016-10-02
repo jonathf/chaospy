@@ -37,7 +37,7 @@ __all__ = [
 def all(A, ax=None):
     """ Test if all values in A evaluate to True """
 
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.all(A, ax)
 
     elif isinstance(A, f.frac):
@@ -56,7 +56,7 @@ def all(A, ax=None):
 def any(A, ax=None):
     """ Test if any values in A evaluate to True """
 
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.any(A, ax)
 
     elif isinstance(A, f.frac):
@@ -94,7 +94,7 @@ def around(A, decimals=0):
         >>> print(cp.around(P, 2))
         [1.0, 0.25q0, 0.06q0^2]
     """
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.around(A, decimals)
 
     elif isinstance(A, f.frac):
@@ -117,7 +117,7 @@ def around(A, decimals=0):
 
 def asfloat(A):
 
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.asfarray(A)
 
     elif isinstance(A, f.frac):
@@ -148,7 +148,7 @@ def reshape(a, shape):
         >>> print(cp.reshape(P, (2,3)))
         [[1, q0, q0^2], [q0^3, q0^4, q0^5]]
     """
-    if isinstance(a, (np.ndarray, float, int, long)):
+    if isinstance(a, (np.ndarray, float, int)):
         return np.reshape(a, shape)
 
     elif isinstance(a, f.frac):
@@ -176,7 +176,7 @@ def flatten(A):
         >>> print(cp.flatten(P))
         [1, q0, q0^2, q0^3]
     """
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.flatten(A)
 
     elif isinstance(A, f.frac):
@@ -208,7 +208,7 @@ def sum(A, axis=None):
         >>> print(cp.sum(P))
         q0^2+q0+1
     """
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.sum(A, axis)
 
     elif isinstance(A, f.frac):
@@ -243,7 +243,7 @@ def prod(A, axis=None):
         >>> print(cp.prod(P, -1))
         [[q0, q0^5], [q0^9, q0^13]]
     """
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.prod(A, axis)
 
     elif isinstance(A, f.frac):
@@ -256,7 +256,7 @@ def prod(A, axis=None):
 
 def asfrac(A, limit=None):
 
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return f.frac(A, 1, limit)
 
     elif isinstance(A, f.frac):
@@ -269,7 +269,7 @@ def asfrac(A, limit=None):
 
 def asint(A):
 
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.array(A, dtype=int)
 
     elif isinstance(A, f.frac):
@@ -299,7 +299,7 @@ def toarray(A):
         >>> print(Q[1] == P[1])
         True
     """
-    if isinstance(A, (np.ndarray, float, int, long)):
+    if isinstance(A, (np.ndarray, float, int)):
         return np.array(A)
 
     elif isinstance(A, f.frac):
@@ -313,7 +313,7 @@ def toarray(A):
 
 def mean(A, ax=None):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.mean(A, ax)
 
     elif isinstance(A, f.frac):
@@ -326,7 +326,7 @@ def mean(A, ax=None):
 
 def var(A, ax=None):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.var(A, ax)
 
     elif isinstance(A, f.frac):
@@ -356,7 +356,7 @@ def transpose(A):
         [[1, q0^2], [q0, q0^3]]
     """
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.transpose(A)
 
     elif isinstance(A, f.frac):
@@ -370,7 +370,7 @@ def transpose(A):
 
 def rollaxis(A, ax, start=0):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.rollaxis(A, ax, start)
 
     elif isinstance(A, f.frac):
@@ -384,7 +384,7 @@ def rollaxis(A, ax, start=0):
 
 def roll(A, shift, axis=None):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.roll(A, shift, axis)
 
     elif isinstance(A, f.frac):
@@ -398,7 +398,7 @@ def roll(A, shift, axis=None):
 
 def cumsum(A, axis=None):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.cumsum(A, axis)
 
     elif isinstance(A, f.frac):
@@ -412,7 +412,7 @@ def cumsum(A, axis=None):
 
 def cumprod(A, axis=None):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.cumprod(A, axis)
 
     elif isinstance(A, f.frac):
@@ -427,7 +427,7 @@ def cumprod(A, axis=None):
 def diag(A, k=0):
     """ Extract or construct a diagonal polynomial array.  """
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.diag(A, k)
 
     elif isinstance(A, f.frac):
@@ -440,7 +440,7 @@ def diag(A, k=0):
 
 def repeat(A, repeats, axis=None):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.repeat(A, repeats, axis)
 
     elif isinstance(A, f.frac):
@@ -453,7 +453,7 @@ def repeat(A, repeats, axis=None):
 
 def std(A, axis):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.std(A, axis)
 
     elif isinstance(A, f.frac):
@@ -466,7 +466,7 @@ def std(A, axis):
 
 
 def swapaxes(A, ax1, ax2):
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.swapaxes(A, ax1, ax2)
 
     elif isinstance(A, f.frac):
@@ -480,7 +480,7 @@ def swapaxes(A, ax1, ax2):
 
 def trace(A, offset=0, ax1=0, ax2=1):
 
-    if isinstance(A, (int, long, float, np.ndarray)):
+    if isinstance(A, (int, float, np.ndarray)):
         return np.trace(A, offset, ax1, ax2)
 
     elif isinstance(A, f.frac):
@@ -576,7 +576,7 @@ def outer(*args):
             args = map(asfloat, args)
         elif dtype==object:
             args = map(asfrac, args)
-        elif dtype in (int, long):
+        elif dtype in (int):
             args = map(asint, args)
 
         if len(args)>2:

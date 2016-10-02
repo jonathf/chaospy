@@ -206,7 +206,7 @@ def gill_king(A, eps=EPS):
 
     # there are no inner for loops, everything implemented with
     # vector operations for a reasonable level of efficiency
-    for j in xrange(n):
+    for j in range(n):
         if j == 0:
             K = []     # column index: all columns to left of diagonal
                        # d(K) doesn't work in case K is empty
@@ -226,7 +226,7 @@ def gill_king(A, eps=EPS):
             d[j] = max(abs(djtemp), delta)
 
     # convert to usual output format: replace L by L*sqrt(D) and transpose
-    for j in xrange(n):
+    for j in range(n):
         L[:, j] = L[:, j]*np.sqrt(d[j]) # L = L*diag(sqrt(d)) bad in sparse case
 
     e = (np.dot(L, L.T) - A).diagonal()
@@ -349,7 +349,7 @@ def schnabel_eskow(A, eps=EPS):
 
             # Modified Cholesky decomposition.
             delta_prev = 0.0
-            for j in xrange(k+1, n-2):
+            for j in range(k+1, n-2):
                 # Pivot on the maximum lower Gerschgorin bound
                 # estimate.
                 i = j + np.argmax(g[j-(k+1):])
@@ -394,7 +394,7 @@ def schnabel_eskow(A, eps=EPS):
             A[n-1, n-2] /= A[n-2, n-2]
             A[n-1, n-1] = np.sqrt(A[n-1, n-1] - A[n-1, n-2]**2)
 
-    for j in xrange(n):
+    for j in range(n):
 
         # Calculate max_Aii and min_Aii
         _d = A.diagonal()[j:]
@@ -481,7 +481,7 @@ def bastos_ohagen(A, eps=EPS):
     R = np.zeros((n, n))
     piv = np.arange(n)
 
-    for k in xrange(n):
+    for k in range(n):
 
         q = np.argmax( np.diag(A[k:, k:]) ) + k
 
@@ -490,7 +490,7 @@ def bastos_ohagen(A, eps=EPS):
             if not k:
                 raise ValueError("Purly negative definite")
 
-            for j in xrange(k, n):
+            for j in range(k, n):
                 R[j, j] = R[j-1, j-1]/float(j)
 
             break
@@ -507,7 +507,7 @@ def bastos_ohagen(A, eps=EPS):
         A[k+1:, k+1:] -= np.outer(r, r)
 
     P = np.zeros((n, n))
-    for k in xrange(n):
+    for k in range(n):
         P[k, piv[k]] = 1.
 
     E = np.dot(R.T, R) - np.dot(np.dot(P.T, B), P)

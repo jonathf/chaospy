@@ -7,14 +7,14 @@ import numpy as np
 def test_basic_mom():
     dist = cp.Normal(0, 1)
     res = np.array([1, 0, 1, 0, 3])
-    assert np.allclose(dist.mom(range(5)), res)
+    assert np.allclose(dist.mom(np.arange(5)), res)
 
 
 def test_operator_E():
     dist = cp.Normal(0, 1)
     res = np.array([1, 0, 1, 0, 3])
     x = cp.variable()
-    poly = x**range(5)
+    poly = x**np.arange(5)
     assert np.allclose(cp.E(poly, dist), res)
 
 

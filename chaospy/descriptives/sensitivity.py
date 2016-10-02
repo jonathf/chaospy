@@ -2,6 +2,9 @@ import numpy as np
 
 import chaospy
 
+from .second1d import Var
+from .first import E_cond
+
 def Sens_m(poly, dist, **kws):
     """
     Variance-based decomposition
@@ -119,7 +122,7 @@ def Sens_m_nataf(order, dist, samples, vals, **kws):
                  marginal, **kws)/(V+(V == 0))*(V != 0)
 
 
-    for i in xrange(1, dim):
+    for i in range(1, dim):
 
         r = r[1:] + r[:1]
         index = index[-1:] + index[:-1]
@@ -181,7 +184,7 @@ def Sens_t_nataf(order, dist, samples, vals, **kws):
     out[0] = (V-Var(E_cond(poly, index, marginal, **kws),
                     marginal, **kws))/(V+(V == 0))**(V != 0)
 
-    for i in xrange(1, dim):
+    for i in range(1, dim):
 
         r = r[1:] + r[:1]
         index = index[-1:] + index[:-1]
@@ -247,7 +250,7 @@ def Sens_nataf(order, dist, samples, vals, **kws):
     out[1, 0] = Var(E_cond(poly, index1, marginal, **kws),
                    marginal, **kws)/(V+(V == 0))*(V != 0)
 
-    for i in xrange(1, dim):
+    for i in range(1, dim):
 
         r = r[1:] + r[:1]
         index0 = index0[-1:] + index0[:-1]

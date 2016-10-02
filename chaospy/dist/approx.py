@@ -55,7 +55,7 @@ G : Graph
     G.__call__ = G.fwd_call
 
     out = np.empty(x.shape)
-    for d in xrange(len(dist)):
+    for d in range(len(dist)):
         x[d] += eps[d]
         out[d] = G.copy()(x.copy(), dist)[d]
         x[d] -= eps[d]
@@ -108,7 +108,7 @@ G : Graph
     out = np.empty(shape)
     eps = eps*np.ones(dim)
 
-    for i in xrange(dim):
+    for i in range(dim):
         eps_ = np.where(x[i]<mu[i], eps[i], -eps[i])
 
         xdx[i] += eps_
@@ -388,7 +388,7 @@ antithetic : array_like, optional
         if mu.size==1 and dim>1:
             mu = mu.repeat(dim)
 
-        for d in xrange(dim):
+        for d in range(dim):
             alpha = np.cov(out, Y[d])[0,1]/np.var(Y[d])
             out -= alpha*(Y[d]-mu)
 

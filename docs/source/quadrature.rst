@@ -1,4 +1,4 @@
 .. _quadrature:
 
-Quadrature methods
-------------------
+Quadrature Integration
+----------------------

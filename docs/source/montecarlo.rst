@@ -1,9 +1,7 @@
 .. _montecarlo:
 
-Monte Carlo simulation
-----------------------
+(Pseudo-)Random Sampling
+------------------------
 
 .. automodule:: chaospy.dist.sampler
 .. autofunction:: chaospy.dist.samplegen
-
-.. bibliography:: bibliography.bib

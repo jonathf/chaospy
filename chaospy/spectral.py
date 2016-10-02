@@ -1,22 +1,85 @@
-"""
-Tools for performing Probabilistic Collocation Method (PCM)
+r"""
+In practice the following four components are needed to perform psuedo-spectral
+projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
-pcm             Front-end function for PCM
-fit_adaptive    Fit an adaptive spectral projection
-fit_regression  Fit a point collocation together
-fit_quadrature  Fit a spectral projection together
-lstsq_cv        Cross-validated least squares solver
-rlstsq          Robust least squares solver
+-  A distribution for the unknown function parameters (as described in
+   section :ref:`distributions`). For example::
+
+      >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
+
+-  Create integration absissas and weights (as described in :ref:`quadrature`)::
+
+      >>> absissas, weights = cp.generate_quadrature(
+      ...     2, distribution, rule="G")
+      >>> print(np.around(absissas, 15))
+      [[-1.73205081 -1.73205081 -1.73205081  0.          0.          0.
+         1.73205081  1.73205081  1.73205081]
+       [-1.73205081  0.          1.73205081 -1.73205081  0.          1.73205081
+        -1.73205081  0.          1.73205081]]
+      >>> print(weights)
+      [ 0.02777778  0.11111111  0.02777778  0.11111111  0.44444444  0.11111111
+        0.02777778  0.11111111  0.02777778]
+
+- An orthogonal polynomial expansion (as described in section
+  :ref:`orthogonality`) where the weight function is the distribution in the
+  first step::
+
+      >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
+      >>> print(orthogonal_expansion)
+      [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+
+- A function evaluated using the nodes generated in the second step.
+  For example::
+
+      >>> def model_solver(q):
+      ...     return [q[0]*q[1], q[0]*np.e**-q[1]+1]
+      >>> solves = [model_solver(absissa) for absissa in absissas.T]
+      >>> print(np.around(solves[:4], 8))
+      [[ 3.         -8.7899559 ]
+       [-0.         -0.73205081]
+       [-3.          0.69356348]
+       [-0.          1.        ]]
+
+- To bring it together, expansion, absissas, weights and solves are used as
+  arguments to create approximation::
+
+      >>> approx = cp.fit_quadrature(
+      ...     orthogonal_expansion, absissas, weights, solves)
+      >>> print(cp.around(approx, 8))
+      [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
+
+Note that in this case the function output is
+bivariate. The software is designed to create an approximation of any
+discretized model as long as it is compatible with ``numpy`` shapes.
+
+As mentioned in section :ref:`orthogonality`, moment based construction of
+polynomials can be unstable. This might also be the case for the
+denominator :math:`\mathbb E{\Phi_n^2}`. So when using three terms
+recursion, it is common to use the recurrence coefficients to estimated
+the denominator.
+
+One cavat with using psuedo-spectral projection is that the calculations of the
+norms of the polynomials becomes unstable. To mittigate, recurrence
+coefficients can be used to calculate them instead with more stability.
+To include these stable norms in the calculations, the following change in code
+can be added::
+
+   >>> orthogonal_expansion, norms = cp.orth_ttr(2, distribution, retall=True)
+   >>> approx2 = cp.fit_quadrature(
+   ...     orthogonal_expansion, absissas, weights, solves, norms=norms)
+   >>> print(cp.around(approx2, 8))
+   [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
+
+Note that at low polynomial order, the error is very small. For example the
+largest coefficient between the two approximation::
+
+   >>> print(np.max(abs(approx-approx2).coeffs(), -1) < 1e-12)
+   [ True  True]
+
+The ``coeffs`` function returns all the polynomial coefficients.
 """
 
 import numpy as np
-from scipy import linalg as la
-from scipy import optimize as op
-
-try:
-    from sklearn import linear_model as lm
-except:
-    pass
 
 try:
     from cubature._cubature import _cubature
@@ -26,7 +89,7 @@ except:
 import chaospy as cp
 
 __all__ = [
-"pcm", "fit_adaptive", "fit_regression", "fit_quadrature", "lstsq_cv", "rlstsq"
+"pcm", "fit_adaptive", "fit_quadrature"
 ]
 
 
@@ -34,94 +97,49 @@ def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
         orth=None, orth_acc=100, quad_acc=100, sparse=False, composit=1,
         antithetic=None, lr="LS", **kws):
     """
-Probabilistic Collocation Method
+Probabilistic Collocation Method.
 
-Parameters
-----------
-Required arguments
+Args:
+    func (callable) : The model to be approximated.  Must accept arguments on
+            the form `func(z, *args, **kws)` where `z` is an 1-dimensional
+            array with `len(z)==len(dist)`.
+    porder (int) : The order of the polynomial approximation.
+    dist (Dist) : Distributions for models parameter.
+    rule (str) : The rule for estimating the Fourier coefficients.  For
+            spectral projection/quadrature rules, see generate_quadrature.
+            For point collocation/nummerical sampling, see samplegen.
 
-func : callable
-    The model to be approximated.
-    Must accept arguments on the form `func(z, *args, **kws)`
-    where `z` is an 1-dimensional array with `len(z)==len(dist)`.
-porder : int
-    The order of the polynomial approximation
-dist_out : Dist
-    Distributions for models parameter
-rule : str
-    The rule for estimating the Fourier coefficients.
-    For spectral projection/quadrature rules, see generate_quadrature.
-    For point collocation/nummerical sampling, see samplegen.
+Kwargs:
+    proxy_dist (Dist) : If included, the expansion will be created in
+            proxy_dist and values will be mapped to dist using a double
+            Rosenblatt transformation.
+    sorder (float) : The order of the sample scheme used.  If omited, default
+            values will be used.
+    orth (callable, Poly) : Orthogonal polynomial generation.
+            If callable, the return of orth(order, dist) will be used. If Poly
+            is provided, it will be used directly. If omited, orthogonal
+            polynomial will be `orth_ttr` or `orth_chol` depending on if
+            `dist` is stochastically independent of not.
+    orth_acc (int) : Accuracy used in the estimation of polynomial expansion.
+    sparse (bool) : If True, Smolyak sparsegrid will be used instead of full
+            tensorgrid.
+    composit (int) : Use composit rule. Note that the number of evaluations
+            may grow quickly.
+    antithetic (bool, array_like) : Use of antithetic variable
+    lr (str) : Linear regresion method.
+    lr_kws (dict) : Extra keyword arguments passed to fit_regression.
 
-Optional arguments
+Returns:
+    q : Poly
+        Polynomial approximation of a given a model.
 
-proxy_dist : Dist
-    If included, the expansion will be created in proxy_dist and
-    values will be mapped to dist using a double Rosenblatt
-    transformation.
-sorder : float
-    The order of the sample scheme used.
-    If omited, default values will be used.
-orth : int, str, callable, Poly
-    Orthogonal polynomial generation.
-
-    int, str :
-        orth will be passed to orth_select
-        for selection of orthogonalization.
-        See orth_select doc for more details.
-
-    callable :
-        the return of orth(order, dist) will be used.
-
-    Poly :
-        it will be used directly.
-        All polynomials must be orthogonal for method to work
-        properly if spectral projection is used.
-orth_acc : int
-    Accuracy used in the estimation of polynomial expansion.
-
-Spectral projection arguments
-
-sparse : bool
-    If True, Smolyak sparsegrid will be used instead of full
-    tensorgrid.
-composit : int
-    Use composit rule. Note that the number of evaluations may grow
-    quickly.
-
-Point collocation arguments
-
-antithetic : bool, array_like
-    Use of antithetic variable
-lr : str
-    Linear regresion method.
-    See fit_regression for more details.
-lr_kws : dict
-    Extra keyword arguments passed to fit_regression.
-
-Returns
--------
-q : Poly
-    Polynomial approximation of a given a model.
-
-Examples
---------
-
-Define function and distribution:
->>> func = lambda z: -z[1]**2 + 0.1*z[0]
->>> dist = cp.J(cp.Uniform(), cp.Uniform())
-
-Perform pcm:
->>> q = cp.pcm(func, 2, dist)
->>> print(cp.around(q, 10))
-0.1q0-q1^2
-
-See also
---------
-generate_quadrature         Generator for quadrature rules
-samplegen       Generator for sampling schemes
+Examples:
+    >>> func = lambda z: -z[1]**2 + 0.1*z[0]
+    >>> dist = cp.J(cp.Uniform(), cp.Uniform())
+    >>> q = cp.pcm(func, 2, dist)
+    >>> print(cp.around(q, 10))
+    -q1^2+0.1q0
     """
-
     # Proxy variable
     if proxy_dist is None:
         trans = lambda x:x
@@ -132,11 +150,9 @@ samplegen       Generator for sampling schemes
     # The polynomial expansion
     if orth is None:
         if dist.dependent():
-            orth = "svd"
+            orth = cp.orthogonal.orth_chol
         else:
-            orth = "ttr"
-    if isinstance(orth, (str, int, long)):
-        orth = cp.orthogonal.orth_select(orth, **kws)
+            orth = cp.orthogonal.orth_ttr
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
@@ -150,7 +166,7 @@ samplegen       Generator for sampling schemes
             composit=composit, **kws)
 
         x = trans(z)
-        y = np.array(map(func, x.T))
+        y = np.array([func(_) for _ in x.T])
         Q = fit_quadrature(orth, x, w, y, **kws)
 
     else:
@@ -267,7 +283,7 @@ y : np.ndarray
             orth = "chol"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = orth_select(orth)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
@@ -441,7 +457,7 @@ X : np.ndarray
             orth = "chol"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = orth_select(orth)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
@@ -547,7 +563,7 @@ retall : bool
             orth = "chol"
         else:
             orth = "ttr"
-    if isinstance(orth, (str, int, long)):
+    if isinstance(orth, (str, int)):
         orth = orth_select(orth)
     if not isinstance(orth, cp.poly.Poly):
         orth = orth(order, dist)
@@ -579,366 +595,11 @@ retall : bool
         return R, x, y
     return R
 
-def lstsq_cv(A, b, order=1):
-    A = np.array(A)
-    b = np.array(b)
-    m,l = A.shape
 
-    if order==0:
-        L = np.eye(l)
-    elif order==1:
-        L = np.zeros((l-1,l))
-        L[:,:-1] -= np.eye(l-1)
-        L[:,1:] += np.eye(l-1)
-    elif order==2:
-        L = np.zeros((l-2,l))
-        L[:,:-2] += np.eye(l-2)
-        L[:,1:-1] -= 2*np.eye(l-2)
-        L[:,2:] += np.eye(l-2)
-    elif order is None:
-        L = np.zeros(1)
-    else:
-        L = np.array(order)
-        assert L.shape[-1]==l or L.shape in ((), (1,))
 
-#      def cross(alpha):
-#          out = 0.
-#          for k in range(l):
-#              valid = np.arange(l)==k
-#              A_ = A[:,valid]
-#              b_ = b[valid]
-#              _ = la.inv(np.dot(A_.T,A_) + alpha*np.dot(L.T, L))
-#              out += np.dot(_, np.dot(A_.T, b_))
-
-    return la.lstsq(A, b)
-
-
-
-def rlstsq(A, b, order=1, alpha=None, cross=False, retall=False):
-    """
-Least Squares Minimization using Tikhonov regularization, and
-robust generalized cross-validation.
-
-Parameters
-----------
-A : array_like, shape (M,N)
-    "Coefficient" matrix.
-b : array_like, shape (M,) or (M, K)
-    Ordinate or "dependent variable" values. If `b` is
-    two-dimensional, the least-squares solution is calculated for
-    each of the `K` columns of `b`.
-order : int, array_like
-    If int, it is the order of Tikhonov regularization.
-    If array_like, it will be used as regularization matrix.
-alpha : float, optional
-    Lower threshold for the dampening parameter.
-    The real value is calculated using generalised cross
-    validation.
-cross : bool
-    Use cross validation
-retall : bool
-    If True, return also estimated alpha-value
-    """
-
-    A = np.array(A)
-    b = np.array(b)
-    m,l = A.shape
-
-    if cross:
-        out = np.empty((m,l) + b.shape[1:])
-        A_ = np.empty((m-1,l))
-        b_ = np.empty((m-1,) + b.shape[1:])
-        for i in xrange(m):
-            A_[:i] = A[:i]
-            A_[i:] = A[i+1:]
-            b_[:i] = b[:i]
-            b_[i:] = b[i+1:]
-            out[i] = rlstsq(A_, b_, order, alpha, False)
-
-        return np.median(out, 0)
-
-    if order==0:
-        L = np.eye(l)
-
-    elif order==1:
-        L = np.zeros((l-1,l))
-        L[:,:-1] -= np.eye(l-1)
-        L[:,1:] += np.eye(l-1)
-
-    elif order==2:
-        L = np.zeros((l-2,l))
-        L[:,:-2] += np.eye(l-2)
-        L[:,1:-1] -= 2*np.eye(l-2)
-        L[:,2:] += np.eye(l-2)
-
-    elif order is None:
-        L = np.zeros(1)
-
-    else:
-        L = np.array(order)
-        assert L.shape[-1]==l or L.shape in ((), (1,))
-
-    if alpha is None and not (order is None):
-
-        gamma = 0.1
-
-        def rgcv_error(alpha):
-            if alpha<=0: return np.inf
-            A_ = np.dot(A.T,A)+alpha*(np.dot(L.T,L))
-            try:
-                A_ = np.dot(la.inv(A_), A.T)
-            except la.LinAlgError:
-                return np.inf
-            x = np.dot(A_, b)
-            res2 = np.sum((np.dot(A,x)-b)**2)
-            K = np.dot(A, A_)
-            V = m*res2/np.trace(np.eye(m)-K)**2
-            mu2 = np.sum(K*K.T)/m
-
-            return (gamma + (1-gamma)*mu2)*V
-
-        alpha = op.fmin(rgcv_error, 1, disp=0)
-
-    out = la.inv(np.dot(A.T,A) + alpha*np.dot(L.T, L))
-    out = np.dot(out, np.dot(A.T, b))
-    if retall:
-        return out, alpha
-    return out
-
-
-def fit_regression(P, x, u, rule="LS", retall=False, **kws):
-    """
-Fit a polynomial chaos expansion using linear regression.
-
-Parameters
-----------
-P : Poly
-    Polynomial chaos expansion with `P.shape=(M,)` and `P.dim=D`.
-x : array_like
-    Collocation nodes with `x.shape=(D,K)`.
-u : array_like
-    Model evaluations with `len(u)=K`.
-retall : bool
-    If True return uhat in addition to R
-rule : str
-    Regression method used.
-
-    The follwong methods uses scikits-learn as backend.
-    See `sklearn.linear_model` for more details.
-
-    Key     Scikit-learn    Description
-    ---     ------------    -----------
-        Parameters      Description
-        ----------      -----------
-
-    "BARD"  ARDRegression   Bayesian ARD Regression
-        n_iter=300      Maximum iterations
-        tol=1e-3        Optimization tolerance
-        alpha_1=1e-6    Gamma scale parameter
-        alpha_2=1e-6    Gamma inverse scale parameter
-        lambda_1=1e-6   Gamma shape parameter
-        lambda_2=1e-6   Gamma inverse scale parameter
-        threshold_lambda=1e-4   Upper pruning threshold
-
-    "BR"    BayesianRidge   Bayesian Ridge Regression
-        n_iter=300      Maximum iterations
-        tol=1e-3        Optimization tolerance
-        alpha_1=1e-6    Gamma scale parameter
-        alpha_2=1e-6    Gamma inverse scale parameter
-        lambda_1=1e-6   Gamma shape parameter
-        lambda_2=1e-6   Gamma inverse scale parameter
-
-    "EN"    ElastiNet       Elastic Net
-        alpha=1.0       Dampening parameter
-        rho             Mixing parameter in [0,1]
-        max_iter=300    Maximum iterations
-        tol             Optimization tolerance
-
-    "ENC"   ElasticNetCV    EN w/Cross Validation
-        rho             Dampening parameter(s)
-        eps=1e-3        min(alpha)/max(alpha)
-        n_alphas        Number of alphas
-        alphas          List of alphas
-        max_iter        Maximum iterations
-        tol             Optimization tolerance
-        cv=3            Cross validation folds
-
-    "LA"    Lars            Least Angle Regression
-        n_nonzero_coefs Number of non-zero coefficients
-        eps             Cholesky regularization
-
-    "LAC"   LarsCV          LAR w/Cross Validation
-        max_iter        Maximum iterations
-        cv=5            Cross validation folds
-        max_n_alphas    Max points for residuals in cv
-
-    "LAS"   Lasso           Least Absolute Shrinkage and
-                            Selection Operator
-        alpha=1.0       Dampening parameter
-        max_iter        Maximum iterations
-        tol             Optimization tolerance
-
-    "LASC"  LassoCV         LAS w/Cross Validation
-        eps=1e-3        min(alpha)/max(alpha)
-        n_alphas        Number of alphas
-        alphas          List of alphas
-        max_iter        Maximum iterations
-        tol             Optimization tolerance
-        cv=3            Cross validation folds
-
-    "LL"    LassoLars       Lasso and Lars model
-        max_iter        Maximum iterations
-        eps             Cholesky regularization
-
-    "LLC"   LassoLarsCV     LL w/Cross Validation
-        max_iter        Maximum iterations
-        cv=5            Cross validation folds
-        max_n_alphas    Max points for residuals in cv
-        eps             Cholesky regularization
-
-    "LLIC"  LassoLarsIC     LL w/AIC or BIC
-        criterion       "AIC" or "BIC" criterion
-        max_iter        Maximum iterations
-        eps             Cholesky regularization
-
-    "OMP"   OrthogonalMatchingPursuit
-        n_nonzero_coefs Number of non-zero coefficients
-        tol             Max residual norm (instead of non-zero coef)
-
-    Local methods
-
-    Key     Description
-    ---     -----------
-    "LS"    Ordenary Least Squares
-
-    "T"     Ridge Regression/Tikhonov Regularization
-        order           Order of regularization (or custom matrix)
-        alpha           Dampning parameter (else estimated from gcv)
-
-    "TC"    T w/Cross Validation
-        order           Order of regularization (or custom matrix)
-        alpha           Dampning parameter (else estimated from gcv)
-
-
-Returns
--------
-R[, uhat]
-
-R : Poly
-    Fitted polynomial with `R.shape=u.shape[1:]` and `R.dim=D`.
-uhat : np.ndarray
-    The Fourier coefficients in the estimation.
-
-Examples
---------
->>> x, y = cp.variable(2)
->>> P = cp.Poly([1, x, y])
->>> s = [[-1,-1,1,1], [-1,1,-1,1]]
->>> u = [0,1,1,2]
->>> print(fit_regression(P, s, u))
-0.5q0+0.5q1+1.0
-
-    """
-
-    x = np.array(x)
-    if len(x.shape)==1:
-        x = x.reshape(1, *x.shape)
-    u = np.array(u)
-
-    Q = P(*x).T
-    shape = u.shape[1:]
-    u = u.reshape(u.shape[0], int(np.prod(u.shape[1:])))
-
-    rule = rule.upper()
-
-    # Local rules
-    if rule=="LS":
-        uhat = la.lstsq(Q, u)[0].T
-
-    elif rule=="T":
-        uhat, alphas = rlstsq(Q, u, kws.get("order",0),
-                kws.get("alpha", None), False, True)
-        uhat = uhat.T
-
-    elif rule=="TC":
-        uhat = rlstsq(Q, u, kws.get("order",0),
-                kws.get("alpha", None), True)
-        uhat = uhat.T
-
-    else:
-
-        # Scikit-learn wrapper
-        try:
-            _ = lm
-        except:
-            raise NotImplementedError(
-                    "sklearn not installed")
-
-        if rule=="BARD":
-            solver = lm.ARDRegression(fit_intercept=False,
-                    copy_X=False, **kws)
-
-        elif rule=="BR":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.BayesianRidge(**kws)
-
-        elif rule=="EN":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.ElasticNet(**kws)
-
-        elif rule=="ENC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.ElasticNetCV(**kws)
-
-        elif rule=="LA": # success
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.Lars(**kws)
-
-        elif rule=="LAC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LarsCV(**kws)
-
-        elif rule=="LAS":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.Lasso(**kws)
-
-        elif rule=="LASC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoCV(**kws)
-
-        elif rule=="LL":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoLars(**kws)
-
-        elif rule=="LLC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoLarsCV(**kws)
-
-        elif rule=="LLIC":
-            kws["fit_intercept"] = kws.get("fit_intercept", False)
-            solver = lm.LassoLarsIC(**kws)
-
-        elif rule=="OMP":
-            solver = lm.OrthogonalMatchingPursuit(**kws)
-
-        uhat = solver.fit(Q, u).coef_
-
-    u = u.reshape(u.shape[0], *shape)
-
-    R = cp.poly.sum((P*uhat), -1)
-    R = cp.poly.reshape(R, shape)
-
-    if retall==1:
-        return R, uhat
-    elif retall==2:
-        if rule=="T":
-            return R, uhat, Q, alphas
-        return R, uhat, Q
-    return R
 
 def fit_lagrange(X, Y):
     """Simple lagrange method"""
-
     X = np.array(X)
     Y = np.array(Y)
     assert X.shape[0] == Y.shape[0]
@@ -984,7 +645,7 @@ folds : int,optional
         folds = K
     R = np.random.randint(0, folds, K)
 
-    for fold in xrange(folds):
+    for fold in range(folds):
 
         infold = R==fold
         x = X[:, True-infold]
@@ -1109,3 +770,4 @@ Examples
     if retall:
         return out, val2, val1, err2, err1
     return val2
+

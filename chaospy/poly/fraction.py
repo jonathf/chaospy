@@ -27,8 +27,8 @@ def gcd(a, b):
         >>> print(gcd([0,1,2,3], 2))
         [2 1 2 1]
     """
-    if isinstance(a, (int, long)) and \
-        isinstance(b, (int, long)):
+    if isinstance(a, (int)) and \
+        isinstance(b, (int)):
         while b:
             a, b = b, a%b
         return a
@@ -153,7 +153,7 @@ class frac(object):
             shape = shape1+shape2
 
             a_,b_ = [], []
-            for i in xrange(len(a)):
+            for i in range(len(a)):
                 a_.append( a[i].a )
                 b_.append( a[i].b )
             a_, b_ = np.array(a_), np.array(b_)
@@ -218,7 +218,7 @@ class frac(object):
             isinstance(x, np.ndarray) and x.dtype==float:
                 return np.array(asfloat(self)+x)
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
             out = frac(self.a*x.b + self.b*x.a, self.b*x.b)
@@ -235,7 +235,7 @@ class frac(object):
             isinstance(x, np.ndarray) and x.dtype==float:
                 return np.array(asfloat(self)*x)
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
             out = frac(self.a*x.a, self.b*x.b)
@@ -252,7 +252,7 @@ class frac(object):
             isinstance(x, np.ndarray) and x.dtype==float:
                 return np.array(asfloat(self) - x)
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
             return frac(self.a*x.b - self.b*x.a, self.b*x.b)
@@ -268,7 +268,7 @@ class frac(object):
             isinstance(x, np.ndarray) and x.dtype==float:
                 return np.array(asfloat(self)/x)
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
             out = frac(self.a*x.b, self.b*x.a)
@@ -285,7 +285,7 @@ class frac(object):
             isinstance(x, np.ndarray) and x.dtype==float:
                 return np.array(asfloat(self)**x)
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
 
@@ -322,7 +322,7 @@ class frac(object):
 
     def __eq__(self, x):
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
             return (self.a==x.a)*(self.b==x.b)
@@ -330,7 +330,7 @@ class frac(object):
 
     def __ne__(self, x):
 
-        if isinstance(x, (int, long, np.ndarray, frac)):
+        if isinstance(x, (int, np.ndarray, frac)):
             if not isinstance(x, frac):
                 x = frac(x)
             return (self.a!=x.a)+(self.b!=x.b)
@@ -418,7 +418,7 @@ def sum(A, axis):
         b = np.rollaxis(A.b, axis)
 
     A = np.sum([np.prod(b[:i], 0)*np.prod(b[i+1:], 0)*a[i] \
-        for i in xrange(len(b))], 0)
+        for i in range(len(b))], 0)
     B = np.prod(b, 0)
     return frac(A, B)
 
@@ -476,7 +476,7 @@ def cumsum(A, axis=None):
         b = np.rollaxis(A.b, axis)
 
     A = [np.prod(b[:i], 0)*np.prod(b[i+1:], 0)*a[i] \
-        for i in xrange(len(b))]
+        for i in range(len(b))]
     A = np.rollaxis(np.cumsum(A, 0), axis)
     B = np.rollaxis(np.cumprod(b, 0), axis)
     return frac(A, B)

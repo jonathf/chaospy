@@ -52,8 +52,8 @@ def Cov(poly, dist=None, **kws):
         keys2 = sum(np.meshgrid(keys, keys))
     else:
         keys2 = np.empty((dim, N, N))
-        for i in xrange(N):
-            for j in xrange(N):
+        for i in range(N):
+            for j in range(N):
                 keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = dist.mom(keys1, **kws)
@@ -61,10 +61,10 @@ def Cov(poly, dist=None, **kws):
     mom = m2-np.outer(m1, m1)
 
     out = np.zeros((len(poly), len(poly)))
-    for i in xrange(len(keys)):
+    for i in range(len(keys)):
         a = A[keys[i]]
         out += np.outer(a, a)*mom[i, i]
-        for j in xrange(i+1, len(keys)):
+        for j in range(i+1, len(keys)):
             b = A[keys[j]]
             ab = np.outer(a, b)
             out += (ab+ab.T)*mom[i, j]

@@ -1,74 +1,26 @@
-"""
-Class for organizing dependencies in runtime.
-Iteraction with this element is required to create advanced
-distributions.
+r"""
+Constructing an transitional operator requires to construct the
+distributions different from a stand-alone variable. To illustrate how
+to construct these types of variables, consider the following example.
+Let :math:`Q=A+B`, where one of :math:`A` and :math:`B` is a random
+variable, and the other a scalar. Which variable is what dependents on
+the user setup of the variable. Assuming that :math:`A` is the random
+variable, we have that
 
-To use a let a distribution be advanced, include the following
-parameters on initiation:
-    _advance=True       Initiates the advanced distribution
-    _length=len(dist)   Te length of a distribution. Defaults to 1
+.. math::
 
-Subsetting the Dist-class using the _advance feature requires the
-following backend methods.
-The required ones are:
+    F_{Q\mid B}(q\mid b) = \mathbb P {q\leq Q\mid B\!=\!b} =
+    \mathbb P {q\leq AB\mid B\!=\!b}
 
-    _cdf(self, x, G)        Cumulative distribution function
-    _bnd(self, x, G)        Upper and lower bounds at location x
+    = \mathbb P {\tfrac qb\leq A\mid B\!=\!b} =
+    F_{A\mid B}(\tfrac qb\mid b).
 
-The following can be provided:
+Because of symmetry the distribution will be the same, but with
+:math:`A` and :math:`B` substituted.
 
-    _pdf(self, x, G)        Probability density function
-    _ppf(self, q, G)        CDF inverse
-    _mom(self, k, G)        Statistical moment generator
-    _ttr(self, k, G)        TTR coefficients generator
-    _dep(self, G)           Dependency callback.
-    _val(self, G)           Value callback function. Used to
-                            itterative check if a distribution has
-                            been evaluated before, indirectly.
-    _str(self, **prm)       Preaty print of distribution
-
-Here G is the graph. It is used as follows.
-
-Access parameter for distributions, input locations (or
-constants), and function evaluations respectively:
-    G.D, G.K, G.V
-See Container for it's usage.
-
-Itterate the graph by evaluating the distribution it is a wrapper for:
-    G(z, dist)
-where z is locations, and dist is the distribution it wraps.
-
-Itterate through distribution's dependencies:
-    for dist in G
-or get all distributions as a list:
-    G.dependencies()
-
-print the chaospy state of graph:
-    print(G)
-
-Make a copy of chaospy state:
-    G.copy()
-
-Initiate an itteration process:
-    G.run(...)
-
-Switch from PDF to forward seemlessly:
-    G.fwd_as_pdf(x, dist)
-
-From dist.backend we have that there are two new methods. They are
-defined as follows.
-
-    _val(self, G)   If enough information exists to say that the
-                    distribution is evaluated given the state of
-                    parameters, return that value.  Else return
-                    self.
-
-    _dep(self, G)   Return a list l with len(l)==len(self)with all
-                    dependent distributions as a set in each
-                    element.  A common element between two sets
-                    implies dependencies.  Use G(dist) (instead of
-                    G(x, dist)) to generate a distributions
-                    dependencies.
+This is required when trying to use operators on multivariate variables. To
+create such a variable with ``construct`` provide an additional ``length``
+keyword argument specifying the length of a distribution.
 """
 
 import numpy as np
@@ -79,14 +31,94 @@ from .approx import pdf, ppf, mom
 
 class Graph():
     """
-A hierarcical representation of dependencies between random
-variables.
+    Class for organizing dependencies in runtime.
+
+    Iteraction with this element is required to create advanced
+    distributions.
+
+    To use a let a distribution be advanced, include the following
+    parameters on initiation::
+
+        _advance=True       Initiates the advanced distribution
+        _length=len(dist)   Te length of a distribution. Defaults to 1
+
+    Subsetting the Dist-class using the _advance feature requires the
+    following backend methods.
+    The required ones are::
+
+        _cdf(self, x, G)        Cumulative distribution function
+        _bnd(self, x, G)        Upper and lower bounds at location x
+
+    The following can be provided::
+
+        _pdf(self, x, G)        Probability density function
+        _ppf(self, q, G)        CDF inverse
+        _mom(self, k, G)        Statistical moment generator
+        _ttr(self, k, G)        TTR coefficients generator
+        _dep(self, G)           Dependency callback.
+        _val(self, G)           Value callback function. Used to
+                                itterative check if a distribution has
+                                been evaluated before, indirectly.
+        _str(self, **prm)       Preaty print of distribution
+
+    Here G is the graph. It is used as follows.
+
+    Access parameter for distributions, input locations (or
+    constants), and function evaluations respectively::
+
+        G.D, G.K, G.V
+
+    See Container for respective usage usage.
+
+    Iterate through the graph by evaluating the distribution it is a wrapper
+    for::
+
+        G(z, dist)
+
+    where z is locations, and dist is the distribution it wraps.
+
+    Iterate through distribution's dependencies::
+
+        for dist in G
+
+    or get all distributions as a list::
+
+        G.dependencies()
+
+    print the chaospy state of graph::
+
+        print(G)
+
+    Make a copy of chaospy state::
+
+        G.copy()
+
+    Initiate an itteration process::
+
+        G.run(...)
+
+    Switch from PDF to forward seemlessly::
+
+        G.fwd_as_pdf(x, dist)
+
+    From dist.backend we have that there are two new methods. They are
+    defined as follows::
+
+        _val(self, G)   If enough information exists to say that the
+                        distribution is evaluated given the state of
+                        parameters, return that value.  Else return self.
+
+        _dep(self, G)   Return a list l with len(l)==len(self) with all
+                        distributions it depends upon as a set in each
+                        element.  A common element between two sets implies
+                        dependencies.  Use G(dist) (instead of G(x, dist)) to
+                        generate a distributions dependencies.
     """
 
     def __init__(self, dist):
         """
-dist : Dist
-    The root of the dependency tree.
+        Args:
+            dist (Dist) : The root of the dependency tree.
         """
 
         graph = nx.DiGraph()
@@ -119,7 +151,12 @@ dist : Dist
         self.K = Keys(self)
         self.V = Vals(self)
 
-        self.__call__ = None
+        self._call = None
+
+
+    def __call__(self, *args, **kwargs):
+        return self._call(*args, **kwargs)
+
 
     def __str__(self):
         graph = self.graph
@@ -145,7 +182,7 @@ dist : Dist
 
     def copy(self):
         """
-Shallow copy of graph. Distribution stays the same.
+        Shallow copy of graph. Distribution stays the same.
         """
 
         G = Graph(self.root)
@@ -155,35 +192,36 @@ Shallow copy of graph. Distribution stays the same.
 
         G.size = self.size
         G.meta = self.meta
-        G.__call__ = self.__call__
+        G._call = self._call
 
         return G
 
 
     def run(self, x, mode, **meta):
         """
-Run through network to perform an operator.
-Using this during another call is possible, but care has to be
-taken to ensure that the chaospy graph state is compatible with the
-new call.
+        Run through network to perform an operator.
 
-x : np.ndarray
-    Input variable with shape=(D,K), where D is the number of
-    dimensions in dist.
-mode : str
-    What type of operator to perform.
-    Key     Type
-    ---     ----
-    "fwd"   Forward
-    "inv"   Inverse
-    "range" Lower and upper limits
-        self.N, N = 0, self.N
-    "ttr"   Three terms recursion coefficient generator
-    "mom"   Raw statistical moments
-    "dep"   Dependencies
-    "val"   Values
-**meta
-    Keyword argument passed to approximation method if run.
+        Using this during another call is possible, but care has to be
+        taken to ensure that the chaospy graph state is compatible with the
+        new call.
+
+        Available modes to run in:
+        ------- -------------------------------------------
+        "fwd"   Forward
+        "inv"   Inverse
+        "range" Lower and upper limits
+        "ttr"   Three terms recursion coefficient generator
+        "mom"   Raw statistical moments
+        "dep"   Dependencies
+        "val"   Values
+        ------- -------------------------------------------
+
+        Args:
+            x (np.ndarray) : Input variable with shape=(D,K), where D is the
+                    number of dimensions in dist.
+            mode (str) : What type of operator to perform.
+        **meta
+            Keyword argument passed to approximation method if run.
         """
         if mode in ("rnd", "dep", "val"):
             self.size, size = x, self.size
@@ -199,25 +237,25 @@ mode : str
             graph.add_edges_from(graph_source.edges())
             graph, self.graph = self.graph, graph
 
-        call = self.__call__
+        call = self._call
         if mode=="fwd":
-            self.__call__ = self.fwd_call
+            self._call = self.fwd_call
         elif mode=="pdf":
-            self.__call__ = self.pdf_call
+            self._call = self.pdf_call
         elif mode=="inv":
-            self.__call__ = self.inv_call
+            self._call = self.inv_call
         elif mode=="range":
-            self.__call__ = self.range_call
+            self._call = self.range_call
         elif mode=="ttr":
-            self.__call__ = self.ttr_call
+            self._call = self.ttr_call
         elif mode=="mom":
-            self.__call__ = self.mom_call
+            self._call = self.mom_call
         elif mode=="dep":
-            self.__call__ = self.dep_call
+            self._call = self.dep_call
         elif mode=="rnd":
-            self.__call__ = self.rnd_call
+            self._call = self.rnd_call
         elif mode=="val":
-            self.__call__ = self.val_call
+            self._call = self.val_call
         else:
             raise ValueError("unknown mode")
 
@@ -240,9 +278,8 @@ mode : str
             graph = self.graph
         else:
             graph, self.graph = self.graph, graph
-        self.__call__ = call
+        self._call = call
         self.meta = meta
-        self.N = 0
 
         return out, graph
 
@@ -331,11 +368,11 @@ mode : str
         graph.add_edges_from(graph_source.edges())
         graph, self.graph = self.graph, graph
 
-        self.__call__ = self.fwd_call
+        self._call = self.fwd_call
         out = self(x, dist)
 
         graph, self.graph = self.graph, graph
-        self.__call__ = self.pdf_call
+        self._call = self.pdf_call
 
         return out
 
@@ -535,25 +572,36 @@ Set of node dependencies
 
 
 class Container(object):
-    """Graph interactive wrapper
+    """
+    Graph interactive wrapper.
 
-Used to retrieve parameters in a distribution.
-Can be interacted with as follows:
+    Used to retrieve parameters in a distribution. Comes in three flavoers:
 
-Retrieve parameter:
-    container["param"]
+        D   Dist
+        K   Keys
+        V   Vals
 
-Check of paramater is in collection:
-    "param" in container
+    Can be interacted with as follows:
 
-Itterate over all parameters:
-    for (key,param) in container
+    Retrieve parameter::
 
-Generate dictionary with all values:
-    container.build()
+        container["param"]
 
-Identify the number of parameters available:
-    len(container)
+    Check of paramater is in collection::
+
+        "param" in container
+
+    Itterate over all parameters::
+
+        for (key,param) in container
+
+    Generate dictionary with all values::
+
+        container.build()
+
+    Identify the number of parameters available::
+
+        len(container)
     """
 
     def __init__(self, G):
@@ -580,10 +628,11 @@ Identify the number of parameters available:
         return len(self.build())
 
 class Dists(Container):
-    "Contains all dstributions"
+    """Contains all distributions."""
 
     def __contains__(self, key):
         return not isinstance(self.G.dist.prm[key], np.ndarray)
+
     def getitem(self, key):
         if not key in self:
             raise KeyError()
@@ -591,8 +640,10 @@ class Dists(Container):
 
 class Keys(Container):
     """
-Contains all values, either as constants or as
-substitutes of distributions"""
+    Contains all values.
+
+    Either as constants or as substitutes of distributions.
+    """
 
     def __contains__(self, key):
 
@@ -624,10 +675,12 @@ substitutes of distributions"""
 
 class Vals(Container):
     """Contains all evaluations of distributions."""
+
     def __contains__(self, key):
         out = self.G.dist.prm[key]
         return  not isinstance(out, np.ndarray) and \
                 "val" in self.G.graph.node[out]
+
     def getitem(self, key):
         if not key in self:
             raise KeyError()

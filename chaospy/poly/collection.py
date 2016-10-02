@@ -104,7 +104,7 @@ def lagrange(X):
     dim, K = X.shape
 
     coefs = np.zeros((dim, K, K))
-    for d in xrange(dim):
+    for d in range(dim):
         s,t = np.mgrid[:K,:K]
         coefs[d] = X[d,s]-X[d,t]
         coefs[d] += np.eye(K)
@@ -133,11 +133,11 @@ def cutoff(P, *args):
     Examples:
         >>> P = prange(4, 1) + prange(4, 2)[::-1]
         >>> print(P)
-        [q1^3+1, q0+q1^2, q0^2+q1, q0^3+1]
+        [q1^3+1, q1^2+q0, q0^2+q1, q0^3+1]
         >>> print(cutoff(P, 3))
-        [1, q0+q1^2, q0^2+q1, 1]
+        [1, q1^2+q0, q0^2+q1, 1]
         >>> print(cutoff(P, 1, 3))
-        [0, q0+q1^2, q0^2+q1, 0]
+        [0, q1^2+q0, q0^2+q1, 0]
     """
     if len(args)==1:
         low, high = 0, args[0]
@@ -196,7 +196,7 @@ def differential(P, Q):
 
         A[tuple(newkey)] = P.A[key]*np.prod([fac(key[i], \
             exact=True)/fac(newkey[i], exact=True) \
-            for i in xrange(P.dim)])
+            for i in range(P.dim)])
 
     return Poly(A, P.dim, None)
 
@@ -232,7 +232,7 @@ def prange(N=1, dim=1):
     A = {}
     r = np.arange(N, dtype=int)
     key = np.zeros(dim, dtype=int)
-    for i in xrange(N):
+    for i in range(N):
         key[-1] = i
         A[tuple(key)] = 1*(r==i)
 
@@ -256,7 +256,7 @@ def rolldim(P, n=1):
         >>> print(P)
         q0^3+q1^2+q2
         >>> print(rolldim(P))
-        q0^2+q1+q2^3
+        q0^2+q2^3+q1
     """
     dim = P.dim
     shape = P.shape
@@ -284,7 +284,7 @@ def swapdim(P, dim1=1, dim2=0):
         >>> print(P)
         q0^4-q1
         >>> print(swapdim(P))
-        -q0+q1^4
+        q1^4-q0
     """
     if not isinstance(P, Poly):
         return np.swapaxes(P, dim1, dim2)
@@ -357,7 +357,7 @@ def variable(dims=1):
 
     r = np.arange(dims, dtype=int)
     A = {}
-    for i in xrange(dims):
+    for i in range(dims):
         A[tuple(1*(r==i))] = 1*(r==i)
 
     return Poly(A, dim=dims, shape=(dims,))
@@ -419,7 +419,7 @@ def order(P):
 #     if not isinstance(P, Poly):
 #         A = {}
 #         coefs = np.poly(P)[::-1]
-#         for i in xrange(len(coefs)):
+#         for i in range(len(coefs)):
 #             if coefs[i]:
 #                 A[(i,)] = np.array(coefs[i])
 #         return Poly(A)

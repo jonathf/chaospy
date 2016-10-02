@@ -1,14 +1,36 @@
 """
-Operators for creating multivariate distributions.
+One of ``chaospy``'s most powerful features is possible to construct advance
+multivariate variables directly through dependencies. To illustrate this,
+consider the following bivariate distribution::
 
-It contains the following two operators:
+    >>> dist_ind = cp.Gamma(1)
+    >>> dist_dep = cp.Normal(dist_ind**2, dist_ind+1)
+    >>> distribution = cp.J(dist_ind, dist_dep)
 
-    J       Joint operator
-    Iid     Independent identical distributed generator
+In other words, a distribution dependent upon another distribution was created
+simply by inserting it into the constructor of another distribution. The
+resulting bivariate distribution if fully valid with dependent components.
+For example the probability density function functions will in this case look
+as follows::
 
-Extra for these distribution beyond bavckend.Dist is that they
-behave like a itterable tuple.
-It support __getitem__, __iter__.
+    >>> x, y = np.meshgrid(np.linspace(-4, 7), np.linspace(0, 3))
+    >>> likelihood = distribution.pdf([x, y])
+
+This method also allows for construct any multivariate probabilty distribution
+as long as you can fully construct the distribution's conditional decomposition
+as noted in :ref:`rosenblatt`. One only has to construct each univariate
+probability distribution and add dependencies in through the parameter
+structer.
+
+Now it is worth noting a couple of cavats:
+
+* Since the underlying feature to accomplish this is the :ref:`rosenblatt`, the
+  number of unique random variables in the final joint distribution has to be
+  constant. In other words, `dist_dep` is not a valid distribution in itself,
+  since it is univariat, but depends on the results of `dist_ind`.
+* The dependency order does not matter as long as it can defined as an asyclic
+  graph. In other words, `dist_ind` can not be dependent upon `dist_dep` at
+  the same time as `dist_dep` is dependent upon `dist_ind`.
 """
 import numpy as np
 from copy import copy
@@ -138,13 +160,13 @@ Parameters
 
     def _str(self, **prm):
         dists = [prm["_%03d" % i] \
-                for i in xrange(self.length)]
+                for i in range(self.length)]
         dists = ",".join(map(str, dists))
         return "J(" + dists + ")"
 
     def _dep(self, G):
         dists = [self.prm["_%03d" % i] \
-                for i in xrange(len(self))]
+                for i in range(len(self))]
         sets = [G(dist)[0] for dist in dists]
         return sets
 
@@ -163,7 +185,7 @@ Parameters
             if step is None: step = 1
             out = []
             prm = self.prm
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 out.append(prm["_%03d" % i])
             return J(*out)
 

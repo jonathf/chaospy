@@ -1,116 +1,27 @@
-"""
-Rosenblatt Distributions (RoseDist)
+r"""
+As noted throughout the documentation, known distributions are created easily
+by calling their name of the function of interest. For example to create
+a Gaussian random variable::
 
-This module focuses on construction, manipulation and analysis of
-random variables, and their underlying probability distribution.
-The main component for addressing multivariate distribution is
-through the automatical handling of Rosenblatt transformations.
+   >>> distribution = cp.Normal(0,1)
 
-The module contains the following submodules:
+To construct simple multivariate random variables with stochastically
+independent components, either all the same using :func:`~chaospy.dist.Iid`::
 
-    approx          Methods for calculating variable statistics
-                    when the approriate function is unavailable.
-    backend         The superclass for the distribution object
-                    Dist. All distributions are based on this one.
-    collection      Collection of various probability
-                    distributions.
-    copulas         Collection of various copulas.
-    cores           Backend module for collection submodule
-    graph           The internal module for handling dependencies
-                    between variables. Also the core for creating
-                    advanced variables.
-    hyperbolic      Collection of hyperbolic distributions.
-    joint           Tools for creating multivariat distributions.
-    operators       Collection of basic operators (+,-,*,/,^,>,<).
-    sampler         Sample generator on the unit-hypercube.
-    sobol_lib       Library for generating Sobol sequences.
-    trignomatric    Collection of trignometric operators.
+   >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
 
-Examples
---------
->>> X1 = cp.Normal(0,1)
->>> print(X1.mom([1,2,3,4]))
-[ 0.  1.  0.  3.]
+Or with more detailed control through :func:`~chaospy.dist.J`::
 
->>> X2 = cp.Uniform(0,4)
->>> print(X2.fwd([2,3,4]))
-[ 0.5   0.75  1.  ]
+   >>> distribution = cp.J(cp.Normal(0, 1), cp.Normal(0, 1))
 
->>> X = cp.J(X1,X2)
->>> print(X.sample(3))
-[[ 0.39502989 -1.20032309  1.64760248]
- [ 1.92876561  3.48989814  0.84933072]]
+The functionality of the distributions are covered in various other sections:
 
->>> Y = cp.Iid(X1, 3)
->>> print(cp.Cov(Y))
-[[ 1.  0.  0.]
- [ 0.  1.  0.]
- [ 0.  0.  1.]]
+* To generate random samples, see :ref:`montecarlo`.
+* To create transformations, see :ref:`rosenblatt`.
+* To generate raw statistical moments, see :ref:`moments`.
+* To generate three terms recurrence coefficients, see :ref:`orthogonality`.
+* To analyse statistical properies, see :ref:`descriptives`.
 
-Distributions
--------------
-Uniform         Uniform
-Loguniform      Log-uniform
-Normal          Normal (Gaussian)
-Lognormal       Log-normal
-Gamma           Gamma
-Expon           Exponential
-Laplace         Laplace
-Beta            Beta
-Weibull         Weibull
-Triangle        Triangle
-Wigner          Wigner (semi-circle)
-Kumaraswamy     Kumaraswswamy's double bounded
-Hypgeosec       hyperbolic secant
-Arcsinus        Generalized Arc-sinus
-Logistic        Generalized logistic type 1 or Sech squared
-Student_t       (Non-central) Student-t
-Raised_cosinei  Raised cosine
-Alpha           Alpha
-MvNormal        Multivariate Normal
-MvLognormal     Multivariate Log-Normal
-MvStudent_t     Multivariate student-t
-Anglit          Anglit
-Bradford        Bradford
-Burr            Burr Type XII or Singh-Maddala
-Fisk            Fisk or Log-logistic
-Cauchy          Cauchy
-Chi             Chi
-Dbl_gamma       Double gamma
-Dbl_weibull     Double weibull
-Exponweibull    Expontiated Weibull
-Exponpow        Expontial power or Generalized normal version 1
-Fatiguelife     Fatigue-Life or Birmbaum-Sanders
-Foldcauchy      Folded Cauchy
-F               (Non-central) F or Fisher-Snedecor
-Foldnormal      Folded normal
-Frechet         Frechet or Extreme value type 2
-Genexpon        Generalized exponential
-Genextreme      Generalized extreme value or Fisher-Tippett
-Gengamma        Generalized gamma
-Genhalflogistic Generalized half-logistic
-Gompertz        Gompertz
-Gumbel          Gumbel or Log-Weibull
-Levy            Levy
-Loggamma        Log-gamma
-Loglaplace      Log-laplace
-Gibrat          Gilbrat or Standard log-normal
-Maxwell         Maxwell-Boltzmann
-Mielke          Mielke's beta-kappa
-Nakagami        Nakagami-m
-Chisquard       (Non-central) Chi-squared
-Pareto1         Pareto type 1
-Pareto2         Pareto type 2
-Powerlaw        Powerlaw
-Powerlognormal  Power log-normal
-Powernorm       Power normal or Box-Cox
-Wald            Wald or Reciprocal inverse Gaussian
-Rayleigh        Rayleigh
-Reciprocal      Reciprocal
-Truncexpon      Truncated exponential
-Truncnorm       Truncated normal
-Tukeylambda     Tukey-lambda
-Wrapcauchy      Wraped Cauchy
 """
 
 import chaospy.dist.backend

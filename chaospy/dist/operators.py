@@ -92,7 +92,7 @@ class Add(Dist):
             k = k.flatten()
 
         out = 0.
-        for i in xrange(K.shape[1]):
+        for i in range(K.shape[1]):
             I = K.T[i]
             coef = comb(k.T, I)
             a0 = A[0][i]
@@ -385,11 +385,11 @@ class Mvmul(Dist):
         dist = G.D["dist"]
         S = G(dist)
 
-        out = [set([]) for _ in xrange(len(self))]
+        out = [set([]) for _ in range(len(self))]
         C = G.K["C"]
 
-        for i in xrange(len(self)):
-            for j in xrange(len(self)):
+        for i in range(len(self)):
+            for j in range(len(self)):
                 if C[i,j]:
                     out[i].update(S[j])
 
@@ -825,7 +825,7 @@ class Composit(Dist):
         Q = dist.fwd(x)
         out = np.empty(x.shape)
         up = LO
-        for n in xrange(N):
+        for n in range(N):
             lo, up = up, t[n+1]*(UP-LO)+LO
             out[:,n] = ((Q[:,n].T-lo)/(up-lo)).T
 
@@ -838,7 +838,7 @@ class Composit(Dist):
         shape = q.shape
         q = q.reshape(dim, N, q.size/dim/N)
         t = np.linspace(0,1,N+1)
-        for n in xrange(N):
+        for n in range(N):
             q[:,n] = q[:,n]*(t[n+1]-t[n]) + t[n]
         return dist.inv(q).reshape(shape)
 
@@ -849,7 +849,7 @@ class Composit(Dist):
         lo,up = dist.range()
 
         out = np.empty((2,dim,N))
-        for d in xrange(dim):
+        for d in range(dim):
             t = np.linspace(lo[d], up[d], N+1)
             out[0,d], out[1,d] = t[:-1], t[1:]
         out = out.reshape(2, dim*N)

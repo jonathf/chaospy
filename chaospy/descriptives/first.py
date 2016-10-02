@@ -1,6 +1,7 @@
 """
 First order statistics functions.
 """
+from itertools import product
 import numpy as np
 
 import chaospy as cp
@@ -62,7 +63,7 @@ def E(poly, dist=None, **kws):
         mom = mom[0]
 
     out = np.zeros(poly.shape)
-    for i in xrange(len(keys)):
+    for i in range(len(keys)):
         out += A[keys[i]]*mom[i]
 
     out = np.reshape(out, shape)
@@ -73,38 +74,42 @@ def E_cond(poly, freeze, dist, **kws):
 
     assert not dist.dependent()
 
-    if poly.dim<len(dist):
+    if poly.dim < len(dist):
         poly = cp.poly.setdim(poly, len(dist))
 
     freeze = cp.poly.Poly(freeze)
     freeze = cp.poly.setdim(freeze, len(dist))
-    keys = freeze.A.keys()
+    keys = freeze.keys
     if len(keys)==1 and keys[0]==(0,)*len(dist):
-        freeze = freeze.A.values()[0]
+        freeze = list(freeze.A.values())[0]
     else:
         freeze = np.array(keys)
-    freeze = freeze.reshape(freeze.size/len(dist), len(dist))
+    freeze = freeze.reshape(int(freeze.size/len(dist)), len(dist))
 
     shape = poly.shape
     poly = cp.poly.flatten(poly)
 
     kmax = np.max(poly.keys, 0)+1
-    keys = [i for i in np.ndindex(*kmax)]
+    # TODO: swap ndindex with cp.bertran.olindex iterator
+    # keys = [i for i in np.ndindex(*kmax)]
+    keys = [range(k) for k in kmax]
+    keys = [k for k in product(*keys)]
+
     vals = dist.mom(np.array(keys).T, **kws).T
     mom = dict(zip(keys, vals))
 
     A = poly.A.copy()
-    keys = A.keys()
+    keys = poly.keys
 
     out = {}
     zeros = [0]*poly.dim
-    for i in xrange(len(keys)):
+    for i in range(len(keys)):
 
         key = list(keys[i])
         a = A[tuple(key)]
 
-        for d in xrange(poly.dim):
-            for j in xrange(len(freeze)):
+        for d in range(poly.dim):
+            for j in range(len(freeze)):
                 if freeze[j, d]:
                     key[d], zeros[d] = zeros[d], key[d]
                     break
@@ -115,8 +120,8 @@ def E_cond(poly, freeze, dist, **kws):
         else:
             out[tuple(zeros)] = tmp
 
-        for d in xrange(poly.dim):
-            for j in xrange(len(freeze)):
+        for d in range(poly.dim):
+            for j in range(len(freeze)):
                 if freeze[j, d]:
                     key[d], zeros[d] = zeros[d], key[d]
                     break

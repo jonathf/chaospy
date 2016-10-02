@@ -79,7 +79,7 @@ Examples
             raise ValueError("shapes must be smaller than 3")
         return x
 
-    X = map(clean, X)
+    X = [clean(x) for x in X]
 
     if not (part is None):
         parts, orders = part
@@ -87,7 +87,7 @@ Examples
             orders = [int(np.array(orders).item())]*len(X)
         parts = np.array(parts).flatten()
 
-        for i in xrange(len(X)):
+        for i in range(len(X)):
             m,n = float(parts[i]), float(orders[i])
             l = len(X[i])
             X[i] = X[i][int(m/n*l):int((m+1)/n*l)]
@@ -141,7 +141,7 @@ def combine_bac(X, chunk=2):
     grid = np.mgrid[[slice(0,len(_),1) for _ in X]]
     grid = grid.reshape(L, grid.size/L)
 
-    X = [X[i][grid[i]] for i in xrange(L)]
+    X = [X[i][grid[i]] for i in range(L)]
     X = np.concatenate(X, 1)
 
     return X
@@ -210,8 +210,7 @@ convert : callable, optional
 
     def __call__(self, *args, **kws):
 
-        items = kws.items()
-        items.sort(key=lambda x:x[0])
+        items = sorted(kws.items(), key=lambda x:x[0])
         key = args + tuple(items)
 
         if not (self.convert is None):
@@ -368,12 +367,12 @@ array([-0.0039152 , -0.00224043, -0.00282827,\
     x = x0 + span * (2 * r.random_sample(dim) - 1)
     v = span / 10. * (2 * r.random_sample(dim) - 1)
     xpbest = x[:]
-    fpbest = np.array(map(func, x))
+    fpbest = np.array([func(_) for _ in x])
     index = np.argmin(fpbest)
     xgbest = xpbest[index]
 
     # Starting the process.
-    for iter in xrange(maxiter):
+    for iter in range(maxiter):
 
         # Update velocity and possition
         v = w*v + c1* r.random_sample(dim) *(xpbest-x) \
@@ -381,7 +380,7 @@ array([-0.0039152 , -0.00224043, -0.00282827,\
         x += v
 
         # Update x_pbest and f(x_pbest)
-        fx = np.array(map(func, x))
+        fx = np.array([func(_) for _ in x])
         improve = (fx < fpbest)
         xpbest = (xpbest.T * (improve==0) + x.T*improve).T
         fpbest = fpbest * (improve==0) + fx*improve
@@ -417,7 +416,7 @@ time (sec):     %g''' % (xgbest, fgbest, iterations, t))
     return xgbest
 
 def mlog10(a):
-    """Interger part of log10. Works on large long variables."""
+    """Interger part of log10. Works on large int variables."""
 
     out = 0
     while a>=10**100:
@@ -434,7 +433,7 @@ def mlog10(a):
 
     return out
 
-mlog10 = lazy_eval(mlog10, lambda x: long(max(x.flatten())))
+mlog10 = lazy_eval(mlog10, lambda x: int(max(x.flatten())))
 
 
 def mci(func, dist, samples=10**5, args=(), kws={}):
@@ -755,7 +754,7 @@ alpha : float, optional
         out = np.empty((m,l) + b.shape[1:])
         A_ = np.empty((m-1,l))
         b_ = np.empty((m-1,) + b.shape[1:])
-        for i in xrange(m):
+        for i in range(m):
             A_[:i] = A[:i]
             A_[i:] = A[i+1:]
             b_[:i] = b[:i]
