@@ -1,3 +1,6 @@
+networkx>=1.11
+numpy>=1.11
+scipy
 scikit-learn>=0.17
 pytest>=3.0.0
 pytest-runner>=2.9
