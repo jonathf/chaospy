@@ -10,7 +10,7 @@ import chaospy as cp
 
 __all__ = [
     "add", "terms", "multi_index", "bindex", "single_index", "rank",
-    "child", "parent", "olindex"
+    "child", "parent", "olindex", "olindices",
 ]
 
 def add(idxi, idxj, dim):
@@ -332,3 +332,21 @@ def olindex(order, dim):
 
     _olindex(0)
     return np.array(out)
+
+
+def olindices(order, dim):
+    """
+    Create an lexiographical sorted basis for a given order.
+
+    Examples:
+        >>> cp.olindices(2, 2)
+        array([[0, 0],
+               [0, 1],
+               [1, 0],
+               [0, 2],
+               [1, 1],
+               [2, 0]])
+    """
+    indices = [olindex(o, dim) for o in range(order+1)]
+    indices = np.vstack(indices)
+    return indices

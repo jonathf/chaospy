@@ -8,21 +8,39 @@ polynomials stabilized using the three terms recursion relation:
 
 .. math::
 
-       \Phi_{n+1}(q) = \Phi_{n}(q)(q-A_n) - \Phi_{n-1}(q) B_n,
+    \Phi_{n+1}(q) = \Phi_{n}(q)(q-A_n) - \Phi_{n-1}(q) B_n,
 
- where
+where
 
 .. math::
 
-       A_n = 
-       \frac{\left\langle{q\bm\Phi_n,\bm\Phi_n}}{
-           \left\langle{\bm\Phi_n,\bm\Phi_n}} =
-           \frac{\E{q\Phi_{n}^2}}{\E{\Phi_n^2}}
+    A_n &= \frac{
+        \left\langle
+            q \Phi_n, \Phi_n
+        \right\rangle
+    }{
+        \left\langle
+            \Phi_n, \Phi_n
+        \right\rangle
+    } = \frac{
+        \mathbb E[q\Phi_{n}^2]
+    }{
+        \mathbb E[\Phi_n^2]
+    }
 
-       B_n =
-       \frac{\left\langle{\bm\Phi_n,\bm\Phi_n}}{
-           \left\langle{\bm\Phi_{n-1},\bm\Phi_{n-1}}} =
-           \frac{\E{\Phi_{n}^2}}{\E{\Phi_{n-1}^2}}
+    B_n &= \frac{
+        \left\langle
+            \Phi_n, \Phi_n
+        \right\rangle
+    }{
+        \left\langle
+            \Phi_{n-1}, \Phi_{n-1}
+        \right\rangle
+    } = \frac{
+        \mathbb E[\Phi_{n}^2]
+    }{
+        \mathbb E[\Phi_{n-1}^2]
+    }
 
 A multivariate polynomial expansion can be created using tensor product
 rule of univariate polynomials expansions. This assumes that the
@@ -31,10 +49,10 @@ distribution is stochastically independent.
 In the ``chaospy`` toolbox three terms recursion coefficient can be
 generating by calling the ``ttr`` instance method::
 
-   >>> dist = cp.Uniform(-1,1)
-   >>> print(dist.ttr([0,1,2,3]))
-   [[ 0.          0.          0.          0.        ]
-    [-0.          0.33333333  0.26666667  0.25714286]]
+    >>> dist = cp.Uniform(-1,1)
+    >>> print(dist.ttr([0,1,2,3]))
+    [[ 0.          0.          0.          0.        ]
+     [-0.          0.33333333  0.26666667  0.25714286]]
 
 Looking back to section :ref:`distributions` and the ``pc.contruct`` function,
 ``ttr`` can be added as a keyword argument. So tailored recursion coefficients
@@ -64,25 +82,26 @@ univariate polynomials together:
 
 .. math::
 
-       \bm\Phi_n = \Phi_{1,n_1}\cdots\Phi_{N,n_N}
+    \Phi_n = \Phi_{1,n_1}\cdots\Phi_{N,n_N}
 
 where :math:`\Phi_{i,n_i}` represents the :math:`n_i`-th polynomial in
 the univariate expansion orthogonal with respect to the :math:`i`-th
-component of :math:`\bm Q`. For the orthogonality to hold, it must be
-assumed that :math:`p_{\bm Q}` is stochastically independent. This to
+component of :math:`Q`. For the orthogonality to hold, it must be
+assumed that :math:`p_{Q}` is stochastically independent. This to
 assure the third equality in
 
 .. math::
 
-       \left\langle{\bm\Phi_n,\bm\Phi_m}\right\rangle =
-       \E{ \bm\Phi_n\bm\Phi_m } =
-       \E{ \Phi_{1,n_1}\Phi_{i,m_1} \cdots\Phi_{N,n_N}
-       \Phi_{N,m_N} } \\ &=
-       \E{\Phi_{1,n_1}\Phi_{1,m_1}}\cdots
-       \E{ \Phi_{N,n_N}\Phi_{N,m_N} }
+    \left\langle \Phi_n, \Phi_m \right\rangle &=
+    \mathbb E[\Phi_n \Phi_m ] =
+    \mathbb E[ \Phi_{1,n_1}\Phi_{i,m_1} \cdots\Phi_{N,n_N}
+    \Phi_{N,m_N} ]
 
-      = \left\langle{\Phi_{1,n_1},\Phi_{1,m_1}}\right\rangle
-      \cdots \left\langle{\Phi_{N,n_N},\Phi_{N,m_N}}{}.
+    &= \mathbb E[\Phi_{1,n_1}\Phi_{1,m_1}]\cdots
+    \mathbb E[ \Phi_{N,n_N}\Phi_{N,m_N} ]
+
+    &= \left\langle{\Phi_{1,n_1},\Phi_{1,m_1}}\right\rangle
+    \cdots \left\langle{\Phi_{N,n_N},\Phi_{N,m_N}}\right\rangle.
 
 Since each univariate polynomial expansion is orthogonal, this implies
 that the multivariate also is orthogonal.
@@ -90,10 +109,10 @@ that the multivariate also is orthogonal.
 In ``chaospy`` constructing orthogonal polynomial using the three term
 recursion scheme can be done through ``orth_ttr``. For example::
 
-   >>> dist = cp.Iid(cp.Gamma(1), 2)
-   >>> orths = cp.orth_ttr(2, dist)
-   >>> print(orths)
-   [1.0, q1-1.0, q0-1.0, q1^2-4.0q1+2.0, q0q1-q0-q1+1.0, q0^2-4.0q0+2.0]
+    >>> dist = cp.Iid(cp.Gamma(1), 2)
+    >>> orths = cp.orth_ttr(2, dist)
+    >>> print(orths)
+    [1.0, q1-1.0, q0-1.0, q1^2-4.0q1+2.0, q0q1-q0-q1+1.0, q0^2-4.0q0+2.0]
 
 The method will use the ``ttr`` function if available, and discretized
 Stieltjes otherwise.

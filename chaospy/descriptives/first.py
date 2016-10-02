@@ -1,6 +1,7 @@
 """
 First order statistics functions.
 """
+from itertools import product
 import numpy as np
 
 import chaospy as cp
@@ -90,7 +91,10 @@ def E_cond(poly, freeze, dist, **kws):
 
     kmax = np.max(poly.keys, 0)+1
     # TODO: swap ndindex with cp.bertran.olindex iterator
-    keys = [i for i in np.ndindex(*kmax)]
+    # keys = [i for i in np.ndindex(*kmax)]
+    keys = [range(k) for k in kmax]
+    keys = [k for k in product(*keys)]
+
     vals = dist.mom(np.array(keys).T, **kws).T
     mom = dict(zip(keys, vals))
 

@@ -7,7 +7,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
       >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
 
--  Create integration absissas and weights (as described in :ref`quadrature`)::
+-  Create integration absissas and weights (as described in :ref:`quadrature`)::
 
       >>> absissas, weights = cp.generate_quadrature(
       ...     2, distribution, rule="G")
@@ -54,7 +54,7 @@ discretized model as long as it is compatible with ``numpy`` shapes.
 
 As mentioned in section :ref:`orthogonality`, moment based construction of
 polynomials can be unstable. This might also be the case for the
-denominator :math:`\E{\bm\Phi_n^2}`. So when using three terms
+denominator :math:`\mathbb E{\Phi_n^2}`. So when using three terms
 recursion, it is common to use the recurrence coefficients to estimated
 the denominator.
 

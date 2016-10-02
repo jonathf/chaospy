@@ -184,4 +184,7 @@ def QoI_Dist(poly, dist, sample=1e4, **kws):
     qoi_dists = np.array(qoi_dists, cp.dist.Dist)
     qoi_dists = qoi_dists.reshape(shape)
 
+    if not shape:
+        qoi_dists = qoi_dists.item()
+
     return qoi_dists

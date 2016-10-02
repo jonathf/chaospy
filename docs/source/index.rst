@@ -12,20 +12,12 @@ Table of contents
 .. toctree::
    :maxdepth: 2
 
-   tutorial
-   montecarlo
-   regression
-   spectral
-
+   introduction
    distributions
-   listdist
    polynomials
-   quadrature
-   moments
-   orthogonality
+   integration
+   advanced
+   cookbook
    descriptives
-   rosenblatt
-   copulas
-   galerkin
 
    bibliography

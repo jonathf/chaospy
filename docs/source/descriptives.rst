@@ -1,13 +1,13 @@
 .. _descriptives:
 
-Descriptives
-------------
+Descriptive Statistics
+======================
 
 .. automodule:: chaospy.descriptives
 
 
 First order statistics
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 .. automodule:: chaospy.descriptives.first
 
@@ -15,7 +15,7 @@ First order statistics
 .. autofunction:: chaospy.descriptives.E_cond
 
 Second order statistics, 1 dimensional
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------
 
 .. automodule:: chaospy.descriptives.second1d
 
@@ -23,7 +23,7 @@ Second order statistics, 1 dimensional
 .. autofunction:: chaospy.descriptives.Std
 
 Second order statistics, 2 dimensional
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------
 
 .. automodule:: chaospy.descriptives.second2d
 
@@ -31,7 +31,7 @@ Second order statistics, 2 dimensional
 .. autofunction:: chaospy.descriptives.Corr
 
 Higher order statistics
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 .. automodule:: chaospy.descriptives.higher
 
@@ -40,7 +40,7 @@ Higher order statistics
 
 
 Sensitivity analysis
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 .. automodule:: chaospy.descriptives.sensitivity
 
@@ -52,7 +52,7 @@ Sensitivity analysis
 .. autofunction:: chaospy.descriptives.Sens_nataf
 
 Miscelanious descriptive tools
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------
 
 .. automodule:: chaospy.descriptives.misc
 

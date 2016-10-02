@@ -1,68 +1,250 @@
+.. _listdist:
+
 List of Distributions
----------------------
+=====================
 
 .. automodule:: chaospy.dist.collection
 
+Uniform Distribution
+--------------------
 .. autofunction:: chaospy.dist.collection.Uniform
-.. autofunction:: chaospy.dist.collection.Loguniform
-.. autofunction:: chaospy.dist.collection.Normal
-.. autofunction:: chaospy.dist.collection.Lognormal
-.. autofunction:: chaospy.dist.collection.Gamma
-.. autofunction:: chaospy.dist.collection.Exponential
-.. autofunction:: chaospy.dist.collection.Laplace
-.. autofunction:: chaospy.dist.collection.Beta
-.. autofunction:: chaospy.dist.collection.Weibull
-.. autofunction:: chaospy.dist.collection.Triangle
-.. autofunction:: chaospy.dist.collection.Wigner
-.. autofunction:: chaospy.dist.collection.Kumaraswamy
-.. autofunction:: chaospy.dist.collection.Hypgeosec
-.. autofunction:: chaospy.dist.collection.Arcsinus
-.. autofunction:: chaospy.dist.collection.Logistic
-.. autofunction:: chaospy.dist.collection.Student_t
-.. autofunction:: chaospy.dist.collection.Raised_cosine
-.. autofunction:: chaospy.dist.collection.Alpha
-.. autofunction:: chaospy.dist.collection.MvNormal
-.. autofunction:: chaospy.dist.collection.MvLognormal
-.. autofunction:: chaospy.dist.collection.MvStudent_t
-.. autofunction:: chaospy.dist.collection.Anglit
-.. autofunction:: chaospy.dist.collection.Bradford
-.. autofunction:: chaospy.dist.collection.Burr
-.. autofunction:: chaospy.dist.collection.Fisk
-.. autofunction:: chaospy.dist.collection.Cauchy
-.. autofunction:: chaospy.dist.collection.Chi
-.. autofunction:: chaospy.dist.collection.Dbl_gamma
-.. autofunction:: chaospy.dist.collection.Dbl_weibull
-.. autofunction:: chaospy.dist.collection.Exponweibull
-.. autofunction:: chaospy.dist.collection.Exponpow
-.. autofunction:: chaospy.dist.collection.Fatiguelife
-.. autofunction:: chaospy.dist.collection.Foldcauchy
-.. autofunction:: chaospy.dist.collection.F
-.. autofunction:: chaospy.dist.collection.Foldnormal
-.. autofunction:: chaospy.dist.collection.Frechet
-.. autofunction:: chaospy.dist.collection.Genexpon
-.. autofunction:: chaospy.dist.collection.Genextreme
-.. autofunction:: chaospy.dist.collection.Gengamma
-.. autofunction:: chaospy.dist.collection.Genhalflogistic
-.. autofunction:: chaospy.dist.collection.Gompertz
-.. autofunction:: chaospy.dist.collection.Logweibul
-.. autofunction:: chaospy.dist.collection.Levy
-.. autofunction:: chaospy.dist.collection.Loggamma
-.. autofunction:: chaospy.dist.collection.Loglaplace
-.. autofunction:: chaospy.dist.collection.Gilbrat
-.. autofunction:: chaospy.dist.collection.Maxwell
-.. autofunction:: chaospy.dist.collection.Mielke
-.. autofunction:: chaospy.dist.collection.Nakagami
-.. autofunction:: chaospy.dist.collection.Chisquard
-.. autofunction:: chaospy.dist.collection.Pareto1
-.. autofunction:: chaospy.dist.collection.Pareto2
-.. autofunction:: chaospy.dist.collection.Powerlaw
-.. autofunction:: chaospy.dist.collection.Powerlognormal
-.. autofunction:: chaospy.dist.collection.Powernorm
-.. autofunction:: chaospy.dist.collection.Wald
-.. autofunction:: chaospy.dist.collection.Rayleigh
-.. autofunction:: chaospy.dist.collection.Reciprocal
-.. autofunction:: chaospy.dist.collection.Truncexpon
-.. autofunction:: chaospy.dist.collection.Truncnorm
-.. autofunction:: chaospy.dist.collection.Tukeylambda
-.. autofunction:: chaospy.dist.collection.Wrapcauchy
 
+Log-uniform Distribution
+------------------------
+.. autofunction:: chaospy.dist.collection.Loguniform
+
+Normal Distribution
+-------------------
+.. autofunction:: chaospy.dist.collection.Normal
+
+Log-normal Distribution
+-----------------------
+.. autofunction:: chaospy.dist.collection.Lognormal
+
+Gamma Distribution
+------------------
+.. autofunction:: chaospy.dist.collection.Gamma
+
+Exponential Distribution
+------------------------
+.. autofunction:: chaospy.dist.collection.Exponential
+
+Laplace Distribution
+--------------------
+.. autofunction:: chaospy.dist.collection.Laplace
+
+Beta Distribution
+-----------------
+.. autofunction:: chaospy.dist.collection.Beta
+
+Weibull Distribution
+--------------------
+.. autofunction:: chaospy.dist.collection.Weibull
+
+Triangle Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Triangle
+
+Wigner Distribution
+-------------------
+.. autofunction:: chaospy.dist.collection.Wigner
+
+Kumaraswamy Distribution
+------------------------
+.. autofunction:: chaospy.dist.collection.Kumaraswamy
+
+Hypgeosec Distribution
+----------------------
+.. autofunction:: chaospy.dist.collection.Hypgeosec
+
+Arcsinus Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Arcsinus
+
+Logistic Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Logistic
+
+Student_t Distribution
+----------------------
+.. autofunction:: chaospy.dist.collection.Student_t
+
+Raised Cosine Distribution
+--------------------------
+.. autofunction:: chaospy.dist.collection.Raised_cosine
+
+Alpha Distribution
+------------------
+.. autofunction:: chaospy.dist.collection.Alpha
+
+Multivariate Normal Distribution
+--------------------------------
+.. autofunction:: chaospy.dist.collection.MvNormal
+
+Multivariate Lognormal Distribution
+-----------------------------------
+.. autofunction:: chaospy.dist.collection.MvLognormal
+
+Multivariate Student-T Distribution
+-----------------------------------
+.. autofunction:: chaospy.dist.collection.MvStudent_t
+
+Anglit Distribution
+-------------------
+.. autofunction:: chaospy.dist.collection.Anglit
+
+Bradford Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Bradford
+
+Burr Distribution
+-----------------
+.. autofunction:: chaospy.dist.collection.Burr
+
+Fisk Distribution
+-----------------
+.. autofunction:: chaospy.dist.collection.Fisk
+
+Cauchy Distribution
+-------------------
+.. autofunction:: chaospy.dist.collection.Cauchy
+
+Chi Distribution
+----------------
+.. autofunction:: chaospy.dist.collection.Chi
+
+Double Gamma Distribution
+-------------------------
+.. autofunction:: chaospy.dist.collection.Dbl_gamma
+
+Double Weibull Distribution
+---------------------------
+.. autofunction:: chaospy.dist.collection.Dbl_weibull
+
+Expontial Weibull Distribution
+------------------------------
+.. autofunction:: chaospy.dist.collection.Exponweibull
+
+Expontial Power Distribution
+----------------------------
+.. autofunction:: chaospy.dist.collection.Exponpow
+
+Fatigue Life Distribution
+-------------------------
+.. autofunction:: chaospy.dist.collection.Fatiguelife
+
+Folded Cauchy Distribution
+--------------------------
+.. autofunction:: chaospy.dist.collection.Foldcauchy
+
+Fischer's F Distribution
+------------------------
+.. autofunction:: chaospy.dist.collection.F
+
+Folded Normal Distribution
+--------------------------
+.. autofunction:: chaospy.dist.collection.Foldnormal
+
+Frechet Distribution
+--------------------
+.. autofunction:: chaospy.dist.collection.Frechet
+
+Generalised Exponential Distribution
+------------------------------------
+.. autofunction:: chaospy.dist.collection.Genexpon
+
+Generalised Extreme Value Distribution
+--------------------------------------
+.. autofunction:: chaospy.dist.collection.Genextreme
+
+Generalised Gamma Distribution
+------------------------------
+.. autofunction:: chaospy.dist.collection.Gengamma
+
+Generalised Half Logistic Distribution
+--------------------------------------
+.. autofunction:: chaospy.dist.collection.Genhalflogistic
+
+Gompertz Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Gompertz
+
+Log-Weibul Distribution
+-----------------------
+.. autofunction:: chaospy.dist.collection.Logweibul
+
+Levy Distribution
+-----------------
+.. autofunction:: chaospy.dist.collection.Levy
+
+Log-Gamma Distribution
+----------------------
+.. autofunction:: chaospy.dist.collection.Loggamma
+
+Log-Laplace Distribution
+------------------------
+.. autofunction:: chaospy.dist.collection.Loglaplace
+
+Gilbrat Distribution
+--------------------
+.. autofunction:: chaospy.dist.collection.Gilbrat
+
+Maxwell Distribution
+--------------------
+.. autofunction:: chaospy.dist.collection.Maxwell
+
+Mielke Distribution
+-------------------
+.. autofunction:: chaospy.dist.collection.Mielke
+
+Nakagami Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Nakagami
+
+Chi-Squard Distribution
+-----------------------
+.. autofunction:: chaospy.dist.collection.Chisquard
+
+Pareto 1 Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Pareto1
+
+Pareto 2 Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Pareto2
+
+Powerlaw Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Powerlaw
+
+Power Log-Normal Distribution
+-----------------------------
+.. autofunction:: chaospy.dist.collection.Powerlognormal
+
+Power-Normal Distribution
+-------------------------
+.. autofunction:: chaospy.dist.collection.Powernorm
+
+Wald Distribution
+-----------------
+.. autofunction:: chaospy.dist.collection.Wald
+
+Rayleigh Distribution
+---------------------
+.. autofunction:: chaospy.dist.collection.Rayleigh
+
+Reciprocal Distribution
+-----------------------
+.. autofunction:: chaospy.dist.collection.Reciprocal
+
+Truncated Exponential Distribution
+----------------------------------
+.. autofunction:: chaospy.dist.collection.Truncexpon
+
+Truncated Normal Distribution
+-----------------------------
+.. autofunction:: chaospy.dist.collection.Truncnorm
+
+Tukey-Lambda Distribution
+-------------------------
+.. autofunction:: chaospy.dist.collection.Tukeylambda
