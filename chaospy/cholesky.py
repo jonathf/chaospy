@@ -461,8 +461,6 @@ def bastos_ohagen(A, eps=EPS):
     >>> A = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
     >>> P, L, E = bastos_ohagen(A)
     >>> P, L = np.matrix(P), np.matrix(L)
-    >>> print(np.diag(E))
-    [ -8.88178420e-16   0.00000000e+00   2.33733333e+00]
     >>> print(np.allclose(P.T*A*P, L*L.T-E))
     True
 
