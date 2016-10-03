@@ -16,6 +16,7 @@ before_install:
   - pip install --no-index --find-links=$HOME/.cache/pip/wheels scipy
 install:
   - pip install -r requirements-dev.txt
-script: python setup.py test
+script:
+  - python setup.py test
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - codecov

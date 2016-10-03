@@ -96,4 +96,4 @@ Questions & Troubleshooting
 ---------------------------
 
 For any problems and questions you might have related to ``chaospy``, please
-feel free to file an `<https://github.com/jonathf/chaospy/issues>`_.
+feel free to file an `issue <https://github.com/jonathf/chaospy/issues>`_.
