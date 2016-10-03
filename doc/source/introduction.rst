@@ -6,6 +6,7 @@ Introduction
 .. toctree::
    :maxdepth: 2
 
+   installation
    tutorial
    montecarlo
    regression
