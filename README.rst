@@ -1,27 +1,17 @@
 Chaospy
 =======
 
-|travis| |codecov| |pypi|
+|travis| |codecov| |pypi| |readthedocs|
 
 |logo|
-
-.. |logo| image:: logo.jpg
-.. |travis| image:: https://img.shields.io/travis/jonathf/chaospy.svg
-    :target: https://travis-ci.org/jonathf/chaospy
-.. |codecov| image:: https://img.shields.io/codecov/c/github/jonathf/chaospy.svg
-    :target: https://codecov.io/gh/jonathf/chaospy
-.. |pypi| image:: https://img.shields.io/pypi/v/chaospy.svg
-    :target: https://pypi.python.org/pypi/chaospy
-.. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=latest
-    :target: http://chaospy.readthedocs.io/en/latest/?badge=latest
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods.
 
 A article in Elsevier Journal of Computational Science has been published
-introducing the software:
-`here <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.
-If you are to use this software in work that is published, please cite this paper.
+introducing the software: `here
+<http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.  If you are to use this
+software in work that is published, please cite this paper.
 
 Installation
 ------------
@@ -97,3 +87,15 @@ Questions & Troubleshooting
 
 For any problems and questions you might have related to ``chaospy``, please
 feel free to file an `issue <https://github.com/jonathf/chaospy/issues>`_.
+
+
+.. |travis| image:: https://travis-ci.org/jonathf/chaospy.svg?branch=master
+    :target: https://travis-ci.org/jonathf/chaospy
+.. |codecov| image:: https://codecov.io/gh/jonathf/chaospy/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jonathf/chaospy
+.. |pypi| image:: https://img.shields.io/pypi/v/chaospy.svg
+    :target: https://pypi.python.org/pypi/chaospy
+.. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
+    :target: http://chaospy.readthedocs.io/en/master/?badge=master
+.. |logo| image:: logo.jpg
+    :target: https://gihub.com/jonathf/chaospy
