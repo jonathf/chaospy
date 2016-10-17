@@ -369,7 +369,7 @@ class Dist(object):
 
     def __radd__(self, X):
         """Y.__radd__(X) <==> Y+X"""
-        return add(X, self)
+        return add(self, X)
 
     def __sub__(self, X):
         """Y.__sub__(X) <==> X-Y"""
@@ -389,7 +389,7 @@ class Dist(object):
 
     def __rmul__(self, X):
         """Y.__rmul__(X) <==> Y*X"""
-        return mul(X, self)
+        return mul(self, X)
 
     def __div__(self, X):
         """Y.__div__(X) <==> Y/X"""
