@@ -20,9 +20,9 @@ Table of contents
    introduction
    distributions
    polynomials
+   descriptives
    integration
    advanced
    cookbook
-   descriptives
 
    bibliography

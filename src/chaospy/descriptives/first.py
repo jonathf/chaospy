@@ -89,9 +89,7 @@ def E_cond(poly, freeze, dist, **kws):
     shape = poly.shape
     poly = cp.poly.flatten(poly)
 
-    kmax = np.max(poly.keys, 0)+1
-    # TODO: swap ndindex with cp.bertran.olindex iterator
-    # keys = [i for i in np.ndindex(*kmax)]
+    kmax = np.max(poly.keys, 0) + 1
     keys = [range(k) for k in kmax]
     keys = [k for k in product(*keys)]
 

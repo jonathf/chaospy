@@ -325,7 +325,7 @@ class Dist(object):
         dim = len(self)
         shape = k.shape
         shape = (2,) + shape
-        size = k.size/dim
+        size = int(k.size/dim)
         k = k.reshape(dim, size)
 
         out, G = self.G.run(k, "ttr")
