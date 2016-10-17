@@ -6,7 +6,8 @@ Chaospy
 |logo|
 
 Chaospy is a numerical tool for performing uncertainty quantification using
-polynomial chaos expansions and advanced Monte Carlo methods.
+polynomial chaos expansions and advanced Monte Carlo methods implemented in
+Python 2 and 3.
 
 A article in Elsevier Journal of Computational Science has been published
 introducing the software: `here
