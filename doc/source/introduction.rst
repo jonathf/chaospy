@@ -8,6 +8,3 @@ Introduction
 
    installation
    tutorial
-   montecarlo
-   regression
-   spectral
