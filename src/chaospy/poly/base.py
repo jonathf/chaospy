@@ -351,13 +351,11 @@ class Poly(object):
 
     def __div__(self, y):
         """x.__div__(y) <==> x/y"""
-        print(repr(y))
         if isinstance(y, (float, int, f.frac)):
             return self.__mul__(y**-1)
         if isinstance(y, np.ndarray):
             y = np.asfarray(y)
             return self.__mul__(y**-1)
-        print(123)
         return NotImplemented
 
     def __truediv__(self, y):
