@@ -161,6 +161,35 @@ class Dist(object):
         """
         return rosenblatt.fwd(self, x)
 
+    def cdf(self, x):
+        """
+        Cumulative distribution function.
+
+        Note that chaospy only supports cumulative distribution funcitons in
+        one dimensions.
+
+        Args:
+            x (array_like) : Location for the distribution function. x.shape
+                    must be compatible with distribution shape.
+
+        Returns:
+            (ndarray) : Evaluated distribution function values, where
+                    out.shape==x.shape.
+
+        Except:
+            (NotImplementedError) : for distributions with dependent
+                components.
+        """
+        if self.dependent():
+            except NotImplementedError(
+                    "Cumulative distribution function is only available for "
+                    "stocastically independent variables")
+        out = rosenblatt.fwd(self, x)
+        if len(self) > 1:
+            out = np.prod(out, 0)
+        return out
+
+
     def inv(self, q, maxiter=100, tol=1e-5, verbose=False, **kws):
         """
         Inverse Rosenblatt transformation.
