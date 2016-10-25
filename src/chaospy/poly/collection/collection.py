@@ -1,26 +1,10 @@
 import numpy as np
 from scipy.misc import comb, factorial as fac
 
-import chaospy as cp
+import chaospy.bertran as bertran
+import chaospy.poly as poly
 
-from .base import Poly, setdim, decompose, is_decomposed
-from chaospy.bertran import terms, multi_index, bindex
-
-__all__ = [
-    "basis",
-    "cutoff",
-    "dot",
-    "differential",
-    "gradient",
-    "hessian",
-    "rolldim",
-    "swapdim",
-    "tril",
-    "tricu",
-    "variable",
-    "order",
-    "prange",
-]
+from chaospy.poly import Poly
 
 
 def basis(start, stop=None, dim=1, sort="G"):
@@ -65,7 +49,7 @@ def basis(start, stop=None, dim=1, sort="G"):
     start = np.array(start, dtype=int)
     stop = np.array(stop, dtype=int)
     dim = max(start.size, stop.size, dim)
-    indices = np.array(bindex(np.min(start), 2*np.max(stop),
+    indices = np.array(bertran.bindex(np.min(start), 2*np.max(stop),
         dim, sort))
 
     if start.size==1:
@@ -173,16 +157,16 @@ def differential(P, Q):
     """
     P, Q = Poly(P), Poly(Q)
 
-    if not is_decomposed(Q):
-        differential(decompose(Q)).sum(0)
+    if not poly.is_decomposed(Q):
+        differential(poly.decompose(Q)).sum(0)
 
     if Q.shape:
         return Poly([differential(P, q) for q in Q])
 
     if Q.dim>P.dim:
-        P = setdim(P, Q.dim)
+        P = poly.setdim(P, Q.dim)
     else:
-        Q = setdim(Q, P.dim)
+        Q = poly.setdim(Q, P.dim)
 
     qkey = Q.keys[0]
 
@@ -298,7 +282,7 @@ def swapdim(P, dim1=1, dim2=0):
 
     m = max(dim1, dim2)
     if P.dim <= m:
-        P = setdim(P, m+1)
+        P = poly.setdim(P, m+1)
 
     A = {}
 
@@ -362,6 +346,7 @@ def variable(dims=1):
 
     return Poly(A, dim=dims, shape=(dims,))
 
+
 def order(P):
 
     out = np.zeros(P.shape, dtype=int)
@@ -371,83 +356,7 @@ def order(P):
     return out
 
 
-# def roots(P, ax=0, args=None):
-#     """
-# Find the roots of a polynomial or construct a
-# polynomials from roots.
-# 
-# Parameters
-# ----------
-# P : Poly, array_like
-#     The polynomial or roots in question. If Poly is provided,
-#     roots will be returned and vice versa.
-# ax : int
-#     Axis which the roots are found. If polynomial has more
-#     then one dimensions, roots are taken along a given axes
-#     ax. The remaining axes are evaluated.
-# args : array_like
-#     Arguments for the axes to be evaluated to create a one
-#     dimensional polynomial. Value in position ax-1 is ignored.
-#     evaluate all values as 1 if omitted.
-#     
-# Returns
-# -------
-# Q : ndarray, Poly
-#     List of roots or Poly dependent on P.
-# 
-# Examples
-# --------
-# Find roots of polynomial
-# 
-# >>> x = variable()
-# >>> print(roots(x*x-1))
-# [-1.  1.]
-# 
-# Find polynomials from roots
-# >>> print(roots([-1,1]))
-# x^2-1
-# 
-# Roots along an axis
-# >>> x,y = variable(2)
-# >>> P = (x*x-1)*(y-2)
-# >>> print(roots(P))
-# [ 1. -1.]
-# >>> print(roots(P, ax=1, args=[2,0]))
-# [ 2.]
-#     """
-# 
-#     if not isinstance(P, Poly):
-#         A = {}
-#         coefs = np.poly(P)[::-1]
-#         for i in range(len(coefs)):
-#             if coefs[i]:
-#                 A[(i,)] = np.array(coefs[i])
-#         return Poly(A)
-# 
-#     if P.dim>1:
-#         if args==None:
-#             args = [1]*P.dim
-#         else:
-#             args = list(args)
-#         args[ax] = np.nan
-#         P = P(*args)
-#         P = swapdim(P, 0, ax)
-#         P = setdim(P, 1)
-# 
-#     coef = []
-#     P.keys.sort(key=lambda x: sum(x)**P.dim +\
-#         sum(x*P.dim**np.arange(P.dim)),reverse=1)
-#     length = P.keys[0][0]+1
-#     for key in range(length):
-#         if P.A.has_key((key,)):
-#             coef.append(P.A[(key,)])
-#         else:
-#             coef.append(0)
-#     coef = np.array(coef).flatten()
-#     return np.roots(coef[::-1])
-
-
+import chaospy as cp
 if __name__=='__main__':
-    import __init__ as cp
     import doctest
     doctest.testmod()

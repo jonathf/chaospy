@@ -11,8 +11,9 @@ import numpy as np
 import scipy as sp
 from scipy import special
 
-from .backend import Dist
-from . import joint
+from chaospy.dist.backend import Dist
+
+import chaospy.dist
 
 
 class uniform(Dist):
@@ -196,15 +197,15 @@ class weibull(Dist):
     def _str(self, a):
         return "wei(%s)" % a
 
-from chaospy.quadrature import clenshaw_curtis as cc
-from chaospy.poly import variable
 def tri_ttr(k, a):
-    q1,w1 = cc(int(10**3*a), 0, a)
-    q2,w2 = cc(int(10**3*(1-a)), a, 1)
+    from chaospy.quadrature import clenshaw_curtis
+    q1,w1 = clenshaw_curtis(int(10**3*a), 0, a)
+    q2,w2 = clenshaw_curtis(int(10**3*(1-a)), a, 1)
     q = np.concatenate([q1,q2], 1)
     w = np.concatenate([w1,w2])
     w = w*np.where(q<a, 2*q/a, 2*(1-q)/(1-a))
 
+    from chaospy.poly import variable
     x = variable()
 
     orth = [x*0, x**0]
@@ -487,7 +488,7 @@ class mvlognormal(Dist):
         loc, scale = np.asfarray(loc), np.asfarray(scale)
         assert len(loc)==len(scale)
 
-        dist = joint.Iid(normal(), len(loc))
+        dist = chaospy.dist.joint.Iid(normal(), len(loc))
         C = np.linalg.cholesky(scale)
         Ci = np.linalg.inv(C)
         Dist.__init__(self, dist=dist, loc=loc, C=C, Ci=Ci,

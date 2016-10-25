@@ -181,9 +181,9 @@ class Dist(object):
                 components.
         """
         if self.dependent():
-            except NotImplementedError(
-                    "Cumulative distribution function is only available for "
-                    "stocastically independent variables")
+            raise NotImplementedError("""\
+Cumulative distribution function is only available for stocastically \
+independent variables""")
         out = rosenblatt.fwd(self, x)
         if len(self) > 1:
             out = np.prod(out, 0)

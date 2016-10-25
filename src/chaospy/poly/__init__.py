@@ -93,11 +93,28 @@ time. For example, partial evaluation and variable substitution::
       >>> print(poly(q1=y**3-1))
       [1, q0^2, q0q1^3-q0]
 """
+import chaospy.poly.base
+from chaospy.poly.base import Poly
 
-import numpy as np
-import chaospy as cp
+import chaospy.poly.typing
+import chaospy.poly.caller
+import chaospy.poly.dimension
+import chaospy.poly.shaping
+import chaospy.poly.collection
 
-from .base import *
-from .collection import *
-from .fraction import *
-from .wrapper import *
+from chaospy.poly.typing import *
+from chaospy.poly.caller import (
+    substitute, is_decomposed, decompose
+)
+from chaospy.poly.dimension import *
+from chaospy.poly.shaping import *
+from chaospy.poly.collection import *
+
+import chaospy.poly.constructor
+
+
+if __name__ == "__main__":
+    import numpy as np
+    import chaospy as cp
+    import doctest
+    doctest.testmod()

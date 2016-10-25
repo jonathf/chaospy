@@ -201,7 +201,7 @@ def fit_regression(P, x, u, rule="LS", retall=False, **kws):
         >>> P = cp.Poly([1, x, y])
         >>> s = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> u = [0,1,1,2]
-        >>> print(cp.around(fit_regression(P, s, u), 14))
+        >>> print(cp.around(cp.fit_regression(P, s, u), 14))
         0.5q0+0.5q1+1.0
     """
     x = np.array(x)
@@ -412,4 +412,3 @@ def lstsq_cv(A, b, order=1):
         assert L.shape[-1]==l or L.shape in ((), (1,))
 
     return linalg.lstsq(A, b)
-

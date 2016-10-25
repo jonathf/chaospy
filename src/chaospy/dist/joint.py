@@ -34,9 +34,10 @@ Now it is worth noting a couple of cavats:
 """
 import numpy as np
 from copy import copy
+
 from .backend import Dist
 
-__all__ = ["J", "joint", "Joint", "Iid"]
+__all__ = ["J", "Joint", "Iid"]
 
 class Joint(Dist):
     """
@@ -287,9 +288,6 @@ N : int
     def _dep(self, G):
         dist = G.D["dist"]
         return [set([copy(dist)]) for _ in range(len(self))]
-
-
-joint = J
 
 
 if __name__=='__main__':
