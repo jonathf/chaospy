@@ -4,6 +4,7 @@ import chaospy
 
 from .second1d import Var
 from .first import E_cond
+from .first import E as E_total
 
 def Sens_m(poly, dist, **kws):
     """
@@ -41,14 +42,25 @@ def Sens_m2(poly, dist, **kws):
 
     zero = [0]*dim
     out = np.zeros((dim, dim) + poly.shape)
-    V = Var(poly, dist, **kws)
+
+    mean = E_total(poly, dist)
+    V_total = Var(poly, dist)
+    E_cond_i = [None]*dim
+    V_E_cond_i = [None]*dim
     for i in range(dim):
         zero[i] = 1
-        for j in range(dim):
+        E_cond_i[i] = E_cond(poly, zero, dist, **kws) 
+        V_E_cond_i[i] = Var(E_cond_i[i], dist, **kws)
+        zero[i] = 0
+             
+    for i in range(dim):
+        zero[i] = 1
+        for j in range(i+1, dim):
             zero[j] = 1
-            out[i] = Var(E_cond(poly, zero, dist, **kws),
-                         dist, **kws)/(V+(V == 0))*(V != 0)
+            E_cond_ij = E_cond(poly, zero, dist, **kws)
+            out[j, i] = out[i, j] = (Var(E_cond_ij, dist, **kws)-V_E_cond_i[i] - V_E_cond_i[j]) /(V_total+(V_total == 0))*(V_total != 0)
             zero[j] = 0
+
         zero[i] = 0
 
     return out
