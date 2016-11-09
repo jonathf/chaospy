@@ -5,13 +5,13 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 -  A distribution for the unknown function parameters (as described in
    section :ref:`distributions`). For example::
 
-      >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
+      >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 2)
 
 -  Create integration absissas and weights (as described in :ref:`quadrature`)::
 
-      >>> absissas, weights = cp.generate_quadrature(
+      >>> absissas, weights = chaospy.generate_quadrature(
       ...     2, distribution, rule="G")
-      >>> print(np.around(absissas, 15))
+      >>> print(numpy.around(absissas, 15))
       [[-1.73205081 -1.73205081 -1.73205081  0.          0.          0.
          1.73205081  1.73205081  1.73205081]
        [-1.73205081  0.          1.73205081 -1.73205081  0.          1.73205081
@@ -24,7 +24,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
   :ref:`orthogonality`) where the weight function is the distribution in the
   first step::
 
-      >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
+      >>> orthogonal_expansion = chaospy.orth_ttr(2, distribution)
       >>> print(orthogonal_expansion)
       [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
 
@@ -32,9 +32,9 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
   For example::
 
       >>> def model_solver(q):
-      ...     return [q[0]*q[1], q[0]*np.e**-q[1]+1]
+      ...     return [q[0]*q[1], q[0]*numpy.e**-q[1]+1]
       >>> solves = [model_solver(absissa) for absissa in absissas.T]
-      >>> print(np.around(solves[:4], 8))
+      >>> print(numpy.around(solves[:4], 8))
       [[ 3.         -8.7899559 ]
        [-0.         -0.73205081]
        [-3.          0.69356348]
@@ -43,9 +43,9 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 - To bring it together, expansion, absissas, weights and solves are used as
   arguments to create approximation::
 
-      >>> approx = cp.fit_quadrature(
+      >>> approx = chaospy.fit_quadrature(
       ...     orthogonal_expansion, absissas, weights, solves)
-      >>> print(cp.around(approx, 8))
+      >>> print(chaospy.around(approx, 8))
       [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
 
 Note that in this case the function output is
@@ -64,33 +64,24 @@ coefficients can be used to calculate them instead with more stability.
 To include these stable norms in the calculations, the following change in code
 can be added::
 
-   >>> orthogonal_expansion, norms = cp.orth_ttr(2, distribution, retall=True)
-   >>> approx2 = cp.fit_quadrature(
+   >>> orthogonal_expansion, norms = chaospy.orth_ttr(2, distribution, retall=True)
+   >>> approx2 = chaospy.fit_quadrature(
    ...     orthogonal_expansion, absissas, weights, solves, norms=norms)
-   >>> print(cp.around(approx2, 8))
+   >>> print(chaospy.around(approx2, 8))
    [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
 
 Note that at low polynomial order, the error is very small. For example the
 largest coefficient between the two approximation::
 
-   >>> print(np.max(abs(approx-approx2).coeffs(), -1) < 1e-12)
+   >>> print(numpy.max(abs(approx-approx2).coeffs(), -1) < 1e-12)
    [ True  True]
 
 The ``coeffs`` function returns all the polynomial coefficients.
 """
 
-import numpy as np
+import numpy
 
-try:
-    from cubature._cubature import _cubature
-except:
-    pass
-
-import chaospy as cp
-
-__all__ = [
-"pcm", "fit_adaptive", "fit_quadrature"
-]
+import chaospy
 
 
 def pcm(func, porder, dist, rule="G", sorder=None, proxy_dist=None,
@@ -135,9 +126,9 @@ Returns:
 
 Examples:
     >>> func = lambda z: -z[1]**2 + 0.1*z[0]
-    >>> dist = cp.J(cp.Uniform(), cp.Uniform())
-    >>> q = cp.pcm(func, 2, dist)
-    >>> print(cp.around(q, 10))
+    >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Uniform())
+    >>> q = chaospy.pcm(func, 2, dist)
+    >>> print(chaospy.around(q, 10))
     -q1^2+0.1q0
     """
     # Proxy variable
@@ -150,10 +141,10 @@ Examples:
     # The polynomial expansion
     if orth is None:
         if dist.dependent():
-            orth = cp.orthogonal.orth_chol
+            orth = chaospy.orthogonal.orth_chol
         else:
-            orth = cp.orthogonal.orth_ttr
-    if not isinstance(orth, cp.poly.Poly):
+            orth = chaospy.orthogonal.orth_ttr
+    if not isinstance(orth, chaospy.poly.Poly):
         orth = orth(porder, dist, acc=orth_acc, **kws)
 
     # Applying scheme
@@ -161,12 +152,12 @@ Examples:
     if rule in "GEC":
         if sorder is None:
             sorder = porder+1
-        z, w = cp.quadrature.generate_quadrature(
+        z, w = chaospy.quad.generate_quadrature(
             sorder, dist, acc=quad_acc, sparse=sparse, rule=rule,
             composit=composit, **kws)
 
         x = trans(z)
-        y = np.array([func(_) for _ in x.T])
+        y = numpy.array([func(_) for _ in x.T])
         Q = fit_quadrature(orth, x, w, y, **kws)
 
     else:
@@ -175,7 +166,7 @@ Examples:
         z = dist.sample(sorder, rule=rule, antithetic=antithetic)
 
         x = trans(z)
-        y = np.array(map(func, x.T))
+        y = numpy.array(map(func, x.T))
         Q = fit_regression(orth, x, y, rule=lr, **kws)
 
     return Q
@@ -235,12 +226,12 @@ q[, x, w, y]
 
 q : Poly
     Polynomial estimate of a given a model.
-x : np.ndarray
+x : numpy.ndarray
     Nodes used in quadrature with `x.shape=(dim, K)` where K is the
     number of samples.
-w : np.ndarray
+w : numpy.ndarray
     Weights used in quadrature with `w.shape=(K,)`.
-y : np.ndarray
+y : numpy.ndarray
     Evauluations of func with `len(y)=K`.
 
 #  Examples
@@ -248,18 +239,18 @@ y : np.ndarray
 #
 #  Define function and distribution:
 #  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
-#  >>> dist = cp.J(cp.Uniform(), cp.Uniform())
+#  >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Uniform())
 #
 #  Perform pcm:
-#  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1)
-#  >>> print(cp.around(q, 10))
+#  >>> q, x, w, y = chaospy.pcm_cc(func, 2, dist, acc=2, retall=1)
+#  >>> print(chaospy.around(q, 10))
 #  -q1^2+0.1q0
 #  >>> print(len(w))
 #  9
 #
 #  With Smolyak sparsegrid
-#  >>> q, x, w, y = cp.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
-#  >>> print(cp.around(q, 10))
+#  >>> q, x, w, y = chaospy.pcm_cc(func, 2, dist, acc=2, retall=1, sparse=1)
+#  >>> print(chaospy.around(q, 10))
 #  -q1^2+0.1q0
 #  >>> print(len(w))
 #  13
@@ -268,12 +259,12 @@ y : np.ndarray
         acc = order+1
 
     if dist_in is None:
-        z, w = cp.quadrature.generate_quadrature(
+        z, w = chaospy.quadrature.generate_quadrature(
             acc, dist_out, 100, sparse=sparse, rule="C")
         x = z
         dist = dist_out
     else:
-        z, w = cp.quadrature.generate_quadrature(
+        z, w = chaospy.quadrature.generate_quadrature(
             acc, dist_in, 100, sparse=sparse, rule="C")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
@@ -285,10 +276,10 @@ y : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int)):
         orth = orth_select(orth)
-    if not isinstance(orth, cp.poly.Poly):
+    if not isinstance(orth, chaospy.poly.Poly):
         orth = orth(order, dist)
 
-    y = np.array(map(func, x.T))
+    y = numpy.array(map(func, x.T))
     Q = fit_quadrature(orth, x, w, y)
 
     if retall:
@@ -326,13 +317,13 @@ norms : array_like
     norms.shape==(len(orth),)
     """
 
-    orth = cp.poly.Poly(orth)
-    nodes = np.asfarray(nodes)
-    weights = np.asfarray(weights)
+    orth = chaospy.poly.Poly(orth)
+    nodes = numpy.asfarray(nodes)
+    weights = numpy.asfarray(weights)
 
     if hasattr(solves, "__call__"):
         solves = [solves(q) for q in nodes.T]
-    solves = np.asfarray(solves)
+    solves = numpy.asfarray(solves)
 
     shape = solves.shape
     solves = solves.reshape(weights.size, solves.size/weights.size)
@@ -342,14 +333,14 @@ norms : array_like
 
     if norms is None:
         vals2 = [(val**2*weights).T for val in ovals]
-        norms = np.sum(vals2, 1)
+        norms = numpy.sum(vals2, 1)
     else:
-        norms = np.array(norms).flatten()
+        norms = numpy.array(norms).flatten()
         assert len(norms)==len(orth)
 
-    coefs = (np.sum(vals1, 1).T/norms).T
+    coefs = (numpy.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])
-    Q = cp.poly.transpose(cp.poly.sum(orth*coefs.T, -1))
+    Q = chaospy.poly.transpose(chaospy.poly.sum(orth*coefs.T, -1))
 
     if retall:
         return Q, coefs
@@ -415,7 +406,7 @@ Q[, X]
 
 Q : Poly
     Polynomial estimate of a given a model.
-X : np.ndarray
+X : numpy.ndarray
     Values used in evaluation
 
 #  Examples
@@ -424,11 +415,11 @@ X : np.ndarray
 #  >>> func = lambda z: z[1]*z[0]
 #
 #  Define distribution:
-#  >>> dist = cp.J(cp.Normal(), cp.Normal())
+#  >>> dist = chaospy.J(chaospy.Normal(), chaospy.Normal())
 #
 #  Perform pcm:
-#  >>> p, x, w, y = cp.pcm_gq(func, 2, dist, acc=3, retall=True)
-#  >>> print(cp.around(p, 10))
+#  >>> p, x, w, y = chaospy.pcm_gq(func, 2, dist, acc=3, retall=True)
+#  >>> print(chaospy.around(p, 10))
 #  q0q1
 #  >>> print(len(w))
 #  16
@@ -438,17 +429,17 @@ X : np.ndarray
         acc = order+1
 
     if dist_in is None:
-        z, w = cp.quadrature.generate_quadrature(
+        z, w = chaospy.quadrature.generate_quadrature(
             acc, dist_out, 100, sparse=sparse, rule="G")
         x = z
         dist = dist_out
     else:
-        z, w = cp.quadrature.generate_quadrature(
+        z, w = chaospy.quadrature.generate_quadrature(
             acc, dist_in, 100, sparse=sparse, rule="G")
         x = dist_out.ppf(dist_in.cdf(z))
         dist = dist_in
 
-    y = np.array(map(func, x.T))
+    y = numpy.array(map(func, x.T))
     shape = y.shape
     y = y.reshape(w.size, y.size/w.size)
 
@@ -459,16 +450,16 @@ X : np.ndarray
             orth = "ttr"
     if isinstance(orth, (str, int)):
         orth = orth_select(orth)
-    if not isinstance(orth, cp.poly.Poly):
+    if not isinstance(orth, chaospy.poly.Poly):
         orth = orth(order, dist)
 
     ovals = orth(*z)
     vals1 = [(val*y.T*w).T for val in ovals]
     vals2 = [(val**2*w).T for val in ovals]
-    coef = (np.sum(vals1, 1).T/np.sum(vals2, 1)).T
+    coef = (numpy.sum(vals1, 1).T/numpy.sum(vals2, 1)).T
 
     coef = coef.reshape(len(coef), *shape[1:])
-    Q = cp.poly.transpose(cp.poly.sum(orth*coef.T, -1))
+    Q = chaospy.poly.transpose(chaospy.poly.sum(orth*coef.T, -1))
 
     if retall:
         return Q, x, w, y
@@ -542,11 +533,11 @@ retall : bool
 #  >>> func = lambda z: -z[1]**2 + 0.1*z[0]
 #
 #  Define distribution:
-#  >>> dist = cp.J(cp.Normal(), cp.Normal())
+#  >>> dist = chaospy.J(chaospy.Normal(), chaospy.Normal())
 #
 #  Perform pcm:
-#  >>> q, x, y = cp.pcm_lr(func, 2, dist, retall=True)
-#  >>> print(cp.around(q, 10))
+#  >>> q, x, y = chaospy.pcm_lr(func, 2, dist, retall=True)
+#  >>> print(chaospy.around(q, 10))
 #  -q1^2+0.1q0
 #  >>> print(len(x.T))
 #  12
@@ -565,14 +556,14 @@ retall : bool
             orth = "ttr"
     if isinstance(orth, (str, int)):
         orth = orth_select(orth)
-    if not isinstance(orth, cp.poly.Poly):
+    if not isinstance(orth, chaospy.poly.Poly):
         orth = orth(order, dist)
 
     # sampling
     if sample is None:
         sample = 2*len(orth)
 
-    x = cp.dist.samplegen(sample, dist, rule)
+    x = chaospy.dist.samplegen(sample, dist, rule)
 
 
     # Rosenblatt
@@ -580,7 +571,7 @@ retall : bool
         x = dist_out.ppf(dist_in.cdf(x))
 
     # evals
-    y = np.array(map(func, x.T))
+    y = numpy.array(map(func, x.T))
     shape = y.shape[1:]
     y = y.reshape(len(y), y.size/len(y))
     if sample==0:
@@ -589,7 +580,7 @@ retall : bool
     else:
         R, y_ = fit_regression(orth, x, y, regression, retall=1)
 
-    R = cp.poly.reshape(R, shape)
+    R = chaospy.poly.reshape(R, shape)
 
     if retall:
         return R, x, y
@@ -600,8 +591,8 @@ retall : bool
 
 def fit_lagrange(X, Y):
     """Simple lagrange method"""
-    X = np.array(X)
-    Y = np.array(Y)
+    X = numpy.array(X)
+    Y = numpy.array(Y)
     assert X.shape[0] == Y.shape[0]
 
     if len(X.shape) == 1:
@@ -612,7 +603,7 @@ def fit_lagrange(X, Y):
     basis = []
     n = 1
     while len(basis) < N:
-        basis = cp.poly.basis(0, n, dim)
+        basis = chaospy.poly.basis(0, n, dim)
         n += 1
 
     basis = basis[:N]
@@ -634,16 +625,16 @@ Y : array_like
 folds : int,optional
     Number of folds in validation. If omitted selected to be K.
     """
-    X = np.array(X)
+    X = numpy.array(X)
     dim,K = X.shape
-    Y = np.array(Y)
+    Y = numpy.array(Y)
     assert len(Y)==K
 
     out = Y.copy()
 
     if folds is None:
         folds = K
-    R = np.random.randint(0, folds, K)
+    R = numpy.random.randint(0, folds, K)
 
     for fold in range(folds):
 
@@ -654,120 +645,3 @@ folds : int,optional
         out[infold] = out[infold]-poly(*X[:,infold])
 
     return out
-
-
-
-def fit_adaptive(func, poly, dist, abserr=1.e-8, relerr=1.e-8,
-        budget=0, norm=0, bufname="", retall=False):
-    """Adaptive estimation of Fourier coefficients.
-
-Parameters
-----------
-func : callable
-    Should take a single argument `q` which is 1D array
-    `len(q)=len(dist)`.
-    Must return something compatible with np.ndarray.
-poly : Poly
-    Polynomial vector for which to create Fourier coefficients for.
-dist : Dist
-    A distribution to optimize the Fourier coefficients to.
-abserr : float
-    Absolute error tolerance.
-relerr : float
-    Relative error tolerance.
-budget : int
-    Soft maximum number of function evaluations.
-    0 means unlimited.
-norm : int
-    Specifies the norm that is used to measure the error and
-    determine convergence properties (irrelevant for single-valued
-    functions). The `norm` argument takes one of the values:
-    0 : L0-norm
-    1 : L0-norm on top of paired the L2-norm. Good for complex
-        numbers where each conseqtive pair of the solution is real
-        and imaginery.
-    2 : L2-norm
-    3 : L1-norm
-    4 : L_infinity-norm
-bufname : str, optional
-    Buffer evaluations to file such that the fit_adaptive can be
-    run again without redooing all evaluations.
-retall : bool
-    If true, returns extra values.
-
-Returns
--------
-estimate[, coeffs, norms, coeff_error, norm_error]
-
-estimate : Poly
-    The polynomial chaos expansion representation of func.
-coeffs : np.ndarray
-    The Fourier coefficients.
-norms : np.ndarray
-    The norm of the orthogonal polynomial squared.
-coeff_error : np.ndarray
-    Estimated integration error of the coeffs.
-norm_error : np.ndarray
-    Estimated integration error of the norms.
-
-Examples
---------
-# >>> func = lambda q: q[0]*q[1]
-# >>> poly = cp.basis(0,2,2)
-# >>> dist = cp.J(cp.Uniform(0,1), cp.Uniform(0,1))
-# >>> res = cp.fit_adaptive(func, poly, dist, budget=100)
-# >>> print(res)
-    """
-
-    if bufname:
-        func = cp.utils.lazy_eval(func, load=bufname)
-
-    dim = len(dist)
-    n = [0,0]
-
-    dummy_x = dist.inv(.5*np.ones(dim, dtype=np.float64))
-    val = np.array(func(dummy_x), np.float64)
-
-    xmin = np.zeros(dim, np.float64)
-    xmax = np.ones(dim, np.float64)
-
-    def f1(u, ns, *args):
-        qs = dist.inv(u.reshape(ns, dim))
-        out = (poly(*qs.T)**2).T.flatten()
-        return out
-    dim1 = len(poly)
-    val1 = np.empty(dim1, dtype=np.float64)
-    err1 = np.empty(dim1, dtype=np.float64)
-    _cubature(f1, dim1, xmin, xmax, (), "h", abserr, relerr, norm,
-            budget, True, val1, err1)
-    val1 = np.tile(val1, val.size)
-
-    dim2 = np.prod(val.shape)*dim1
-    val2 = np.empty(dim2, dtype=np.float64)
-    err2 = np.empty(dim2, dtype=np.float64)
-    def f2(u, ns, *args):
-        n[0] += ns
-        n[1] += 1
-        qs = dist.inv(u.reshape(ns, dim))
-        Y = np.array([func(q) for q in qs])
-        Q = poly(*qs.T)
-        out = np.array([Y.T*q1 for q1 in Q]).T.flatten()
-        out = out/np.tile(val1, ns)
-        return out
-    try:
-        _ = _cubature
-    except:
-        raise NotImplementedError(
-                "cubature not install properly")
-    _cubature(f2, dim2, xmin, xmax, (), "h", abserr, relerr, norm,
-                budget, True, val2, err2)
-
-    shape = (dim1,)+val.shape
-    val2 = val2.reshape(shape[::-1]).T
-
-    out = cp.poly.transpose(cp.poly.sum(poly*val2.T, -1))
-
-    if retall:
-        return out, val2, val1, err2, err1
-    return val2
-

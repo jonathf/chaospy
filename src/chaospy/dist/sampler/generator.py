@@ -1,8 +1,6 @@
 import numpy as np
 
-from chaospy import quadrature
-
-from . import samplers, sobol_lib
+import chaospy.dist
 
 
 def samplegen(order, domain, rule="S", antithetic=None,
@@ -31,8 +29,6 @@ def samplegen(order, domain, rule="S", antithetic=None,
     +------+---------------------+--------+
     | "NC" | Nested Chebyshev    | yes    |
     +------+---------------------+--------+
-    | "G"  | Gaussian quadrature | no     |
-    +------+---------------------+--------+
     | "K"  | Korobov             | no     |
     +------+---------------------+--------+
     | "R"  | (Pseudo-)Random     | no     |
@@ -60,7 +56,7 @@ def samplegen(order, domain, rule="S", antithetic=None,
                 to mirror using antithetic variable.
 
     Examples:
-        >>> print(cp.samplegen(3, cp.Normal(), "G"))
+        >>> print(cp.samplegen(3, cp.Normal(), "H"))
         [-2.33441422 -0.74196378  0.74196378  2.33441422]
 
         >>> cp.seed(1000)
@@ -103,38 +99,34 @@ def samplegen(order, domain, rule="S", antithetic=None,
                 trans_(antithetic_gen(X, antithetic)[:,:order_])
 
     if rule=="C":
-        X = samplers.chebyshev(dim, order)
+        X = chaospy.dist.samplers.chebyshev(dim, order)
 
     elif rule=="NC":
-        X = samplers.chebyshev_nested(dim, order)
-
-    elif rule=="G":
-        X = quadrature.golub_welsch(order-1, dist)[0]
-        trans = lambda x, verbose:x
+        X = chaospy.dist.samplers.chebyshev_nested(dim, order)
 
     elif rule=="K":
-        X = samplers.korobov(dim, order)
+        X = chaospy.dist.samplers.korobov(dim, order)
 
     elif rule=="R":
         X = np.random.random((dim,order))
 
     elif rule=="RG":
-        X = samplers.regular_grid(dim, order)
+        X = chaospy.dist.samplers.regular_grid(dim, order)
 
     elif rule=="NG":
-        X = samplers.regular_grid_nested(dim, order)
+        X = chaospy.dist.samplers.regular_grid_nested(dim, order)
 
     elif rule=="L":
-        X = samplers.latin_hypercube(dim, order)
+        X = chaospy.dist.samplers.latin_hypercube(dim, order)
 
     elif rule=="S":
-        X = sobol_lib.sobol(dim, order)
+        X = chaospy.dist.sobol_lib.sobol(dim, order)
 
     elif rule=="H":
-        X = samplers.halton(dim, order)
+        X = chaospy.dist.samplers.halton(dim, order)
 
     elif rule=="M":
-        X = samplers.hammersley(dim, order)
+        X = chaospy.dist.samplers.hammersley(dim, order)
 
     else:
         raise KeyError("rule not recognised")
