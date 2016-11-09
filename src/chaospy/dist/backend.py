@@ -201,8 +201,8 @@ class Dist(object):
         x = x.reshape(dim, size)
         out = np.zeros((dim, size))
 
-        (lo,up),G = self.G.run(x, "range")
-        valids = np.prod((x.T>=lo.T)*(x.T<=up.T), 1, dtype=bool)
+        (lo, up), G = self.G.run(x, "range")
+        valids = np.prod((x.T >= lo.T)*(x.T <= up.T), 1, dtype=bool)
         x[:, True-valids] = (.5*(up+lo))[:, True-valids]
         out = np.zeros((dim,size))
 
