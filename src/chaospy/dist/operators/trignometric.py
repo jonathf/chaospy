@@ -1,7 +1,7 @@
 """
 Collection of trigonometric operators
 """
-from .backend import Dist
+from chaospy.dist.backend import Dist
 import numpy as np
 
 
@@ -173,7 +173,3 @@ class Arctan(Dist):
 
     def _bnd(self, x, G):
         return np.arctan(G(np.tan(x), G.D["dist"]))
-
-
-
-

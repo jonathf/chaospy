@@ -147,9 +147,9 @@ class Graph():
         self.L = nx.topological_sort(graph)
         self.root = self.dist = dist
 
-        self.D = Dists(self)
-        self.K = Keys(self)
-        self.V = Vals(self)
+        self.dists = self.D = Dists(self)
+        self.keys = self.K = Keys(self)
+        self.values = self.V = Vals(self)
 
         self._call = None
 

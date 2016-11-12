@@ -35,8 +35,7 @@ import chaospy.dist.cores
 import chaospy.dist.copulas
 import chaospy.dist.collection
 import chaospy.dist.operators
-import chaospy.dist.hyperbolic
-import chaospy.dist.trignometric
+import chaospy.dist.rosenblatt
 
 from chaospy.dist.graph import *
 from chaospy.dist.sampler import *
@@ -46,8 +45,6 @@ from chaospy.dist.cores import *
 from chaospy.dist.copulas import *
 from chaospy.dist.collection import *
 from chaospy.dist.operators import *
-from chaospy.dist.hyperbolic import *
-from chaospy.dist.trignometric import *
 
 from numpy.random import seed
 
