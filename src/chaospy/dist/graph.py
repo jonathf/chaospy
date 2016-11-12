@@ -229,7 +229,7 @@ class Graph():
             self.size, size = x.shape[-1], self.size
         self.meta, meta = meta, self.meta
 
-        if mode!="val":
+        if mode != "val":
             graph_source = self.graph_source
             graph = nx.DiGraph()
             for node in graph_source.nodes():

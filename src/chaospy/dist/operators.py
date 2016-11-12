@@ -669,8 +669,8 @@ class Pow(Dist):
 
     def __init__(self, A, B):
 
-        a = not isinstance(A, Dist) or 1 and len(A)
-        b = not isinstance(B, Dist) or 1 and len(B)
+        a = 1 if not isinstance(A, Dist) else len(A)
+        b = 1 if not isinstance(B, Dist) else len(B)
         length = max(a,b)
         Dist.__init__(self, A=A, B=B,
                 _length=length, _advance=True)
@@ -697,12 +697,13 @@ class Pow(Dist):
 
             num, dist = G.K["B"], G.D["A"]
             y = np.sign(x)*np.abs(x)**(1./num)
+            y[(x == 0.)*(num < 0)] = np.inf
 
             bnd = G(y, dist)
-            assert np.all((num%1==0) + (bnd[0]>=0)), \
+            assert np.all((num % 1 == 0) + (bnd[0] >= 0)), \
                     "root of negative number"
 
-            pair = num%2==0
+            pair = num % 2 == 0
             bnd_ = np.empty(bnd.shape)
             bnd_[0] = np.where(pair*(bnd[0]*bnd[1]<0), 0, bnd[0])
             bnd_[0] = np.where(pair*(bnd[0]*bnd[1]>0), \
@@ -710,17 +711,24 @@ class Pow(Dist):
             bnd_[1] = np.where(pair, np.max(np.abs(bnd), 0),
                     bnd[1])**num
 
+            bnd_[0], bnd_[1] = np.where(
+                bnd_[0] < bnd_[1], bnd_[0], bnd_[1]
+            ), np.where(
+                bnd_[0] < bnd_[1], bnd_[1], bnd_[0]
+            )
+
         return bnd_
 
 
     def _cdf(self, x, G):
 
         if "A" in G.K and "B" in G.D:
+
             num, dist = G.K["A"], G.D["B"]
             assert np.all(num>0), "imaginary result"
 
             y = np.log(np.abs(x) + 1.*(x<=0))/\
-                    np.log(np.abs(num)+1.*(num==1))
+                    np.log(np.abs(num)+1.*(num == 1))
 
             out = G(y, dist)
             out = np.where(x<=0, 0., out)
@@ -729,11 +737,11 @@ class Pow(Dist):
 
             num, dist = G.K["B"], G.D["A"]
             y = np.sign(x)*np.abs(x)**(1./num)
-            pairs = np.sign(x**num)!=-1
+            pairs = np.sign(x**num) != -1
 
             _1 = G.copy()(-y, dist)
             out = G(y, dist)
-            out = out - pairs*_1
+            out = np.where(num < 0, 1-out, out - pairs*_1)
 
         return out
 
@@ -763,15 +771,16 @@ class Pow(Dist):
         else:
 
             num, dist = G.K["B"], G.D["A"]
-            assert np.all(num>0), "imaginary result"
+            x_ = np.sign(x)*np.abs(x)**(1./num -1)
             x = np.sign(x)*np.abs(x)**(1./num)
-            pairs = np.sign(x**num)==1
-            num_ = 2*x
+            pairs = np.sign(x**num) == 1
 
-            _ = G.copy()(-x, dist)
-            out = G(x, dist) + pairs*_
-
-            out = np.abs(out/np.where(num_, num_, np.inf))
+            G_ = G.copy()
+            out = G(x, dist)
+            if np.any(pairs):
+                out = out + pairs*G_(-x, dist)
+            out = np.sign(num)*out * x_ / num
+            out[np.isnan(out)] = np.inf
 
         return out
 

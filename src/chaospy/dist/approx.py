@@ -411,6 +411,11 @@ Returns
 interior_point : np.ndarray
     shape=(len(dist),)
     """
+    try:
+        x = dist.inv([.5]*len(dist))
+        return x
+    except:
+        pass
 
     bnd = dist.range(np.zeros(len(dist)))
     x = .5*(bnd[1]-bnd[0])
@@ -418,7 +423,7 @@ interior_point : np.ndarray
     for i in range(10):
         bnd = dist.range(x)
         x_ = .5*(bnd[1]-bnd[0])
-        if np.allclose(x,x_):
+        if np.allclose(x, x_):
             break
         x = x_
 
