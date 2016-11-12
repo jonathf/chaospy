@@ -35,9 +35,8 @@ Now it is worth noting a couple of cavats:
 import numpy as np
 from copy import copy
 
-from .backend import Dist
+from chaospy.dist.baseclass import Dist
 
-__all__ = ["J", "Joint", "Iid"]
 
 class Joint(Dist):
     """
@@ -56,11 +55,11 @@ Parameters
         prm = {"_%03d" % i:args[i] for i in range(len(args))}
         Dist.__init__(self, _advance=True, _length=len(args), **prm)
         self.sorting = []
-        for dist in self.G:
+        for dist in self.graph:
             if dist in args:
                 self.sorting.append(args.index(dist))
 
-    def _cdf(self, x, G):
+    def _cdf(self, x, graph):
 
         dim,size = x.shape
         out = np.empty((dim,1,size))
@@ -68,14 +67,14 @@ Parameters
 
         for i in self.sorting[::-1]:
             key = "_%03d" % i
-            if key in G.K:
-                out[i] = G.K[key]
+            if key in graph.keys:
+                out[i] = graph.keys[key]
             else:
-                out[i] = G(x[i], G.D[key])
+                out[i] = graph(x[i], graph.dists[key])
 
         return out.reshape(dim,size)
 
-    def _mom(self, K, G):
+    def _mom(self, K, graph):
 
         if self.dependent():
             raise NotImplementedError()
@@ -85,11 +84,11 @@ Parameters
 
         out = np.ones(K.shape[-1])
         for i in self.sorting:
-            out *= G(K[i], G.D["_%03d" % i])
+            out *= graph(K[i], graph.dists["_%03d" % i])
 
         return out
 
-    def _pdf(self, x, G):
+    def _pdf(self, x, graph):
 
         dim,size = x.shape
         out = np.empty((dim,1,size))
@@ -97,14 +96,14 @@ Parameters
 
         for i in self.sorting[::-1]:
             key = "_%03d" % i
-            if key in G.K:
-                out[i] = G.K[key]
+            if key in graph.keys:
+                out[i] = graph.keys[key]
             else:
-                out[i] = G(x[i], G.D[key])
+                out[i] = graph(x[i], graph.dists[key])
 
         return out.reshape(dim,size)
 
-    def _ppf(self, q, G):
+    def _ppf(self, q, graph):
 
         dim,size = q.shape
         out = np.empty((dim,size))
@@ -112,14 +111,14 @@ Parameters
 
         for i in self.sorting[::-1]:
             key = "_%03d" % i
-            if key in G.K:
-                out[i] = G.K[key]
+            if key in graph.keys:
+                out[i] = graph.keys[key]
             else:
-                out[i] = G(q[i], G.D[key])
+                out[i] = graph(q[i], graph.dists[key])
 
         return out.reshape(dim,size)
 
-    def _ttr(self, K, G):
+    def _ttr(self, K, graph):
 
         if self.dependent():
             raise NotImplementedError("dependency")
@@ -129,11 +128,11 @@ Parameters
 
         out = np.zeros((2,dim,size))
         for i in self.sorting:
-            out[:, i] = G(K[i], G.D["_%03d" % i])[:,0]
+            out[:, i] = graph(K[i], graph.dists["_%03d" % i])[:,0]
 
         return out
 
-    def _bnd(self, x, G):
+    def _bnd(self, x, graph):
 
 
         dim,size = x.shape
@@ -143,18 +142,18 @@ Parameters
         for i in self.sorting[::-1]:
 
             key = "_%03d" % i
-            if key in G.K:
-                bnd[:,i] = G.K[key]
+            if key in graph.keys:
+                bnd[:,i] = graph.keys[key]
             else:
-                bnd[:,i] = G(x[i], G.D[key])
+                bnd[:,i] = graph(x[i], graph.dists[key])
 
         return bnd.reshape(2, dim, size)
 
-    def _val(self, G):
+    def _val(self, graph):
 
-        if len(G.K)!=len(self):
+        if len(graph.keys)!=len(self):
             return self
-        out = np.array([G.K["_%03d" % i] \
+        out = np.array([graph.keys["_%03d" % i] \
                 for i in self.sorting])
         out = out.reshape(len(out), out.shape[-1])
         return out
@@ -165,10 +164,10 @@ Parameters
         dists = ",".join(map(str, dists))
         return "J(" + dists + ")"
 
-    def _dep(self, G):
+    def _dep(self, graph):
         dists = [self.prm["_%03d" % i] \
                 for i in range(len(self))]
-        sets = [G(dist)[0] for dist in dists]
+        sets = [graph(dist)[0] for dist in dists]
         return sets
 
     def __getitem__(self, i):
@@ -285,8 +284,8 @@ N : int
 
         raise NotImplementedError("index not recogniced")
 
-    def _dep(self, G):
-        dist = G.D["dist"]
+    def _dep(self, graph):
+        dist = graph.dists["dist"]
         return [set([copy(dist)]) for _ in range(len(self))]
 
 

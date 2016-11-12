@@ -24,8 +24,8 @@ The functionality of the distributions are covered in various other sections:
 
 """
 
-import chaospy.dist.backend
-from chaospy.dist.backend import *
+import chaospy.dist.baseclass
+from chaospy.dist.baseclass import Dist
 
 import chaospy.dist.graph
 import chaospy.dist.sampler

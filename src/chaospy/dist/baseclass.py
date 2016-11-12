@@ -101,8 +101,8 @@ class Dist(object):
         self.length = int(prm.pop("_length", 1))
         self.advance = prm.pop("_advance", False)
         self.prm = prm.copy()
-        self.G = chaospy.dist.graph.Graph(self)
-        self.dependencies = self.G.run(self.length, "dep")[0]
+        self.graph = chaospy.dist.graph.Graph(self)
+        self.dependencies = self.graph.run(self.length, "dep")[0]
 
     def range(self, x=None, retall=False, verbose=False):
         """
@@ -127,14 +127,14 @@ class Dist(object):
         size = int(x.size/dim)
         x = x.reshape(dim, size)
 
-        out, G = self.G.run(x, "range")
+        out, graph = self.graph.run(x, "range")
         out = out.reshape((2,)+shape)
 
         if verbose>1:
-            print(G)
+            print(graph)
 
         if retall:
-            return out, G
+            return out, graph
         return out
 
     def fwd(self, x):
@@ -220,17 +220,17 @@ independent variables""")
         x = x.reshape(dim, size)
         out = np.zeros((dim, size))
 
-        (lo, up), G = self.G.run(x, "range")
+        (lo, up), graph = self.graph.run(x, "range")
         valids = np.prod((x.T >= lo.T)*(x.T <= up.T), 1, dtype=bool)
         x[:, True-valids] = (.5*(up+lo))[:, True-valids]
         out = np.zeros((dim,size))
 
         try:
-            tmp,G = self.G.run(x, "pdf",
+            tmp,graph = self.graph.run(x, "pdf",
                     eps=step)
             out[:,valids] = tmp[:,valids]
         except NotImplementedError:
-            tmp,G = chaospy.dist.approx.pdf_full(self, x, step, retall=True)
+            tmp,graph = chaospy.dist.approx.pdf_full(self, x, step, retall=True)
             out[:,valids] = tmp[:,valids]
             if verbose:
                 print("approx %s.pdf")
@@ -238,7 +238,7 @@ independent variables""")
             pass
 
         if verbose>1:
-            print(self.G)
+            print(self.graph)
 
         out = out.reshape(shape)
         if dim>1:
@@ -319,7 +319,7 @@ independent variables""")
         K = K.reshape(dim, size)
 
         try:
-            out, G = self.G.run(K, "mom", **kws)
+            out, graph = self.graph.run(K, "mom", **kws)
 
         except NotImplementedError:
             out = chaospy.dist.approx.mom(self, K, **kws)
@@ -347,20 +347,20 @@ independent variables""")
         size = int(k.size/dim)
         k = k.reshape(dim, size)
 
-        out, G = self.G.run(k, "ttr")
+        out, graph = self.graph.run(k, "ttr")
         return out.reshape(shape)
 
     def _ttr(self, *args, **kws):
         """Default TTR generator, throws error."""
         raise NotImplementedError
 
-    def _dep(self, G):
+    def _dep(self, graph):
         """
         Default dependency module backend.
 
         See graph for advanced distributions.
         """
-        sets = [G(dist) for dist in G.D]
+        sets = [graph(dist) for dist in graph.dists]
         if len(self)==1:
             out = [set([self])]
         else:
@@ -492,7 +492,7 @@ independent variables""")
         Returns:
             (bool) : True if distribution is dependent.
         """
-        sets, G = self.G.run(None, "dep")
+        sets, graph = self.graph.run(None, "dep")
 
         if args:
 
@@ -503,7 +503,7 @@ independent variables""")
 
             for arg in args:
                 sets_ = set()
-                for set_ in arg.G.run(None, "dep"):
+                for set_ in arg.graph.run(None, "dep"):
                     sets_ = sets_.union(set_)
                 sets.append(sets_)
 

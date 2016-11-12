@@ -1,7 +1,7 @@
 """
 Collection of trigonometric operators
 """
-from chaospy.dist.backend import Dist
+from chaospy.dist.baseclass import Dist
 import numpy as np
 
 
@@ -16,22 +16,22 @@ class Sin(Dist):
     def _str(self, dist):
         return "Sin(%s)" % dist
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return np.sin(G.K["dist"])
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return np.sin(graph.keys["dist"])
         return self
 
-    def _pdf(self, x, G):
-        return G(np.arcsin(x), G.D["dist"])/np.sqrt(1-x*x)
+    def _pdf(self, x, graph):
+        return graph(np.arcsin(x), graph.dists["dist"])/np.sqrt(1-x*x)
 
-    def _cdf(self, x, G):
-        return G(np.arcsin(x), G.D["dist"])
+    def _cdf(self, x, graph):
+        return graph(np.arcsin(x), graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        return np.sin(G(q, G.D["dist"]))
+    def _ppf(self, q, graph):
+        return np.sin(graph(q, graph.dists["dist"]))
 
-    def _bnd(self, x, G):
-        return np.sin(G(np.arcsin(x), G.D["dist"]))
+    def _bnd(self, x, graph):
+        return np.sin(graph(np.arcsin(x), graph.dists["dist"]))
 
 class Arcsin(Dist):
 
@@ -44,22 +44,22 @@ class Arcsin(Dist):
     def _str(self, dist):
         return "Arcsin(%s)" % dist
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return np.arcsin(G.K["dist"])
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return np.arcsin(graph.keys["dist"])
         return self
 
-    def _pdf(self, x, G):
-        return G(np.sin(x), G.D["dist"])*np.cos(x)
+    def _pdf(self, x, graph):
+        return graph(np.sin(x), graph.dists["dist"])*np.cos(x)
 
-    def _cdf(self, x, G):
-        return G(np.sin(x), G.D["dist"])
+    def _cdf(self, x, graph):
+        return graph(np.sin(x), graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        return np.arcsin(G(q, G.D["dist"]))
+    def _ppf(self, q, graph):
+        return np.arcsin(graph(q, graph.dists["dist"]))
 
-    def _bnd(self, x, G):
-        return np.arcsin(G(np.sin(x), G.D["dist"]))
+    def _bnd(self, x, graph):
+        return np.arcsin(graph(np.sin(x), graph.dists["dist"]))
 
 
 class Cos(Dist):
@@ -73,22 +73,22 @@ class Cos(Dist):
     def _str(self, dist):
         return "Cos(%s)" % dist
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return np.cos(G.K["dist"])
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return np.cos(graph.keys["dist"])
         return self
 
-    def _pdf(self, x, G):
-        return G(np.arccos(x), G.D["dist"])/np.sqrt(1-x*x)
+    def _pdf(self, x, graph):
+        return graph(np.arccos(x), graph.dists["dist"])/np.sqrt(1-x*x)
 
-    def _cdf(self, x, G):
-        return 1-G(np.arccos(x), G.D["dist"])
+    def _cdf(self, x, graph):
+        return 1-graph(np.arccos(x), graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        return np.cos(G(q, G.D["dist"]))
+    def _ppf(self, q, graph):
+        return np.cos(graph(q, graph.dists["dist"]))
 
-    def _bnd(self, x, G):
-        return np.cos(G(np.arccos(x), G.D["dist"]))
+    def _bnd(self, x, graph):
+        return np.cos(graph(np.arccos(x), graph.dists["dist"]))
 
 
 
@@ -103,22 +103,22 @@ class Arccos(Dist):
     def _str(self, dist):
         return "Arccos(%s)" % dist
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return np.arccos(G.K["dist"])
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return np.arccos(graph.keys["dist"])
         return self
 
-    def _pdf(self, x, G):
-        return G(np.cos(x), G.D["dist"])*np.sin(x)
+    def _pdf(self, x, graph):
+        return graph(np.cos(x), graph.dists["dist"])*np.sin(x)
 
-    def _cdf(self, x, G):
-        return 1-G(np.cos(x), G.D["dist"])
+    def _cdf(self, x, graph):
+        return 1-graph(np.cos(x), graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        return np.arccos(G(-q, G.D["dist"]))
+    def _ppf(self, q, graph):
+        return np.arccos(graph(-q, graph.dists["dist"]))
 
-    def _bnd(self, x, G):
-        return np.arccos(G(np.cos(x), G.D["dist"]))
+    def _bnd(self, x, graph):
+        return np.arccos(graph(np.cos(x), graph.dists["dist"]))
 
 class Tan(Dist):
 
@@ -131,22 +131,22 @@ class Tan(Dist):
     def _str(self, dist):
         return "Tan(%s)" % dist
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return np.tan(G.K["dist"])
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return np.tan(graph.keys["dist"])
         return self
 
-    def _pdf(self, x, G):
-        return G(np.arctan(x), G.D["dist"])/(1-x*x)
+    def _pdf(self, x, graph):
+        return graph(np.arctan(x), graph.dists["dist"])/(1-x*x)
 
-    def _cdf(self, x, G):
-        return G(np.arctan(x), G.D["dist"])
+    def _cdf(self, x, graph):
+        return graph(np.arctan(x), graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        return np.tan(G(q, G.D["dist"]))
+    def _ppf(self, q, graph):
+        return np.tan(graph(q, graph.dists["dist"]))
 
-    def _bnd(self, x, G):
-        return np.tan(G(np.arctan(x), G.D["dist"]))
+    def _bnd(self, x, graph):
+        return np.tan(graph(np.arctan(x), graph.dists["dist"]))
 
 class Arctan(Dist):
 
@@ -157,19 +157,19 @@ class Arctan(Dist):
     def _str(self, dist):
         return "Arccos(%s)" % dist
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return np.arctan(G.K["dist"])
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return np.arctan(graph.keys["dist"])
         return self
 
-    def _pdf(self, x, G):
-        return G(np.tan(x), G.D["dist"])/np.cos(x)**2
+    def _pdf(self, x, graph):
+        return graph(np.tan(x), graph.dists["dist"])/np.cos(x)**2
 
-    def _cdf(self, x, G):
-        return G(np.cos(x), G.D["dist"])
+    def _cdf(self, x, graph):
+        return graph(np.cos(x), graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        return np.arctan(G(q, G.D["dist"]))
+    def _ppf(self, q, graph):
+        return np.arctan(graph(q, graph.dists["dist"]))
 
-    def _bnd(self, x, G):
-        return np.arctan(G(np.tan(x), G.D["dist"]))
+    def _bnd(self, x, graph):
+        return np.arctan(graph(np.tan(x), graph.dists["dist"]))
