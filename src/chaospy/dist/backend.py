@@ -108,7 +108,7 @@ class Dist(object):
             if not isinstance(val, Dist):
                 prm[key] = np.array(val)
 
-        self.length = prm.pop("_length", 1)
+        self.length = int(prm.pop("_length", 1))
         self.advance = prm.pop("_advance", False)
         self.prm = prm.copy()
         self.G = Graph(self)
@@ -397,6 +397,22 @@ class Dist(object):
 
     def __rdiv__(self, X):
         """Y.__rdiv__(X) <==> X/Y"""
+        return mul(X, self**-1)
+
+    def __truediv__(self, X):
+        """Y.__truediv__(X) <==> Y/X"""
+        return mul(self, X**-1)
+
+    def __rtruediv__(self, X):
+        """Y.__rtruediv__(X) <==> X/Y"""
+        return mul(X, self**-1)
+
+    def __floordiv__(self, X):
+        """Y.__floordiv__(X) <==> Y/X"""
+        return mul(self, X**-1)
+
+    def __rfloordiv__(self, X):
+        """Y.__rfloordiv__(X) <==> X/Y"""
         return mul(X, self**-1)
 
     def __pow__(self, X):
