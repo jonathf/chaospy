@@ -366,7 +366,7 @@ antithetic : array_like, optional
 
     dim = len(dist)
     shape = K.shape
-    size = K.size/dim
+    size = int(K.size/dim)
     K = K.reshape(dim,size)
 
     if dim>1:
