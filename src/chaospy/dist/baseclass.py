@@ -441,7 +441,7 @@ independent variables""")
         return chaospy.dist.operators.pow(self, X)
 
     def __rpow__(self, X):
-        """Y.__pow__(X) <==> X**Y"""
+        """Y.__rpow__(X) <==> X**Y"""
         return chaospy.dist.operators.pow(X, self)
 
     def __le__(self, X):
