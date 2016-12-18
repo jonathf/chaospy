@@ -857,8 +857,8 @@ class exponweibull(Dist):
         return (exm1c)**a
     def _ppf(self, q, a, c):
         return (-np.log1p(-q**(1.0/a)))**(1.0/c)
-    def _bnd(self, c):
-        return 0, self._ppf(1-1e-10, c)
+    def _bnd(self, a, c):
+        return 0, self._ppf(1-1e-10, a, c)
 
 class exponpow(Dist):
 
@@ -1409,7 +1409,7 @@ class rice(Dist):
 
 class kdedist(Dist):
     """
-A distribution that is based on a kernel density estimator (KDE). 
+A distribution that is based on a kernel density estimator (KDE).
     """
     def __init__(self, kernel, lo, up):
         self.kernel = kernel
@@ -1426,15 +1426,15 @@ A distribution that is based on a kernel density estimator (KDE).
 
     def _bnd(self, lo, up):
         return (lo, up)
-    
+
     def sample(self, size=(), rule="R", antithetic=None,
             verbose=False, **kws):
         """
             Overwrite sample() function, because the constructed Dist that is
-            based on the KDE is only working with the random sampling that is 
+            based on the KDE is only working with the random sampling that is
             given by the KDE itself.
         """
-        
+
         size_ = np.prod(size, dtype=int)
         dim = len(self)
         if dim>1:
