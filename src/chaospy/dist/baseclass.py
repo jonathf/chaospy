@@ -86,6 +86,8 @@ class Dist(object):
     Alternative use the construct generator :func:`~chaospy.dist.construct`.
     """
 
+    __array_priority__ = 9000
+
     def __init__(self, **prm):
         """
         Args:

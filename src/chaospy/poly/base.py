@@ -45,6 +45,8 @@ class Poly(object):
         [q0q1, q0, q1]
     """
 
+    __array_priority__ = 9000
+
     def __init__(self, core=None, dim=None, shape=None, dtype=None):
         """
         Constructor for the Poly class.
