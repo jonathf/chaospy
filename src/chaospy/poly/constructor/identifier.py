@@ -21,7 +21,6 @@ def identify_core(core):
             np.float16: _identify_scaler,
             np.float32: _identify_scaler,
             np.float64: _identify_scaler,
-            np.float128: _identify_scaler,
             chaospy.poly.base.Poly: _identify_poly,
             dict: _identify_dict,
             np.ndarray: _identify_iterable,

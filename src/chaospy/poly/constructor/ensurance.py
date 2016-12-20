@@ -39,7 +39,6 @@ def ensure_dtype(core, dtype, dtype_):
             float: chaospy.poly.typing.asfloat,
             np.float32: chaospy.poly.typing.asfloat,
             np.float64: chaospy.poly.typing.asfloat,
-            np.float128: chaospy.poly.typing.asfloat,
     }.items():
 
         if dtype == key:

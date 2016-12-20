@@ -13,7 +13,6 @@ DATATYPES = [
     numpy.float16,
     numpy.float32,
     numpy.float64,
-    numpy.float128,
     int,
     numpy.int16,
     numpy.int32,
