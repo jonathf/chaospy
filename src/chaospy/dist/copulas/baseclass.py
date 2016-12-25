@@ -48,7 +48,7 @@ together in `chaospy`.
 """
 import numpy as np
 
-from ..backend import Dist
+from chaospy.dist.baseclass import Dist
 
 class Copula(Dist):
 
@@ -61,21 +61,21 @@ class Copula(Dist):
         Dist.__init__(self, dist=dist, trans=trans,
                 _advance=True, _length=len(trans))
 
-    def _cdf(self, x, G):
-        dist, trans = G.D["dist"], G.D["trans"]
-        q = G(G(x, dist), trans)
+    def _cdf(self, x, graph):
+        dist, trans = graph.dists["dist"], graph.dists["trans"]
+        q = graph(graph(x, dist), trans)
         return q
 
-    def _bnd(self, x, G):
-        return G(x, G.D["dist"])
+    def _bnd(self, x, graph):
+        return graph(x, graph.dists["dist"])
 
-    def _ppf(self, q, G):
-        dist, trans = G.D["dist"], G.D["trans"]
-        return G(G(q, trans), dist)
+    def _ppf(self, q, graph):
+        dist, trans = graph.dists["dist"], graph.dists["trans"]
+        return graph(graph(q, trans), dist)
 
-    def _pdf(self, x, G):
-        dist, trans = G.D["dist"], G.D["trans"]
-        return G(G.fwd_as_pdf(x, dist), trans)*G(x, dist)
+    def _pdf(self, x, graph):
+        dist, trans = graph.dists["dist"], graph.dists["trans"]
+        return graph(graph.fwd_as_pdf(x, dist), trans)*graph(x, dist)
 
 
 class Archimedean(Dist):

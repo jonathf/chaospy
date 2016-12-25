@@ -11,8 +11,9 @@ import numpy as np
 import scipy as sp
 from scipy import special
 
-from .backend import Dist
-from . import joint
+from chaospy.dist.baseclass import Dist
+
+import chaospy.dist
 
 
 class uniform(Dist):
@@ -196,15 +197,15 @@ class weibull(Dist):
     def _str(self, a):
         return "wei(%s)" % a
 
-from chaospy.quadrature import clenshaw_curtis as cc
-from chaospy.poly import variable
 def tri_ttr(k, a):
-    q1,w1 = cc(int(10**3*a), 0, a)
-    q2,w2 = cc(int(10**3*(1-a)), a, 1)
+    from chaospy.quadrature import clenshaw_curtis
+    q1,w1 = clenshaw_curtis(int(10**3*a), 0, a)
+    q2,w2 = clenshaw_curtis(int(10**3*(1-a)), a, 1)
     q = np.concatenate([q1,q2], 1)
     w = np.concatenate([w1,w2])
     w = w*np.where(q<a, 2*q/a, 2*(1-q)/(1-a))
 
+    from chaospy.poly import variable
     x = variable()
 
     orth = [x*0, x**0]
@@ -404,16 +405,16 @@ class mvnormal(Dist):
         Dist.__init__(self, C=C, Ci=Ci, loc=loc,
                 _advance=True, _length=len(C))
 
-    def _cdf(self, x, G):
-        Ci, loc = G.K["Ci"], G.K["loc"]
+    def _cdf(self, x, graph):
+        Ci, loc = graph.keys["Ci"], graph.keys["loc"]
         return sp.special.ndtr(np.dot(Ci, (x.T-loc.T).T))
 
-    def _ppf(self, q, G):
-        return (np.dot(G.K["C"], sp.special.ndtri(q)).T+G.K["loc"].T).T
+    def _ppf(self, q, graph):
+        return (np.dot(graph.keys["C"], sp.special.ndtri(q)).T+graph.keys["loc"].T).T
 
-    def _pdf(self, x, G):
+    def _pdf(self, x, graph):
 
-        loc, C, Ci = G.K["loc"], G.K["C"], G.K["Ci"]
+        loc, C, Ci = graph.keys["loc"], graph.keys["C"], graph.keys["Ci"]
         det = np.linalg.det(np.dot(C,C.T))
 
         x_ = np.dot(Ci.T, (x.T-loc.T).T)
@@ -421,18 +422,18 @@ class mvnormal(Dist):
         out[0] =  np.e**(-.5*np.sum(x_*x_, 0))/np.sqrt((2*np.pi)**len(Ci)*det)
         return out
 
-    def _bnd(self, x, G):
+    def _bnd(self, x, graph):
 
-        C, loc = G.K["C"], G.K["loc"]
+        C, loc = graph.keys["C"], graph.keys["loc"]
         scale = np.sqrt(np.diag(np.dot(C,C.T)))
         lo,up = np.zeros((2,)+x.shape)
         lo.T[:] = (-7.5*scale+loc)
         up.T[:] = (7.5*scale+loc)
         return lo,up
 
-    def _mom(self, k, G):
+    def _mom(self, k, graph):
 
-        C, loc = G.K["C"], G.K["loc"]
+        C, loc = graph.keys["C"], graph.keys["loc"]
         scale = np.dot(C, C.T)
 
         def mom(k):
@@ -472,7 +473,7 @@ class mvnormal(Dist):
 
         return out
 
-    def _dep(self, G):
+    def _dep(self, graph):
         n = normal()
         out = [set([n]) for _ in range(len(self))]
         return out
@@ -487,44 +488,44 @@ class mvlognormal(Dist):
         loc, scale = np.asfarray(loc), np.asfarray(scale)
         assert len(loc)==len(scale)
 
-        dist = joint.Iid(normal(), len(loc))
+        dist = chaospy.dist.joint.Iid(normal(), len(loc))
         C = np.linalg.cholesky(scale)
         Ci = np.linalg.inv(C)
         Dist.__init__(self, dist=dist, loc=loc, C=C, Ci=Ci,
                 scale=scale, _length=len(scale), _advance=True)
 
-    def _cdf(self, x, G):
+    def _cdf(self, x, graph):
 
         y = np.log(np.abs(x) + 1.*(x<=0))
-        out = G(np.dot(G.K["Ci"], (y.T-G.K["loc"].T).T),
-                G.D["dist"])
+        out = graph(np.dot(graph.keys["Ci"], (y.T-graph.keys["loc"].T).T),
+                graph.dists["dist"])
         return np.where(x<=0, 0., out)
 
-    def _ppf(self, q, G):
-        return np.e**(np.dot(G.K["C"], \
-                G(q, G.D["dist"])).T+G.K["loc"].T).T
+    def _ppf(self, q, graph):
+        return np.e**(np.dot(graph.keys["C"], \
+                graph(q, graph.dists["dist"])).T+graph.keys["loc"].T).T
 
-    def _mom(self, k, G):
-        scale, loc = G.K["scale"], G.K["loc"]
+    def _mom(self, k, graph):
+        scale, loc = graph.keys["scale"], graph.keys["loc"]
         return np.e**(np.dot(k.T, loc).T+ \
             .5*np.diag(np.dot(k.T, np.dot(scale, k))))
 
-    def _bnd(self, x, G):
-        loc, scale = G.K["loc"], G.K["scale"]
+    def _bnd(self, x, graph):
+        loc, scale = graph.keys["loc"], graph.keys["scale"]
         up = (7.1*np.sqrt(np.diag(scale))*x.T**0 + loc.T).T
         return 0*up, np.e**up
 
-    def _val(self, G):
-        if "dist" in G.K:
-            return (np.dot(G.K["dist"].T, G.K["C"].T)+G.K["loc"].T).T
+    def _val(self, graph):
+        if "dist" in graph.keys:
+            return (np.dot(graph.keys["dist"].T, graph.keys["C"].T)+graph.keys["loc"].T).T
         return self
 
-    def _dep(self, G):
+    def _dep(self, graph):
 
-        dist = G.D["dist"]
-        S = G(dist)
+        dist = graph.dists["dist"]
+        S = graph(dist)
         out = [set([]) for _ in range(len(self))]
-        C = G.K["C"]
+        C = graph.keys["C"]
 
         for i in range(len(self)):
             for j in range(len(self)):
@@ -572,9 +573,9 @@ class mvstudentt(Dist):
         up.T[:] = (10**5*scale+loc)
         return lo,up
 
-#      def _mom(self, k, G):
+#      def _mom(self, k, graph):
 #
-#          C, loc = G.K["C"], G.K["loc"]
+#          C, loc = graph.keys["C"], graph.keys["loc"]
 #          scale = np.dot(C, C.T)
 #
 #          def mom(k):
@@ -614,7 +615,7 @@ class mvstudentt(Dist):
 #
 #          return out
 
-    def _dep(self, G):
+    def _dep(self, graph):
         n = student_t()
         out = [set([n]) for _ in range(len(self))]
         return out
@@ -856,8 +857,8 @@ class exponweibull(Dist):
         return (exm1c)**a
     def _ppf(self, q, a, c):
         return (-np.log1p(-q**(1.0/a)))**(1.0/c)
-    def _bnd(self, c):
-        return 0, self._ppf(1-1e-10, c)
+    def _bnd(self, a, c):
+        return 0, self._ppf(1-1e-10, a, c)
 
 class exponpow(Dist):
 
@@ -1408,7 +1409,7 @@ class rice(Dist):
 
 class kdedist(Dist):
     """
-A distribution that is based on a kernel density estimator (KDE). 
+A distribution that is based on a kernel density estimator (KDE).
     """
     def __init__(self, kernel, lo, up):
         self.kernel = kernel
@@ -1425,15 +1426,15 @@ A distribution that is based on a kernel density estimator (KDE).
 
     def _bnd(self, lo, up):
         return (lo, up)
-    
+
     def sample(self, size=(), rule="R", antithetic=None,
             verbose=False, **kws):
         """
             Overwrite sample() function, because the constructed Dist that is
-            based on the KDE is only working with the random sampling that is 
+            based on the KDE is only working with the random sampling that is
             given by the KDE itself.
         """
-        
+
         size_ = np.prod(size, dtype=int)
         dim = len(self)
         if dim>1:

@@ -4,35 +4,34 @@ Functions for generating samples on the unite hyper cube.
 
 import numpy as np
 
-from chaospy.utils import combine
+import chaospy.quad
 
 def chebyshev(dim, n):
     "Chebyshev sampling"
     x = .5*np.cos(np.arange(n,0,-1)*np.pi/(n+1)) + .5
-    X = combine([x]*dim)
+    X = chaospy.quad.combine([x]*dim)
     return X.T
 
 
 def chebyshev_nested(dim, n):
     "Chebyshev sampling, nested"
     x = .5*np.cos(np.arange(2**n-1,0,-1)*np.pi/(2**n)) + .5
-    X = combine([x]*dim)
+    X = chaospy.quad.combine([x]*dim)
     return X.T
 
 
 def regular_grid(dim, n):
     "regular grid"
     x = np.arange(1,n+1)/(n+1.)
-    X = combine([x]*dim)
+    X = chaospy.quad.combine([x]*dim)
     return X.T
 
 
 def regular_grid_nested(dim, n):
     "regular grid, nested"
     x = np.arange(1,2**n)*1./(2**n)
-    X = combine([x]*dim)
+    X = chaospy.quad.combine([x]*dim)
     return X.T
-
 
 def corput(p, k):
     """

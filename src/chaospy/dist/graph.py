@@ -46,72 +46,70 @@ class Graph():
     following backend methods.
     The required ones are::
 
-        _cdf(self, x, G)        Cumulative distribution function
-        _bnd(self, x, G)        Upper and lower bounds at location x
+        _cdf(self, x, graph)        Cumulative distribution function
+        _bnd(self, x, graph)        Upper and lower bounds at location x
 
     The following can be provided::
 
-        _pdf(self, x, G)        Probability density function
-        _ppf(self, q, G)        CDF inverse
-        _mom(self, k, G)        Statistical moment generator
-        _ttr(self, k, G)        TTR coefficients generator
-        _dep(self, G)           Dependency callback.
-        _val(self, G)           Value callback function. Used to
+        _pdf(self, x, graph)        Probability density function
+        _ppf(self, q, graph)        CDF inverse
+        _mom(self, k, graph)        Statistical moment generator
+        _ttr(self, k, graph)        TTR coefficients generator
+        _dep(self, graph)           Dependency callback.
+        _val(self, graph)           Value callback function. Used to
                                 itterative check if a distribution has
                                 been evaluated before, indirectly.
         _str(self, **prm)       Preaty print of distribution
 
-    Here G is the graph. It is used as follows.
-
     Access parameter for distributions, input locations (or
     constants), and function evaluations respectively::
 
-        G.D, G.K, G.V
+        graph.dists, graph.keys, graph.values
 
     See Container for respective usage usage.
 
     Iterate through the graph by evaluating the distribution it is a wrapper
     for::
 
-        G(z, dist)
+        graph(z, dist)
 
     where z is locations, and dist is the distribution it wraps.
 
     Iterate through distribution's dependencies::
 
-        for dist in G
+        for dist in graph
 
     or get all distributions as a list::
 
-        G.dependencies()
+        graph.dependencies()
 
     print the chaospy state of graph::
 
-        print(G)
+        print(graph)
 
     Make a copy of chaospy state::
 
-        G.copy()
+        graph.copy()
 
     Initiate an itteration process::
 
-        G.run(...)
+        graph.run(...)
 
     Switch from PDF to forward seemlessly::
 
-        G.fwd_as_pdf(x, dist)
+        graph.fwd_as_pdf(x, dist)
 
-    From dist.backend we have that there are two new methods. They are
+    From dist.baseclass we have that there are two new methods. They are
     defined as follows::
 
-        _val(self, G)   If enough information exists to say that the
+        _val(self, graph)   If enough information exists to say that the
                         distribution is evaluated given the state of
                         parameters, return that value.  Else return self.
 
-        _dep(self, G)   Return a list l with len(l)==len(self) with all
+        _dep(self, graph)   Return a list l with len(l)==len(self) with all
                         distributions it depends upon as a set in each
                         element.  A common element between two sets implies
-                        dependencies.  Use G(dist) (instead of G(x, dist)) to
+                        dependencies.  Use graph(dist) (instead of graph(x, dist)) to
                         generate a distributions dependencies.
     """
 
@@ -147,9 +145,9 @@ class Graph():
         self.L = nx.topological_sort(graph)
         self.root = self.dist = dist
 
-        self.D = Dists(self)
-        self.K = Keys(self)
-        self.V = Vals(self)
+        self.dists = Dists(self)
+        self.keys = Keys(self)
+        self.values = Values(self)
 
         self._call = None
 
@@ -185,16 +183,16 @@ class Graph():
         Shallow copy of graph. Distribution stays the same.
         """
 
-        G = Graph(self.root)
+        graph = Graph(self.root)
         for node in self.graph.nodes():
-            G.graph.add_node(node, **self.graph.node[node])
-        G.graph.add_edges_from(self.graph.edges())
+            graph.graph.add_node(node, **self.graph.node[node])
+        graph.graph.add_edges_from(self.graph.edges())
 
-        G.size = self.size
-        G.meta = self.meta
-        G._call = self._call
+        graph.size = self.size
+        graph.meta = self.meta
+        graph._call = self._call
 
-        return G
+        return graph
 
 
     def run(self, x, mode, **meta):
@@ -302,8 +300,8 @@ class Graph():
         graph.add_node(dist, key=x)
         out = np.empty(x.shape)
 
-        prm = self.D.build()
-        prm.update(self.K.build())
+        prm = self.dists.build()
+        prm.update(self.keys.build())
         for k,v in prm.items():
             if not isinstance(v, np.ndarray):
                 v_ = self.run(v, "val")[0]
@@ -314,8 +312,8 @@ class Graph():
         if dist.advance:
             out[:] = dist._cdf(x, self)
         else:
-#              prm = self.D.build()
-#              prm.update(self.K.build())
+#              prm = self.dists.build()
+#              prm.update(self.keys.build())
             out[:] = dist._cdf(x, **prm)
 
         graph.add_node(dist, val=out)
@@ -334,8 +332,8 @@ class Graph():
         graph.add_node(dist, key=x)
         out = np.empty(x.shape)
 
-        prm = self.D.build()
-        prm.update(self.K.build())
+        prm = self.dists.build()
+        prm.update(self.keys.build())
         for k,v in prm.items():
             if not isinstance(v, np.ndarray):
                 v_ = self.run(v, "val")[0]
@@ -347,8 +345,8 @@ class Graph():
             if dist.advance:
                 out[:] = dist._pdf(x, self)
             else:
-#                  prm = self.D.build()
-#                  prm.update(self.K.build())
+#                  prm = self.dists.build()
+#                  prm.update(self.keys.build())
                 out[:] = dist._pdf(x, **prm)
         else:
             out = pdf(dist, x, self, **self.meta)
@@ -388,8 +386,8 @@ class Graph():
         graph.add_node(dist, val=q)
         out = np.empty(q.shape)
 
-        prm = self.D.build()
-        prm.update(self.K.build())
+        prm = self.dists.build()
+        prm.update(self.keys.build())
         for k,v in prm.items():
             if not isinstance(v, np.ndarray):
                 v_ = self.run(v, "val")[0]
@@ -421,8 +419,8 @@ class Graph():
         graph.add_node(dist, key=x)
         out = np.empty((2,)+x.shape)
 
-        prm = self.D.build()
-        prm.update(self.K.build())
+        prm = self.dists.build()
+        prm.update(self.keys.build())
         for k,v in prm.items():
             if not isinstance(v, np.ndarray):
                 v_ = self.run(v, "val")[0]
@@ -455,8 +453,8 @@ class Graph():
                 out = dist._ttr(k, self)
             else:
                 out = np.empty((2,)+k.shape)
-                prm = self.D.build()
-                prm.update(self.K.build())
+                prm = self.dists.build()
+                prm.update(self.keys.build())
                 out[0],out[1] = dist._ttr(k, **prm)
         else:
             raise NotImplementedError()
@@ -478,8 +476,8 @@ class Graph():
                 out = dist._mom(k, self)
             else:
                 out = np.empty(k.shape[1:])
-                prm = self.D.build()
-                prm.update(self.K.build())
+                prm = self.dists.build()
+                prm.update(self.keys.build())
                 out[:] = dist._mom(k, **prm)
         else:
             out = mom(dist, k, **self.meta)
@@ -568,18 +566,16 @@ class Graph():
         """
 Set of node dependencies
         """
-        return set(self.G.nodes())
+        return set(self.graph.nodes())
 
 
 class Container(object):
     """
     Graph interactive wrapper.
 
-    Used to retrieve parameters in a distribution. Comes in three flavoers:
+    Used to retrieve parameters in a distribution. Comes in three flavoers::
 
-        D   Dist
-        K   Keys
-        V   Vals
+        Dist Keys Values
 
     Can be interacted with as follows:
 
@@ -604,9 +600,9 @@ class Container(object):
         len(container)
     """
 
-    def __init__(self, G):
+    def __init__(self, graph):
         "Graph module"
-        self.G = G
+        self.graph = graph
     def __contains__(self, key):
         raise NotImplementedError()
     def getitem(self, key):
@@ -616,7 +612,7 @@ class Container(object):
     def build(self):
         "build a dict with all parameters"
         out = {}
-        for k,v in self.G.dist.prm.items():
+        for k,v in self.graph.dist.prm.items():
             if k in self:
                 out[k] = self[k]
         return out
@@ -631,12 +627,12 @@ class Dists(Container):
     """Contains all distributions."""
 
     def __contains__(self, key):
-        return not isinstance(self.G.dist.prm[key], np.ndarray)
+        return not isinstance(self.graph.dist.prm[key], np.ndarray)
 
     def getitem(self, key):
         if not key in self:
             raise KeyError()
-        return self.G.dist.prm[key]
+        return self.graph.dist.prm[key]
 
 class Keys(Container):
     """
@@ -648,16 +644,10 @@ class Keys(Container):
     def __contains__(self, key):
 
         out = False
-        val = self.G.dist.prm[key]
+        val = self.graph.dist.prm[key]
         if isinstance(val, np.ndarray) or \
-                "key" in self.G.graph.node[val]:
+                "key" in self.graph.graph.node[val]:
             out = True
-
-#          else:
-#              val_ = self.G.run(val, "val")
-#              if isinstance(val_, np.ndarray):
-#                  out = True
-#                  self.G.graph.add_node(val, key=val_)
 
         return out
 
@@ -665,23 +655,23 @@ class Keys(Container):
 
         if not key in self:
             raise KeyError()
-        val = self.G.dist.prm[key]
+        val = self.graph.dist.prm[key]
 
         if isinstance(val, np.ndarray):
             return val
 
-        gkey = self.G.dist.prm[key]
-        return self.G.graph.node[gkey]["key"]
+        gkey = self.graph.dist.prm[key]
+        return self.graph.graph.node[gkey]["key"]
 
-class Vals(Container):
+class Values(Container):
     """Contains all evaluations of distributions."""
 
     def __contains__(self, key):
-        out = self.G.dist.prm[key]
+        out = self.graph.dist.prm[key]
         return  not isinstance(out, np.ndarray) and \
-                "val" in self.G.graph.node[out]
+                "val" in self.graph.graph.node[out]
 
     def getitem(self, key):
         if not key in self:
             raise KeyError()
-        return self.G.graph.node[self.G.dist.prm[key]]["val"]
+        return self.graph.graph.node[self.graph.dist.prm[key]]["val"]

@@ -3,8 +3,8 @@ import scipy as sp
 
 import chaospy.dist
 
-from .baseclass import Archimedean, Copula
-from ..backend import Dist
+from chaospy.dist.baseclass import Dist
+from chaospy.dist.copulas.baseclass import Archimedean, Copula
 
 class gumbel(Archimedean):
     "Gumbel copula backend"

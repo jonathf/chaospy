@@ -13,10 +13,10 @@ def fwd(dist, x):
     size = int(x.size/dim)
     x = x.reshape(dim, size)
 
-    bnd, G = dist.G.run(x, "range")
+    bnd, graph = dist.graph.run(x, "range")
     x_ = np.where(x < bnd[0], bnd[0], x)
     x_ = np.where(x_ > bnd[1], bnd[1], x_)
-    out, G = dist.G.run(x_, "fwd")
+    out, graph = dist.graph.run(x_, "fwd")
     out = np.where(x < bnd[0], 0, out)
     out = np.where(x > bnd[1], 1, out)
 
@@ -35,7 +35,7 @@ def inv(dist, q, maxiter=100, tol=1e-5, **kws):
     q = q.reshape(dim, size)
 
     try:
-        out, G = dist.G.run(q, "inv", maxiter=maxiter, tol=tol)
+        out, graph = dist.graph.run(q, "inv", maxiter=maxiter, tol=tol)
 
     except NotImplementedError:
         out, N, q_ = approx.inv(dist, q, maxiter=maxiter, tol=tol, retall=True)
@@ -43,7 +43,7 @@ def inv(dist, q, maxiter=100, tol=1e-5, **kws):
         diff = np.max(np.abs(q-q_))
         print("approx %s.inv w/%d calls and eps=%g" % (dist, N, diff))
 
-    lo,up = dist.G.run(out, "range")[0]
+    lo,up = dist.graph.run(out, "range")[0]
     out = np.where(out.T>up.T, up.T, out.T).T
     out = np.where(out.T<lo.T, lo.T, out.T).T
     out = out.reshape(shape)

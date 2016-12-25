@@ -3,15 +3,11 @@ Basic tools for Bertran index manipulation.
 """
 import functools
 
-import numpy as np
-from scipy.misc import comb
+import numpy
+import scipy.misc
 
-import chaospy as cp
+import chaospy.bertran
 
-__all__ = [
-    "add", "terms", "multi_index", "bindex", "single_index", "rank",
-    "child", "parent", "olindex", "olindices",
-]
 
 def add(idxi, idxj, dim):
     """
@@ -19,13 +15,13 @@ def add(idxi, idxj, dim):
 
     Example
     -------
-    >>> print(add(3, 3, 1))
+    >>> print(chaospy.bertran.add(3, 3, 1))
     6
-    >>> print(add(3, 3, 2))
+    >>> print(chaospy.bertran.add(3, 3, 2))
     10
     """
-    idxm = np.array(multi_index(idxi, dim))
-    idxn = np.array(multi_index(idxj, dim))
+    idxm = numpy.array(multi_index(idxi, dim))
+    idxn = numpy.array(multi_index(idxj, dim))
     out = single_index(idxm + idxn)
     return out
 
@@ -47,7 +43,7 @@ def terms(order, dim):
         The number of terms in an expansion of upper order `M` and
         number of dimensions `dim`.
     """
-    return int(comb(order+dim, dim, 1))
+    return int(scipy.misc.comb(order+dim, dim, 1))
 
 
 def multi_index(idx, dim):
@@ -69,7 +65,7 @@ def multi_index(idx, dim):
     Examples
     --------
     >>> for idx in range(5):
-    ...     print(cp.multi_index(idx, 3))
+    ...     print(chaospy.bertran.multi_index(idx, 3))
     (0, 0, 0)
     (1, 0, 0)
     (0, 1, 0)
@@ -125,9 +121,9 @@ def bindex(start, stop=None, dim=1, sort="G"):
 
     Examples
     --------
-    >>> print(cp.bindex(0, 1, 3))
+    >>> print(chaospy.bertran.bindex(0, 1, 3))
     [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)]
-    >>> print(cp.bindex(2, 3, 2))
+    >>> print(chaospy.bertran.bindex(2, 3, 2))
     [(2, 0), (1, 1), (0, 2), (3, 0), (2, 1), (1, 2), (0, 3)]
     """
     if stop is None:
@@ -164,7 +160,7 @@ def bindex(start, stop=None, dim=1, sort="G"):
     else:
         def cmp_(idxi, idxj):
             """Old style compare method."""
-            if not np.any(idxi):
+            if not numpy.any(idxi):
                 return 0
             if idxi[0] == idxj[0]:
                 return cmp(idxi[:-1], idxj[:-1])
@@ -200,7 +196,7 @@ def single_index(idxm):
     Examples
     --------
     >>> for idx in range(3):
-    ...     print(single_index(np.eye(3)[idx]))
+    ...     print(chaospy.bertran.single_index(numpy.eye(3)[idx]))
     1
     2
     3
@@ -246,7 +242,7 @@ def parent(idx, dim, axis=None):
     """
     idxm = multi_index(idx, dim)
     if axis is None:
-        axis = dim - np.argmin(1*(np.array(idxm)[::-1] == 0))-1
+        axis = dim - numpy.argmin(1*(numpy.array(idxm)[::-1] == 0))-1
 
     if not idx:
         return idx, axis
@@ -257,7 +253,7 @@ def parent(idx, dim, axis=None):
             idxi += 1
         return idxi, axis
 
-    out = np.array(idxm) - 1*(np.eye(dim)[axis])
+    out = numpy.array(idxm) - 1*(numpy.eye(dim)[axis])
     return single_index(out), axis
 
 
@@ -282,13 +278,13 @@ def child(idx, dim, axis):
 
     Examples
     --------
-    >>> print(cp.child(4, 1, 0))
+    >>> print(chaospy.bertran.child(4, 1, 0))
     5
-    >>> print(cp.child(4, 2, 1))
+    >>> print(chaospy.bertran.child(4, 2, 1))
     8
     """
     idxm = multi_index(idx, dim)
-    out = np.array(idxm) + 1*(np.eye(len(idxm))[axis])
+    out = numpy.array(idxm) + 1*(numpy.eye(len(idxm))[axis])
     return single_index(out)
 
 
@@ -298,7 +294,7 @@ def olindex(order, dim):
 
     Examples
     --------
-    >>> cp.olindex(3, 2)
+    >>> chaospy.bertran.olindex(3, 2)
     array([[0, 3],
            [1, 2],
            [2, 1],
@@ -309,17 +305,17 @@ def olindex(order, dim):
 
     def _olindex(idx):
         """Recursive backend for olindex."""
-        if np.sum(idxm) == order:
+        if numpy.sum(idxm) == order:
             out.append(idxm[:])
             return
 
         if idx == dim:
             return
 
-        idxm_sum = np.sum(idxm)
+        idxm_sum = numpy.sum(idxm)
         idx_saved = idxm[idx]
 
-        for idxi in range(order - np.sum(idxm) + 1):
+        for idxi in range(order - numpy.sum(idxm) + 1):
 
             idxm[idx] = idxi
 
@@ -331,7 +327,7 @@ def olindex(order, dim):
         idxm[idx] = idx_saved
 
     _olindex(0)
-    return np.array(out)
+    return numpy.array(out)
 
 
 def olindices(order, dim):
@@ -339,7 +335,7 @@ def olindices(order, dim):
     Create an lexiographical sorted basis for a given order.
 
     Examples:
-        >>> cp.olindices(2, 2)
+        >>> chaospy.bertran.olindices(2, 2)
         array([[0, 0],
                [0, 1],
                [1, 0],
@@ -348,5 +344,5 @@ def olindices(order, dim):
                [2, 0]])
     """
     indices = [olindex(o, dim) for o in range(order+1)]
-    indices = np.vstack(indices)
+    indices = numpy.vstack(indices)
     return indices

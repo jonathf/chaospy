@@ -61,18 +61,8 @@ Equivalently constructing the same distribution using subclass:
 import types
 import numpy as np
 
-from . import rosenblatt
-from .approx import pdf_full, inv, mom, find_interior_point
+import chaospy.dist
 
-from .graph import Graph
-from .sampler import samplegen
-
-string = str # will be overridden locally
-#operators imported at end
-
-__all__ = [
-    "Dist", "construct"
-]
 
 class Dist(object):
     """
@@ -96,6 +86,8 @@ class Dist(object):
     Alternative use the construct generator :func:`~chaospy.dist.construct`.
     """
 
+    __array_priority__ = 9000
+
     def __init__(self, **prm):
         """
         Args:
@@ -111,8 +103,8 @@ class Dist(object):
         self.length = int(prm.pop("_length", 1))
         self.advance = prm.pop("_advance", False)
         self.prm = prm.copy()
-        self.G = Graph(self)
-        self.dependencies = self.G.run(self.length, "dep")[0]
+        self.graph = chaospy.dist.graph.Graph(self)
+        self.dependencies = self.graph.run(self.length, "dep")[0]
 
     def range(self, x=None, retall=False, verbose=False):
         """
@@ -130,21 +122,21 @@ class Dist(object):
         """
         dim = len(self)
         if x is None:
-            x = find_interior_point(self)
+            x = chaospy.dist.approx.find_interior_point(self)
         else:
             x = np.array(x)
         shape = x.shape
         size = int(x.size/dim)
         x = x.reshape(dim, size)
 
-        out, G = self.G.run(x, "range")
+        out, graph = self.graph.run(x, "range")
         out = out.reshape((2,)+shape)
 
         if verbose>1:
-            print(G)
+            print(graph)
 
         if retall:
-            return out, G
+            return out, graph
         return out
 
     def fwd(self, x):
@@ -159,7 +151,36 @@ class Dist(object):
             (ndarray) : Evaluated distribution function values, where
                     out.shape==x.shape.
         """
-        return rosenblatt.fwd(self, x)
+        return chaospy.dist.rosenblatt.fwd(self, x)
+
+    def cdf(self, x):
+        """
+        Cumulative distribution function.
+
+        Note that chaospy only supports cumulative distribution funcitons in
+        one dimensions.
+
+        Args:
+            x (array_like) : Location for the distribution function. x.shape
+                    must be compatible with distribution shape.
+
+        Returns:
+            (ndarray) : Evaluated distribution function values, where
+                    out.shape==x.shape.
+
+        Except:
+            (NotImplementedError) : for distributions with dependent
+                components.
+        """
+        if self.dependent():
+            raise NotImplementedError("""\
+Cumulative distribution function is only available for stocastically \
+independent variables""")
+        out = chaospy.dist.rosenblatt.fwd(self, x)
+        if len(self) > 1:
+            out = np.prod(out, 0)
+        return out
+
 
     def inv(self, q, maxiter=100, tol=1e-5, verbose=False, **kws):
         """
@@ -177,7 +198,7 @@ class Dist(object):
         Returns:
             (ndarray) : Inverted probability values where out.shape==q.shape.
         """
-        return rosenblatt.inv(self, q, maxiter, tol, **kws)
+        return chaospy.dist.rosenblatt.inv(self, q, maxiter, tol, **kws)
 
     def pdf(self, x, step=1e-7, verbose=0):
         """
@@ -201,17 +222,17 @@ class Dist(object):
         x = x.reshape(dim, size)
         out = np.zeros((dim, size))
 
-        (lo, up), G = self.G.run(x, "range")
+        (lo, up), graph = self.graph.run(x, "range")
         valids = np.prod((x.T >= lo.T)*(x.T <= up.T), 1, dtype=bool)
         x[:, True-valids] = (.5*(up+lo))[:, True-valids]
         out = np.zeros((dim,size))
 
         try:
-            tmp,G = self.G.run(x, "pdf",
+            tmp,graph = self.graph.run(x, "pdf",
                     eps=step)
             out[:,valids] = tmp[:,valids]
         except NotImplementedError:
-            tmp,G = pdf_full(self, x, step, retall=True)
+            tmp,graph = chaospy.dist.approx.pdf_full(self, x, step, retall=True)
             out[:,valids] = tmp[:,valids]
             if verbose:
                 print("approx %s.pdf")
@@ -219,7 +240,7 @@ class Dist(object):
             pass
 
         if verbose>1:
-            print(self.G)
+            print(self.graph)
 
         out = out.reshape(shape)
         if dim>1:
@@ -251,7 +272,7 @@ class Dist(object):
         else:
             shape = size
 
-        out = samplegen(size_, self, rule, antithetic)
+        out = chaospy.dist.sampler.samplegen(size_, self, rule, antithetic)
         try:
             out = out.reshape(shape)
         except:
@@ -300,10 +321,10 @@ class Dist(object):
         K = K.reshape(dim, size)
 
         try:
-            out, G = self.G.run(K, "mom", **kws)
+            out, graph = self.graph.run(K, "mom", **kws)
 
         except NotImplementedError:
-            out = mom(self, K, **kws)
+            out = chaospy.dist.approx.mom(self, K, **kws)
 
         return out.reshape(shape)
 
@@ -328,20 +349,20 @@ class Dist(object):
         size = int(k.size/dim)
         k = k.reshape(dim, size)
 
-        out, G = self.G.run(k, "ttr")
+        out, graph = self.graph.run(k, "ttr")
         return out.reshape(shape)
 
     def _ttr(self, *args, **kws):
         """Default TTR generator, throws error."""
         raise NotImplementedError
 
-    def _dep(self, G):
+    def _dep(self, graph):
         """
         Default dependency module backend.
 
         See graph for advanced distributions.
         """
-        sets = [G(dist) for dist in G.D]
+        sets = [graph(dist) for dist in graph.dists]
         if len(self)==1:
             out = [set([self])]
         else:
@@ -356,7 +377,7 @@ class Dist(object):
     def __str__(self):
         """X.__str__() <==> str(X)"""
         if hasattr(self, "_str"):
-            return string(self._str(**self.prm))
+            return str(self._str(**self.prm))
         return "D"
 
     def __len__(self):
@@ -365,79 +386,79 @@ class Dist(object):
 
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""
-        return add(self, X)
+        return chaospy.dist.operators.add(self, X)
 
     def __radd__(self, X):
         """Y.__radd__(X) <==> Y+X"""
-        return add(self, X)
+        return chaospy.dist.operators.add(self, X)
 
     def __sub__(self, X):
         """Y.__sub__(X) <==> X-Y"""
-        return add(self, -X)
+        return chaospy.dist.operators.add(self, -X)
 
     def __rsub__(self, X):
         """Y.__rsub__(X) <==> Y-X"""
-        return add(X, -self)
+        return chaospy.dist.operators.add(X, -self)
 
     def __neg__(self):
         """X.__neg__() <==> -X"""
-        return neg(self)
+        return chaospy.dist.operators.neg(self)
 
     def __mul__(self, X):
         """Y.__mul__(X) <==> X*Y"""
-        return mul(self, X)
+        return chaospy.dist.operators.mul(self, X)
 
     def __rmul__(self, X):
         """Y.__rmul__(X) <==> Y*X"""
-        return mul(self, X)
+        return chaospy.dist.operators.mul(self, X)
 
     def __div__(self, X):
         """Y.__div__(X) <==> Y/X"""
-        return mul(self, X**-1)
+        return chaospy.dist.operators.mul(self, X**-1)
 
     def __rdiv__(self, X):
         """Y.__rdiv__(X) <==> X/Y"""
-        return mul(X, self**-1)
-
-    def __truediv__(self, X):
-        """Y.__truediv__(X) <==> Y/X"""
-        return mul(self, X**-1)
-
-    def __rtruediv__(self, X):
-        """Y.__rtruediv__(X) <==> X/Y"""
-        return mul(X, self**-1)
+        return chaospy.dist.operators.mul(X, self**-1)
 
     def __floordiv__(self, X):
         """Y.__floordiv__(X) <==> Y/X"""
-        return mul(self, X**-1)
+        return chaospy.dist.operators.mul(self, X**-1)
 
     def __rfloordiv__(self, X):
         """Y.__rfloordiv__(X) <==> X/Y"""
-        return mul(X, self**-1)
+        return chaospy.dist.operators.mul(X, self**-1)
+
+    def __truediv__(self, X):
+        """Y.__truediv__(X) <==> Y/X"""
+        return chaospy.dist.operators.mul(self, X**-1)
+
+    def __rtruediv__(self, X):
+        """Y.__rtruediv__(X) <==> X/Y"""
+        return chaospy.dist.operators.mul(X, self**-1)
 
     def __pow__(self, X):
         """Y.__pow__(X) <==> Y**X"""
-        return pow(self, X)
+        return chaospy.dist.operators.pow(self, X)
 
     def __rpow__(self, X):
-        """Y.__pow__(X) <==> X**Y"""
-        return pow(X, self)
+        """Y.__rpow__(X) <==> X**Y"""
+        return chaospy.dist.operators.pow(X, self)
 
     def __le__(self, X):
         """Y.__le__(X) <==> Y<=X"""
-        return trunk(self, X)
+        return chaospy.dist.operators.trunk(self, X)
 
     def __lt__(self, X):
         """Y.__lt__(X) <==> Y<X"""
-        return trunk(self, X)
+        return chaospy.dist.operators.trunk(self, X)
 
     def __ge__(self, X):
         """Y.__ge__(X) <==> Y>=X"""
-        return trunk(X, self)
+        return chaospy.dist.operators.trunk(X, self)
 
     def __gt__(self, X):
         """Y.__gt__(X) <==> Y>X"""
-        return trunk(X, self)
+        return chaospy.dist.operators.trunk(X, self)
 
     def addattr(self, **kws):
         """
@@ -455,7 +476,7 @@ class Dist(object):
             dep (callable) : Dependency structure (if non-trivial).
         """
         for key,val in kws.items():
-            if key=="str" and isinstance(val, string):
+            if key=="str" and isinstance(val, str):
                 val_ = val
                 val = lambda *a,**k: val_
             setattr(self, "_"+key, types.MethodType(val, self))
@@ -473,7 +494,7 @@ class Dist(object):
         Returns:
             (bool) : True if distribution is dependent.
         """
-        sets, G = self.G.run(None, "dep")
+        sets, graph = self.graph.run(None, "dep")
 
         if args:
 
@@ -484,7 +505,7 @@ class Dist(object):
 
             for arg in args:
                 sets_ = set()
-                for set_ in arg.G.run(None, "dep"):
+                for set_ in arg.graph.run(None, "dep"):
                     sets_ = sets_.union(set_)
                 sets.append(sets_)
 
@@ -598,5 +619,3 @@ Custom random variable
     setattr(custom, "__doc__", doc)
 
     return custom
-
-from .operators import add, mul, neg, pow, trunk
