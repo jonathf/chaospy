@@ -79,7 +79,7 @@ class Add(Dist):
         dim = len(self)
         kmax = numpy.max(keys, 1)+1
         keys_ = numpy.mgrid[[slice(0, _, 1) for _ in kmax]]
-        keys_ = keys_.reshape(dim, keys_.size/dim)
+        keys_ = keys_.reshape(dim, int(keys_.size/dim))
 
         left = []
         if "left" in graph.dists:

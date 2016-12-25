@@ -223,18 +223,18 @@ def Exponpow(shape=0, scale=1, shift=0):
     return dist
 
 
-def Exponweibull(a=1, b=1, scale=1, shift=0):
+def Exponweibull(a=1, c=1, scale=1, shift=0):
     """
     Expontiated Weibull distribution.
 
     Args:
         a (float, Dist) : First shape parameter
-        b (float, Dist) : Second shape parameter
+        c (float, Dist) : Second shape parameter
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.exponweibull(a, b)*scale + shift
-    dist.addattr(str="Exponweibull(%s,%s,%s,%s)"%(a, b, scale,shift))
+    dist = chaospy.dist.cores.exponweibull(a, c)*scale + shift
+    dist.addattr(str="Exponweibull(%s,%s,%s,%s)"%(a, c, scale,shift))
     return dist
 
 
