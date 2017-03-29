@@ -31,7 +31,7 @@ github as follows::
     git clone git@github.com:jonathf/chaospy.git
     cd chaospy
     pip install -r requirements.txt
-    python setupy.py install
+    python setup.py install
 
 The last command might need ``sudo`` prefix, depending on your python setup.
 
