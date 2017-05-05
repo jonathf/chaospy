@@ -426,8 +426,13 @@ def lagrange_polynomial(absicas, sort="GR"):
 
     coeffs = numpy.zeros((size, size))
 
-    if size == 2:
+    if size == 1:
+        out = chaospy.poly.basis(1, 1, dim, sort) - absicas
+        out = chaospy.poly.sum(out)
+
+    elif size == 2:
         coeffs = numpy.linalg.inv(matrix)
+        out = chaospy.poly.sum(vec*(coeffs.T), 1)
 
     else:
         for i in range(size):
@@ -436,8 +441,9 @@ def lagrange_polynomial(absicas, sort="GR"):
                 matrix = numpy.roll(matrix, -1, axis=0)
             matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
+        out = chaospy.poly.sum(vec*(coeffs.T), 1)
 
-    return chaospy.poly.sum(vec*(coeffs.T), 1)
+    return out
 
 
 if __name__=="__main__":
