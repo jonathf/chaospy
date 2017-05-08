@@ -400,10 +400,27 @@ def norm(order, dist, orth=None):
 
 def lagrange_polynomial(absicas, sort="GR"):
     """
-    Lagrange Polynomials
+    Create Lagrange polynomials.
 
-    absicas : array_like
-        Sample points where the Lagrange polynomials shall be.
+    Args:
+        absicas (array_like):
+            Sample points where the Lagrange polynomials shall be defined.
+
+    Example:
+        univariate case:
+        >>> print(lagrange_polynomial([-10, 10]))
+        [-0.05q0+0.5, 0.05q0+0.5]
+        >>> print(lagrange_polynomial([-1, 0, 1]))
+        [0.5q0^2-0.5q0, -q0^2+1.0, 0.5q0^2+0.5q0]
+
+        multivariate case:
+        >>> poly = lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
+        >>> print(poly)
+        [0.5q0-0.5q1+0.5, -q0+1.0, 0.5q0+0.5q1-0.5]
+        >>> print(poly([1, 0, 1], [0, 1, 2]))
+        [[ 1.  0.  0.]
+         [ 0.  1.  0.]
+         [ 0.  0.  1.]]
     """
     absicas = numpy.asfarray(absicas)
     if len(absicas.shape) == 1:
@@ -420,15 +437,14 @@ def lagrange_polynomial(absicas, sort="GR"):
     matrix = numpy.prod(absicas.T[idx]**indices[idy], -1)
     det = numpy.linalg.det(matrix)
     if det == 0:
-        raise numpy.linalg.LinAlgError("invertable matrix")
+        raise numpy.linalg.LinAlgError("invertible matrix")
 
     vec = chaospy.poly.basis(0, order-1, dim, sort)[:size]
 
     coeffs = numpy.zeros((size, size))
 
     if size == 1:
-        out = chaospy.poly.basis(1, 1, dim, sort) - absicas
-        out = chaospy.poly.sum(out)
+        out = chaospy.poly.basis(0, 0, dim, sort)*absicas.item()
 
     elif size == 2:
         coeffs = numpy.linalg.inv(matrix)
@@ -446,7 +462,7 @@ def lagrange_polynomial(absicas, sort="GR"):
     return out
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     import doctest
     import __init__ as cp
     doctest.testmod()
