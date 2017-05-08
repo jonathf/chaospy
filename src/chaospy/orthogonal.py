@@ -398,46 +398,52 @@ def norm(order, dist, orth=None):
         return chaospy.descriptives.E(orth**2, dist)
 
 
-def lagrange_polynomial(X, sort="GR"):
+def lagrange_polynomial(absicas, sort="GR"):
     """
-Lagrange Polynomials
+    Lagrange Polynomials
 
-X : array_like
-    Sample points where the lagrange polynomials shall be.
+    absicas : array_like
+        Sample points where the Lagrange polynomials shall be.
     """
-
-    X = numpy.asfarray(X)
-    if len(X.shape)==1:
-        X = X.reshape(1,X.size)
-    dim,size = X.shape
+    absicas = numpy.asfarray(absicas)
+    if len(absicas.shape) == 1:
+        absicas = absicas.reshape(1, absicas.size)
+    dim, size = absicas.shape
 
     order = 1
-    while chaospy.bertran.terms(order, dim)<=size: order += 1
+    while chaospy.bertran.terms(order, dim) <= size:
+        order += 1
 
-    indices = numpy.array(chaospy.bertran.bindex(1, order, dim, sort)[:size])
-    s,t = numpy.mgrid[:size, :size]
+    indices = numpy.array(chaospy.bertran.bindex(0, order-1, dim, sort)[:size])
+    idx, idy = numpy.mgrid[:size, :size]
 
-    M = numpy.prod(X.T[s]**indices[t], -1)
-    det = numpy.linalg.det(M)
-    if det==0:
+    matrix = numpy.prod(absicas.T[idx]**indices[idy], -1)
+    det = numpy.linalg.det(matrix)
+    if det == 0:
         raise numpy.linalg.LinAlgError("invertable matrix")
 
-    v = chaospy.poly.basis(1, order, dim, sort)[:size]
+    vec = chaospy.poly.basis(0, order-1, dim, sort)[:size]
 
     coeffs = numpy.zeros((size, size))
 
-    if size==2:
-        coeffs = numpy.linalg.inv(M)
+    if size == 1:
+        out = chaospy.poly.basis(1, 1, dim, sort) - absicas
+        out = chaospy.poly.sum(out)
+
+    elif size == 2:
+        coeffs = numpy.linalg.inv(matrix)
+        out = chaospy.poly.sum(vec*(coeffs.T), 1)
 
     else:
         for i in range(size):
             for j in range(size):
-                coeffs[i,j] += numpy.linalg.det(M[1:,1:])
-                M = numpy.roll(M, -1, axis=0)
-            M = numpy.roll(M, -1, axis=1)
+                coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
+                matrix = numpy.roll(matrix, -1, axis=0)
+            matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
+        out = chaospy.poly.sum(vec*(coeffs.T), 1)
 
-    return chaospy.poly.sum(v*(coeffs.T), 1)
+    return out
 
 
 if __name__=="__main__":
