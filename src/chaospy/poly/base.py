@@ -1,7 +1,7 @@
 """
 Polynomial base class Poly.
 """
-
+import re
 import numpy as np
 
 import chaospy.poly
@@ -9,6 +9,8 @@ import chaospy.poly
 
 # Name of variables
 VARNAME = "q"
+POWER = "^"
+SEP = ""
 
 
 def setvarname(name):
@@ -355,10 +357,10 @@ class Poly(object):
 
             for j in range(self.dim):
 
-                if key[j]==1:
+                if key[j] == 1:
                     o += basename[j]
-                if key[j]>1:
-                    o +="%s^%d" % (basename[j], key[j])
+                if key[j] > 1:
+                    o +="%s%s%d" % (basename[j], POWER, key[j])
 
             if not o:
                 if self.dtype in (int, np.int16, np.int32, np.int64):
@@ -371,7 +373,7 @@ class Poly(object):
                 o = "+0.0"
 
             for b in basename:
-                if o[4:5] == b[0] and o[1:4] == "1.0":
+                if o[4:5] == b[0] and o[1:].startswith("1.0"):
                     o = o[0] + o[4:]
                 elif o[2:3] == b[0] and o[1:2] == "1":
                     o = o[0] + o[2:]
@@ -387,7 +389,9 @@ class Poly(object):
                 out = ["0.0"]
         if out[0][0]=="+": out[0] = out[0][1:]
 
-        return "".join(out)
+        out = "".join(out)
+        out = re.sub(r"(\d)(%s)" % re.escape(VARNAME), r"\1%s\2" % SEP, out)
+        return out
 
 
     def copy(self):
