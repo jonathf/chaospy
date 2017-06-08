@@ -40,7 +40,7 @@ def Acf(poly, dist, N=None, **kws):
     return out
 
 
-def Spearman(poly, dist, sample=1e4, retall=False, **kws):
+def Spearman(poly, dist, sample=10000, retall=False, **kws):
     """
     Calculate Spearman's rank-order correlation coefficient.
 
@@ -66,7 +66,7 @@ def Spearman(poly, dist, sample=1e4, retall=False, **kws):
     return spearmanr(Y.T)[0]
 
 
-def Perc(poly, q, dist, sample=1e4, **kws):
+def Perc(poly, q, dist, sample=10000, **kws):
     """
     Percentile function.
 
@@ -102,7 +102,6 @@ def Perc(poly, q, dist, sample=1e4, **kws):
     dim = len(dist)
 
     # Interior
-    sample = kws.pop("sample", 1e4)
     Z = dist.sample(sample, **kws)
     if dim==1:
         Z = (Z, )
@@ -126,7 +125,7 @@ def Perc(poly, q, dist, sample=1e4, **kws):
     return out
 
 
-def QoI_Dist(poly, dist, sample=1e4, **kws):
+def QoI_Dist(poly, dist, sample=10000, **kws):
     """
     Constructs distributions for the quantity of interests.
 
