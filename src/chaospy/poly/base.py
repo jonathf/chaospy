@@ -27,12 +27,12 @@ class Poly(object):
 
     Examples:
         Direct construction:
-        >>> P = cp.Poly({(1,):np.array(1)})
+        >>> P = chaospy.Poly({(1,):np.array(1)})
         >>> print(P)
         q0
 
         Basic operators:
-        >>> x,y = cp.variable(2)
+        >>> x,y = chaospy.variable(2)
         >>> print(x**2 + x*y + 2)
         q0^2+q0q1+2
 
@@ -42,7 +42,7 @@ class Poly(object):
         [-2 -2  0]
 
         Arrays:
-        >>> P = cp.Poly([x*y, x, y])
+        >>> P = chaospy.Poly([x*y, x, y])
         >>> print(P)
         [q0q1, q0, q1]
     """
@@ -410,8 +410,7 @@ def sort_key(val):
     return np.sum((max(val)+1)**np.arange(len(val)-1, -1, -1)*val)
 
 
-import chaospy as cp
-
 if __name__=='__main__':
+    import chaospy
     import doctest
     doctest.testmod()

@@ -21,12 +21,12 @@ def dimsplit(P):
                 is used for coeficients.
 
     Examples:
-        >>> x,y = cp.variable(2)
-        >>> P = cp.Poly([2, x*y, 2*x])
-        >>> Q = cp.dimsplit(P)
+        >>> x,y = chaospy.variable(2)
+        >>> P = chaospy.Poly([2, x*y, 2*x])
+        >>> Q = chaospy.dimsplit(P)
         >>> print(Q)
         [[2, 1, 2], [1, q0, q0], [1, q1, 1]]
-        >>> print(cp.prod(Q, 0))
+        >>> print(chaospy.prod(Q, 0))
         [2, q0q1, 2q0]
     """
     P = P.copy()
@@ -89,9 +89,9 @@ def setdim(P, dim=None):
                 all cut.
 
     Examples:
-        >>> x,y = cp.variable(2)
+        >>> x,y = chaospy.variable(2)
         >>> P = x*x-x*y
-        >>> print(cp.setdim(P, 1))
+        >>> print(chaospy.setdim(P, 1))
         q0^2
     """
     P = P.copy()
@@ -123,5 +123,6 @@ def setdim(P, dim=None):
     P.keys = sorted(P.A.keys(), key=sort_key)
     return P
 
-
-import chaospy as cp
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

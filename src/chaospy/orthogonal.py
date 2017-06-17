@@ -117,34 +117,40 @@ recursion scheme can be done through ``orth_ttr``. For example::
 The method will use the ``ttr`` function if available, and discretized
 Stieltjes otherwise.
 """
+import logging
 
 import numpy
 import chaospy
 
-__all__ = [
-"orth_gs",
-"orth_ttr",
-"orth_chol",
-"orth_bert",
-"norm",
-]
+__all__ = (
+    "orth_gs",
+    "orth_ttr",
+    "orth_chol",
+    "norm",
+)
+
 
 def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
 
     Args:
-        order (int, Poly) : The upper polynomial order.  Alternative a custom
-                polynomial basis can be used.
-        dist (Dist) : Weighting distribution(s) defining orthogonality.
-        normed (bool) : If True orthonormal polynomials will be used instead
-                of monic.
-        sort (str) : Ordering argument passed to poly.basis.  If custom basis
-                is used, argument is ignored.
-        cross_truncation (float) : Use hyperbolic cross truncation scheme to
-                reduce the number of terms in expansion.
-        kws (optional) : Keyword argument passed to dist.mom if the moments
-                need to be estimated.
+        order (int, Poly):
+            The upper polynomial order. Alternative a custom polynomial basis
+            can be used.
+        dist (Dist):
+            Weighting distribution(s) defining orthogonality.
+        normed (bool):
+            If True orthonormal polynomials will be used instead of monic.
+        sort (str):
+            Ordering argument passed to poly.basis. If custom basis is used,
+            argument is ignored.
+        cross_truncation (float):
+            Use hyperbolic cross truncation scheme to reduce the number of
+            terms in expansion.
+        kws (optional):
+            Keyword argument passed to dist.mom if the moments need to be
+            estimated.
 
     Returns:
         (Poly) : The orthogonal polynomial expansion.
@@ -154,6 +160,7 @@ def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
         >>> print(chaospy.orth_gs(2, Z))
         [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
     """
+    logger = logging.getLogger(__name__)
     dim = len(dist)
 
     if isinstance(order, int):
@@ -166,37 +173,46 @@ def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
 
     basis = list(basis)
 
-    P = [basis[0]]
+    polynomials = [basis[0]]
 
     if normed:
-        for i in range(1,len(basis)):
+        for idx in range(1, len(basis)):
 
-            for j in range(i):
-                tmp = P[j]*chaospy.descriptives.E(basis[i]*P[j], dist, **kws)
-                basis[i] = basis[i] - tmp
+            # orthogonalize polynomial:
+            for idy in range(idx):
+                orth = chaospy.descriptives.E(
+                    basis[idx]*polynomials[idy], dist, **kws)
+                basis[idx] = basis[idx] - polynomials[idy]*orth
 
-            g = chaospy.descriptives.E(P[-1]**2, dist, **kws)
-            if g<=0:
-                print("Warning: Polynomial cutoff at term %d" % i)
+            # normalize:
+            norms = chaospy.descriptives.E(polynomials[-1]**2, dist, **kws)
+            if norms <= 0:
+                logger.warning("Warning: Polynomial cutoff at term %d", idx)
                 break
-            basis[i] = basis[i]/numpy.sqrt(g)
-            P.append(basis[i])
+            basis[idx] = basis[idx] / numpy.sqrt(norms)
+
+            polynomials.append(basis[idx])
 
     else:
 
-        G = [1.]
-        for i in range(1,len(basis)):
-            for j in range(i):
-                tmp = P[j]*(chaospy.descriptives.E(basis[i]*P[j], dist, **kws) / G[j])
-                basis[i] = basis[i] - tmp
+        norms = [1.]
+        for idx in range(1, len(basis)):
 
-            G.append(chaospy.descriptives.E(P[-1]**2, dist, **kws))
-            if G[-1]<=0:
-                print("Warning: Polynomial cutoff at term %d" % i)
+            # orthogonalize polynomial:
+            for idy in range(idx):
+                orth = chaospy.descriptives.E(
+                    basis[idx]*polynomials[idy], dist, **kws)
+                basis[idx] = basis[idx] - polynomials[idy] * orth / norms[idy]
+
+            norms.append(
+                chaospy.descriptives.E(polynomials[-1]**2, dist, **kws))
+            if norms[-1] <= 0:
+                logger.warning("Warning: Polynomial cutoff at term %d", idx)
                 break
-            P.append(basis[i])
 
-    return chaospy.poly.Poly(P, dim=dim, shape=(len(P),))
+            polynomials.append(basis[idx])
+
+    return chaospy.poly.Poly(polynomials, dim=dim, shape=(len(polynomials),))
 
 
 def orth_ttr(
@@ -206,60 +222,72 @@ def orth_ttr(
     Create orthogonal polynomial expansion from three terms recursion formula.
 
     Args:
-        order (int) : Order of polynomial expansion.
-        dist (Dist) : Distribution space where polynomials are orthogonal If
-                dist.ttr exists, it will be used, othervice Clenshaw-Curtis
-                integration will be used.  Must be stochastically independent.
-        normed (bool) : If True orthonormal polynomials will be used instead
-                of monic.
-        sort (str) : Polynomial sorting. Same as in basis.
-        retall (bool) : If true return norms as well.
-        cross_truncation (float) : Use hyperbolic cross truncation scheme to
-                reduce the number of terms in expansion.
-        kws (optional) : Keyword argument passed to stieltjes method.
+        order (int):
+            Order of polynomial expansion.
+        dist (Dist):
+            Distribution space where polynomials are orthogonal If dist.ttr
+            exists, it will be used, othervice Clenshaw-Curtis integration will
+            be used.  Must be stochastically independent.
+        normed (bool):
+            If True orthonormal polynomials will be used instead of monic.
+        sort (str):
+            Polynomial sorting. Same as in basis.
+        retall (bool):
+            If true return norms as well.
+        cross_truncation (float):
+            Use hyperbolic cross truncation scheme to reduce the number of
+            terms in expansion.
+        kws (optional):
+            Keyword argument passed to stieltjes method.
 
     Returns:
-        orth (Poly, numpy.ndarray) : Orthogonal polynomial expansion and norms of
-                the orthogonal expansion on the form E(orth**2, dist).
-                Calculated using recurrence coefficients for stability.
+        orth (Poly, numpy.ndarray):
+            Orthogonal polynomial expansion and norms of the orthogonal
+            expansion on the form E(orth**2, dist). Calculated using recurrence
+            coefficients for stability.
 
     Examples:
         >>> Z = chaospy.Normal()
         >>> print(chaospy.orth_ttr(4, Z))
         [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
-    P, norms, A, B = chaospy.quad.generate_stieltjes(
-        dist, order, retall=True, **kws)
+    polynomials, norms, _, _ = chaospy.quad.generate_stieltjes(
+        dist=dist, order=order, retall=True, **kws)
 
     if normed:
-        for i in range(len(P)):
-            P[i] = P[i]/numpy.sqrt(norms[:,i])
+        for idx, poly in enumerate(polynomials):
+            polynomials[idx] = poly / numpy.sqrt(norms[:, idx])
         norms = norms**0
 
     dim = len(dist)
     if dim > 1:
-        Q, G = [], []
-        indices = chaospy.bertran.bindex(0, order, dim, sort, cross_truncation)
-        for I in indices:
-            q = P[I[0]][0]
-            for i in range(1, dim):
-                q = q * P[I[i]][i]
-            Q.append(q)
+        mv_polynomials = []
+        mv_norms = []
+        indices = chaospy.bertran.bindex(
+            start=0, stop=order, dim=dim, sort=sort,
+            cross_truncation=cross_truncation,
+        )
+
+        for index in indices:
+            poly = polynomials[index[0]][0]
+            for idx in range(1, dim):
+                poly = poly * polynomials[index[idx]][idx]
+            mv_polynomials.append(poly)
 
         if retall:
-            for I in indices:
-                g = [norms[i,I[i]] for i in range(dim)]
-                G.append(numpy.prod(g))
-        P = Q
+            for index in indices:
+                mv_norms.append(
+                    numpy.prod([norms[idx, index[idx]] for idx in range(dim)]))
 
     else:
-        G = norms[0]
+        mv_norms = norms[0]
+        mv_polynomials = polynomials
 
-    P = chaospy.poly.flatten(chaospy.poly.Poly(P))
+    polynomials = chaospy.poly.flatten(chaospy.poly.Poly(mv_polynomials))
 
     if retall:
-        return P, numpy.array(G)
-    return P
+        return polynomials, numpy.array(mv_norms)
+    return polynomials
 
 
 def orth_chol(order, dist, normed=True, sort="GR", cross_truncation=1., **kws):
@@ -284,103 +312,39 @@ def orth_chol(order, dist, normed=True, sort="GR", cross_truncation=1., **kws):
     """
     dim = len(dist)
     basis = chaospy.poly.basis(
-        1, order, dim, sort, cross_truncation=cross_truncation)
-    C = chaospy.descriptives.Cov(basis, dist)
-    N = len(basis)
+        start=1, stop=order, dim=dim, sort=sort,
+        cross_truncation=cross_truncation,
+    )
+    length = len(basis)
 
-    L = chaospy.chol.gill_king(C)
-    Li = numpy.linalg.inv(L.T).T
+    cholmat = chaospy.chol.gill_king(chaospy.descriptives.Cov(basis, dist))
+    cholmat_inv = numpy.linalg.inv(cholmat.T).T
     if not normed:
-        Li /= numpy.repeat(numpy.diag(Li), len(Li)).reshape(Li.shape)
-    E_ = -numpy.sum(Li*chaospy.descriptives.E(basis, dist, **kws), -1)
-    coefs = numpy.empty((N+1, N+1))
-    coefs[1:,1:] = Li
-    coefs[0,0] = 1
-    coefs[0,1:] = 0
-    coefs[1:,0] = E_
+        diag_mesh = numpy.repeat(numpy.diag(cholmat_inv), len(cholmat_inv))
+        cholmat_inv /= diag_mesh.reshape(cholmat_inv.shape)
+
+    coefs = numpy.empty((length+1, length+1))
+
+    coefs[1:, 1:] = cholmat_inv
+    coefs[0, 0] = 1
+    coefs[0, 1:] = 0
+
+    expected = -numpy.sum(
+        cholmat_inv*chaospy.descriptives.E(basis, dist, **kws), -1)
+    coefs[1:, 0] = expected
+
     coefs = coefs.T
 
     out = {}
     out[(0,)*dim] = coefs[0]
-    for i in range(N):
-        I = basis[i].keys[0]
-        out[I] = coefs[i+1]
+    for idx in range(length):
+        index = basis[idx].keys[0]
+        out[index] = coefs[idx+1]
 
-    P = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
+    polynomials = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
 
-    return P
+    return polynomials
 
-
-def orth_bert(N, dist, normed=False, sort="GR", cross_truncation=1.):
-    """
-    Stabilized process for generating orthogonal polynomials.
-
-    Args:
-        N (int) : The upper polynomial order.
-        dist (Dist) : Weighting distribution(s) defining orthogonality.
-        normed (bool) : True the polynomials are normalised.
-        sort (str) : The sorting method.
-        cross_truncation (float) : Use hyperbolic cross truncation scheme to
-                reduce the number of terms in expansion.
-
-    Returns:
-        P (Poly) : The orthogonal polynomial expansion.
-
-    Examples:
-        # >>> Z = chaospy.MvNormal([0,0], [[1,.5],[.5,1]])
-        # >>> P = orth_bert(2, Z)
-        # >>> print(P)
-        # [1.0, q0, -0.5q0+q1, q0^2-1.0, -0.5q0^2+q0q1, 0.25q0^2+q1^2-q0q1-0.75]
-    """
-    dim = len(dist)
-    sort = sort.upper()
-
-    # Start orthogonalization
-    x = chaospy.poly.basis(1, 1, dim, cross_truncation=cross_truncation)
-    if not ("R" in sort):
-        x = x[::-1]
-    foo = chaospy.bertran.fourier.FourierRecursive(dist)
-
-    # Create order=0
-    pool = [chaospy.poly.Poly(1, dim=dim, shape=())]
-
-    # start loop
-    M = chaospy.bertran.terms(N,dim)
-    for i in range(1, M):
-
-        par, ax0 = chaospy.bertran.parent(i, dim)
-        gpar, ax1 = chaospy.bertran.parent(par, dim)
-        oneup = chaospy.bertran.child(0, dim, ax0)
-
-        # calculate rank to cut some terms
-        rank = chaospy.bertran.multi_index(i, dim)
-        while rank[-1]==0: rank = rank[:-1]
-        rank = dim - len(rank)
-
-        candi = x[ax0]*pool[par]
-
-        for j in range(gpar, i):
-
-            # cut irrelevant term
-            if rank and numpy.any(chaospy.bertran.multi_index(j, dim)[-rank:]):
-                continue
-
-            A = foo(oneup, par, j)
-            P = pool[j]
-
-            candi = candi - P*A
-
-        if normed:
-            candi = candi/numpy.sqrt(foo(i, i, 0))
-
-        pool.append(candi)
-
-    if "I" in sort:
-        pool = pool[::-1]
-
-    P = chaospy.poly.Poly(
-        [_.A for _ in pool], dim, (chaospy.bertran.terms(N, dim),))
-    return P
 
 
 def norm(order, dist, orth=None):
@@ -393,10 +357,10 @@ def norm(order, dist, orth=None):
             out = numpy.ones(len(Is))
 
             for i in range(len(Is)):
-                I = Is[i]
+                index = Is[i]
                 for j in range(dim):
-                    if I[j]:
-                        out[i] *= norms[j, I[j]]
+                    if index[j]:
+                        out[i] *= norms[j, index[j]]
             return out
 
         K = range(1,order+1)

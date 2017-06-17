@@ -2,7 +2,8 @@
 Collection of tools for manipulation polynomial.
 """
 
-import numpy as np
+import numpy
+from scipy.misc import comb, factorial as fac
 
 import chaospy.poly.dimension
 import chaospy.bertran
@@ -50,37 +51,57 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
         [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
     """
     if stop is None:
-        start, stop = np.array(0), start
+        start, stop = numpy.array(0), start
 
-    start = np.array(start, dtype=int)
-    stop = np.array(stop, dtype=int)
+    start = numpy.array(start, dtype=int)
+    stop = numpy.array(stop, dtype=int)
     dim = max(start.size, stop.size, dim)
-    indices = np.array(chaospy.bertran.bindex(
-        np.min(start), 2*np.max(stop), dim, sort, cross_truncation))
+    indices = numpy.array(chaospy.bertran.bindex(
+        numpy.min(start), 2*numpy.max(stop), dim, sort, cross_truncation))
 
     if start.size == 1:
-        bellow = np.sum(indices, -1) >= start
+        bellow = numpy.sum(indices, -1) >= start
 
     else:
-        start = np.ones(dim, dtype=int)*start
-        bellow = np.all(indices-start >= 0, -1)
+        start = numpy.ones(dim, dtype=int)*start
+        bellow = numpy.all(indices-start >= 0, -1)
+
 
     if stop.size == 1:
-        above = np.sum(indices, -1) <= stop.item()
-
+        above = numpy.sum(indices, -1) <= stop.item()
     else:
-        stop = np.ones(dim, dtype=int)*stop
-        above = np.all(stop-indices >= 0, -1)
+        stop = numpy.ones(dim, dtype=int)*stop
+        above = numpy.all(stop-indices >= 0, -1)
 
     pool = list(indices[above*bellow])
 
-    arg = np.zeros(len(pool), dtype=int)
+    arg = numpy.zeros(len(pool), dtype=int)
     arg[0] = 1
     poly = {}
     for idx in pool:
         idx = tuple(idx)
         poly[idx] = arg
-        arg = np.roll(arg, 1)
+        arg = numpy.roll(arg, 1)
+    x = numpy.zeros(len(pool), dtype=int)
+    x[0] = 1
+    A = {}
+    for I in pool:
+        I = tuple(I)
+        A[I] = x
+        x = numpy.roll(x,1)
+
+    return Poly(A, dim)
+
+
+def lagrange(X):
+
+    X = numpy.array(X)
+    if len(X.shape) < 2:
+        X = X.reshape(1, *X.shape)
+    if len(X.shape) < 2:
+        X = X.reshape(1, *X.shape)
+
+    dim, K = X.shape
 
     return Poly(poly, dim)
 
@@ -90,14 +111,17 @@ def cutoff(poly, *args):
     Remove polynomial components with order outside a given interval.
 
     Args:
-        poly (Poly) : Input data.
-        low (int, optional) : The lowest order that is allowed to be included.
-                Defaults to 0.
-        high (int) : The upper threshold for the cutoff range.
+        poly (Poly):
+            Input data.
+        low (int, optional):
+            The lowest order that is allowed to be included. Defaults to 0.
+        high (int):
+            The upper threshold for the cutoff range.
 
     Returns:
-        (Poly) : The same as `P`, except that all terms that have a order not
-                within the bound `low<=order<high` are removed.
+        (Poly):
+            The same as `P`, except that all terms that have a order not within
+            the bound `low <= order < high` are removed.
 
     Examples:
         >>> poly = cp.prange(4, 1) + cp.prange(4, 2)[::-1]
@@ -116,13 +140,57 @@ def cutoff(poly, *args):
     core_old = poly.A
     core_new = {}
     for key in poly.keys:
-        if low <= np.sum(key) < high:
+        if low <= numpy.sum(key) < high:
             core_new[key] = core_old[key]
-
     return Poly(core_new, poly.dim, poly.shape, poly.dtype)
 
 
+def dot(P, Q):
 
+    P = Poly(P)
+    Q = Poly(Q)
+    if numpy.prod(P.shape)<=1 or numpy.prod(Q.shape)<=1:
+        return P*Q
+    return sum(P*Q, -1)
+
+
+def differential(P, Q):
+    """
+    Polynomial differential operator.
+
+    Args:
+        P (Poly) : Polynomial to be differentiated.
+        Q (Poly) : Polynomial to differentiate by. Must be decomposed. If
+                polynomial array, the output is the Jacobian matrix.
+    """
+    P, Q = Poly(P), Poly(Q)
+
+    if not chaospy.poly.is_decomposed(Q):
+        differential(chaospy.poly.decompose(Q)).sum(0)
+
+    if Q.shape:
+        return Poly([differential(P, q) for q in Q])
+
+    if Q.dim>P.dim:
+        P = chaospy.poly.setdim(P, Q.dim)
+    else:
+        Q = chaospy.poly.setdim(Q, P.dim)
+
+    qkey = Q.keys[0]
+
+    A = {}
+    for key in P.keys:
+
+        newkey = numpy.array(key) - numpy.array(qkey)
+
+        if numpy.any(newkey<0):
+            continue
+
+        A[tuple(newkey)] = P.A[key]*numpy.prod([fac(key[i], \
+            exact=True)/fac(newkey[i], exact=True) \
+            for i in range(P.dim)])
+
+    return Poly(B, P.dim, P.shape, P.dtype)
 
 
 def prange(N=1, dim=1):
@@ -145,8 +213,8 @@ def prange(N=1, dim=1):
         [1, q2, q2^2, q2^3]
     """
     A = {}
-    r = np.arange(N, dtype=int)
-    key = np.zeros(dim, dtype=int)
+    r = numpy.arange(N, dtype=int)
+    key = numpy.zeros(dim, dtype=int)
     for i in range(N):
         key[-1] = i
         A[tuple(key)] = 1*(r==i)
@@ -192,8 +260,7 @@ def swapdim(P, dim1=1, dim2=0):
     Returns:
         (Poly) : Polynomial with swapped dimensions.
 
-    Examples
-    --------
+    Examples:
         >>> x,y = variable(2)
         >>> P = x**4-y
         >>> print(P)
@@ -202,7 +269,7 @@ def swapdim(P, dim1=1, dim2=0):
         q1^4-q0
     """
     if not isinstance(P, Poly):
-        return np.swapaxes(P, dim1, dim2)
+        return numpy.swapaxes(P, dim1, dim2)
 
     dim = P.dim
     shape = P.shape
@@ -231,13 +298,13 @@ def tril(P, k=0):
     """Lower triangle of coefficients."""
     A = P.A.copy()
     for key in P.keys:
-        A[key] = np.tril(P.A[key])
+        A[key] = numpy.tril(P.A[key])
     return Poly(A, dim=P.dim, shape=P.shape)
 
 
 def tricu(P, k=0):
     """Cross-diagonal upper triangle."""
-    tri = np.sum(np.mgrid[[slice(0,_,1) for _ in P.shape]], 0)
+    tri = numpy.sum(numpy.mgrid[[slice(0,_,1) for _ in P.shape]], 0)
     tri = tri<len(tri) + k
 
     if isinstance(P, Poly):
@@ -267,47 +334,43 @@ def variable(dims=1):
         >>> print(variable(3))
         [q0, q1, q2]
     """
-    if dims==1:
-        return Poly({(1,):np.array(1)}, dim=1, shape=())
-
-    r = np.arange(dims, dtype=int)
-    A = {}
-    for i in range(dims):
-        A[tuple(1*(r==i))] = 1*(r==i)
-
-    return Poly(A, dim=dims, shape=(dims,))
+    if dims == 1:
+        return Poly({(1,): 1}, dim=1, shape=())
+    return Poly({
+        tuple(indices): indices for indices in numpy.eye(dims, dtype=int)
+    }, dim=dims, shape=(dims,))
 
 def order(P):
 
-    out = np.zeros(P.shape, dtype=int)
+    out = numpy.zeros(P.shape, dtype=int)
     for key in P.keys:
         o = sum(key)
-        out = np.max([out, o*(P.A[key])], 0)
+        out = numpy.max([out, o*(P.A[key])], 0)
     return out
 
 
 def all(A, ax=None):
     """ Test if all values in A evaluate to True """
     if isinstance(A, Poly):
-        out = np.zeros(A.shape, dtype=bool)
+        out = numpy.zeros(A.shape, dtype=bool)
         B = A.A
         for key in A.keys:
             out += all(B[key], ax)
         return out
 
-    return np.all(A, ax)
+    return numpy.all(A, ax)
 
 
 def any(A, ax=None):
     """ Test if any values in A evaluate to True """
     if isinstance(A, Poly):
-        out = np.zeros(A.shape, dtype=bool)
+        out = numpy.zeros(A.shape, dtype=bool)
         B = A.A
         for key in A.keys:
             out *= any(B[key])
         return out
 
-    return np.any(A, ax)
+    return numpy.any(A, ax)
 
 
 def around(A, decimals=0):
@@ -324,7 +387,7 @@ def around(A, decimals=0):
         (Poly, array_like) : Same type as A.
 
     Examples:
-        >>> P = cp.prange(3)*2**-np.arange(0, 6, 2, float)
+        >>> P = cp.prange(3)*2**-numpy.arange(0, 6, 2, float)
         >>> print(P)
         [1.0, 0.25q0, 0.0625q0^2]
         >>> print(cp.around(P))
@@ -338,7 +401,7 @@ def around(A, decimals=0):
             B[key] = around(B[key], decimals)
         return Poly(B, A.dim, A.shape, A.dtype)
 
-    return np.around(A, decimals)
+    return numpy.around(A, decimals)
 
 
 def diag(A, k=0):
@@ -346,11 +409,11 @@ def diag(A, k=0):
     if isinstance(A, Poly):
         core, core_new = A.A, {}
         for key in A.keys:
-            core_new[key] = np.diag(core[key], k)
+            core_new[key] = numpy.diag(core[key], k)
 
         return Poly(core_new, A.dim, None, A.dtype)
 
-    return np.diag(A, k)
+    return numpy.diag(A, k)
 
 
 def repeat(A, repeats, axis=None):
@@ -360,7 +423,7 @@ def repeat(A, repeats, axis=None):
             core[key] = repeat(core[key], repeats, axis)
         return Poly(core, A.dim, None, A.dtype)
 
-    return np.repeat(A, repeats, axis)
+    return numpy.repeat(A, repeats, axis)
 
 
 def trace(A, offset=0, ax1=0, ax2=1):
@@ -370,7 +433,7 @@ def trace(A, offset=0, ax1=0, ax2=1):
             core[key] = trace(core[key], ax1, ax2)
         return Poly(core, A.dim, None, A.dtype)
 
-    return np.trace(A, offset, ax1, ax2)
+    return numpy.trace(A, offset, ax1, ax2)
 
 
 import chaospy as cp  # pylint: disable=unused-import
