@@ -410,8 +410,7 @@ def sort_key(val):
     return np.sum((max(val)+1)**np.arange(len(val)-1, -1, -1)*val)
 
 
-import chaospy as cp
-
 if __name__=='__main__':
+    import chaospy as cp
     import doctest
     doctest.testmod()
