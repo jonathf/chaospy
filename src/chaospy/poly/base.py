@@ -115,7 +115,7 @@ class Poly(object):
         return chaospy.poly.collection.asint(self.__div__(other))
 
     def __eq__(self, other):
-        return True - self.__ne__(other)
+        return ~self.__ne__(other)
 
     def __ne__(self, other):
         if not isinstance(other, Poly):

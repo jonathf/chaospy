@@ -224,7 +224,7 @@ independent variables""")
 
         (lo, up), graph = self.graph.run(x, "range")
         valids = np.prod((x.T >= lo.T)*(x.T <= up.T), 1, dtype=bool)
-        x[:, True-valids] = (.5*(up+lo))[:, True-valids]
+        x[:, ~valids] = (.5*(up+lo))[:, ~valids]
         out = np.zeros((dim,size))
 
         try:
