@@ -326,7 +326,7 @@ norms : array_like
     solves = numpy.asfarray(solves)
 
     shape = solves.shape
-    solves = solves.reshape(weights.size, solves.size/weights.size)
+    solves = solves.reshape(weights.size, int(solves.size/weights.size))
 
     ovals = orth(*nodes)
     vals1 = [(val*solves.T*weights).T for val in ovals]
