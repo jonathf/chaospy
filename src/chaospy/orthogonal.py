@@ -129,7 +129,7 @@ __all__ = [
 "norm",
 ]
 
-def orth_gs(order, dist, normed=False, sort="GR", **kws):
+def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
 
@@ -141,6 +141,8 @@ def orth_gs(order, dist, normed=False, sort="GR", **kws):
                 of monic.
         sort (str) : Ordering argument passed to poly.basis.  If custom basis
                 is used, argument is ignored.
+        cross_truncation (float) : Use hyperbolic cross truncation scheme to
+                reduce the number of terms in expansion.
         kws (optional) : Keyword argument passed to dist.mom if the moments
                 need to be estimated.
 
@@ -155,9 +157,10 @@ def orth_gs(order, dist, normed=False, sort="GR", **kws):
     dim = len(dist)
 
     if isinstance(order, int):
-        if order==0:
+        if order == 0:
             return chaospy.poly.Poly(1, dim=dim)
-        basis = chaospy.poly.basis(0, order, dim, sort)
+        basis = chaospy.poly.basis(
+            0, order, dim, sort, cross_truncation=cross_truncation)
     else:
         basis = order
 
@@ -196,7 +199,9 @@ def orth_gs(order, dist, normed=False, sort="GR", **kws):
     return chaospy.poly.Poly(P, dim=dim, shape=(len(P),))
 
 
-def orth_ttr(order, dist, normed=False, sort="GR", retall=False, **kws):
+def orth_ttr(
+        order, dist, normed=False, sort="GR", retall=False,
+        cross_truncation=1., **kws):
     """
     Create orthogonal polynomial expansion from three terms recursion formula.
 
@@ -209,6 +214,8 @@ def orth_ttr(order, dist, normed=False, sort="GR", retall=False, **kws):
                 of monic.
         sort (str) : Polynomial sorting. Same as in basis.
         retall (bool) : If true return norms as well.
+        cross_truncation (float) : Use hyperbolic cross truncation scheme to
+                reduce the number of terms in expansion.
         kws (optional) : Keyword argument passed to stieltjes method.
 
     Returns:
@@ -232,7 +239,7 @@ def orth_ttr(order, dist, normed=False, sort="GR", retall=False, **kws):
     dim = len(dist)
     if dim > 1:
         Q, G = [], []
-        indices = chaospy.bertran.bindex(0,order,dim,sort)
+        indices = chaospy.bertran.bindex(0, order, dim, sort, cross_truncation)
         for I in indices:
             q = P[I[0]][0]
             for i in range(1, dim):
@@ -255,7 +262,7 @@ def orth_ttr(order, dist, normed=False, sort="GR", retall=False, **kws):
     return P
 
 
-def orth_chol(order, dist, normed=True, sort="GR", **kws):
+def orth_chol(order, dist, normed=True, sort="GR", cross_truncation=1., **kws):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
@@ -266,6 +273,8 @@ def orth_chol(order, dist, normed=True, sort="GR", **kws):
                 of monic.
         sort (str) : Ordering argument passed to poly.basis.  If custom basis
                 is used, argument is ignored.
+        cross_truncation (float) : Use hyperbolic cross truncation scheme to
+                reduce the number of terms in expansion.
         kws (optional) : Keyword argument passed to dist.mom.
 
     Examples:
@@ -274,7 +283,8 @@ def orth_chol(order, dist, normed=True, sort="GR", **kws):
         [1.0, q0, 0.7071q0^2-0.7071, 0.4082q0^3-1.2247q0]
     """
     dim = len(dist)
-    basis = chaospy.poly.basis(1,order,dim, sort)
+    basis = chaospy.poly.basis(
+        1, order, dim, sort, cross_truncation=cross_truncation)
     C = chaospy.descriptives.Cov(basis, dist)
     N = len(basis)
 
@@ -301,7 +311,7 @@ def orth_chol(order, dist, normed=True, sort="GR", **kws):
     return P
 
 
-def orth_bert(N, dist, normed=False, sort="GR"):
+def orth_bert(N, dist, normed=False, sort="GR", cross_truncation=1.):
     """
     Stabilized process for generating orthogonal polynomials.
 
@@ -310,6 +320,8 @@ def orth_bert(N, dist, normed=False, sort="GR"):
         dist (Dist) : Weighting distribution(s) defining orthogonality.
         normed (bool) : True the polynomials are normalised.
         sort (str) : The sorting method.
+        cross_truncation (float) : Use hyperbolic cross truncation scheme to
+                reduce the number of terms in expansion.
 
     Returns:
         P (Poly) : The orthogonal polynomial expansion.
@@ -324,7 +336,7 @@ def orth_bert(N, dist, normed=False, sort="GR"):
     sort = sort.upper()
 
     # Start orthogonalization
-    x = chaospy.poly.basis(1,1,dim)
+    x = chaospy.poly.basis(1, 1, dim, cross_truncation=cross_truncation)
     if not ("R" in sort):
         x = x[::-1]
     foo = chaospy.bertran.fourier.FourierRecursive(dist)

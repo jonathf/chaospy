@@ -98,7 +98,7 @@ def multi_index(idx, dim):
     return _rec(idx, dim)
 
 
-def bindex(start, stop=None, dim=1, sort="G"):
+def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     """
     Generator for creating multi-indices.
 
@@ -113,6 +113,9 @@ def bindex(start, stop=None, dim=1, sort="G"):
         If array of int, set as largest order along each axis.
     dim : int
         The number of dimensions in the expansion
+    cross_truncation : float
+        Use hyperbolic cross truncation scheme to reduce the number of
+        terms in expansion.
 
     Returns
     -------
@@ -173,6 +176,12 @@ def bindex(start, stop=None, dim=1, sort="G"):
 
     if "R" in sort:
         total = [idx[::-1] for idx in total]
+
+    for pos, idx in reversed(list(enumerate(total))):
+        idx = numpy.array(idx)
+        if numpy.any(numpy.sum(idx**(1./cross_truncation)) > stop**(1./cross_truncation)):
+            del total[pos]
+
 
     return total
 

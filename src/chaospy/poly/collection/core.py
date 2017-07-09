@@ -6,11 +6,12 @@ import numpy as np
 
 import chaospy.poly.dimension
 import chaospy.bertran
+import chaospy.quadrature
 
 from chaospy.poly.base import Poly
 
 
-def basis(start, stop=None, dim=1, sort="G"):
+def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     """
     Create an N-dimensional unit polynomial basis.
 
@@ -36,6 +37,8 @@ def basis(start, stop=None, dim=1, sort="G"):
                 "R"     [1 x x^2 y xy y^2]
                 "GIR"   [y^2 xy x^2 y x 1]
                 ------  ------------------
+        cross_truncation (float) : Use hyperbolic cross truncation scheme to
+                reduce the number of terms in expansion.
 
     Returns:
         (Poly) : Polynomial array.
@@ -52,8 +55,8 @@ def basis(start, stop=None, dim=1, sort="G"):
     start = np.array(start, dtype=int)
     stop = np.array(stop, dtype=int)
     dim = max(start.size, stop.size, dim)
-    indices = np.array(
-        chaospy.bertran.bindex(np.min(start), 2*np.max(stop), dim, sort))
+    indices = np.array(chaospy.bertran.bindex(
+        np.min(start), 2*np.max(stop), dim, sort, cross_truncation))
 
     if start.size == 1:
         bellow = np.sum(indices, -1) >= start
