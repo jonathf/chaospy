@@ -6,7 +6,7 @@ import numpy as np
 
 import chaospy.poly.dimension
 import chaospy.bertran
-import chaospy.quadrature
+import chaospy.quad
 
 from chaospy.poly.base import Poly
 

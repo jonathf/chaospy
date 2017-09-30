@@ -458,7 +458,7 @@ class mvnormal(Dist):
 
         dim = len(loc)
         K = np.mgrid[[slice(0,_+1,1) for _ in np.max(k, 1)]]
-        K = K.reshape(dim, K.size/dim)
+        K = K.reshape(dim, int(K.size/dim))
         M = mom(K)
 
         out = np.zeros(k.shape[1])
