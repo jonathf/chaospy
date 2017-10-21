@@ -383,13 +383,10 @@ def lagrange_polynomial(absicas, sort="GR"):
             Sample points where the Lagrange polynomials shall be defined.
 
     Example:
-        univariate case:
         >>> print(lagrange_polynomial([-10, 10]))
         [-0.05q0+0.5, 0.05q0+0.5]
         >>> print(lagrange_polynomial([-1, 0, 1]))
         [0.5q0^2-0.5q0, -q0^2+1.0, 0.5q0^2+0.5q0]
-
-        multivariate case:
         >>> poly = lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
         >>> print(poly)
         [0.5q0-0.5q1+0.5, -q0+1.0, 0.5q0+0.5q1-0.5]

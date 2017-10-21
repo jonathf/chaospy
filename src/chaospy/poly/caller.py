@@ -9,13 +9,15 @@ def call(poly, args):
     Evaluate a polynomial along specified axes.
 
     Args:
-        poly (Poly) : Input polynomial.
-        args (array_like, masked) : Argument to be evalutated.
-                Masked values keeps the variable intact.
+        poly (Poly):
+            Input polynomial.
+        args (array_like, masked):
+            Argument to be evaluated. Masked values keeps the variable intact.
 
     Returns:
-        (Poly, np.array) : If masked values are used the Poly is returned. Else
-                an numpy array matching the polynomial's shape is returned.
+        (Poly, np.array):
+            If masked values are used the Poly is returned. Else an numpy array
+            matching the polynomial's shape is returned.
     """
     args = list(args)
 
@@ -165,10 +167,12 @@ def is_decomposed(P):
     Check if a polynomial (array) is on component form.
 
     Args:
-        P (Poly) : Input data.
+        P (Poly):
+            Input data.
 
     Returns:
-        (bool) : True if all polynomials in `P` are on component form.
+        (bool):
+            True if all polynomials in ``P`` are on component form.
 
     Examples:
         >>> x,y = cp.variable(2)
@@ -187,7 +191,7 @@ def decompose(P):
     Decompose a polynomial to component form.
 
     In array missing values are padded with 0 to make decomposition compatible
-    with `cp.sum(Q, 0)`.
+    with ``chaospy.sum(Q, 0)``.
 
     Args:
         P (Poly) : Input data.

@@ -16,21 +16,21 @@ as follows::
     >>> x, y = np.meshgrid(np.linspace(-4, 7), np.linspace(0, 3))
     >>> likelihood = distribution.pdf([x, y])
 
-This method also allows for construct any multivariate probabilty distribution
+This method also allows for construct any multivariate probability distribution
 as long as you can fully construct the distribution's conditional decomposition
 as noted in :ref:`rosenblatt`. One only has to construct each univariate
 probability distribution and add dependencies in through the parameter
-structer.
+structure.
 
 Now it is worth noting a couple of cavats:
 
 * Since the underlying feature to accomplish this is the :ref:`rosenblatt`, the
   number of unique random variables in the final joint distribution has to be
-  constant. In other words, `dist_dep` is not a valid distribution in itself,
-  since it is univariat, but depends on the results of `dist_ind`.
-* The dependency order does not matter as long as it can defined as an asyclic
-  graph. In other words, `dist_ind` can not be dependent upon `dist_dep` at
-  the same time as `dist_dep` is dependent upon `dist_ind`.
+  constant. In other words, ``dist_dep`` is not a valid distribution in itself,
+  since it is univariat, but depends on the results of ``dist_ind``.
+* The dependency order does not matter as long as it can defined as an acyclic
+  graph. In other words, ``dist_ind`` can not be dependent upon ``dist_dep`` at
+  the same time as ``dist_dep`` is dependent upon ``dist_ind``.
 """
 import numpy as np
 from copy import copy
@@ -39,9 +39,7 @@ from chaospy.dist.baseclass import Dist
 
 
 class Joint(Dist):
-    """
-Joint probability operator
-    """
+    """Joint probability operator."""
 
     def __init__(self, *args):
         """
@@ -191,32 +189,29 @@ Parameters
 
         raise NotImplementedError("index not recogniced")
 
+
 def J(*args):
     """
-Joint random variable generator
+    Joint random variable generator.
 
-Parameters
-----------
-*args : Dist
-    Distribution to join together
+    Args:
+        *args : Dist
+            Distribution to join together
 
-Returns
--------
-dist : Dist
-    Multivariate distribution
+    Returns:
+        Multivariate distribution
 
-Examples
---------
-Independent
->>> dist = cp.J(cp.Uniform(), cp.Normal())
->>> print(dist.mom([[0,0,1], [0,2,2]]))
-[ 1.   1.   0.5]
+    Examples:
+        Independent
+        >>> dist = cp.J(cp.Uniform(), cp.Normal())
+        >>> print(dist.mom([[0,0,1], [0,2,2]]))
+        [ 1.   1.   0.5]
 
-Dependent
->>> d0 = cp.Uniform()
->>> dist = cp.J(d0, d0+cp.Uniform())
->>> print(dist.mom([[0,0,1], [0,1,1]]))
-[ 1.          1.          0.53469533]
+        Dependent
+        >>> d0 = cp.Uniform()
+        >>> dist = cp.J(d0, d0+cp.Uniform())
+        >>> print(dist.mom([[0,0,1], [0,1,1]]))
+        [ 1.          1.          0.53469533]
     """
     out = []
     args = list(args)
@@ -230,28 +225,27 @@ Dependent
 
     return Joint(*out)
 
+
 class Iid(Dist):
     """
-Opaque method for creating independent identical distributed random
-variables from an univariate variable.
+    Opaque method for creating independent identical distributed random
+    variables from an univariate variable.
 
-Examples
---------
->>> X = cp.Normal()
->>> Y = cp.Iid(X, 4)
->>> cp.seed(1000)
->>> print(Y.sample())
-[ 0.39502989 -1.20032309  1.64760248 -0.04465437]
-    """
+    Examples:
+        >>> X = cp.Normal()
+        >>> Y = cp.Iid(X, 4)
+        >>> cp.seed(1000)
+        >>> print(Y.sample())
+        [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
+        """
 
     def __init__(self, dist, N):
         """
-Parameters
-----------
-dist : Dist
-    Input variable. Must have `len(dist)==1`.
-N : int
-    Number of variable in the output.
+        Parameters:
+            dist : Dist
+                Input variable. Must have `len(dist)==1`.
+            N : int
+                Number of variable in the output.
         """
         assert len(dist)==1 and N>1
         Dist.__init__(self, dist=dist, _length=N)
@@ -287,10 +281,3 @@ N : int
     def _dep(self, graph):
         dist = graph.dists["dist"]
         return [set([copy(dist)]) for _ in range(len(self))]
-
-
-if __name__=='__main__':
-    import __init__ as cp
-    import numpy as np
-    import doctest
-    doctest.testmod()

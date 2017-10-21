@@ -5,4 +5,4 @@ Polynomial Representation
 
 .. automodule:: chaospy.poly
 
-.. autoclass:: chaospy.poly.Poly
+.. autoclass:: chaospy.poly.base.Poly

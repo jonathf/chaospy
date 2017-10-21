@@ -9,16 +9,17 @@ def dimsplit(P):
     Segmentize a polynomial (on decomposed form) into it's dimensions.
 
     In array missing values are padded with 1 to make dimsplit compatible with
-    `poly.prod(Q, 0)`.
+    ``poly.prod(Q, 0)``.
 
 
     Args:
-        P (Poly) : Input polynomial.
+        P (Poly):
+            Input polynomial.
 
     Returns:
-        (Poly) : Segmentet polynomial array where
-                `Q.shape==P.shape+(P.dim+1,)`. The surplus element in `P.dim+1`
-                is used for coeficients.
+        (Poly):
+            Segmentet polynomial array where ``Q.shape==P.shape+(P.dim+1,)``.
+            The surplus element in ``P.dim+1`` is used for coefficients.
 
     Examples:
         >>> x,y = chaospy.variable(2)

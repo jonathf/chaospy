@@ -6,5 +6,5 @@ Custom Constructions
 .. automodule:: chaospy.dist.backend
 
 .. autoclass:: chaospy.dist.Dist
-.. autofunction:: chaospy.dist.construct
+.. autofunction:: chaospy.dist.baseclass.construct
 

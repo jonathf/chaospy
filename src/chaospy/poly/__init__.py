@@ -2,7 +2,7 @@
 A simple polynomial can be created through ``variable`` constructor. For
 example to construct a simple bivariate polynomial::
 
-     >>> x,y = cp.variable(2)
+     >>> x,y = cp.variable(dims=2)
      >>> print(x)
      q0
 
@@ -22,23 +22,23 @@ larger arrays for application. To automate the construction of simple
 polynomials, there is the ``basis`` constructor. In its simplest forms
 it creates an array of simple monomials::
 
-      >>> print(cp.basis(4))
+      >>> print(cp.basis(start=4))
       [1, q0, q0^2, q0^3, q0^4]
 
 It can be expanded to include number of dimensions and a lower bound for the
 polynomial order::
 
-      >>> print(cp.basis(1, 2, dim=2))
+      >>> print(cp.basis(start=1, stop=2, dim=2))
       [q0, q1, q0^2, q0q1, q1^2]
 
 There is also the possibility to create anisotropic expansions::
 
-      >>> print(cp.basis(1, [1, 2]))
+      >>> print(cp.basis(start=1, stop=[1, 2]))
       [q0, q1, q0q1, q1^2, q0q1^2]
 
 and the possibility to fine tune the sorting of the polynomials::
 
-      >>> print(cp.basis(1, 2, dim=2, sort="GRI"))
+      >>> print(cp.basis(start=1, stop=2, dim=2, sort="GRI"))
       [q0^2, q0q1, q1^2, q0, q1]
 
 To manipulate a polynomial there is a collection of tools available. In
@@ -111,10 +111,3 @@ from chaospy.poly.shaping import *
 from chaospy.poly.collection import *
 
 import chaospy.poly.constructor
-
-
-if __name__ == "__main__":
-    import numpy as np
-    import chaospy as cp
-    import doctest
-    doctest.testmod()

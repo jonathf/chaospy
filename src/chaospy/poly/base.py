@@ -1,6 +1,4 @@
-"""
-Polynomial base class Poly.
-"""
+"""Polynomial base class Poly."""
 import re
 import numpy as np
 
@@ -26,24 +24,15 @@ class Poly(object):
     Can also represent sets of polynomials.
 
     Examples:
-        Direct construction:
-        >>> P = chaospy.Poly({(1,):np.array(1)})
-        >>> print(P)
+        >>> print(chaospy.Poly({(1,): np.array(1)}))
         q0
-
-        Basic operators:
         >>> x,y = chaospy.variable(2)
         >>> print(x**2 + x*y + 2)
         q0^2+q0q1+2
-
-        Evaluation:
         >>> g = -3*x+x**2
-        >>> print(g([1,2,3], [1,2,3]))
+        >>> print(g([1, 2, 3], [1, 2, 3]))
         [-2 -2  0]
-
-        Arrays:
-        >>> P = chaospy.Poly([x*y, x, y])
-        >>> print(P)
+        >>> print(chaospy.Poly([x*y, x, y]))
         [q0q1, q0, q1]
     """
 

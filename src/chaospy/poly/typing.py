@@ -50,7 +50,7 @@ def dtyping(*args):
         "dtypes not recognised " + str([str(_) for _ in args]))
 
 
-def asfloat(vari, limit=10**300):
+def asfloat(vari, limit=None):
     """
     Convert dtype of polynomial coefficients to float.
 
@@ -61,6 +61,8 @@ def asfloat(vari, limit=10**300):
         >>> print(cp.asfloat(poly))
         2.0q0+1.0
     """
+    if limit is None:
+        limit = 10**300
     if isinstance(vari, Poly):
         core = vari.A.copy()
         for key in vari.keys:

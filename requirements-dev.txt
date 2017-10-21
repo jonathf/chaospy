@@ -8,3 +8,4 @@ coverage
 sphinx>=0.1.15
 sphinxcontrib-bibtex
 sphinx-autobuild
+seaborn

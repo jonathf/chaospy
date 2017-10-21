@@ -1,6 +1,6 @@
 codecov:
-  token: 446bf698-063b-4a26-a88d-756e66def632
-  branch: stable
+  token: 593eb5b0-1541-4d6c-b31b-cfcfc86f6e5a
+  branch: dev
   archive:
     uploads: no
 

@@ -17,29 +17,34 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     Create an N-dimensional unit polynomial basis.
 
     Args:
-        start (int, array_like) : the minimum polynomial to include.  If int is
-                provided, set as lowest total order.  If array of int, set as
-                lower order along each axis.
-        stop (int, array_like, optional) : the maximum shape included. If
-                omitted: stop <- start; start <- 0 If int is provided, set as
-                largest total order.  If array of int, set as largest order
-                along each axis.
-        dim (int) : dim of the basis.  Ignored if array is provided in either
-                start or stop.
-        sort (str) : The polynomial ordering where the letters G, I and R can
-                be used to set grade, inverse and reverse to the ordering.  For
-                `basis(0, 2, 2, order)` we get:
-                ------  ------------------
-                order   output
-                ------  ------------------
-                ""      [1 y y^2 x xy x^2]
-                "G"     [1 y x y^2 xy x^2]
-                "I"     [x^2 xy x y^2 y 1]
-                "R"     [1 x x^2 y xy y^2]
-                "GIR"   [y^2 xy x^2 y x 1]
-                ------  ------------------
-        cross_truncation (float) : Use hyperbolic cross truncation scheme to
-                reduce the number of terms in expansion.
+        start (int, array_like):
+            the minimum polynomial to include. If int is provided, set as
+            lowest total order.  If array of int, set as lower order along each
+            axis.
+        stop (int, array_like, optional):
+            the maximum shape included. If omitted:
+            ``stop <- start; start <- 0`` If int is provided, set as largest
+            total order. If array of int, set as largest order along each axis.
+        dim (int):
+            dim of the basis. Ignored if array is provided in either start or
+            stop.
+        sort (str):
+            The polynomial ordering where the letters ``G``, ``I`` and ``R``
+            can be used to set grade, inverse and reverse to the ordering.  For
+            ``basis(start=0, stop=2, dim=2, order=order)`` we get:
+
+            ------  ------------------
+            order   output
+            ------  ------------------
+            ""      [1 y y^2 x xy x^2]
+            "G"     [1 y x y^2 xy x^2]
+            "I"     [x^2 xy x y^2 y 1]
+            "R"     [1 x x^2 y xy y^2]
+            "GIR"   [y^2 xy x^2 y x 1]
+            ------  ------------------
+        cross_truncation (float):
+            Use hyperbolic cross truncation scheme to reduce the number of
+            terms in expansion.
 
     Returns:
         (Poly) : Polynomial array.
@@ -198,12 +203,15 @@ def prange(N=1, dim=1):
     Constructor to create a range of polynomials where the exponent vary.
 
     Args:
-        N (int) : Number of polynomials in the array.
-        dim (int) : The dimension the polynomial should span.
+        N (int):
+            Number of polynomials in the array.
+        dim (int):
+            The dimension the polynomial should span.
 
     Returns:
-        (Poly) : A polynomial array of length N containing simple polynomials
-                with increasing exponent.
+        (Poly):
+            A polynomial array of length N containing simple polynomials with
+            increasing exponent.
 
     Examples:
         >>> print(prange(4))
