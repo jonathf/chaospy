@@ -22,8 +22,8 @@ def differential(poly, diffvar):
                 polynomial array, the output is the Jacobian matrix.
 
     Examples:
-        >>> q0, q1 = cp.variable(2)
-        >>> poly = cp.Poly([1, q0, q0*q1**2+1])
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.Poly([1, q0, q0*q1**2+1])
         >>> print(poly)
         [1, q0, q0q1^2+1]
         >>> print(differential(poly, q0))
@@ -73,9 +73,9 @@ def gradient(poly):
         (Poly) : The resulting gradient.
 
     Examples:
-        >>> q0, q1, q2 = cp.variable(3)
+        >>> q0, q1, q2 = chaospy.variable(3)
         >>> poly = 2*q0 + q1*q2
-        >>> print(cp.gradient(poly))
+        >>> print(chaospy.gradient(poly))
         [2, q2, q1]
     """
     return differential(poly, chaospy.poly.collection.basis(1, 1, poly.dim))
@@ -92,16 +92,9 @@ def hessian(poly):
         (Poly) : The resulting Hessian.
 
     Examples:
-        >>> q0, q1, q2 = cp.variable(3)
+        >>> q0, q1, q2 = chaospy.variable(3)
         >>> poly = 2*q0**2 + q1**2*q2
-        >>> print(cp.hessian(poly))
+        >>> print(chaospy.hessian(poly))
         [[4, 0, 0], [0, 2q2, 2q1], [0, 2q1, 0]]
     """
     return gradient(gradient(poly))
-
-
-import chaospy as cp  # pylint: disable=unused-import
-
-if __name__=='__main__':
-    import doctest
-    doctest.testmod()

@@ -38,7 +38,7 @@ distribution which we then use to evaluate the model::
     >>> samples = distribution.sample(50)
     >>> evals = [foo(coord, sample) for sample in samples.T]
 
-.. figure:: fig/demonstration.png
+.. figure:: ./fig/demonstration.png
 
     50 sample evaluations of an exponential function with uncertain initial
     conditions and rate.
@@ -72,7 +72,7 @@ These samples can then be used to do analysis using tools from the standard
     >>> expected = np.mean(evals, 0)
     >>> deviation = np.std(evals, 0)
 
-.. figure:: fig/results_montecarlo.png
+.. figure:: ./fig/results_montecarlo.png
 
     Expected value plus/minus standard deviation.
 
@@ -108,7 +108,7 @@ With the approximation available, analysis can be done using tools from the
     >>> expected = cp.E(foo_approx, distribution)
     >>> deviation = cp.Std(foo_approx, distribution)
 
-.. figure:: fig/results_collocation.png
+.. figure:: ./fig/results_collocation.png
 
     Expected value plus/minus standard deviation. For smooth problems, these
     results are expected to be more accurate than Monte Carlo.
@@ -145,7 +145,7 @@ The expected value and variance is calculated as before::
     >>> expected = cp.E(foo_approx, distribution)
     >>> deviation = cp.Std(foo_approx, distribution)
 
-.. figure:: fig/results_spectral.png
+.. figure:: ./fig/results_spectral.png
 
     Expected value plus/minus standard deviation. For very smooth problems,
     these results are expected to be more accurate than both Monte Carlo and

@@ -8,4 +8,3 @@ Advanced Transformations
 
    rosenblatt
    copulas
-   graph

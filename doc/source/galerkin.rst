@@ -25,14 +25,12 @@ method:
 .. math::
    :label: governing
 
-   \frac{d}{dt} u(t) = -a\ u(t) \qquad
-   u(0) = I \qquad
-   t &\in [0, 10]
+   \frac{d}{dt} u(t) = -a\ u(t) \qquad u(0) = I \qquad t \in [0, 10]
 
 Here :math:`a` and :math:`I` are unknown hyper parameters which can be
 described through a probability distribution.
 
-To apply Galerkin's method, we will first assume that the solution `:math:`u`
+To apply Galerkin's method, we will first assume that the solution :math:`u`
 can be expressed as the sum:
 
 .. math::

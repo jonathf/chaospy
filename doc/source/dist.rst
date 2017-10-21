@@ -5,5 +5,5 @@ Simple Distributions
 
 .. automodule:: chaospy.dist
 
-.. autofunction:: chaospy.dist.J
-.. autofunction:: chaospy.dist.Iid
+.. autofunction:: chaospy.dist.joint.J
+.. autofunction:: chaospy.dist.joint.Iid
