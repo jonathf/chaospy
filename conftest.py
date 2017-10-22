@@ -31,6 +31,10 @@ def workspace(global_setup, workspace_folder, doctest_namespace):
     import chaospy
     doctest_namespace["chaospy"] = chaospy
 
+    # fix random seeds:
+    from numpy.random import seed
+    seed(1000)
+
     # change to workspace for the duration of test:
     curdir = os.path.abspath(os.path.curdir)
     os.chdir(workspace_folder)

@@ -255,7 +255,7 @@ independent variables""")
         Args:
             size (int,array_like) : The size of the samples to generate.
             rule (str) : Alternative sampling techniques. See
-                    :func:`~chaospy.dist.samplegen`.
+                    :func:`~chaospy.dist.sampler.generator.generate_samples`.
             antithetic (bool, array_like) : If provided, will be used to setup
                     antithetic variables.  If array, defines the axes to mirror.
 
@@ -272,7 +272,8 @@ independent variables""")
         else:
             shape = size
 
-        out = chaospy.dist.sampler.samplegen(size_, self, rule, antithetic)
+        out = chaospy.dist.sampler.generator.generate_samples(
+            order=size_, domain=self, rule=rule, antithetic=antithetic)
         try:
             out = out.reshape(shape)
         except:
