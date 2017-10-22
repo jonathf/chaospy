@@ -33,7 +33,7 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
         growth (bool, optional) : If True sets the growth rule for the
             composite quadrature rule to exponential for Clenshaw-Curtis
             quadrature.
-        **kws (optional) : Extra keywords passed to samplegen.
+        **kws (optional) : Extra keywords passed to ``generate_samples``.
     """
     if growth and order:
         if isinstance(order, int):

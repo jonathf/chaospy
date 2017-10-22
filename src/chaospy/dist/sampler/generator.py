@@ -1,136 +1,134 @@
-import numpy as np
+"""
+Front end for generating psuedo-random samples.
 
-import chaospy.dist
+The samples are as follows:
+
+``C``
+    Chebyshev nodes
+``NC``
+    Nested Chebyshev
+``K``
+    Korobov
+``R``
+    (Pseudo-)Random
+``RG``
+    Regular grid
+``NG``
+    Nested grid
+``L``
+    Latin hypercube
+``S``
+    Sobol
+``H``
+    Halton
+``M``
+    Hammersley
+
+Example usage
+-------------
+
+Generating simple samples::
+
+    >>> print(generate_samples(order=4))
+    [[ 0.65358959  0.11500694  0.95028286  0.4821914 ]]
+
+Custom domain::
+
+    >>> print(generate_samples(order=4, domain=[-1, 1]))
+    [[ 0.74494907 -0.57533464 -0.91858075 -0.20561108]]
+    >>> print(generate_samples(order=4, domain=chaospy.Normal(0, 1)))
+    [[-0.72857056  1.00163781 -0.81658665  0.65097762]]
+
+Use a custom sampling scheme::
+
+    >>> print(generate_samples(order=4, rule="H"))
+    [[ 0.75   0.125  0.625  0.375  0.875]]
+
+Multivariate case::
+
+    >>> print(generate_samples(order=4, domain=[[-1, 0], [0, 1]]))
+    [[-0.60784587 -0.81774348 -0.25646059 -0.93041792]
+     [ 0.8853372   0.9526444   0.93114343  0.41543095]]
+    >>> print(generate_samples(
+    ...     order=4, domain=chaospy.J(chaospy.Normal(), chaospy.Uniform())))
+    [[-1.89597524  2.0975487  -0.41345216  0.54373243]
+     [ 0.36187707  0.0351059   0.85505825  0.65725351]]
+
+Antithetic variates::
+    >>> print(generate_samples(order=8, rule="H", antithetic=True))
+    [[ 0.75   0.125  0.25   0.875]]
+"""
+import numpy
+
+from . import collection
 
 
-def samplegen(order, domain, rule="S", antithetic=None,
-        verbose=False):
+SAMPLERS = {
+    "C": collection.create_chebyshev_samples,
+    "NC": collection.create_nested_chebyshev_samples,
+    "K": collection.create_korobov_samples,
+    "R": lambda order, dim: numpy.random.random((dim, order)),
+    "RG": collection.create_grid_samples,
+    "NG": collection.create_nested_grid_samples,
+    "L": collection.create_latin_hypercube_samples,
+    "S": collection.create_sobol_samples,
+    "H": collection.create_halton_samples,
+    "M": collection.create_hammersley_samples,
+}
+
+
+def generate_samples(order, domain=(0, 1), rule="R", antithetic=None, verbose=False):
     """
     Sample generator.
 
-    Interpretation of the domain argument:
-
-    +------------+------------------------------------------------------------+
-    | Value      | Interpretation                                             |
-    +============+============================================================+
-    | Dist       | Mapped to distribution domain using inverse Rosenblatt.    |
-    +------------+------------------------------------------------------------+
-    | int        | No mapping, but sets the number of dimension.              |
-    +------------+------------------------------------------------------------+
-    | array_like | Stretch samples such that they are in domain[0], domain[1] |
-    +------------+------------------------------------------------------------+
-
-    Intepretation of the rule argument:
-
-    +------+---------------------+--------+
-    | Key  | Name                | Nested |
-    +======+=====================+========+
-    | "C"  | Chebyshev nodes     | no     |
-    +------+---------------------+--------+
-    | "NC" | Nested Chebyshev    | yes    |
-    +------+---------------------+--------+
-    | "K"  | Korobov             | no     |
-    +------+---------------------+--------+
-    | "R"  | (Pseudo-)Random     | no     |
-    +------+---------------------+--------+
-    | "RG" | Regular grid        | no     |
-    +------+---------------------+--------+
-    | "NG" | Nested grid         | yes    |
-    +------+---------------------+--------+
-    | "L"  | Latin hypercube     | no     |
-    +------+---------------------+--------+
-    | "S"  | Sobol               | yes    |
-    +------+---------------------+--------+
-    | "H"  | Halton              | yes    |
-    +------+---------------------+--------+
-    | "M"  | Hammersley          | yes    |
-    +------+---------------------+--------+
-
     Args:
-        order (int) : Sample order.
-        domain (Dist, int, array_like) : Defines the space where the samples
-                are generated.
-        rule (str) : rule for generating samples, where d is the number of
-                dimensions.
-        antithetic (array_like, optional) : List of bool. Represents the axes
-                to mirror using antithetic variable.
-
-    Examples:
-        >>> print(cp.samplegen(3, cp.Normal(), "H"))
-        [-2.33441422 -0.74196378  0.74196378  2.33441422]
-
-        >>> cp.seed(1000)
-        >>> print(cp.samplegen(3, cp.Normal(), "L"))
-        [[ 0.6633974   0.46811863]
-         [ 0.27875174  0.05308317]
-         [ 0.98757072  0.51017741]
-         [ 0.12054785  0.84929862]]
+        order (int):
+            Sample order. Determines the number of samples to create.
+        domain (Dist, int, array_like):
+            Defines the space where the samples are generated. If integer is
+            provided, the space ``[0, 1]^domain`` will be used. If array-like
+            object is provided, a hypercube it defines will be used. If
+            distribution, the domain it spans will be used.
+        rule (str):
+            rule for generating samples, where d is the number of dimensions.
+        antithetic (array_like, optional):
+            List of bool. Represents the axes to mirror using antithetic
+            variable.
     """
     rule = rule.upper()
 
     if isinstance(domain, int):
         dim = domain
-        trans = lambda x, verbose:x
+        trans = lambda x_data: x_data
 
-    elif isinstance(domain, (tuple, list, np.ndarray)):
-        domain = np.asfarray(domain)
-        if len(domain.shape)<2:
+    elif isinstance(domain, (tuple, list, numpy.ndarray)):
+        domain = numpy.asfarray(domain)
+        if len(domain.shape) < 2:
             dim = 1
         else:
             dim = len(domain[0])
-        lo,up = domain
-        trans = lambda x, verbose: ((up-lo)*x.T + lo).T
+        trans = lambda x_data: ((domain[1]-domain[0])*x_data.T + domain[0]).T
 
     else:
         dist = domain
         dim = len(dist)
         trans = dist.inv
 
-    if not (antithetic is None):
+    if antithetic is not None:
 
-        antithetic = np.array(antithetic, dtype=bool).flatten()
-        if antithetic.size==1 and dim>1:
-            antithetic = np.repeat(antithetic, dim)
+        from .antithetic import create_antithetic_variates
+        antithetic = numpy.array(antithetic, dtype=bool).flatten()
+        if antithetic.size == 1 and dim > 1:
+            antithetic = numpy.repeat(antithetic, dim)
 
-        N = np.sum(1*np.array(antithetic))
-        order_,order = order,int(order*2**-N+1*(order%2!=0))
+        size = numpy.sum(1*numpy.array(antithetic))
+        order_, order = order, int(order*2.**-size+1*(order % 2 != 0))
         trans_ = trans
-        trans = lambda X, verbose: \
-                trans_(antithetic_gen(X, antithetic)[:,:order_])
+        trans = lambda x_data: trans_(
+            create_antithetic_variates(x_data, antithetic)[:, :order_])
 
-    if rule=="C":
-        X = chaospy.dist.samplers.chebyshev(dim, order)
+    assert rule in SAMPLERS, "rule not recognised"
+    sampler = SAMPLERS[rule]
+    x_data = trans(sampler(order=order, dim=dim))
 
-    elif rule=="NC":
-        X = chaospy.dist.samplers.chebyshev_nested(dim, order)
-
-    elif rule=="K":
-        X = chaospy.dist.samplers.korobov(dim, order)
-
-    elif rule=="R":
-        X = np.random.random((dim,order))
-
-    elif rule=="RG":
-        X = chaospy.dist.samplers.regular_grid(dim, order)
-
-    elif rule=="NG":
-        X = chaospy.dist.samplers.regular_grid_nested(dim, order)
-
-    elif rule=="L":
-        X = chaospy.dist.samplers.latin_hypercube(dim, order)
-
-    elif rule=="S":
-        X = chaospy.dist.sobol_lib.sobol(dim, order)
-
-    elif rule=="H":
-        X = chaospy.dist.samplers.halton(dim, order)
-
-    elif rule=="M":
-        X = chaospy.dist.samplers.hammersley(dim, order)
-
-    else:
-        raise KeyError("rule not recognised")
-
-    X = trans(X, verbose=verbose)
-
-    return X
+    return x_data

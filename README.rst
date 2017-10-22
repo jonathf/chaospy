@@ -21,12 +21,10 @@ Installation should be straight forward::
 
     pip install chaospy
 
+And you should be ready to go.
 
-From Source
-~~~~~~~~~~~
-
-Alternativly, to get the most current version, the code can be installed from
-github as follows::
+Alternatively, to get the most current experimental version, the code can be
+installed from Github as follows::
 
     git clone git@github.com:jonathf/chaospy.git
     cd chaospy
@@ -34,9 +32,6 @@ github as follows::
     python setup.py install
 
 The last command might need ``sudo`` prefix, depending on your python setup.
-
-Optional Packages
-~~~~~~~~~~~~~~~~~
 
 Optionally, to support more regression methods, install the Scikit-learn
 package::
@@ -53,6 +48,7 @@ point collocation method will look as follows::
     >>> import numpy as np
 
     >>> def foo(coord, prm): # your code wrapper goes here
+    ...     """Function to do uncertainty quantification on."""
     ...     return prm[0] * np.e ** (-prm[1] * np.linspace(0, 10, 100))
 
     >>> distribution = cp.J(
@@ -69,19 +65,10 @@ point collocation method will look as follows::
     >>> deviation = cp.Std(foo_approx, distribution)
 
 For a more extensive description of what going on, see the `tutorial
-<http://chaospy.readthedocs.io/en/master/tutorial.html>`_. For a collection of
-reciepies, see the `cookbook
+<http://chaospy.readthedocs.io/en/master/tutorial.html>`_.
+
+For a collection of recipes, see the `cookbook
 <http://chaospy.readthedocs.io/en/master/cookbook.html>`_.
-
-Testing
--------
-
-To test the build locally::
-
-    pip install -r requirements-dev.txt
-    python setup.py test
-
-It will run ``pytest-runner`` and execute all tests.
 
 Questions & Troubleshooting
 ---------------------------
