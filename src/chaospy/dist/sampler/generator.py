@@ -1,28 +1,21 @@
 """
 Front end for generating psuedo-random samples.
 
-The samples are as follows:
+All sampling methods:
 
-``C``
-    Chebyshev nodes
-``NC``
-    Nested Chebyshev
-``K``
-    Korobov
-``R``
-    (Pseudo-)Random
-``RG``
-    Regular grid
-``NG``
-    Nested grid
-``L``
-    Latin hypercube
-``S``
-    Sobol
-``H``
-    Halton
-``M``
-    Hammersley
+Key     Name
+------  ----------------
+``C``   Chebyshev nodes
+``NC``  Nested Chebyshev
+``K``   Korobov
+``R``   (Pseudo-)Random
+``RG``  Regular grid
+``NG``  Nested grid
+``L``   Latin hypercube
+``S``   Sobol
+``H``   Halton
+``M``   Hammersley
+------  ----------------
 
 Example usage
 -------------
@@ -60,20 +53,20 @@ Antithetic variates::
 """
 import numpy
 
-from . import collection
+from . import sequences, latin_hypercube
 
 
 SAMPLERS = {
-    "C": collection.create_chebyshev_samples,
-    "NC": collection.create_nested_chebyshev_samples,
-    "K": collection.create_korobov_samples,
+    "C": sequences.create_chebyshev_samples,
+    "NC": sequences.create_nested_chebyshev_samples,
+    "K": sequences.create_korobov_samples,
+    "RG": sequences.create_grid_samples,
+    "NG": sequences.create_nested_grid_samples,
+    "S": sequences.create_sobol_samples,
+    "H": sequences.create_halton_samples,
+    "M": sequences.create_hammersley_samples,
+    "L": latin_hypercube.create_latin_hypercube_samples,
     "R": lambda order, dim: numpy.random.random((dim, order)),
-    "RG": collection.create_grid_samples,
-    "NG": collection.create_nested_grid_samples,
-    "L": collection.create_latin_hypercube_samples,
-    "S": collection.create_sobol_samples,
-    "H": collection.create_halton_samples,
-    "M": collection.create_hammersley_samples,
 }
 
 
@@ -90,7 +83,8 @@ def generate_samples(order, domain=(0, 1), rule="R", antithetic=None, verbose=Fa
             object is provided, a hypercube it defines will be used. If
             distribution, the domain it spans will be used.
         rule (str):
-            rule for generating samples, where d is the number of dimensions.
+            rule for generating samples. The various rules are listed in
+            :mod:`chaospy.dist.sampler.generator`.
         antithetic (array_like, optional):
             List of bool. Represents the axes to mirror using antithetic
             variable.
