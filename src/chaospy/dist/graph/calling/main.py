@@ -44,8 +44,7 @@ def call(self, x_data, mode, **meta):
 
     call = self._call
     if mode=="fwd":
-        from .forward import forward_call
-        self._call = forward_call
+        self._call = self.fwd_call
     elif mode=="pdf":
         self._call = self.pdf_call
     elif mode=="inv":

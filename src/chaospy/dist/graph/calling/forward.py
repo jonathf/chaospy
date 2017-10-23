@@ -20,7 +20,7 @@ def forward_call(self, x_data, dist):
             post_value = self.run(value, "val")[0]
             if isinstance(post_value, numpy.ndarray):
                 prm[key] = post_value
-                graph.add_node(value, key=post_value)
+                self.graph.add_node(value, key=post_value)
 
     if dist.advance:
         out[:] = dist._cdf(x_data, self)

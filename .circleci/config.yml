@@ -1,0 +1,31 @@
+version: 2
+jobs:
+    build:
+        working_directory: ~/chaospy
+        docker:
+            - image: circleci/python:2.7.14
+        steps:
+            - checkout
+            - restore_cache:
+                key: reqs-{{ checksum "requirements.txt" }}
+            - run:
+                name: "Install Python requirements"
+                command: |
+                    virtualenv venv
+                    . venv/bin/activate
+                    pip install -Ur requirements-dev.txt
+                    pip install -e .
+            - save_cache:
+                key: reqs-{{ checksum "requirements.txt" }}
+                paths:
+                    - venv
+            - run:
+                name: "Run tests"
+                command: |
+                    . venv/bin/activate
+                    pytest src/ tests/ doc/ --cov=src/
+            - run:
+                name: "Coverage report"
+                command: |
+                    . venv/bin/activate
+                    codecov
