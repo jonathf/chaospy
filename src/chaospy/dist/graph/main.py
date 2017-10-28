@@ -1,5 +1,8 @@
+# pylint: disable=protected-access
 """Main operator."""
 import networkx
+
+from . import calling
 
 
 def call(self, x_data, mode, **meta):
@@ -42,49 +45,30 @@ def call(self, x_data, mode, **meta):
         graph.add_edges_from(graph_source.edges())
         graph, self.graph = self.graph, graph
 
-    call = self._call
-    if mode=="fwd":
-        from .forward import forward_call
-        self._call = forward_call
-    elif mode=="pdf":
-        self._call = self.pdf_call
-    elif mode=="inv":
-        self._call = self.inv_call
-    elif mode=="range":
-        self._call = self.range_call
-    elif mode=="ttr":
-        self._call = self.ttr_call
-    elif mode=="mom":
-        self._call = self.mom_call
-    elif mode=="dep":
-        self._call = self.dep_call
-    elif mode=="rnd":
-        self._call = self.rnd_call
-    elif mode=="val":
-        self._call = self.val_call
-    else:
-        raise ValueError("unknown mode")
+    stored_call = self._call
+    assert mode in calling.CALL_FUNCTIONS, "unknown mode %s" % mode
+    self._call = calling.CALL_FUNCTIONS[mode]
 
-    if mode!="val":
+    if mode != "val":
         self.dist = self.root
 
-    if mode in ("rnd","dep"):
+    if mode in ("rnd", "dep"):
         out = self(self.root)
 
-    elif mode=="val":
+    elif mode == "val":
         out = self(x_data)
     else:
         out = self(x_data, self.root)
 
-    if mode=="ttr":
-        out[1]**(x_data != 0)
+    # if mode == "ttr":
+    #     out[1] = out[1]**(x_data != 0)
 
     self.size = size
-    if mode=="val":
+    if mode == "val":
         graph = self.graph
     else:
         graph, self.graph = self.graph, graph
-    self._call = call
+    self._call = stored_call
     self.meta = meta
 
     return out, graph

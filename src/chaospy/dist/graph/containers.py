@@ -1,59 +1,79 @@
 """
-Graph interactive wrapper.
+Convenience properties found on distribution object during dependency traversal.
 
-Used to retrieve parameters in a distribution. Comes in three flavoers::
+Instead of iterating through each parameter in a distribution ``dist.prm``,
+checking each what each state and acting from there, it is possible to access
+a subset of parameters that fit certain criteria.
 
-    Dist Keys Values
+For example, to access all parameters that are also distributions, the property
+``dist.graph.dists``::
 
-Can be interacted with as follows:
+    >>> dists0 = chaospy.beta(a=1, b=2).graph.dists
+    >>> dists1 = chaospy.beta(a=chaospy.uniform(), b=2).graph.dists
+    >>> dists2 = chaospy.beta(a=chaospy.uniform(), b=chaospy.gamma(1)).graph.dists
 
-Retrieve parameter::
+These objects can be used to identify how many distributions are present::
 
-    container["param"]
+    >>> print(len(dists0), len(dists1), len(dists2))
+    (0, 1, 2)
 
-Check of paramater is in collection::
+To identify specific parameters that are distributions::
 
-    "param" in container
+    >>> print("a" in dists0, "a" in dists1, "a" in dists2)
+    (False, True, True)
+    >>> print("b" in dists0, "b" in dists1, "b" in dists2)
+    (False, False, True)
 
-Itterate over all parameters::
+An lastly to extract said parameters::
 
-    for (key,param) in container
+    >>> print(dists2["b"])
+    gam(1)
+    >>> print(dists1["a"])
+    uni
 
-Generate dictionary with all values::
+Giving values not present or illegal values, causes exceptions::
 
-    container.build()
-
-Identify the number of parameters available::
-
-    len(container)
+    >>> dists0["b"]
+    Traceback (most recent call last):
+        ...
+    KeyError: "parameter 'b' is not a distribution"
+    >>> dists0["c"]
+    Traceback (most recent call last):
+        ...
+    KeyError: "parameter key 'c' unknown; ('a', 'b') available"
 """
 import numpy
 
 
 class Container(object):
-    """
-    """
+    """Baseclass for quick access attributes."""
 
     def __init__(self, graph):
-        "Graph module"
         self.graph = graph
+
     def __contains__(self, key):
         raise NotImplementedError()
+
     def getitem(self, key):
         raise NotImplementedError()
+
     def __getitem__(self, key):
+        if key not in self.graph.dist.prm:
+            raise KeyError(
+                "parameter key '%s' unknown; %s available" % (
+                    key, tuple(self.graph.dist.prm)))
         return self.getitem(key)
+
     def build(self):
         "build a dict with all parameters"
-        out = {}
-        for k,v in self.graph.dist.prm.items():
-            if k in self:
-                out[k] = self[k]
-        return out
+        return {key: self[key] for key in self.graph.dist.prm if key in self}
+
     def __iter__(self):
         return self.build().values().__iter__()
+
     def __str__(self):
         return str(self.build())
+
     def __len__(self):
         return len(self.build())
 
@@ -66,8 +86,9 @@ class Dists(Container):
 
     def getitem(self, key):
         if not key in self:
-            raise KeyError()
+            raise KeyError("parameter '%s' is not a distribution" % key)
         return self.graph.dist.prm[key]
+
 
 class Keys(Container):
     """

@@ -51,10 +51,9 @@ Antithetic variates::
     >>> print(generate_samples(order=8, rule="H", antithetic=True))
     [[ 0.75   0.125  0.25   0.875]]
 """
+import logging
 import numpy
-
 from . import sequences, latin_hypercube
-
 
 SAMPLERS = {
     "C": sequences.create_chebyshev_samples,
@@ -70,7 +69,7 @@ SAMPLERS = {
 }
 
 
-def generate_samples(order, domain=(0, 1), rule="R", antithetic=None, verbose=False):
+def generate_samples(order, domain=(0, 1), rule="R", antithetic=None):
     """
     Sample generator.
 
@@ -89,6 +88,9 @@ def generate_samples(order, domain=(0, 1), rule="R", antithetic=None, verbose=Fa
             List of bool. Represents the axes to mirror using antithetic
             variable.
     """
+    logger = logging.getLogger(__name__)
+    logger.debug("generating random samples using rule %s", rule)
+
     rule = rule.upper()
 
     if isinstance(domain, int):
@@ -125,4 +127,5 @@ def generate_samples(order, domain=(0, 1), rule="R", antithetic=None, verbose=Fa
     sampler = SAMPLERS[rule]
     x_data = trans(sampler(order=order, dim=dim))
 
+    logger.debug("order: %d, dim: %d -> shape: %s", order, dim, x_data.shape)
     return x_data

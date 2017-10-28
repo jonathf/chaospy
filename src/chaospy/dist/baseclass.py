@@ -264,7 +264,7 @@ independent variables""")
         """
         size_ = np.prod(size, dtype=int)
         dim = len(self)
-        if dim>1:
+        if dim > 1:
             if isinstance(size, (tuple,list,np.ndarray)):
                 shape = (dim,) + tuple(size)
             else:
@@ -277,7 +277,7 @@ independent variables""")
         try:
             out = out.reshape(shape)
         except:
-            if len(self)==1:
+            if len(self) == 1:
                 out = out.flatten()
             else:
                 out = out.reshape(dim, int(out.size/dim))
@@ -322,8 +322,7 @@ independent variables""")
         K = K.reshape(dim, size)
 
         try:
-            out, graph = self.graph.run(K, "mom", **kws)
-
+            out, _ = self.graph.run(K, "mom", **kws)
         except NotImplementedError:
             out = chaospy.dist.approx.mom(self, K, **kws)
 
@@ -368,10 +367,9 @@ independent variables""")
             out = [set([self])]
         else:
             out = [set([]) for _ in range(len(self))]
-        for s in sets:
-            for i in range(len(self)):
-                out[i].update(s[i])
-
+        for set_ in sets:
+            for idx in range(len(self)):
+                out[idx].update(set_[idx])
         return out
 
 

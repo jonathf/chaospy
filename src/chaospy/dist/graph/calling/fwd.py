@@ -1,9 +1,9 @@
 # pylint: disable=protected-access
-"""Backend for forward transformations."""
+"""Backend for forward Rosenblatt transformations."""
 import numpy
 
 
-def forward_call(self, x_data, dist):
+def fwd_call(self, x_data, dist):
     "forward call backend wrapper"
     self.counting(dist, "fwd")
     assert x_data.shape == (len(dist), self.size)

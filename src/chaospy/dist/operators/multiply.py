@@ -1,5 +1,73 @@
 """
-Multiplication.
+Multiplication of distributions.
+
+Example usage
+-------------
+
+Distribution * a constant::
+
+    >>> distribution = chaospy.Uniform(0, 1) * 4
+    >>> print(distribution)
+    Uniform(0,1)*4
+    >>> print(distribution.sample(5))
+    [ 2.61435834  0.46002777  3.80113146  1.92876561  3.48989814]
+    >>> print(distribution.fwd([1, 2, 3]))
+    [ 0.25  0.5   0.75]
+    >>> print(distribution.inv(distribution.fwd([1, 2, 3])))
+    [ 1.  2.  3.]
+    >>> print(distribution.pdf([1, 2, 3]))
+    [ 0.25  0.25  0.25]
+    >>> print(distribution.mom([1, 2, 3]))
+    [  2.           5.33333333  16.        ]
+    >>> print(distribution.ttr([1, 2, 3]))
+    [[ 2.          2.          2.        ]
+     [ 1.33333333  1.06666667  1.02857143]]
+
+Construct joint addition distribution::
+
+    >>> lhs = chaospy.Uniform(-1, 0)
+    >>> rhs = chaospy.Uniform(-3, -2)
+    >>> multiplication = lhs * rhs
+    >>> print(multiplication)
+    Uniform(-1,0)*Uniform(-3,-2)
+    >>> joint1 = chaospy.J(lhs, multiplication)
+    >>> joint2 = chaospy.J(rhs, multiplication)
+
+Generate random samples::
+
+    >>> print(joint1.sample(4))
+    [[-0.78766732 -0.95929038 -0.60280554 -0.7668678 ]
+     [ 2.2383463   2.11723285  1.65317582  1.83446598]]
+    >>> print(joint2.sample(4))
+    [[-2.81774348 -2.25646059 -2.93041792 -2.1146628 ]
+     [ 2.68430754  2.10108846  1.21738631  0.06128644]]
+
+Forward transformations::
+
+    >>> lcorr = numpy.array([-0.9, -0.5, -0.1])
+    >>> rcorr = numpy.array([-2.99, -2.5, -2.01])
+    >>> print(joint1.fwd([lcorr, lcorr*rcorr]))
+    [[ 0.1   0.5   0.9 ]
+     [ 0.99  0.5   0.01]]
+    >>> print(joint2.fwd([rcorr, lcorr*rcorr]))
+    [[ 0.01  0.5   0.99]
+     [ 0.9   0.5   0.1 ]]
+
+Inverse transformations::
+
+    >>> print(joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])))
+    [[-0.9   -0.5   -0.1  ]
+     [ 2.691  1.25   0.201]]
+    >>> print(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])))
+    [[-2.99  -2.5   -2.01 ]
+     [ 2.691  1.25   0.201]]
+
+Raw moments::
+
+    >>> print(joint1.mom([(0, 1, 1), (1, 0, 1)]))
+    [ 1.25  -0.5   -0.625]
+    >>> print(joint2.mom([(0, 1, 1), (1, 0, 1)]))
+    [ 1.25  -2.5   -3.125]
 """
 import numpy
 
