@@ -19,18 +19,18 @@ For example, to generate nodes from the Korobov lattice::
     [ 0.43293108  0.71285927  0.28714073  0.56706892]]
 
 At the core of `chaospy`, all samples are generated to the unit hyper-cube
-through the function :func:`~chaospy.dist.samplers.generator.generate_samples`.
+through the function :func:`~chaospy.distributions.samplers.generator.generate_samples`.
 These samples are then mapped using a :ref:`rosenblatt` to map the values on
 the domain respective to the distribution in question. This way, all variance
 reduction techniques are supported by all distributions.
 
 If one wants even more control over the sample generation using low-discrepancy
 sequencecs, it is also possible to take a look at
-:mod:`chaospy.dist.sampler.generator.sequences`. This module will contain all
+:mod:`chaospy.distributions.sampler.generator.sequences`. This module will contain all
 the individual sequence schemes with extra flags for controlling each scheme.
 In the case of the Krobov lattice::
 
-    >>> from chaospy.dist.sampler import create_korobov_samples
+    >>> from chaospy.distributions.sampler import create_korobov_samples
     >>> print(create_korobov_samples(order=4, dim=2))
     [[ 0.2  0.4  0.6  0.8]
      [ 0.4  0.8  0.2  0.6]]

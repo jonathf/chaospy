@@ -25,7 +25,8 @@ Invert sign of a distribution::
 
 """
 import numpy
-from chaospy.dist import Dist
+from ..baseclass import Dist
+
 
 class Neg(Dist):
     """Negative of a distribution."""

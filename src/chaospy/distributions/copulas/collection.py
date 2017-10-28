@@ -1,10 +1,9 @@
-import numpy as np
-import scipy as sp
+import numpy
+from scipy import special
 
-import chaospy.dist
+from .baseclass import Archimedean, Copula
+from ..baseclass import Dist
 
-from chaospy.dist.baseclass import Dist
-from chaospy.dist.copulas.baseclass import Archimedean, Copula
 
 class gumbel(Archimedean):
     "Gumbel copula backend"
@@ -13,9 +12,9 @@ class gumbel(Archimedean):
         theta = float(theta)
         Dist.__init__(self, th=theta, eps=eps, _length=N)
     def gen(self, x, th):
-        return (-np.log(x))**th
+        return (-numpy.log(x))**th
     def igen(self, x, th):
-        return np.e**(-x**th)
+        return numpy.e**(-x**th)
 
 
 def Gumbel(dist, theta=2., eps=1e-6):
@@ -36,11 +35,11 @@ Returns:
     (Dist) : The resulting copula distribution.
 
 Examples:
-    >>> dist = cp.J(cp.Uniform(), cp.Normal())
-    >>> copula = cp.Gumbel(dist, theta=2)
-    >>> print(copula.sample(3, "S"))
-    [[ 0.5         0.75        0.25      ]
-    [ 0.07686128 -1.50814454  1.65112325]]
+    >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
+    >>> copula = chaospy.Gumbel(dist, theta=2)
+    >>> print(copula.sample(3, "H"))
+    [[ 0.125       0.625       0.375     ]
+     [ 0.62638094 -0.45417192 -0.21628863]]
 """
     return Copula(dist, gumbel(len(dist), theta, eps))
 
@@ -67,9 +66,9 @@ class ali_mikhail_haq(Archimedean):
         assert -1<=theta<1
         Dist.__init__(self, th=theta, _length=N, eps=eps)
     def gen(self, x, th):
-        return np.log((1-th*(1-x))/x)
+        return numpy.log((1-th*(1-x))/x)
     def igen(self, x, th):
-        return (1-th)/(np.e**x-th)
+        return (1-th)/(numpy.e**x-th)
 
 
 def Ali_mikhail_haq(dist, theta=2., eps=1e-6):
@@ -87,9 +86,9 @@ class frank(Archimedean):
         Dist.__init__(self, th=theta, _length=N, eps=eps)
 
     def gen(self, x, th):
-        return -np.log((np.e**(-th*x)-1)/(np.e**-th-1))
+        return -numpy.log((numpy.e**(-th*x)-1)/(numpy.e**-th-1))
     def igen(self, q, th):
-        return -np.log(1+np.e**-q*(np.e**-th-1))/th
+        return -numpy.log(1+numpy.e**-q*(numpy.e**-th-1))/th
 
 def Frank(dist, theta=1., eps=1e-4):
     "Frank copula"
@@ -105,10 +104,10 @@ class joe(Archimedean):
         Dist.__init__(self, th=theta, _length=N, eps=eps)
 
     def gen(self, x, th):
-        return -np.log(1-(1-x)**th)
+        return -numpy.log(1-(1-x)**th)
 
     def igen(self, q, th):
-        return 1-(1-np.e**-q)**(1/th)
+        return 1-(1-numpy.e**-q)**(1/th)
 
 def Joe(dist, theta=2., eps=1e-6):
     "Joe copula"
@@ -122,22 +121,22 @@ class nataf(Dist):
 
         if ordering is None:
             ordering = range(len(R))
-        ordering = np.array(ordering)
+        ordering = numpy.array(ordering)
 
-        P = np.eye(len(R))[ordering]
+        P = numpy.eye(len(R))[ordering]
 
-        R = np.dot(P, np.dot(R, P.T))
-        R = np.linalg.cholesky(R)
-        R = np.dot(P.T, np.dot(R, P))
-        Ci = np.linalg.inv(R)
+        R = numpy.dot(P, numpy.dot(R, P.T))
+        R = numpy.linalg.cholesky(R)
+        R = numpy.dot(P.T, numpy.dot(R, P))
+        Ci = numpy.linalg.inv(R)
         Dist.__init__(self, C=R, Ci=Ci, _length=len(R))
 
     def _cdf(self, x, C, Ci):
-        out = sp.special.ndtr(np.dot(Ci, sp.special.ndtri(x)))
+        out = special.ndtr(numpy.dot(Ci, special.ndtri(x)))
         return out
 
     def _ppf(self, q, C, Ci):
-        out = sp.special.ndtr(np.dot(C, sp.special.ndtri(q)))
+        out = special.ndtr(numpy.dot(C, special.ndtri(q)))
         return out
 
     def _bnd(self, C, Ci):
@@ -151,8 +150,9 @@ def Nataf(dist, R, ordering=None):
 class t_copula(Dist):
 
     def __init__(self, a, R):
-        self.MV = chaospy.dist.mvstudentt(a, np.zeros(len(R)), R)
-        self.UV = chaospy.dist.student_t(a)
+        from ..cores import mvstudentt, student_t
+        self.MV = mvstudentt(a, numpy.zeros(len(R)), R)
+        self.UV = student_t(a)
         Dist.__init__(self, _length=len(R))
 
     def _cdf(self, x):
@@ -169,11 +169,3 @@ class t_copula(Dist):
 
 def T_copula(dist, a, R):
     return Copula(dist, t_copula(a, R))
-
-
-
-if __name__=="__main__":
-    import chaospy as cp
-    import numpy as np
-    import doctest
-    doctest.testmod()

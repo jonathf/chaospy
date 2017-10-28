@@ -41,5 +41,3 @@ from .stieltjes import generate_stieltjes
 from .collection import *
 from .sparse_grid import sparse_grid
 from .generator import rule_generator
-
-import chaospy

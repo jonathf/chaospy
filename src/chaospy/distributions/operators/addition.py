@@ -72,8 +72,8 @@ Raw moments::
 from scipy.misc import comb
 import numpy
 
-from chaospy.dist import Dist
-import chaospy.dist.operators
+from ..baseclass import Dist
+from .multiply import mul
 
 
 class Add(Dist):
@@ -201,7 +201,7 @@ def add(left, right):
         right (Dist, array_like) : right hand side.
     """
     if left is right:
-        return chaospy.dist.operators.mul(2, left)
+        return mul(2, left)
 
     if isinstance(left, Dist):
         if not isinstance(right, Dist):

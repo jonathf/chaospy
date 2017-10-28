@@ -3,9 +3,9 @@ One of ``chaospy``'s most powerful features is possible to construct advance
 multivariate variables directly through dependencies. To illustrate this,
 consider the following bivariate distribution::
 
-    >>> dist_ind = cp.Gamma(1)
-    >>> dist_dep = cp.Normal(dist_ind**2, dist_ind+1)
-    >>> distribution = cp.J(dist_ind, dist_dep)
+    >>> dist_ind = chaospy.Gamma(1)
+    >>> dist_dep = chaospy.Normal(dist_ind**2, dist_ind+1)
+    >>> distribution = chaospy.J(dist_ind, dist_dep)
 
 In other words, a distribution dependent upon another distribution was created
 simply by inserting it into the constructor of another distribution. The
@@ -32,10 +32,11 @@ Now it is worth noting a couple of cavats:
   graph. In other words, ``dist_ind`` can not be dependent upon ``dist_dep`` at
   the same time as ``dist_dep`` is dependent upon ``dist_ind``.
 """
-import numpy as np
 from copy import copy
 
-from chaospy.dist.baseclass import Dist
+import numpy as np
+
+from .baseclass import Dist
 
 
 class Joint(Dist):
@@ -203,15 +204,15 @@ def J(*args):
 
     Examples:
         Independent
-        >>> dist = cp.J(cp.Uniform(), cp.Normal())
+        >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
         >>> print(dist.mom([[0,0,1], [0,2,2]]))
         [ 1.   1.   0.5]
 
         Dependent
-        >>> d0 = cp.Uniform()
-        >>> dist = cp.J(d0, d0+cp.Uniform())
+        >>> d0 = chaospy.Uniform()
+        >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
         >>> print(dist.mom([[0,0,1], [0,1,1]]))
-        [ 1.          1.          0.53469533]
+        [ 1.   1.   0.5]
     """
     out = []
     args = list(args)
@@ -232,9 +233,9 @@ class Iid(Dist):
     variables from an univariate variable.
 
     Examples:
-        >>> X = cp.Normal()
-        >>> Y = cp.Iid(X, 4)
-        >>> cp.seed(1000)
+        >>> X = chaospy.Normal()
+        >>> Y = chaospy.Iid(X, 4)
+        >>> chaospy.seed(1000)
         >>> print(Y.sample())
         [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
         """

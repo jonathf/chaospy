@@ -35,7 +35,7 @@ Custom domain::
 Use a custom sampling scheme::
 
     >>> print(generate_samples(order=4, rule="H"))
-    [[ 0.75   0.125  0.625  0.375  0.875]]
+    [[ 0.75   0.125  0.625  0.375]]
 
 Multivariate case::
 
@@ -49,7 +49,7 @@ Multivariate case::
 
 Antithetic variates::
     >>> print(generate_samples(order=8, rule="H", antithetic=True))
-    [[ 0.75   0.125  0.25   0.875]]
+    [[ 0.75   0.25   0.125  0.875  0.625  0.375  0.375  0.625]]
 """
 import logging
 import numpy
@@ -83,7 +83,7 @@ def generate_samples(order, domain=(0, 1), rule="R", antithetic=None):
             distribution, the domain it spans will be used.
         rule (str):
             rule for generating samples. The various rules are listed in
-            :mod:`chaospy.dist.sampler.generator`.
+            :mod:`chaospy.distributions.sampler.generator`.
         antithetic (array_like, optional):
             List of bool. Represents the axes to mirror using antithetic
             variable.

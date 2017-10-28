@@ -46,9 +46,10 @@ However in the definition of a copula does not actually require it, and sine
 the Rosenblatt transformation allows for it, multiple copulas can be stacked
 together in `chaospy`.
 """
-import numpy as np
+import numpy
 
-from chaospy.dist.baseclass import Dist
+from .. import Dist
+
 
 class Copula(Dist):
 
@@ -91,7 +92,7 @@ class Archimedean(Dist):
 
             q = x[:i+1].copy()
             lo, up = 0,1
-            dq = np.zeros(i+1)
+            dq = numpy.zeros(i+1)
             dq[i] = eps
             flo, fup = -q[i],1-q[i]
 
@@ -99,25 +100,25 @@ class Archimedean(Dist):
                 fq = self._diff(q[:i+1], th, eps)
                 dfq = self._diff((q[:i+1].T+dq).T, th, eps)
                 dfq = (dfq-fq)/eps
-                dfq = np.where(dfq==0, np.inf, dfq)
+                dfq = numpy.where(dfq==0, numpy.inf, dfq)
 
                 fq = fq-x[i]
-                if not np.any(np.abs(fq)>eps):
+                if not numpy.any(numpy.abs(fq)>eps):
                     break
 
                 # reduce boundaries
-                flo = np.where(fq<=0, fq, flo)
-                lo = np.where(fq<=0, q[i], lo)
+                flo = numpy.where(fq<=0, fq, flo)
+                lo = numpy.where(fq<=0, q[i], lo)
 
-                fup = np.where(fq>=0, fq, fup)
-                up = np.where(fq>=0, q[i], up)
+                fup = numpy.where(fq>=0, fq, fup)
+                up = numpy.where(fq>=0, q[i], up)
 
                 # Newton increment
                 qdq = q[i]-fq/dfq
 
                 # if new val on interior use Newton
                 # else binary search
-                q[i] = np.where((qdq<up)*(qdq>lo),
+                q[i] = numpy.where((qdq<up)*(qdq>lo),
                         qdq, .5*(up+lo))
 
             x[i] = q[i]
@@ -125,7 +126,7 @@ class Archimedean(Dist):
 
 
     def _cdf(self, x, th, eps):
-        out = np.zeros(x.shape)
+        out = numpy.zeros(x.shape)
         out[0] = x[0]
         for i in range(1,len(x)):
             out[i][x[i]==1] = 1
@@ -134,7 +135,7 @@ class Archimedean(Dist):
         return out
 
     def _pdf(self, x, th, eps):
-        out = np.ones(x.shape)
+        out = numpy.ones(x.shape)
         sign = 1-2*(x>.5)
         for i in range(1,len(x)):
             x[i] += eps*sign[i]
@@ -153,13 +154,13 @@ class Archimedean(Dist):
         Numerical approximation of a Rosenblatt transformation created from
         copula formulation.
         """
-        foo = lambda y: self.igen(np.sum(self.gen(y, th), 0), th)
+        foo = lambda y: self.igen(numpy.sum(self.gen(y, th), 0), th)
 
         out1 = out2 = 0.
         sign = 1 - 2*(x>.5).T
-        for I in np.ndindex(*((2,)*(len(x)-1)+(1,))):
+        for I in numpy.ndindex(*((2,)*(len(x)-1)+(1,))):
 
-            eps_ = np.array(I)*eps
+            eps_ = numpy.array(I)*eps
             x_ = (x.T + sign*eps_).T
             out1 += (-1)**sum(I)*foo(x_)
 

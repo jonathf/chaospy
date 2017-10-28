@@ -71,8 +71,7 @@ Raw moments::
 """
 import numpy
 
-from chaospy.dist import Dist
-import chaospy.dist.operators
+from ..baseclass import Dist
 
 
 class Mul(Dist):

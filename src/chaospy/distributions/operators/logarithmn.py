@@ -3,7 +3,7 @@ Logarithm base N.
 """
 import numpy
 
-from chaospy.dist import Dist
+from ..baseclass import Dist
 
 
 class Logn(Dist):
