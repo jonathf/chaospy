@@ -61,7 +61,7 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
 
     if sparse:
         order = np.ones(len(domain), dtype=int)*order
-        abscissas, weights = sparse_grid(quad_function, order, dim)
+        abscissas, weights = sparse_grid.sparse_grid(quad_function, order, dim)
 
     else:
         abscissas, weights = quad_function(order)
