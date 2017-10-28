@@ -9,7 +9,7 @@ quantification of models.
 import chaospy.bertran
 import chaospy.chol
 import chaospy.descriptives
-import chaospy.dist
+import chaospy.distributions
 import chaospy.orthogonal
 import chaospy.poly
 import chaospy.spectral
@@ -17,7 +17,7 @@ import chaospy.quad
 import chaospy.saltelli
 import chaospy.regression
 
-from chaospy.dist import *
+from chaospy.distributions import *
 from chaospy.orthogonal import *
 from chaospy.poly import *
 from chaospy.spectral import *

@@ -1,6 +1,5 @@
 codecov:
-  token: 593eb5b0-1541-4d6c-b31b-cfcfc86f6e5a
-  branch: dev
+  branch: development
   archive:
     uploads: no
 

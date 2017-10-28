@@ -106,8 +106,8 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
         >>> print(poly)
         [q0^2, q0q1, q1^2]
         >>> print(Sens_m_sample(poly, dist, 10000, rule="M"))
-        [[ 2.13214003  0.64612932  0.        ]
-         [ 0.          0.00261391  0.0080231 ]]
+        [[ 0.00801288  0.00258743  0.        ]
+         [ 0.          0.64644081  2.13210677]]
     """
     dim = len(dist)
 

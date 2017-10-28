@@ -1,7 +1,8 @@
-import numpy as np
+"""Second order statistics."""
+import numpy
 from scipy.stats import spearmanr
 
-import chaospy as cp
+from .. import distributions, poly as polynomials
 
 
 def Cov(poly, dist=None, **kws):
@@ -20,56 +21,56 @@ def Cov(poly, dist=None, **kws):
                 `covariance.shape==poly.shape+poly.shape`.
 
     Examples:
-        >>> Z = cp.MvNormal([0, 0], [[2, .5], [.5, 1]])
-        >>> print(cp.Cov(Z))
+        >>> Z = chaospy.MvNormal([0, 0], [[2, .5], [.5, 1]])
+        >>> print(chaospy.Cov(Z))
         [[ 2.   0.5]
          [ 0.5  1. ]]
 
-        >>> x = cp.variable()
-        >>> Z = cp.Normal()
-        >>> print(cp.Cov([x, x**2], Z))
+        >>> x = chaospy.variable()
+        >>> Z = chaospy.Normal()
+        >>> print(chaospy.Cov([x, x**2], Z))
         [[ 1.  0.]
          [ 0.  2.]]
     """
-    if not isinstance(poly, (cp.dist.Dist, cp.poly.Poly)):
-        poly = cp.poly.Poly(poly)
+    if not isinstance(poly, (distributions.Dist, polynomials.Poly)):
+        poly = polynomials.Poly(poly)
 
-    if isinstance(poly, cp.dist.Dist):
-        x = cp.poly.variable(len(poly))
+    if isinstance(poly, distributions.Dist):
+        x = polynomials.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = cp.poly.Poly(poly)
+        poly = polynomials.Poly(poly)
 
     dim = len(dist)
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
     keys = poly.keys
     N = len(keys)
     A = poly.A
-    keys1 = np.array(keys).T
+    keys1 = numpy.array(keys).T
     if dim==1:
         keys1 = keys1[0]
-        keys2 = sum(np.meshgrid(keys, keys))
+        keys2 = sum(numpy.meshgrid(keys, keys))
     else:
-        keys2 = np.empty((dim, N, N))
+        keys2 = numpy.empty((dim, N, N))
         for i in range(N):
             for j in range(N):
                 keys2[:, i, j] = keys1[:, i]+keys1[:, j]
 
     m1 = dist.mom(keys1, **kws)
     m2 = dist.mom(keys2, **kws)
-    mom = m2-np.outer(m1, m1)
+    mom = m2-numpy.outer(m1, m1)
 
-    out = np.zeros((len(poly), len(poly)))
+    out = numpy.zeros((len(poly), len(poly)))
     for i in range(len(keys)):
         a = A[keys[i]]
-        out += np.outer(a, a)*mom[i, i]
+        out += numpy.outer(a, a)*mom[i, i]
         for j in range(i+1, len(keys)):
             b = A[keys[j]]
-            ab = np.outer(a, b)
+            ab = numpy.outer(a, b)
             out += (ab+ab.T)*mom[i, j]
 
-    out = np.reshape(out, shape+shape)
+    out = numpy.reshape(out, shape+shape)
     return out
 
 
@@ -90,23 +91,23 @@ def Corr(poly, dist=None, **kws):
                 `correlation.shape==poly.shape+poly.shape`.
 
     Examples:
-        >>> Z = cp.MvNormal([3, 4], [[2, .5], [.5, 1]])
-        >>> print(cp.Corr(Z))
+        >>> Z = chaospy.MvNormal([3, 4], [[2, .5], [.5, 1]])
+        >>> print(chaospy.Corr(Z))
         [[ 1.          0.35355339]
          [ 0.35355339  1.        ]]
 
-        >>> x = cp.variable()
-        >>> Z = cp.Normal()
-        >>> print(cp.Corr([x, x**2], Z))
+        >>> x = chaospy.variable()
+        >>> Z = chaospy.Normal()
+        >>> print(chaospy.Corr([x, x**2], Z))
         [[ 1.  0.]
          [ 0.  1.]]
     """
-    if isinstance(poly, cp.dist.Dist):
-        poly, dist = cp.poly.variable(len(poly)), poly
+    if isinstance(poly, distributions.Dist):
+        poly, dist = polynomials.variable(len(poly)), poly
     else:
-        poly = cp.poly.Poly(poly)
+        poly = polynomials.Poly(poly)
 
     cov = Cov(poly, dist, **kws)
-    var = np.diag(cov)
-    vvar = np.sqrt(np.outer(var, var))
-    return np.where(vvar > 0, cov/vvar, 0)
+    var = numpy.diag(cov)
+    vvar = numpy.sqrt(numpy.outer(var, var))
+    return numpy.where(vvar > 0, cov/vvar, 0)
