@@ -1,8 +1,12 @@
 """
 Constructing custom probability distributions is done in one of two ways:
-Sublcassing the :class:`~chaospy.dist.Dist` or by calling
-:func:`~chaospy.dist.construct`. They work about the same except for one
+Sublcassing the :class:`~chaospy.distributions.Dist` or by calling
+:func:`~chaospy.distributions.construct`. They work about the same except for one
 methods are defined, while in the other, functions.
+
+Import the construction function::
+
+    >>> from chaospy.distributions import construct, Dist
 
 A simple example for constructing a simple uniform distribution::
 
@@ -10,8 +14,8 @@ A simple example for constructing a simple uniform distribution::
     ...     return (x-lo)/(up-lo)
     >>> def bnd(self, lo, up):
     ...     return lo, up
-    >>> Uniform = cp.construct(cdf=cdf, bnd=bnd)
-    >>> dist = Uniform(-3, 3)
+    >>> Uniform = construct(cdf=cdf, bnd=bnd)
+    >>> dist = Uniform(lo=-3, up=3)
     >>> print(dist.fwd([-3, 0, 3]))
     [ 0.   0.5  1. ]
 
@@ -28,9 +32,9 @@ example a fully featured uniform random variable is defined as follows::
     ...     return 1./(up-lo)
     >>> def ppf(self, q, lo, up):
     ...     return q*(up-lo) + lo
-    >>> Uniform = cp.construct(
+    >>> Uniform = construct(
     ...     cdf=cdf, bnd=bnd, pdf=pdf, ppf=ppf)
-    >>> dist = Uniform(-3, 3)
+    >>> dist = Uniform(lo=-3, up=3)
 
 There ``pdf`` is probability distribution function and ``ppf`` if the point
 percentile function.  These are methods that provides needed functionality for
@@ -38,11 +42,11 @@ probabilistic collocation. If they are not provided during construct, they are
 estimated as far as possible.
 
 Equivalently constructing the same distribution using subclass:
-:func:`~chaospy.dist.construct`::
+:func:`~chaospy.distributions.construct`::
 
-    >>> class Uniform(cp.Dist):
+    >>> class Uniform(Dist):
     ...     def __init__(self, lo=0, up=1):
-    ...         cp.Dist.__init__(self, lo=lo, up=up)
+    ...         Dist.__init__(self, lo=lo, up=up)
     ...     def _cdf(self, x, lo, up):
     ...         return (x-lo)/(up-lo)
     ...     def _bnd(self, lo, up):
@@ -61,14 +65,12 @@ Equivalently constructing the same distribution using subclass:
 import types
 import numpy as np
 
-import chaospy.dist
-
 
 class Dist(object):
     """
     The distribution backend class.
 
-    Subclass this module to construct a custom distribuiton.
+    Subclass this module to construct a custom distribution.
 
     If direct subclass of Dist, two method must be provided:
 
@@ -83,7 +85,8 @@ class Dist(object):
     * TTR coefficients generator: ``_ttr(self, k, **prm)``.
     * Pretty print of distribution: ``_str(self, **prm)``.
 
-    Alternative use the construct generator :func:`~chaospy.dist.construct`.
+    Alternative use the construct generator
+    :func:`~chaospy.distributions.construct`.
     """
 
     __array_priority__ = 9000
@@ -96,6 +99,7 @@ class Dist(object):
             **prm (array_like) : Other optional parameters. Will be assumed when
                     calling any sub-functions.
         """
+        from . import graph
         for key, val in prm.items():
             if not isinstance(val, Dist):
                 prm[key] = np.array(val)
@@ -103,7 +107,7 @@ class Dist(object):
         self.length = int(prm.pop("_length", 1))
         self.advance = prm.pop("_advance", False)
         self.prm = prm.copy()
-        self.graph = chaospy.dist.graph.Graph(self)
+        self.graph = graph.Graph(self)
         self.dependencies = self.graph.run(self.length, "dep")[0]
 
     def range(self, x=None, retall=False, verbose=False):
@@ -122,7 +126,8 @@ class Dist(object):
         """
         dim = len(self)
         if x is None:
-            x = chaospy.dist.approx.find_interior_point(self)
+            from . import approx
+            x = approx.find_interior_point(self)
         else:
             x = np.array(x)
         shape = x.shape
@@ -151,7 +156,8 @@ class Dist(object):
             (ndarray) : Evaluated distribution function values, where
                     out.shape==x.shape.
         """
-        return chaospy.dist.rosenblatt.fwd(self, x)
+        from . import rosenblatt
+        return rosenblatt.fwd(self, x)
 
     def cdf(self, x):
         """
@@ -176,7 +182,8 @@ class Dist(object):
             raise NotImplementedError("""\
 Cumulative distribution function is only available for stocastically \
 independent variables""")
-        out = chaospy.dist.rosenblatt.fwd(self, x)
+        from . import rosenblatt
+        out = rosenblatt.fwd(self, x)
         if len(self) > 1:
             out = np.prod(out, 0)
         return out
@@ -198,7 +205,8 @@ independent variables""")
         Returns:
             (ndarray) : Inverted probability values where out.shape==q.shape.
         """
-        return chaospy.dist.rosenblatt.inv(self, q, maxiter, tol, **kws)
+        from . import rosenblatt
+        return rosenblatt.inv(self, q, maxiter, tol, **kws)
 
     def pdf(self, x, step=1e-7, verbose=0):
         """
@@ -232,8 +240,9 @@ independent variables""")
                     eps=step)
             out[:,valids] = tmp[:,valids]
         except NotImplementedError:
-            tmp,graph = chaospy.dist.approx.pdf_full(self, x, step, retall=True)
-            out[:,valids] = tmp[:,valids]
+            from . import approx
+            tmp, graph = approx.pdf_full(self, x, step, retall=True)
+            out[:, valids] = tmp[:, valids]
             if verbose:
                 print("approx %s.pdf")
         except IndexError:
@@ -253,11 +262,14 @@ independent variables""")
         Create pseudo-random generated samples.
 
         Args:
-            size (int,array_like) : The size of the samples to generate.
-            rule (str) : Alternative sampling techniques. See
-                    :func:`~chaospy.dist.sampler.generator.generate_samples`.
-            antithetic (bool, array_like) : If provided, will be used to setup
-                    antithetic variables.  If array, defines the axes to mirror.
+            size (int,array_like):
+                The size of the samples to generate.
+            rule (str):
+                Alternative sampling techniques. See
+                :func:`~chaospy.distributions.sampler.generator.generate_samples`.
+            antithetic (bool, array_like):
+                If provided, will be used to setup antithetic variables. If
+                array, defines the axes to mirror.
 
         Returns:
             (ndarray) : Random samples with shape (len(self),)+self.shape
@@ -272,7 +284,8 @@ independent variables""")
         else:
             shape = size
 
-        out = chaospy.dist.sampler.generator.generate_samples(
+        from . import sampler
+        out = sampler.generator.generate_samples(
             order=size_, domain=self, rule=rule, antithetic=antithetic)
         try:
             out = out.reshape(shape)
@@ -324,7 +337,8 @@ independent variables""")
         try:
             out, _ = self.graph.run(K, "mom", **kws)
         except NotImplementedError:
-            out = chaospy.dist.approx.mom(self, K, **kws)
+            from . import approx
+            out = approx.mom(self, K, **kws)
 
         return out.reshape(shape)
 
@@ -385,79 +399,98 @@ independent variables""")
 
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""
-        return chaospy.dist.operators.add(self, X)
+        from . import operators
+        return operators.add(self, X)
 
     def __radd__(self, X):
         """Y.__radd__(X) <==> Y+X"""
-        return chaospy.dist.operators.add(self, X)
+        from . import operators
+        return operators.add(self, X)
 
     def __sub__(self, X):
         """Y.__sub__(X) <==> X-Y"""
-        return chaospy.dist.operators.add(self, -X)
+        from . import operators
+        return operators.add(self, -X)
 
     def __rsub__(self, X):
         """Y.__rsub__(X) <==> Y-X"""
-        return chaospy.dist.operators.add(X, -self)
+        from . import operators
+        return operators.add(X, -self)
 
     def __neg__(self):
         """X.__neg__() <==> -X"""
-        return chaospy.dist.operators.neg(self)
+        from . import operators
+        return operators.neg(self)
 
     def __mul__(self, X):
         """Y.__mul__(X) <==> X*Y"""
-        return chaospy.dist.operators.mul(self, X)
+        from . import operators
+        return operators.mul(self, X)
 
     def __rmul__(self, X):
         """Y.__rmul__(X) <==> Y*X"""
-        return chaospy.dist.operators.mul(self, X)
+        from . import operators
+        return operators.mul(self, X)
 
     def __div__(self, X):
         """Y.__div__(X) <==> Y/X"""
-        return chaospy.dist.operators.mul(self, X**-1)
+        from . import operators
+        return operators.mul(self, X**-1)
 
     def __rdiv__(self, X):
         """Y.__rdiv__(X) <==> X/Y"""
-        return chaospy.dist.operators.mul(X, self**-1)
+        from . import operators
+        return operators.mul(X, self**-1)
 
     def __floordiv__(self, X):
         """Y.__floordiv__(X) <==> Y/X"""
-        return chaospy.dist.operators.mul(self, X**-1)
+        from . import operators
+        return operators.mul(self, X**-1)
 
     def __rfloordiv__(self, X):
         """Y.__rfloordiv__(X) <==> X/Y"""
-        return chaospy.dist.operators.mul(X, self**-1)
+        from . import operators
+        return operators.mul(X, self**-1)
 
     def __truediv__(self, X):
         """Y.__truediv__(X) <==> Y/X"""
-        return chaospy.dist.operators.mul(self, X**-1)
+        from . import operators
+        return operators.mul(self, X**-1)
 
     def __rtruediv__(self, X):
         """Y.__rtruediv__(X) <==> X/Y"""
-        return chaospy.dist.operators.mul(X, self**-1)
+        from . import operators
+        return operators.mul(X, self**-1)
 
     def __pow__(self, X):
         """Y.__pow__(X) <==> Y**X"""
-        return chaospy.dist.operators.pow(self, X)
+        from . import operators
+        return operators.pow(self, X)
 
     def __rpow__(self, X):
         """Y.__rpow__(X) <==> X**Y"""
-        return chaospy.dist.operators.pow(X, self)
+        from . import operators
+        return operators.pow(X, self)
 
     def __le__(self, X):
         """Y.__le__(X) <==> Y<=X"""
-        return chaospy.dist.operators.trunk(self, X)
+        from . import operators
+        return operators.trunk(self, X)
 
     def __lt__(self, X):
         """Y.__lt__(X) <==> Y<X"""
-        return chaospy.dist.operators.trunk(self, X)
+        from . import operators
+        return operators.trunk(self, X)
 
     def __ge__(self, X):
         """Y.__ge__(X) <==> Y>=X"""
-        return chaospy.dist.operators.trunk(X, self)
+        from . import operators
+        return operators.trunk(X, self)
 
     def __gt__(self, X):
         """Y.__gt__(X) <==> Y>X"""
-        return chaospy.dist.operators.trunk(X, self)
+        from . import operators
+        return operators.trunk(X, self)
 
     def addattr(self, **kws):
         """
@@ -475,7 +508,7 @@ independent variables""")
             dep (callable) : Dependency structure (if non-trivial).
         """
         for key,val in kws.items():
-            if key=="str" and isinstance(val, str):
+            if key == "str" and isinstance(val, str):
                 val_ = val
                 val = lambda *a,**k: val_
             setattr(self, "_"+key, types.MethodType(val, self))
@@ -516,105 +549,3 @@ independent variables""")
         as_joined = len(as_joined)
 
         return as_seperated != as_joined
-
-
-def construct(cdf, bnd, parent=None, pdf=None, ppf=None, mom=None, ttr=None,
-              val=None, doc=None, str=None, dep=None, defaults=None,
-              advance=False, length=1):
-    """
-    Random variable constructor.
-
-    Args:
-        cdf (callable) : Cumulative distribution function. Optional if parent
-                is used.
-        bnd (callable) : Boundary interval. Optional if parent is used.
-        parent (Dist) : Distribution used as basis for new distribution. Any
-                other argument that is omitted will instead take is function
-                from parent.
-        doc (str, optional) : Documentation for the distribution.
-        str (str, callable, optional) : Pretty print of the variable.
-        pdf (callable, optional) : Probability density function.
-        ppf (callable, optional) : Point percentile function.
-        mom (callable, optional) : Raw moment generator.
-        ttr (callable, optional) : Three terms recursion coefficient generator
-        val (callable, optional) : Value function for transferable
-                distributions.
-        dep (callable, optional) : Dependency structure.
-        advance (bool) : If True, advance mode is used. See dist.graph for
-                details.
-        length (int) : If constructing an multivariate random variable, this
-                sets the assumed length. Defaults to 1.
-        init (callable, optional) : Custom constructor method.
-
-    Returns:
-        dist (Dist) : New custom distribution.
-    """
-    if not (parent is None):
-        if hasattr(parent, "_cdf"):
-            cdf = cdf or parent._cdf
-        if hasattr(parent, "_bnd"):
-            bnd = bnd or parent._bnd
-        if hasattr(parent, "_pdf"):
-            pdf = pdf or parent._pdf
-        if hasattr(parent, "_ppf"):
-            ppf = ppf or parent._ppf
-        if hasattr(parent, "_mom"):
-            mom = mom or parent._mom
-        if hasattr(parent, "_ttr"):
-            ttr = ttr or parent._ttr
-        if hasattr(parent, "_str"):
-            str = str or parent._str
-        if hasattr(parent, "_dep"):
-            dep = dep or parent._dep
-        val = val or parent._val
-        doc = doc or parent.__doc__
-
-    def crash_func(*a, **kw):
-        raise NotImplementedError
-    if advance:
-        ppf = ppf or crash_func
-        pdf = pdf or crash_func
-        mom = mom or crash_func
-        ttr = ttr or crash_func
-
-    def custom(**kws):
-
-        if not (defaults is None):
-            keys = defaults.keys()
-            assert all([key in keys for key in kws.keys()])
-            prm = defaults.copy()
-        else:
-            prm = {}
-        prm.update(kws)
-        _length = prm.pop("_length", length)
-        _advance = prm.pop("_advance", advance)
-
-        dist = Dist(_advance=_advance, _length=_length, **prm)
-
-        dist.addattr(cdf=cdf)
-        dist.addattr(bnd=bnd)
-
-        if not (pdf is None):
-            dist.addattr(pdf=pdf)
-        if not (ppf is None):
-            dist.addattr(ppf=ppf)
-        if not (mom is None):
-            dist.addattr(mom=mom)
-        if not (ttr is None):
-            dist.addattr(ttr=ttr)
-        if not (val is None):
-            dist.addattr(val=val)
-        if not (str is None):
-            dist.addattr(str=str)
-        if not (dep is None):
-            dist.addattr(dep=dep)
-
-        return dist
-
-    if not (doc is None):
-        doc = """
-Custom random variable
-        """
-    setattr(custom, "__doc__", doc)
-
-    return custom

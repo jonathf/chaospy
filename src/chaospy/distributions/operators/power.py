@@ -3,7 +3,7 @@ Power operator.
 """
 import numpy
 
-from chaospy.dist import Dist
+from ..baseclass import Dist
 
 
 class Pow(Dist):

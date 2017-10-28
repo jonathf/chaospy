@@ -1,9 +1,9 @@
 """
 Collection of trigonometric operators
 """
-from chaospy.dist.baseclass import Dist
 import numpy as np
 
+from ..baseclass import Dist
 
 class Sin(Dist):
 

@@ -1,8 +1,11 @@
 """
 Collection of hyerbolic operators
+
+Example usage
+-------------
 """
 import numpy
-from chaospy.dist.baseclass import Dist
+from ..baseclass import Dist
 
 class Sinh(Dist):
 

@@ -3,11 +3,10 @@ Frontend for the collection distributions.
 
 This modules provides a wrapper with documentation for the dist.cores module.
 """
-import numpy as np
+import numpy
 from scipy.stats import gaussian_kde
 
-import chaospy.dist.cores
-import chaospy.dist.joint
+from . import cores, joint
 
 
 def Alpha(shape=1, scale=1, shift=0):
@@ -19,7 +18,7 @@ def Alpha(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scale Parameter
         shift (float, Dist) : Location of lower threshold
     """
-    dist = chaospy.dist.cores.alpha(shape)*scale + shift
+    dist = cores.alpha(shape)*scale + shift
     dist.addattr(str="Alpha(%s,%s,%s)" % (shape, scale, shift))
     return dist
 
@@ -32,7 +31,7 @@ def Anglit(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = chaospy.dist.cores.anglit()*scale + loc
+    dist = cores.anglit()*scale + loc
     dist.addattr(str="Anglit(%s,%s)"(loc, scale))
     return dist
 
@@ -48,7 +47,7 @@ def Arcsinus(shape=0.5, lo=0, up=1):
     up : float, Dist
         Upper threshold
     """
-    dist = chaospy.dist.cores.beta(shape, 1-shape)*(up-lo) + lo
+    dist = cores.beta(shape, 1-shape)*(up-lo) + lo
     dist.addattr(str="Arcsinus(%s,%s,%s)" % (shape, lo, up))
     return dist
 
@@ -64,9 +63,8 @@ def Beta(a, b, lo=0, up=1):
         up (float, Dist) : Upper threshold
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Beta(2, 2, 2, 3)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Beta(2, 2, 2, 3)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 2.28714073  2.43293108  2.56706892  2.71285927]
         >>> print(f.fwd(f.inv(q)))
@@ -76,7 +74,7 @@ def Beta(a, b, lo=0, up=1):
         >>> print(f.mom(1))
         2.5
     """
-    dist = chaospy.dist.cores.beta(a, b)*(up-lo) + lo
+    dist = cores.beta(a, b)*(up-lo) + lo
     dist.addattr(str="Beta(%s,%s,%s,%s)" % (a,b,lo,up))
     return dist
 
@@ -90,7 +88,7 @@ def Bradford(shape=1, lo=0, up=1):
         lo (float, Dist) : Location of lower threshold
         up (float, Dist) : Location of upper threshold
     """
-    dist = chaospy.dist.cores.bradford(c=shape)*(up-lo) + lo
+    dist = cores.bradford(c=shape)*(up-lo) + lo
     dist.addattr(str="Bradford(%s,%s,%s)"%(shape, lo, up))
     return dist
 
@@ -105,7 +103,7 @@ def Burr(c=1, d=1, loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = chaospy.dist.cores.burr(c=1., d=1.)*scale + loc
+    dist = cores.burr(c=1., d=1.)*scale + loc
     dist.addattr(str="Burr(%s,%s,%s,%s)"%(c, d, loc, scale))
     return dist
 
@@ -118,7 +116,7 @@ def Cauchy(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = chaospy.dist.cores.cauchy()*scale + loc
+    dist = cores.cauchy()*scale + loc
     dist.addattr(str="Cauchy(%s,%s)"%(loc,scale))
     return dist
 
@@ -132,7 +130,7 @@ def Chi(df=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.chi(df)*scale + shift
+    dist = cores.chi(df)*scale + shift
     dist.addattr(str="Chi(%s,%s,%s)"%(df, scale, shift))
     return dist
 
@@ -147,7 +145,7 @@ def Chisquard(df=1, scale=1, shift=0, nc=0):
         shift (float, Dist) : Location parameter
         nc (float, Dist) : Non-centrality parameter
     """
-    dist = chaospy.dist.cores.chisquared(df, nc)*scale + shift
+    dist = cores.chisquared(df, nc)*scale + shift
     dist.addattr(str="Chisquared(%s,%s,%s,%s)"%(df, nc,scale,shift))
     return dist
 
@@ -161,7 +159,7 @@ def Dbl_gamma(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.dbl_gamma(shape)*scale + shift
+    dist = cores.dbl_gamma(shape)*scale + shift
     dist.addattr(str="Dbl_gamma(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -175,7 +173,7 @@ def Dbl_weibull(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.dbl_weibull(shape)*scale + shift
+    dist = cores.dbl_weibull(shape)*scale + shift
     dist.addattr(str="Dbl_weibull(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -189,9 +187,8 @@ def Exponential(scale=1, shift=0):
         shift (float, Dist) : Location of the lower bound.
 
     Examples;:
-        >>> cp.seed(1000)
-        >>> f = cp.Exponential(1)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Exponential(1)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 0.22314355  0.51082562  0.91629073  1.60943791]
         >>> print(f.fwd(f.inv(q)))
@@ -201,7 +198,7 @@ def Exponential(scale=1, shift=0):
         >>> print(f.mom(1))
         1.0
     """
-    dist = chaospy.dist.cores.expon()*scale + shift
+    dist = cores.expon()*scale + shift
     dist.addattr(str="Expon(%s,%s)" % (scale, shift))
     return dist
 
@@ -218,7 +215,7 @@ def Exponpow(shape=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.exponpow(shape)*scale + shift
+    dist = cores.exponpow(shape)*scale + shift
     dist.addattr(str="Exponpow(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -233,7 +230,7 @@ def Exponweibull(a=1, c=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.exponweibull(a, c)*scale + shift
+    dist = cores.exponweibull(a, c)*scale + shift
     dist.addattr(str="Exponweibull(%s,%s,%s,%s)"%(a, c, scale,shift))
     return dist
 
@@ -249,7 +246,7 @@ def F(n=1, m=1, scale=1, shift=0, nc=0):
         shift (float, Dist) : Location parameter
         nc (float, Dist) : Non-centrality parameter
     """
-    dist = chaospy.dist.cores.f(n, m, nc)*scale + shift
+    dist = cores.f(n, m, nc)*scale + shift
     dist.addattr(str="F(%s,%s,%s,%s,%s)"%(n, m, scale, shift, nc))
     return dist
 
@@ -263,7 +260,7 @@ def Fatiguelife(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.fatiguelife(shape)*scale + shift
+    dist = cores.fatiguelife(shape)*scale + shift
     dist.addattr(str="Fatiguelife(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -277,7 +274,7 @@ def Fisk(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.fisk(c=shape)*scale + shift
+    dist = cores.fisk(c=shape)*scale + shift
     dist.addattr(str="Fisk(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -291,7 +288,7 @@ def Foldcauchy(shape=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.foldcauchy(shape)*scale + shift
+    dist = cores.foldcauchy(shape)*scale + shift
     dist.addattr(str="Foldcauchy(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -305,7 +302,7 @@ def Foldnormal(mu=0, sigma=1, loc=0):
         sigma (float, Dist) : Scaling parameter (in both normal and fold)
         loc (float, Dist) : Location of fold
     """
-    dist = chaospy.dist.cores.foldnorm(mu-loc)*sigma + loc
+    dist = cores.foldnorm(mu-loc)*sigma + loc
     dist.addattr(str="Foldnorm(%s,%s,%s)"%(mu, sigma, loc))
     return dist
 
@@ -319,7 +316,7 @@ def Frechet(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.frechet(shape)*scale + shift
+    dist = cores.frechet(shape)*scale + shift
     dist.addattr(str="Frechet(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -336,9 +333,8 @@ def Gamma(shape=1, scale=1, shift=0):
         shift (float, Dist) : Location of the lower bound.
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Gamma(1, 1)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Gamma(1, 1)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 0.22314355  0.51082562  0.91629073  1.60943791]
         >>> print(f.fwd(f.inv(q)))
@@ -348,7 +344,7 @@ def Gamma(shape=1, scale=1, shift=0):
         >>> print(f.mom(1))
         1.0
     """
-    dist = chaospy.dist.cores.gamma(shape)*scale + shift
+    dist = cores.gamma(shape)*scale + shift
     dist.addattr(str="Gamma(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -371,7 +367,7 @@ def Genexpon(a=1, b=1, c=1, scale=1, shift=0):
         "The Exponential Distribution: Theory, Methods and Applications",
         N. Balakrishnan, Asit P. Basu.
     """
-    dist = chaospy.dist.cores.genexpon(a=1, b=1, c=1)*scale + shift
+    dist = cores.genexpon(a=1, b=1, c=1)*scale + shift
     dist.addattr(str="Genexpon(%s,%s,%s)"%(a, b, c))
     return dist
 
@@ -386,7 +382,7 @@ def Genextreme(shape=0, scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         loc (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.genextreme(shape)*scale + loc
+    dist = cores.genextreme(shape)*scale + loc
     dist.addattr(str="Genextreme(%s,%s,%s)"%(shape, scale, loc))
     return dist
 
@@ -401,7 +397,7 @@ def Gengamma(shape1, shape2, scale, shift):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.gengamma(shape1, shape2)*scale + shift
+    dist = cores.gengamma(shape1, shape2)*scale + shift
     dist.addattr(
         str="Gengamma(%s,%s,%s,%s)"%(shape1,shape2,scale,shift))
     return dist
@@ -416,7 +412,7 @@ def Genhalflogistic(shape, scale, shift):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.genhalflogistic(shape)*scale + shift
+    dist = cores.genhalflogistic(shape)*scale + shift
     dist.addattr(str="Genhalflogistic(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -431,7 +427,7 @@ def Gilbrat(scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.lognormal(1)*scale + shift
+    dist = cores.lognormal(1)*scale + shift
     dist.addattr(str="Gilbrat(%s,%s)"%(scale, shift))
     return dist
 
@@ -445,7 +441,7 @@ def Gompertz(shape, scale, shift):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.gompertz(shape)*scale + shift
+    dist = cores.gompertz(shape)*scale + shift
     dist.addattr(str="Gompertz(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -458,7 +454,7 @@ def Logweibul(scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         loc (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.gumbel()*scale + loc
+    dist = cores.gumbel()*scale + loc
     dist.addattr(str="Gumbel(%s,%s)"%(scale, loc))
     return dist
 
@@ -471,7 +467,7 @@ def Hypgeosec(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scale parameter
     """
-    dist = chaospy.dist.cores.hypgeosec()*scale + loc
+    dist = cores.hypgeosec()*scale + loc
     dist.addattr(str="Hypgeosec(%s,%s)"%(loc, scale))
     return dist
 
@@ -486,7 +482,7 @@ def Kumaraswamy(a, b, lo=0, up=1):
         lo (float, Dist) : Lower threshold
         up (float, Dist) : Upper threshold
     """
-    dist = chaospy.dist.cores.kumaraswamy(a,b)*(up-lo) + lo
+    dist = cores.kumaraswamy(a,b)*(up-lo) + lo
     dist.addattr(str="Kumaraswamy(%s,%s,%s,%s)"%(a,b,lo,up))
     return dist
 
@@ -501,9 +497,8 @@ def Laplace(mu=0, scale=1):
             scale > 0
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Laplace(2, 2)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Laplace(2, 2)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 0.16741854  1.5537129   2.4462871   3.83258146]
         >>> print(f.fwd(f.inv(q)))
@@ -513,7 +508,7 @@ def Laplace(mu=0, scale=1):
         >>> print(f.mom(1))
         2.0
     """
-    dist = chaospy.dist.cores.laplace()*scale + mu
+    dist = cores.laplace()*scale + mu
     dist.addattr(str="Laplace(%s,%s)"%(mu,scale))
     return dist
 
@@ -526,7 +521,7 @@ def Levy(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = chaospy.dist.cores.levy()*scale+loc
+    dist = cores.levy()*scale+loc
     dist.addattr(str="Levy(%s,%s)"%(loc, scale))
     return dist
 
@@ -540,7 +535,7 @@ def Loggamma(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.loggamma(shape)*scale + shift
+    dist = cores.loggamma(shape)*scale + shift
     dist.addattr(str="Loggamma(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -554,7 +549,7 @@ def Logistic(loc=0, scale=1, skew=1):
     scale (float, Dist) : Scale parameter
     skew (float, Dist) : Shape parameter
     """
-    dist = chaospy.dist.cores.logistic()*scale + loc
+    dist = cores.logistic()*scale + loc
     dist.addattr(str="Logistic(%s,%s)"%(loc, scale))
     return dist
 
@@ -568,7 +563,7 @@ def Loglaplace(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.loglaplace(shape)*scale + shift
+    dist = cores.loglaplace(shape)*scale + shift
     dist.addattr(str="Loglaplace(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -585,9 +580,8 @@ def Lognormal(mu=0, sigma=1, shift=0, scale=1):
         scale (float, Dist) : Scale parameter. Overlaps with mu by scale=e**mu
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Lognormal(0, 1)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Lognormal(0, 1)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 0.43101119  0.77619841  1.28833038  2.32012539]
         >>> print(f.fwd(f.inv(q)))
@@ -597,7 +591,7 @@ def Lognormal(mu=0, sigma=1, shift=0, scale=1):
         >>> print(f.mom(1))
         1.6487212707
     """
-    dist = chaospy.dist.cores.lognormal(sigma)*scale*np.e**mu + shift
+    dist = cores.lognormal(sigma)*scale*numpy.e**mu + shift
     dist.addattr(str="Lognormal(%s,%s,%s,%s)"%(mu,sigma,shift,scale))
     return dist
 
@@ -612,7 +606,7 @@ def Loguniform(lo=0, up=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.loguniform(lo, up)*scale + shift
+    dist = cores.loguniform(lo, up)*scale + shift
     dist.addattr(str="Loguniform(%s,%s,%s,%s)" % (lo,up,scale,shift))
     return dist
 
@@ -626,7 +620,7 @@ def Maxwell(scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.chi(3)*scale + shift
+    dist = cores.chi(3)*scale + shift
     dist.addattr(str="Maxwell(%s,%s)"%(scale, shift))
     return dist
 
@@ -641,7 +635,7 @@ def Mielke(kappa=1, expo=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.mielke(kappa, expo)*scale + shift
+    dist = cores.mielke(kappa, expo)*scale + shift
     dist.addattr(str="Mielke(%s,%s,%s,%s)"%(kappa,expo,scale,shift))
     return dist
 
@@ -655,7 +649,7 @@ def MvLognormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
         scale (float, Dist) : Covariance matrix or variance vector if scale is
                 a 1-d vector.
     """
-    dist = chaospy.dist.cores.mvlognormal(loc, scale)
+    dist = cores.mvlognormal(loc, scale)
     dist.addattr(str="MvLognormal(%s,%s)" % (loc, scale))
     return dist
 
@@ -669,26 +663,25 @@ def MvNormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
         scale (float, Dist) : Covariance matrix or variance vector if scale is a 1-d vector.
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.MvNormal([0,0], [[1,.5],[.5,1]])
+        >>> f = chaospy.MvNormal([0,0], [[1,.5],[.5,1]])
         >>> q = [[.4,.5,.6],[.4,.5,.6]]
         >>> print(f.inv(q))
         [[-0.2533471   0.          0.2533471 ]
-        [-0.34607858  0.          0.34607858]]
+         [-0.34607858  0.          0.34607858]]
         >>> print(f.fwd(f.inv(q)))
         [[ 0.4  0.5  0.6]
-        [ 0.4  0.5  0.6]]
+         [ 0.4  0.5  0.6]]
         >>> print(f.sample(3))
         [[ 0.39502989 -1.20032309  1.64760248]
-        [ 0.15884312  0.38551963  0.1324068 ]]
+         [ 0.15884312  0.38551963  0.1324068 ]]
         >>> print(f.mom((1,1)))
         0.5
     """
-    if np.all((np.diag(np.diag(scale))-scale)==0):
-        out = chaospy.dist.joint.J(
+    if numpy.all((numpy.diag(numpy.diag(scale))-scale)==0):
+        out = joint.J(
             *[Normal(loc[i], scale[i,i]) for i in range(len(scale))])
     else:
-        out = chaospy.dist.cores.mvnormal(loc, scale)
+        out = cores.mvnormal(loc, scale)
     out.addattr(str="MvNormal(%s,%s)" % (loc, scale))
     return out
 
@@ -700,7 +693,7 @@ def MvStudent_t(df=1, loc=[0,0], scale=[[1,.5],[.5,1]]):
         loc (array_like, Dist) : Location parameter
         scale (array_like) : Covariance matrix
     """
-    out = chaospy.dist.cores.mvstudentt(df, loc, scale)
+    out = cores.mvstudentt(df, loc, scale)
     out.addattr(str="MvStudent_t(%s,%s,%s)" % (df, loc, scale))
     return out
 
@@ -714,7 +707,7 @@ def Nakagami(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.nakagami(shape)*scale + shift
+    dist = cores.nakagami(shape)*scale + shift
     dist.addattr(str="Nakagami(%s,%s,%s)"%(shape,scale,shift))
     return dist
 
@@ -728,9 +721,8 @@ def Normal(mu=0, sigma=1):
         sigma (float, Dist) : Standard deviation.  sigma > 0
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Normal(2, 2)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Normal(2, 2)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 0.31675753  1.49330579  2.50669421  3.68324247]
         >>> print(f.fwd(f.inv(q)))
@@ -740,7 +732,7 @@ def Normal(mu=0, sigma=1):
         >>> print(f.mom(1))
         2.0
     """
-    dist = chaospy.dist.cores.normal()*sigma + mu
+    dist = cores.normal()*sigma + mu
     dist.addattr(str="Normal(%s,%s)"%(mu, sigma))
     return dist
 
@@ -756,7 +748,7 @@ def Pareto1(shape=1, scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.pareto1(shape)*scale + loc
+    dist = cores.pareto1(shape)*scale + loc
     dist.addattr(str="Pareto(%s,%s,%s)" % (shape, scale, loc))
     return dist
 
@@ -774,7 +766,7 @@ def Pareto2(shape=1, scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         loc (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.pareto(shape)*scale + loc
+    dist = cores.pareto(shape)*scale + loc
     dist.addattr(str="Pareto(%s,%s,%s)"%(shape, scale, loc))
     return dist
 
@@ -788,7 +780,7 @@ def Powerlaw(shape=1, lo=0, up=1):
         lo (float, Dist) : Location of lower threshold
         up (float, Dist) : Location of upper threshold
     """
-    dist = chaospy.dist.cores.beta(shape, 1)*(up-lo) + lo
+    dist = cores.beta(shape, 1)*(up-lo) + lo
     dist.addattr(str="Powerlaw(%s,%s,%s)"%(shape, lo, up))
     return dist
 
@@ -805,7 +797,7 @@ def Powerlognormal(shape=1, mu=0, sigma=1, shift=0, scale=1):
         shift (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter. Overlap with mu in scale=e**mu
     """
-    dist = chaospy.dist.cores.powerlognorm(shape, sigma)*scale*np.e**mu + shift
+    dist = cores.powerlognorm(shape, sigma)*scale*numpy.e**mu + shift
     dist.addattr(str="Powerlognorm(%s,%s,%s,%s,%s)"%\
             (shape, mu, sigma, shift, scale))
     return dist
@@ -820,7 +812,7 @@ def Powernorm(shape=1, mu=0, scale=1):
         mu (float, Dist) : Mean of the normal distribution
         scale (float, Dist) : Standard deviation of the normal distribution
     """
-    dist = chaospy.dist.cores.powernorm(shape)*scale + mu
+    dist = cores.powernorm(shape)*scale + mu
     dist.addattr(str="Powernorm(%s,%s,%s)"%(shape, mu, scale))
     return dist
 
@@ -833,7 +825,7 @@ def Raised_cosine(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scale parameter
     """
-    dist = chaospy.dist.cores.raised_cosine()*scale + loc
+    dist = cores.raised_cosine()*scale + loc
     dist.addattr(str="Raised_cosine(%s,%s)"%(loc,scale))
     return dist
 
@@ -846,7 +838,7 @@ def Rayleigh(scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.chi(2)*scale + shift
+    dist = cores.chi(2)*scale + shift
     dist.addattr(str="Rayleigh(%s,%s)"%(scale, shift))
     return dist
 
@@ -859,7 +851,7 @@ def Reciprocal(lo=1, up=2):
         lo (float, Dist) : Location of lower threshold
         up (float, Dist) : Location of upper threshold
     """
-    dist = chaospy.dist.cores.reciprocal(lo,up)
+    dist = cores.reciprocal(lo,up)
     dist.addattr(str="Reciprocal(%s,%s)"%(lo,up))
     return dist
 
@@ -874,7 +866,7 @@ def Student_t(df, loc=0, scale=1, nc=0):
         scale (float, Dist) : Scale parameter
         nc (flat, Dist) : Non-centrality parameter
     """
-    dist = chaospy.dist.cores.student_t(df)*scale + loc
+    dist = cores.student_t(df)*scale + loc
     dist.addattr(str="Student_t(%s,%s,%s)" % (df, loc, scale))
     return dist
 
@@ -891,9 +883,8 @@ def Triangle(lo, mid, up):
         up (float, Dist) : Upper bound
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Triangle(2, 3, 4)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Triangle(2, 3, 4)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 2.63245553  2.89442719  3.10557281  3.36754447]
         >>> print(f.fwd(f.inv(q)))
@@ -903,7 +894,7 @@ def Triangle(lo, mid, up):
         >>> print(f.mom(1))
         3.0
     """
-    dist = chaospy.dist.cores.triangle((mid-lo)*1./(up-lo))*(up-lo) + lo
+    dist = cores.triangle((mid-lo)*1./(up-lo))*(up-lo) + lo
     dist.addattr(str="Triangle(%s,%s,%s)" % (lo, mid, up))
     return dist
 
@@ -917,7 +908,7 @@ def Truncexpon(up=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter in the exponential distribution
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.truncexpon((up-shift)/scale)*scale + shift
+    dist = cores.truncexpon((up-shift)/scale)*scale + shift
     dist.addattr(str="Truncexpon(%s,%s,%s)"%(up, scale, shift))
     return dist
 
@@ -932,7 +923,7 @@ def Truncnorm(lo=-1, up=1, mu=0, sigma=1):
         mu (float, Dist) : Mean of normal distribution
         sigma (float, Dist) : Standard deviation of normal distribution
     """
-    dist = chaospy.dist.cores.truncnorm(lo, up, mu, sigma)
+    dist = cores.truncnorm(lo, up, mu, sigma)
     dist.addattr(str="Truncnorm(%s,%s,%s,%s)"%(lo,up,mu,sigma))
     return dist
 
@@ -946,7 +937,7 @@ def Tukeylambda(shape=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.tukeylambda(shape)*scale + shift
+    dist = cores.tukeylambda(shape)*scale + shift
     dist.addattr(str="Tukeylambda(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -960,9 +951,8 @@ def Uniform(lo=0, up=1):
         up (float, Dist) : Upper threshold of distribution.
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Uniform(2, 4)
-        >>> q = np.linspace(0,1,5)
+        >>> f = chaospy.Uniform(2, 4)
+        >>> q = numpy.linspace(0,1,5)
         >>> print(f.inv(q))
         [ 2.   2.5  3.   3.5  4. ]
         >>> print(f.fwd(f.inv(q)))
@@ -973,7 +963,7 @@ def Uniform(lo=0, up=1):
         3.0
     """
 
-    dist = chaospy.dist.cores.uniform()*((up-lo)*.5)+((up+lo)*.5)
+    dist = cores.uniform()*((up-lo)*.5)+((up+lo)*.5)
     dist.addattr(str="Uniform(%s,%s)"%(lo,up))
     return dist
 
@@ -988,7 +978,7 @@ def Wald(mu=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.wald(mu)*scale + shift
+    dist = cores.wald(mu)*scale + shift
     dist.addattr(str="Wald(%s,%s,%s)"%(mu, scale, shift))
     return dist
 
@@ -1003,9 +993,8 @@ def Weibull(shape=1, scale=1, shift=0):
         shift (float, Dist) : Location of lower bound.
 
     Examples:
-        >>> cp.seed(1000)
-        >>> f = cp.Weibull(2)
-        >>> q = np.linspace(0,1,6)[1:-1]
+        >>> f = chaospy.Weibull(2)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(f.inv(q))
         [ 0.47238073  0.71472066  0.95723076  1.26863624]
         >>> print(f.fwd(f.inv(q)))
@@ -1015,7 +1004,7 @@ def Weibull(shape=1, scale=1, shift=0):
         >>> print(f.mom(1))
         0.886226925453
     """
-    dist = chaospy.dist.cores.weibull(shape)*scale + shift
+    dist = cores.weibull(shape)*scale + shift
     dist.addattr(str="Weibull(%s,%s,%s)" % (shape, scale, shift))
     return dist
 
@@ -1028,7 +1017,7 @@ def Wigner(radius=1, shift=0):
         radius (float, Dist) : radius of the semi-circle (scale)
         shift (float, Dist) : location of the origen (location)
     """
-    dist = radius*(2*chaospy.dist.cores.beta(1.5,1.5)-1) + shift
+    dist = radius*(2*cores.beta(1.5,1.5)-1) + shift
     dist.addattr(str="Wigner(%s,%s)" % (radius, shift))
     return dist
 
@@ -1042,7 +1031,7 @@ def Wrapcauchy(shape=0.5, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = chaospy.dist.cores.wrapcauchy(shape)*scale + shift
+    dist = cores.wrapcauchy(shape)*scale + shift
     dist.addattr(str="Wrapcauchy(%s,%s,%s)"%(shape, scale, shift))
     return dist
 
@@ -1068,12 +1057,12 @@ def SampleDist(samples, lo=None, up=None):
     try:
         #construct the kernel density estimator
         kernel = gaussian_kde(samples, bw_method="scott")
-        dist = chaospy.dist.cores.kdedist(kernel, lo, up)
+        dist = cores.kdedist(kernel, lo, up)
         dist.addattr(str="SampleDist(%s,%s)" % (lo, up))
 
     #raised by gaussian_kde if dataset is singular matrix
-    except np.linalg.LinAlgError:
-        dist = Uniform(lo=-np.inf, up=np.inf)
+    except numpy.linalg.LinAlgError:
+        dist = Uniform(lo=-numpy.inf, up=numpy.inf)
 
     return dist
 

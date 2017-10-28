@@ -1,6 +1,8 @@
-import numpy as np
+import numpy
 
-import chaospy as cp
+from .. import distributions, poly as polynomials
+from .first import E
+
 
 
 def Skew(poly, dist=None, **kws):
@@ -20,29 +22,29 @@ def Skew(poly, dist=None, **kws):
                 `skewness.shape==poly.shape`.
 
     Examples:
-        >>> x = cp.variable()
-        >>> Z = cp.Gamma()
-        >>> print(cp.Skew(Z))
+        >>> x = chaospy.variable()
+        >>> Z = chaospy.Gamma()
+        >>> print(chaospy.Skew(Z))
         2.0
     """
-    if isinstance(poly, cp.dist.Dist):
-        x = cp.poly.variable(len(poly))
+    if isinstance(poly, distributions.Dist):
+        x = polynomials.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = cp.poly.Poly(poly)
+        poly = polynomials.Poly(poly)
 
     if poly.dim < len(dist):
-        cp.poly.setdim(poly, len(dist))
+        polynomials.setdim(poly, len(dist))
 
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
 
-    m1 = cp.E(poly, dist)
-    m2 = cp.E(poly**2, dist)
-    m3 = cp.E(poly**3, dist)
+    m1 = E(poly, dist)
+    m2 = E(poly**2, dist)
+    m3 = E(poly**3, dist)
     out = (m3-3*m2*m1+2*m1**3)/(m2-m1**2)**1.5
 
-    out = np.reshape(out, shape)
+    out = numpy.reshape(out, shape)
     return out
 
 
@@ -66,19 +68,19 @@ def Kurt(poly, dist=None, fisher=True, **kws):
                 `skewness.shape==poly.shape`.
 
     Examples:
-        >>> x = cp.variable()
-        >>> Z = cp.Uniform()
-        >>> print(np.around(cp.Kurt(Z), 8))
+        >>> x = chaospy.variable()
+        >>> Z = chaospy.Uniform()
+        >>> print(numpy.around(chaospy.Kurt(Z), 8))
         -1.2
-        >>> Z = cp.Normal()
-        >>> print(np.around(cp.Kurt(x, Z), 8))
+        >>> Z = chaospy.Normal()
+        >>> print(numpy.around(chaospy.Kurt(x, Z), 8))
         0.0
     """
-    if isinstance(poly, cp.dist.Dist):
-        x = cp.poly.variable(len(poly))
+    if isinstance(poly, distributions.Dist):
+        x = polynomials.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = cp.poly.Poly(poly)
+        poly = polynomials.Poly(poly)
 
     if fisher:
         adjust = 3
@@ -86,15 +88,15 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         adjust = 0
 
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
 
-    m1 = cp.E(poly, dist)
-    m2 = cp.E(poly**2, dist)
-    m3 = cp.E(poly**3, dist)
-    m4 = cp.E(poly**4, dist)
+    m1 = E(poly, dist)
+    m2 = E(poly**2, dist)
+    m3 = E(poly**3, dist)
+    m4 = E(poly**4, dist)
 
     out = (m4-4*m3*m1 + 6*m2*m1**2 - 3*m1**4) /\
             (m2**2-2*m2*m1**2+m1**4) - adjust
 
-    out = np.reshape(out, shape)
+    out = numpy.reshape(out, shape)
     return out

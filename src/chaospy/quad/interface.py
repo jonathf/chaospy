@@ -3,8 +3,7 @@ import inspect
 import numpy as np
 from scipy.misc import comb
 
-import chaospy
-import chaospy.quad
+from . import collection, sparse_grid
 
 
 def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
@@ -41,7 +40,8 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
         else:
             order = tuple([2**o for o in order])
 
-    isdist = isinstance(domain, chaospy.dist.Dist)
+    from ..distributions.baseclass import Dist
+    isdist = isinstance(domain, Dist)
     if isdist:
         dim = len(domain)
     else:
@@ -49,9 +49,9 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
 
     rule = rule.lower()
     if len(rule) == 1:
-        rule = chaospy.quad.collection.QUAD_SHORT_NAMES[rule]
+        rule = collection.QUAD_SHORT_NAMES[rule]
 
-    quad_function = chaospy.quad.collection.get_function(
+    quad_function = collection.get_function(
         rule,
         domain,
         growth=growth,
@@ -61,8 +61,7 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
 
     if sparse:
         order = np.ones(len(domain), dtype=int)*order
-        abscissas, weights = chaospy.quad.sparse_grid(
-            quad_function, order, dim)
+        abscissas, weights = sparse_grid(quad_function, order, dim)
 
     else:
         abscissas, weights = quad_function(order)

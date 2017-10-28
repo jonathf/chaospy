@@ -5,15 +5,15 @@ To create a user-defined distribution use the distributions in
 this module as template.
 
 Documentation for each distribution is available in
-dist.collection.
+distribution.collection.
 """
 import numpy as np
 import scipy as sp
 from scipy import special
 
-from chaospy.dist.baseclass import Dist
+from .baseclass import Dist
+from . import joint
 
-import chaospy.dist
 
 
 class uniform(Dist):
@@ -488,7 +488,7 @@ class mvlognormal(Dist):
         loc, scale = np.asfarray(loc), np.asfarray(scale)
         assert len(loc)==len(scale)
 
-        dist = chaospy.dist.joint.Iid(normal(), len(loc))
+        dist = joint.Iid(normal(), len(loc))
         C = np.linalg.cholesky(scale)
         Ci = np.linalg.inv(C)
         Dist.__init__(self, dist=dist, loc=loc, C=C, Ci=Ci,
@@ -636,8 +636,8 @@ class mvstudentt(Dist):
 #
 #  Examples
 #  --------
-#  >>> cp.seed(1000)
-#  >>> f = cp.Dirichlet([1,2,3])
+#  >>> chaospy.seed(1000)
+#  >>> f = chaospy.Dirichlet([1,2,3])
 #  >>> q = [[.3,.3,.7,.7],[.3,.7,.3,.7]]
 #  >>> print(f.inv(q))
 #  [[ 0.06885008  0.06885008  0.21399691  0.21399691]

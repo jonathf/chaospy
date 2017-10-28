@@ -17,6 +17,8 @@ import numpy
 
 import chaospy.quad
 
+from .baseclass import Dist
+
 
 def pdf(dist, x, G, eps=1.e-7, verbose=False,
         retall=False):
@@ -455,7 +457,7 @@ def ttr(order, domain, **kws):
 def moment_generator(order, domain, accuracy=100, sparse=False, rule="C",
                      composite=1, part=None, trans=lambda x:x, **kws):
     """Moment generator."""
-    if isinstance(domain, chaospy.dist.Dist):
+    if isinstance(domain, Dist):
         dim = len(domain)
     else:
         dim = numpy.array(domain[0]).size
@@ -476,7 +478,7 @@ def moment_generator(order, domain, accuracy=100, sparse=False, rule="C",
             return numpy.sum(numpy.prod(values**keys, -1)*weights, 0)
     else:
 
-        isdist = isinstance(domain, chaospy.dist.Dist)
+        isdist = isinstance(domain, Dist)
         if isdist:
             lower, upper = domain.range()
         else:

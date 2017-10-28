@@ -1,10 +1,9 @@
-"""
-Miscellenious descriptive statistics.
-"""
+"""Miscellenious descriptive statistics."""
 import numpy as np
 from scipy.stats import spearmanr
 
-import chaospy as cp
+from .second2d import Corr
+from .. import distributions, poly as polynomials
 
 
 def Acf(poly, dist, N=None, **kws):
@@ -23,15 +22,15 @@ def Acf(poly, dist, N=None, **kws):
                 Note that by definition `Q[0]=1`.
 
     Examples:
-        >>> poly = cp.prange(10)[1:]
-        >>> Z = cp.Uniform()
-        >>> print(cp.Acf(poly, Z, 5))
+        >>> poly = chaospy.prange(10)[1:]
+        >>> Z = chaospy.Uniform()
+        >>> print(chaospy.Acf(poly, Z, 5))
         [ 1.          0.99148391  0.9721971   0.94571181  0.91265479]
     """
     if N is None:
         N = len(poly)/2 + 1
 
-    corr = cp.descriptives.Corr(poly, dist, **kws)
+    corr = Corr(poly, dist, **kws)
     out = np.empty(N)
 
     for n in range(N):
@@ -59,7 +58,7 @@ def Spearman(poly, dist, sample=10000, retall=False, **kws):
                 uncorrelated, has same dimension as rho.
     """
     samples = dist.sample(sample, **kws)
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
     Y = poly(*samples)
     if retall:
         return spearmanr(Y.T)
@@ -86,17 +85,17 @@ def Perc(poly, q, dist, sample=10000, **kws):
         (ndarray) : Percentiles of `poly` with `Q.shape=poly.shape+q.shape`.
 
     Examples:
-        >>> cp.seed(1000)
-        >>> x, y = cp.variable(2)
-        >>> poly = cp.Poly([x, x*y])
-        >>> Z = cp.J(cp.Uniform(3, 6), cp.Normal())
-        >>> print(cp.Perc(poly, [0, 50, 100], Z))
+        >>> chaospy.seed(1000)
+        >>> x, y = chaospy.variable(2)
+        >>> poly = chaospy.Poly([x, x*y])
+        >>> Z = chaospy.J(chaospy.Uniform(3, 6), chaospy.Normal())
+        >>> print(chaospy.Perc(poly, [0, 50, 100], Z))
         [[  3.         -45.        ]
          [  4.5080777   -0.05862173]
          [  6.          45.        ]]
     """
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
 
     q = np.array(q)/100.
     dim = len(dist)
@@ -148,17 +147,17 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
                 where `qoi_dists.shape==poly.shape`.
 
     Examples:
-        >>> cp.seed(1000)
-        >>> dist = cp.Normal(0, 1)
-        >>> x = cp.variable(1)
-        >>> poly = cp.Poly([x])
-        >>> qoi_dist = cp.QoI_Dist(poly, dist)
+        >>> chaospy.seed(1000)
+        >>> dist = chaospy.Normal(0, 1)
+        >>> x = chaospy.variable(1)
+        >>> poly = chaospy.Poly([x])
+        >>> qoi_dist = chaospy.QoI_Dist(poly, dist)
         >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
         >>> print(np.around(values, 8))
         [ 0.29143037  0.39931708  0.29536329]
     """
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
     dim = len(dist)
 
     #sample from the input dist
@@ -176,11 +175,11 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         up = dataset.max()
 
         #creates qoi_dist
-        qoi_dist = cp.dist.SampleDist(dataset, lo, up)
+        qoi_dist = distributions.SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
 
     #reshape the qoi_dists to match the shape of the input poly
-    qoi_dists = np.array(qoi_dists, cp.dist.Dist)
+    qoi_dists = np.array(qoi_dists, distributions.Dist)
     qoi_dists = qoi_dists.reshape(shape)
 
     if not shape:

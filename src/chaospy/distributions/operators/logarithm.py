@@ -3,7 +3,8 @@ Logarithm base e.
 """
 import numpy
 
-from chaospy.dist import Dist
+from ..baseclass import Dist
+
 
 class Log(Dist):
     """Logarithm base e."""
