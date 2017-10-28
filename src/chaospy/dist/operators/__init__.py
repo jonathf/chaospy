@@ -2,7 +2,6 @@
 Collection of mathematical operators.
 """
 from .addition import add
-from .division import div
 from .logarithm import log
 from .logarithm10 import log10
 from .logarithmn import logn

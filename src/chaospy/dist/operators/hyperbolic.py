@@ -1,7 +1,7 @@
 """
 Collection of hyerbolic operators
 """
-import numpy as np
+import numpy
 from chaospy.dist.baseclass import Dist
 
 class Sinh(Dist):
@@ -15,20 +15,20 @@ class Sinh(Dist):
 
     def _val(self, graph):
         if "dist" in graph.keys:
-            return np.sinh(graph.keys["dist"])
+            return numpy.sinh(graph.keys["dist"])
         return self
 
     def _pdf(self, x, graph):
-        return graph(np.arcsinh(x), graph.dists["dist"])/np.sqrt(1+x*x)
+        return graph(numpy.arcsinh(x), graph.dists["dist"])/numpy.sqrt(1+x*x)
 
     def _cdf(self, x, graph):
-        return graph(np.arcsinh(x), graph.dists["dist"])
+        return graph(numpy.arcsinh(x), graph.dists["dist"])
 
     def _ppf(self, q, graph):
-        return np.sinh(graph(q, graph.dists["dist"]))
+        return numpy.sinh(graph(q, graph.dists["dist"]))
 
     def _bnd(self, x, graph):
-        return np.sinh(graph(np.arcsinh(x), graph.dists["dist"]))
+        return numpy.sinh(graph(numpy.arcsinh(x), graph.dists["dist"]))
 
 
 class Arcsinh(Dist):
@@ -42,26 +42,26 @@ class Arcsinh(Dist):
 
     def _val(self, graph):
         if "dist" in graph.keys:
-            return np.arcsinh(graph.keys["dist"])
+            return numpy.arcsinh(graph.keys["dist"])
         return self
 
     def _pdf(self, x, graph):
-        return graph(np.sinh(x), graph.dists["dist"])*np.cosh(x)
+        return graph(numpy.sinh(x), graph.dists["dist"])*numpy.cosh(x)
 
     def _cdf(self, x, graph):
-        return graph(np.sinh(x), graph.dists["dist"])
+        return graph(numpy.sinh(x), graph.dists["dist"])
 
     def _ppf(self, q, graph):
-        return np.arcsinh(graph(q, graph.dists["dist"]))
+        return numpy.arcsinh(graph(q, graph.dists["dist"]))
 
     def _bnd(self, x, graph):
-        return np.arcsinh(graph(np.sinh(x), graph.dists["dist"]))
+        return numpy.arcsinh(graph(numpy.sinh(x), graph.dists["dist"]))
 
 
 class Cosh(Dist):
 
     def __init__(self, dist):
-        assert np.all(dist.range()>=0)
+        assert numpy.all(dist.range()>=0)
         Dist.__init__(self, dist=dist,
                 _length=len(dist), _advance=True)
 
@@ -70,26 +70,26 @@ class Cosh(Dist):
 
     def _val(self, graph):
         if "dist" in graph.keys:
-            return np.cosh(graph.keys["dist"])
+            return numpy.cosh(graph.keys["dist"])
         return self
 
     def _pdf(self, x, graph):
-        return graph(np.arccosh(x), graph.dists["dist"])/np.sqrt(x*x-1)
+        return graph(numpy.arccosh(x), graph.dists["dist"])/numpy.sqrt(x*x-1)
 
     def _cdf(self, x, graph):
-        return graph(np.arccosh(x), graph.dists["dist"])
+        return graph(numpy.arccosh(x), graph.dists["dist"])
 
     def _ppf(self, q, graph):
-        return np.cosh(graph(q, graph.dists["dist"]))
+        return numpy.cosh(graph(q, graph.dists["dist"]))
 
     def _bnd(self, x, graph):
-        return np.cosh(graph(np.arccosh(x), graph.dists["dist"]))
+        return numpy.cosh(graph(numpy.arccosh(x), graph.dists["dist"]))
 
 
 class Arccosh(Dist):
 
     def __init__(self, dist):
-        assert np.all(dist.range()>=1)
+        assert numpy.all(dist.range()>=1)
         Dist.__init__(self, dist=dist,
                 _length=len(dist), _advance=True)
 
@@ -98,27 +98,27 @@ class Arccosh(Dist):
 
     def _val(self, graph):
         if "dist" in graph.keys:
-            return np.arccosh(graph.keys["dist"])
+            return numpy.arccosh(graph.keys["dist"])
         return self
 
     def _pdf(self, x, graph):
-        return graph(np.cosh(x), graph.dists["dist"])*np.sinh(x)
+        return graph(numpy.cosh(x), graph.dists["dist"])*numpy.sinh(x)
 
     def _cdf(self, x, graph):
-        return graph(np.cosh(x), graph.dists["dist"])
+        return graph(numpy.cosh(x), graph.dists["dist"])
 
     def _ppf(self, q, graph):
-        return np.arccosh(graph(q, graph.dists["dist"]))
+        return numpy.arccosh(graph(q, graph.dists["dist"]))
 
     def _bnd(self, x, graph):
-        return np.arccosh(graph(np.cosh(x), graph.dists["dist"]))
+        return numpy.arccosh(graph(numpy.cosh(x), graph.dists["dist"]))
 
 
 class Tanh(Dist):
 
     def __init__(self, dist):
         lo,up = dist.range()
-        assert np.all(lo>=-1) and np.all(up<=1)
+        assert numpy.all(lo>=-1) and numpy.all(up<=1)
         Dist.__init__(self, dist=dist,
                 _length=len(dist), _advance=True)
 
@@ -127,20 +127,20 @@ class Tanh(Dist):
 
     def _val(self, graph):
         if "dist" in graph.keys:
-            return np.tanh(graph.keys["dist"])
+            return numpy.tanh(graph.keys["dist"])
         return self
 
     def _pdf(self, x, graph):
-        return graph(np.arctanh(x), graph.dists["dist"])/np.sqrt(1-x*x)
+        return graph(numpy.arctanh(x), graph.dists["dist"])/numpy.sqrt(1-x*x)
 
     def _cdf(self, x, graph):
-        return graph(np.arctanh(x), graph.dists["dist"])
+        return graph(numpy.arctanh(x), graph.dists["dist"])
 
     def _ppf(self, q, graph):
-        return np.tanh(graph(q, graph.dists["dist"]))
+        return numpy.tanh(graph(q, graph.dists["dist"]))
 
     def _bnd(self, x, graph):
-        return np.tanh(graph(np.arctanh(x), graph.dists["dist"]))
+        return numpy.tanh(graph(numpy.arctanh(x), graph.dists["dist"]))
 
 
 class Arctanh(Dist):
@@ -154,17 +154,17 @@ class Arctanh(Dist):
 
     def _val(self, graph):
         if "dist" in graph.keys:
-            return np.arctanh(graph.keys["dist"])
+            return numpy.arctanh(graph.keys["dist"])
         return self
 
     def _pdf(self, x, graph):
-        return graph(np.tanh(x), graph.dists["dist"])/np.sinh(x)**2
+        return graph(numpy.tanh(x), graph.dists["dist"])/numpy.sinh(x)**2
 
     def _cdf(self, x, graph):
-        return graph(np.tanh(x), graph.dists["dist"])
+        return graph(numpy.tanh(x), graph.dists["dist"])
 
     def _ppf(self, q, graph):
-        return np.arctanh(graph(q, graph.dists["dist"]))
+        return numpy.arctanh(graph(q, graph.dists["dist"]))
 
     def _bnd(self, x, graph):
-        return np.arctanh(graph(np.tanh(x), graph.dists["dist"]))
+        return numpy.arctanh(graph(numpy.tanh(x), graph.dists["dist"]))
