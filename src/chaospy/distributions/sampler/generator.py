@@ -48,8 +48,15 @@ Multivariate case::
      [ 0.36187707  0.0351059   0.85505825  0.65725351]]
 
 Antithetic variates::
+
     >>> print(generate_samples(order=8, rule="H", antithetic=True))
     [[ 0.75   0.25   0.125  0.875  0.625  0.375  0.375  0.625]]
+
+Multivariate antithetic variates::
+
+    >>> print(generate_samples(order=8, domain=2, rule="M", antithetic=True))
+    [[ 0.75   0.25   0.75   0.25   0.125  0.875  0.125  0.875]
+     [ 0.25   0.25   0.75   0.75   0.5    0.5    0.5    0.5  ]]
 """
 import logging
 import numpy
@@ -69,7 +76,7 @@ SAMPLERS = {
 }
 
 
-def generate_samples(order, domain=(0, 1), rule="R", antithetic=None):
+def generate_samples(order, domain=1, rule="R", antithetic=None):
     """
     Sample generator.
 
@@ -118,10 +125,14 @@ def generate_samples(order, domain=(0, 1), rule="R", antithetic=None):
             antithetic = numpy.repeat(antithetic, dim)
 
         size = numpy.sum(1*numpy.array(antithetic))
-        order_, order = order, int(order*2.**-size+1*(order % 2 != 0))
+        order_saved = order
+        order = int(numpy.log(order - dim))
+        order = order if order > 1 else 1
+        while order**dim < order_saved:
+            order += 1
         trans_ = trans
         trans = lambda x_data: trans_(
-            create_antithetic_variates(x_data, antithetic)[:, :order_])
+            create_antithetic_variates(x_data, antithetic)[:, :order_saved])
 
     assert rule in SAMPLERS, "rule not recognised"
     sampler = SAMPLERS[rule]
