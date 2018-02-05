@@ -90,16 +90,12 @@ def E_cond(poly, freeze, dist, **kws):
 
     kmax = numpy.max(poly.keys, 0) + 1
     keys = [range(k) for k in kmax]
-    keys = [k for k in product(*keys)]
-
-    vals = dist.mom(numpy.array(keys).T, **kws).T
-    mom = dict(zip(keys, vals))
 
     A = poly.A.copy()
     keys = poly.keys
-
     out = {}
     zeros = [0]*poly.dim
+
     for i in range(len(keys)):
 
         key = list(keys[i])
@@ -111,7 +107,7 @@ def E_cond(poly, freeze, dist, **kws):
                     key[d], zeros[d] = zeros[d], key[d]
                     break
 
-        tmp = a*mom[tuple(key)]
+        tmp = a*dist.mom(tuple(key))
         if tuple(zeros) in out:
             out[tuple(zeros)] = out[tuple(zeros)] + tmp
         else:

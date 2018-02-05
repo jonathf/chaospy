@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='chaospy',
-    version="2.3.0",
+    version="2.3.1",
     url='https://github.com/jonathf/chaospy',
     author="Jonathan Feinberg",
     author_email="jonathf@gmail.com",
