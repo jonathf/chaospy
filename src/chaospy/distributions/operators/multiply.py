@@ -189,6 +189,7 @@ class Mvmul(Dist):
             dist (Dist, array_like) : Probability.
             C (numpy.ndarray) : matrix to multiply with.
         """
+        C = C*numpy.eye(len(dist))
         Dist.__init__(self, dist=dist, C=C,
                 Ci=numpy.linalg.inv(C),
                 _length=len(dist), _advance=True)
