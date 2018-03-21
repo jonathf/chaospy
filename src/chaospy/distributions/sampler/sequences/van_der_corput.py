@@ -24,6 +24,7 @@ Using base 2::
 
 .. Van Der Corput: https://en.wikipedia.org/wiki/Van_der_Corput_sequence
 """
+from __future__ import division
 import numpy
 
 
@@ -50,7 +51,7 @@ def create_van_der_corput_samples(idx, number_base=2):
     active = numpy.ones(len(idx), dtype=bool)
     while numpy.any(active):
         out[active] += (idx[active] % number_base)/base
-        idx /= number_base
+        idx //= number_base
         base *= number_base
         active = idx > 0
     return out
