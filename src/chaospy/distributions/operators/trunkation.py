@@ -36,12 +36,27 @@ class Trunk(Dist):
         return "(%s<%s)" % (left, right)
 
     def _pdf(self, xloc, graph):
-        """Probability density function."""
+        """
+        Probability density function.
+
+        Example:
+            >>> dist = chaospy.trunk(chaospy.Uniform(), 0.6)
+            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
+            [0.         1.66666667 1.66666667 0.         0.        ]
+            >>> dist = chaospy.trunk(chaospy.Uniform(), 0.4)
+            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
+            [0.  2.5 0.  0.  0. ]
+            >>> dist = chaospy.trunk(0.4, chaospy.Uniform())
+            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
+            [0.         0.         1.66666667 1.66666667 0.        ]
+            >>> dist = chaospy.trunk(0.6, chaospy.Uniform())
+            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
+            [0.  0.  0.  2.5 0. ]
+        """
         if "left" in graph.keys and "right" in graph.dists:
             num, dist = graph.keys["left"], graph.dists["right"]
             num = (num.T*numpy.ones(xloc.shape[::-1])).T
-            norm = dist.fwd(num)
-            out = (graph(xloc, dist)-norm)/(1-norm)
+            out = graph(xloc, dist)/(1-dist.fwd(num))
         else:
             num, dist = graph.keys["right"], graph.dists["left"]
             num = (num.T*numpy.ones(xloc.shape[::-1])).T
