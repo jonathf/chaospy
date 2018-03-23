@@ -15,14 +15,14 @@ For example, to access all parameters that are also distributions, the property
 These objects can be used to identify how many distributions are present::
 
     >>> print(len(dists0), len(dists1), len(dists2))
-    (0, 1, 2)
+    0 1 2
 
 To identify specific parameters that are distributions::
 
     >>> print("a" in dists0, "a" in dists1, "a" in dists2)
-    (False, True, True)
+    False True True
     >>> print("b" in dists0, "b" in dists1, "b" in dists2)
-    (False, False, True)
+    False False True
 
 An lastly to extract said parameters::
 

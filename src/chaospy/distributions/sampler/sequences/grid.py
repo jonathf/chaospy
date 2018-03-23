@@ -6,34 +6,30 @@ Example usage
 
 Basic usage::
 
-    >>> print(create_grid_samples(order=1))
-    [[ 0.5]]
-    >>> print(create_grid_samples(order=2))
-    [[ 0.33333333  0.66666667]]
-    >>> print(create_grid_samples(order=5))
-    [[ 0.16666667  0.33333333  0.5         0.66666667  0.83333333]]
+    >>> print(numpy.around(create_grid_samples(order=2), 4))
+    [[0.3333 0.6667]]
+    >>> print(numpy.around(create_grid_samples(order=5), 4))
+    [[0.1667 0.3333 0.5    0.6667 0.8333]]
 
 Certain orders are nested::
 
-    >>> print(create_grid_samples(order=3))
-    [[ 0.25  0.5   0.75]]
-    >>> print(create_grid_samples(order=7))
-    [[ 0.125  0.25   0.375  0.5    0.625  0.75   0.875]]
+    >>> print(numpy.around(create_grid_samples(order=3), 4))
+    [[0.25 0.5  0.75]]
+    >>> print(numpy.around(create_grid_samples(order=7), 4))
+    [[0.125 0.25  0.375 0.5   0.625 0.75  0.875]]
 
 Create nested samples directly with the dedicated function::
 
-    >>> print(create_nested_grid_samples(order=1))
-    [[ 0.5]]
-    >>> print(create_nested_grid_samples(order=2))
-    [[ 0.25  0.5   0.75]]
-    >>> print(create_nested_grid_samples(order=3))
-    [[ 0.125  0.25   0.375  0.5    0.625  0.75   0.875]]
+    >>> print(numpy.around(create_nested_grid_samples(order=2), 4))
+    [[0.25 0.5  0.75]]
+    >>> print(numpy.around(create_nested_grid_samples(order=3), 4))
+    [[0.125 0.25  0.375 0.5   0.625 0.75  0.875]]
 
 Multivariate usage::
 
-    >>> print(create_grid_samples(order=2, dim=2))
-    [[ 0.33333333  0.33333333  0.66666667  0.66666667]
-     [ 0.33333333  0.66666667  0.33333333  0.66666667]]
+    >>> print(numpy.around(create_grid_samples(order=2, dim=2), 4))
+    [[0.3333 0.3333 0.6667 0.6667]
+     [0.3333 0.6667 0.3333 0.6667]]
 """
 import numpy
 

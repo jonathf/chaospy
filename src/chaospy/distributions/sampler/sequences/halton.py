@@ -13,35 +13,35 @@ Example usage
 
 Standard usage::
 
-    >>> print(create_halton_samples(order=3, dim=2))
-    [[ 0.125       0.625       0.375     ]
-     [ 0.44444444  0.77777778  0.22222222]]
-    >>> print(create_halton_samples(order=3, dim=3))
-    [[ 0.375       0.875       0.0625    ]
-     [ 0.22222222  0.55555556  0.88888889]
-     [ 0.24        0.44        0.64      ]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=2), 4))
+    [[0.125  0.625  0.375 ]
+     [0.4444 0.7778 0.2222]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=3), 4))
+    [[0.375  0.875  0.0625]
+     [0.2222 0.5556 0.8889]
+     [0.24   0.44   0.64  ]]
 
 Custom burn-ins::
 
-    >>> print(create_halton_samples(order=3, dim=2, burnin=0))
-    [[ 0.5         0.25        0.75      ]
-     [ 0.33333333  0.66666667  0.11111111]]
-    >>> print(create_halton_samples(order=3, dim=2, burnin=1))
-    [[ 0.25        0.75        0.125     ]
-     [ 0.66666667  0.11111111  0.44444444]]
-    >>> print(create_halton_samples(order=3, dim=2, burnin=2))
-    [[ 0.75        0.125       0.625     ]
-     [ 0.11111111  0.44444444  0.77777778]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=2, burnin=0), 4))
+    [[0.5    0.25   0.75  ]
+     [0.3333 0.6667 0.1111]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=2, burnin=1), 4))
+    [[0.25   0.75   0.125 ]
+     [0.6667 0.1111 0.4444]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=2, burnin=2), 4))
+    [[0.75   0.125  0.625 ]
+     [0.1111 0.4444 0.7778]]
 
 Using custom prime bases::
 
-    >>> print(create_halton_samples(order=3, dim=2, primes=[7, 5]))
-    [[ 0.16326531  0.30612245  0.44897959]
-     [ 0.64        0.84        0.08      ]]
-    >>> print(create_halton_samples(order=3, dim=3, primes=[5, 3, 7]))
-    [[ 0.64        0.84        0.08      ]
-     [ 0.88888889  0.03703704  0.37037037]
-     [ 0.16326531  0.30612245  0.44897959]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=2, primes=[7, 5]), 4))
+    [[0.1633 0.3061 0.449 ]
+     [0.64   0.84   0.08  ]]
+    >>> print(numpy.around(create_halton_samples(order=3, dim=3, primes=[5, 3, 7]), 4))
+    [[0.64   0.84   0.08  ]
+     [0.8889 0.037  0.3704]
+     [0.1633 0.3061 0.449 ]]
 
 .. Halton sequence: https://en.wikipedia.org/wiki/Halton_sequence
 """

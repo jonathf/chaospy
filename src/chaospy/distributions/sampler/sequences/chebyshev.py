@@ -6,36 +6,30 @@ Example usage
 
 Basic usage::
 
-    >>> print(create_chebyshev_samples(order=1))
-    [[ 0.5]]
     >>> print(create_chebyshev_samples(order=2))
-    [[ 0.25  0.75]]
-    >>> print(create_chebyshev_samples(order=5))
-    [[ 0.0669873  0.25       0.5        0.75       0.9330127]]
+    [[0.25 0.75]]
+    >>> print(numpy.around(create_chebyshev_samples(order=5), 4))
+    [[0.067 0.25  0.5   0.75  0.933]]
 
 Certain orders are nested::
 
-    >>> print(create_chebyshev_samples(order=3))
-    [[ 0.14644661  0.5         0.85355339]]
-    >>> print(create_chebyshev_samples(order=7))
-    [[ 0.03806023  0.14644661  0.30865828  0.5         0.69134172  0.85355339
-       0.96193977]]
+    >>> print(numpy.around(create_chebyshev_samples(order=3), 4))
+    [[0.1464 0.5    0.8536]]
+    >>> print(numpy.around(create_chebyshev_samples(order=7), 4))
+    [[0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]]
 
 Create nested samples directly with the dedicated function::
 
-    >>> print(create_nested_chebyshev_samples(order=1))
-    [[ 0.5]]
-    >>> print(create_nested_chebyshev_samples(order=2))
-    [[ 0.14644661  0.5         0.85355339]]
-    >>> print(create_nested_chebyshev_samples(order=3))
-    [[ 0.03806023  0.14644661  0.30865828  0.5         0.69134172  0.85355339
-       0.96193977]]
+    >>> print(numpy.around(create_nested_chebyshev_samples(order=2), 4))
+    [[0.1464 0.5    0.8536]]
+    >>> print(numpy.around(create_nested_chebyshev_samples(order=3), 4))
+    [[0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]]
 
 Multivariate usage::
 
-    >>> print(create_chebyshev_samples(order=2, dim=2))
-    [[ 0.25  0.25  0.75  0.75]
-     [ 0.25  0.75  0.25  0.75]]
+    >>> print(numpy.around(create_chebyshev_samples(order=2, dim=2), 4))
+    [[0.25 0.25 0.75 0.75]
+     [0.25 0.75 0.25 0.75]]
 """
 import numpy
 

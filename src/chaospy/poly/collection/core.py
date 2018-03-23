@@ -131,11 +131,11 @@ def cutoff(poly, *args):
     Examples:
         >>> poly = cp.prange(4, 1) + cp.prange(4, 2)[::-1]
         >>> print(poly)
-        [q1^3+1, q1^2+q0, q0^2+q1, q0^3+1]
+        [q1^3+1, q0+q1^2, q0^2+q1, q0^3+1]
         >>> print(cp.cutoff(poly, 3))
-        [1, q1^2+q0, q0^2+q1, 1]
+        [1, q0+q1^2, q0^2+q1, 1]
         >>> print(cp.cutoff(poly, 1, 3))
-        [0, q1^2+q0, q0^2+q1, 0]
+        [0, q0+q1^2, q0^2+q1, 0]
     """
     if len(args) == 1:
         low, high = 0, args[0]

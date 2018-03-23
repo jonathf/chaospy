@@ -12,11 +12,11 @@ Generating random samples can be done from the distribution instance
 method ``sample`` as discussed in the :ref:`tutorial`.
 For example, to generate nodes from the Korobov lattice::
 
-   >>> distribution = chaospy.Iid(chaospy.Beta(2, 2), 2)
-   >>> samples = distribution.sample(4, rule="K")
-   >>> print(samples)
-   [[ 0.28714073  0.43293108  0.56706892  0.71285927]
-    [ 0.43293108  0.71285927  0.28714073  0.56706892]]
+    >>> distribution = chaospy.Iid(chaospy.Beta(2, 2), 2)
+    >>> samples = distribution.sample(4, rule="K")
+    >>> print(numpy.around(samples, 4))
+    [[0.2871 0.4329 0.5671 0.7129]
+     [0.4329 0.7129 0.2871 0.5671]]
 
 At the core of `chaospy`, all samples are generated to the unit hyper-cube
 through the function :func:`~chaospy.distributions.samplers.generator.generate_samples`.
@@ -32,11 +32,11 @@ In the case of the Krobov lattice::
 
     >>> from chaospy.distributions.sampler import create_korobov_samples
     >>> print(create_korobov_samples(order=4, dim=2))
-    [[ 0.2  0.4  0.6  0.8]
-     [ 0.4  0.8  0.2  0.6]]
+    [[0.2 0.4 0.6 0.8]
+     [0.4 0.8 0.2 0.6]]
     >>> print(create_korobov_samples(order=4, dim=2, base=1234))
-    [[ 0.2  0.4  0.6  0.8]
-     [ 0.8  0.6  0.4  0.2]]
+    [[0.2 0.4 0.6 0.8]
+     [0.8 0.6 0.4 0.2]]
 """
 from .generator import generate_samples
 

@@ -15,10 +15,10 @@ def quad_leja(order, dist):
 
     Example:
         >>> abscisas, weights = quad_leja(3, chaospy.Normal(0, 1))
-        >>> print(abscisas)
-        [[-2.71725575 -1.41421279  0.          1.76349491]]
-        >>> print(weights)
-        [ 0.02201589  0.16287411  0.65057226  0.16453774]
+        >>> print(numpy.around(abscisas, 4))
+        [[-2.7173 -1.4142  0.      1.7635]]
+        >>> print(numpy.around(weights, 4))
+        [0.022  0.1629 0.6506 0.1645]
     """
     assert not dist.dependent()
 

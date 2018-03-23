@@ -31,14 +31,14 @@ def gill_murray_wright(mat, eps=1e-16):
         [[0 1 0]
          [1 0 0]
          [0 0 1]]
-        >>> print(lowtri)
-        [[  2.44948974e+00   0.00000000e+00   0.00000000e+00]
-         [  8.16496581e-01   1.82574186e+00   0.00000000e+00]
-         [  1.22474487e+00  -1.21618839e-16   1.22637678e+00]]
-        >>> print(perm*lowtri*lowtri.T*perm.T)
-        [[ 4.     2.     1.   ]
-         [ 2.     6.     3.   ]
-         [ 1.     3.     3.004]]
+        >>> print(numpy.around(lowtri, 4))
+        [[ 2.4495  0.      0.    ]
+         [ 0.8165  1.8257  0.    ]
+         [ 1.2247 -0.      1.2264]]
+        >>> print(numpy.around(perm*lowtri*lowtri.T*perm.T, 4))
+        [[4.    2.    1.   ]
+         [2.    6.    3.   ]
+         [1.    3.    3.004]]
     """
     mat = numpy.asfarray(mat)
     size = mat.shape[0]

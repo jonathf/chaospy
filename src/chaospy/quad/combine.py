@@ -22,10 +22,10 @@ def combine(args, part=None):
     Examples:
         >>> A, B = [1,2], [[4,4],[5,6]]
         >>> print(chaospy.quad.combine([A, B]))
-        [[ 1.  4.  4.]
-         [ 1.  5.  6.]
-         [ 2.  4.  4.]
-         [ 2.  5.  6.]]
+        [[1. 4. 4.]
+         [1. 5. 6.]
+         [2. 4. 4.]
+         [2. 5. 6.]]
     """
     args = [cleanup(arg) for arg in args]
 

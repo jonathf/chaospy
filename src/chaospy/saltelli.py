@@ -17,18 +17,18 @@ class Saltelli(object):
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
         >>> generator = Saltelli(dist, 3, rule="H")
 
-        >>> print(generator[(False, False)])
-        [[ 0.875       0.0625      0.5625    ]
-         [ 0.55555556  0.88888889  0.03703704]]
-        >>> print(generator[(False, True)])
-        [[ 0.875       0.0625      0.5625    ]
-         [ 0.44444444  0.77777778  0.22222222]]
-        >>> print(generator[(True, False)])
-        [[ 0.125       0.625       0.375     ]
-         [ 0.55555556  0.88888889  0.03703704]]
-        >>> print(generator[(True, True)])
-        [[ 0.125       0.625       0.375     ]
-         [ 0.44444444  0.77777778  0.22222222]]
+        >>> print(numpy.around(generator[(False, False)], 4))
+        [[0.875  0.0625 0.5625]
+         [0.5556 0.8889 0.037 ]]
+        >>> print(numpy.around(generator[(False, True)], 4))
+        [[0.875  0.0625 0.5625]
+         [0.4444 0.7778 0.2222]]
+        >>> print(numpy.around(generator[(True, False)], 4))
+        [[0.125  0.625  0.375 ]
+         [0.5556 0.8889 0.037 ]]
+        >>> print(numpy.around(generator[(True, True)], 4))
+        [[0.125  0.625  0.375 ]
+         [0.4444 0.7778 0.2222]]
     """
 
     def __init__(self, dist, samples, poly=None, rule="R"):
@@ -105,9 +105,9 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
         >>> poly = chaospy.basis(2, 2, dim=2)
         >>> print(poly)
         [q0^2, q0q1, q1^2]
-        >>> print(Sens_m_sample(poly, dist, 10000, rule="M"))
-        [[ 0.00801288  0.00258743  0.        ]
-         [ 0.          0.64644081  2.13210677]]
+        >>> print(numpy.around(Sens_m_sample(poly, dist, 10000, rule="M"), 4))
+        [[0.008  0.0026 0.    ]
+         [0.     0.6464 2.1321]]
     """
     dim = len(dist)
 
@@ -159,12 +159,12 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
         >>> poly = chaospy.basis(2, 2, dim=2)
         >>> print(poly)
         [q0^2, q0q1, q1^2]
-        >>> print(Sens_m2_sample(poly, dist, 10000, rule="H"))
-        [[[ 0.00803777  0.00259428  0.        ]
-          [-0.08712193  1.15163836  1.2851208 ]]
+        >>> print(numpy.around(Sens_m2_sample(poly, dist, 10000, rule="H"), 4))
+        [[[ 0.008   0.0026  0.    ]
+          [-0.0871  1.1516  1.2851]]
         <BLANKLINE>
-         [[-0.08712193  1.15163836  1.2851208 ]
-          [ 0.          0.79810248  1.3800072 ]]]
+         [[-0.0871  1.1516  1.2851]
+          [ 0.      0.7981  1.38  ]]]
     """
     dim = len(dist)
 
@@ -236,9 +236,9 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
         >>> poly = chaospy.basis(2, 2, dim=2)
         >>> print(poly)
         [q0^2, q0q1, q1^2]
-        >>> print(Sens_t_sample(poly, dist, 10000, rule="H"))
-        [[ 1.          0.19999651 -0.38074974]
-         [ 0.99161213  0.99616215  1.        ]]
+        >>> print(numpy.around(Sens_t_sample(poly, dist, 10000, rule="H"), 4))
+        [[ 1.      0.2    -0.3807]
+         [ 0.9916  0.9962  1.    ]]
     """
     generator = Saltelli(dist, samples, poly, rule=rule)
 

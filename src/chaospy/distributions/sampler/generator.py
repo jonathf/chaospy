@@ -22,41 +22,41 @@ Example usage
 
 Generating simple samples::
 
-    >>> print(generate_samples(order=4))
-    [[ 0.65358959  0.11500694  0.95028286  0.4821914 ]]
+    >>> print(numpy.around(generate_samples(order=4), 4))
+    [[0.6536 0.115  0.9503 0.4822]]
 
 Custom domain::
 
-    >>> print(generate_samples(order=4, domain=[-1, 1]))
-    [[ 0.74494907 -0.57533464 -0.91858075 -0.20561108]]
-    >>> print(generate_samples(order=4, domain=chaospy.Normal(0, 1)))
-    [[-0.72857056  1.00163781 -0.81658665  0.65097762]]
+    >>> print(numpy.around(generate_samples(order=4, domain=[-1, 1]), 4))
+    [[ 0.7449 -0.5753 -0.9186 -0.2056]]
+    >>> print(numpy.around(generate_samples(order=4, domain=chaospy.Normal(0, 1)), 4))
+    [[-0.7286  1.0016 -0.8166  0.651 ]]
 
 Use a custom sampling scheme::
 
-    >>> print(generate_samples(order=4, rule="H"))
-    [[ 0.75   0.125  0.625  0.375]]
+    >>> print(numpy.around(generate_samples(order=4, rule="H"), 4))
+    [[0.75  0.125 0.625 0.375]]
 
 Multivariate case::
 
-    >>> print(generate_samples(order=4, domain=[[-1, 0], [0, 1]]))
-    [[-0.60784587 -0.81774348 -0.25646059 -0.93041792]
-     [ 0.8853372   0.9526444   0.93114343  0.41543095]]
-    >>> print(generate_samples(
-    ...     order=4, domain=chaospy.J(chaospy.Normal(), chaospy.Uniform())))
-    [[-1.89597524  2.0975487  -0.41345216  0.54373243]
-     [ 0.36187707  0.0351059   0.85505825  0.65725351]]
+    >>> print(numpy.around(generate_samples(order=4, domain=[[-1, 0], [0, 1]]), 4))
+    [[-0.6078 -0.8177 -0.2565 -0.9304]
+     [ 0.8853  0.9526  0.9311  0.4154]]
+    >>> print(numpy.around(generate_samples(
+    ...     order=4, domain=chaospy.J(chaospy.Normal(), chaospy.Uniform())), 4))
+    [[-1.896   2.0975 -0.4135  0.5437]
+     [ 0.3619  0.0351  0.8551  0.6573]]
 
 Antithetic variates::
 
-    >>> print(generate_samples(order=8, rule="H", antithetic=True))
-    [[ 0.75   0.25   0.125  0.875  0.625  0.375  0.375  0.625]]
+    >>> print(numpy.around(generate_samples(order=8, rule="H", antithetic=True), 4))
+    [[0.75  0.25  0.125 0.875 0.625 0.375 0.375 0.625]]
 
 Multivariate antithetic variates::
 
-    >>> print(generate_samples(order=8, domain=2, rule="M", antithetic=True))
-    [[ 0.75   0.25   0.75   0.25   0.125  0.875  0.125  0.875]
-     [ 0.25   0.25   0.75   0.75   0.5    0.5    0.5    0.5  ]]
+    >>> print(numpy.around(generate_samples(order=8, domain=2, rule="M", antithetic=True), 4))
+    [[0.75  0.25  0.75  0.25  0.125 0.875 0.125 0.875]
+     [0.25  0.25  0.75  0.75  0.5   0.5   0.5   0.5  ]]
 """
 import logging
 import numpy

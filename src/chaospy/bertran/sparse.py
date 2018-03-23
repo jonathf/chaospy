@@ -31,15 +31,15 @@ def sparse_segment(cords):
 
     Examples
     --------
-    >>> cp.bertran.sparse_segment([0, 2])
-    array([[ 0.5  ,  0.125],
-           [ 0.5  ,  0.375],
-           [ 0.5  ,  0.625],
-           [ 0.5  ,  0.875]])
+    >>> print(cp.bertran.sparse_segment([0, 2]))
+    [[0.5   0.125]
+     [0.5   0.375]
+     [0.5   0.625]
+     [0.5   0.875]]
 
-    >>> cp.bertran.sparse_segment([0, 1, 0, 0])
-    array([[ 0.5 ,  0.25,  0.5 ,  0.5 ],
-           [ 0.5 ,  0.75,  0.5 ,  0.5 ]])
+    >>> print(cp.bertran.sparse_segment([0, 1, 0, 0]))
+    [[0.5  0.25 0.5  0.5 ]
+     [0.5  0.75 0.5  0.5 ]]
     """
     cords = np.array(cords)+1
     slices = []

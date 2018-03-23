@@ -10,9 +10,9 @@ Copula wrapper::
 
 The resulting copula is then ready for use::
 
-    >>> print(copula.sample(5))
-    [[ 0.65358959  0.11500694  0.95028286  0.4821914   0.87247454]
-     [ 0.24832558  0.33253071  0.1725121   0.32059106  0.27318735]]
+    >>> print(numpy.around(copula.sample(5), 4))
+    [[0.6536 0.115  0.9503 0.4822 0.8725]
+     [0.2483 0.3325 0.1725 0.3206 0.2732]]
 """
 from . import baseclass, collection
 

@@ -29,11 +29,11 @@ def rule_generator(*funcs):
         ...         order, lower=0, upper=1)
         >>> quad_func = chaospy.rule_generator(clenshaw_curtis, gauss_legendre)
         >>> abscissas, weights = quad_func(1)
-        >>> print(abscissas)
-        [[-1.         -1.          0.          0.          1.          1.        ]
-         [ 0.21132487  0.78867513  0.21132487  0.78867513  0.21132487  0.78867513]]
-        >>> print(weights)
-        [ 0.16666667  0.16666667  0.66666667  0.66666667  0.16666667  0.16666667]
+        >>> print(numpy.around(abscissas, 4))
+        [[-1.     -1.      0.      0.      1.      1.    ]
+         [ 0.2113  0.7887  0.2113  0.7887  0.2113  0.7887]]
+        >>> print(numpy.around(weights, 4))
+        [0.1667 0.1667 0.6667 0.6667 0.1667 0.1667]
     """
     dim = len(funcs)
     tensprod_rule = create_tensorprod_function(funcs)
