@@ -3,6 +3,7 @@ Implementation of Stieltjes' method.
 """
 import numpy
 
+import chaospy.poly.base
 import chaospy.poly.collection
 import chaospy.quad
 
@@ -31,15 +32,51 @@ def generate_stieltjes(
             `shape=(dim,order+1)`.
 
     Examples:
+        >>> dist = chaospy.J(chaospy.Normal(), chaospy.Weibull())
+        >>> orth, norms, coeffs1, coeffs2 = chaospy.generate_stieltjes(
+        ...     dist, 2, retall=True)
+        >>> print(chaospy.around(orth[2], 5))
+        [q0^2-1.0, q1^2-4.0q1+2.0]
+        >>> print(numpy.around(norms, 5))
+        [[1. 1. 2.]
+         [1. 1. 4.]]
+        >>> print(numpy.around(coeffs1, 5))
+        [[0. 0. 0.]
+         [1. 3. 5.]]
+        >>> print(numpy.around(coeffs2, 5))
+        [[1. 1. 2.]
+         [1. 1. 4.]]
+
         >>> dist = chaospy.Uniform()
         >>> orth, norms, coeffs1, coeffs2 = chaospy.generate_stieltjes(
         ...     dist, 2, retall=True)
         >>> print(chaospy.around(orth[2], 8))
         q0^2-q0+0.16666667
-        >>> print(norms)
-        [[ 1.          0.08333333  0.00555556]]
+        >>> print(numpy.around(norms, 4))
+        [[1.     0.0833 0.0056]]
     """
     assert not dist.dependent()
+
+    if len(dist) > 1:
+
+        # one for each dimension:
+        orth, norms, coeff1, coeff2 = zip(*[generate_stieltjes(
+            _, order, accuracy, normed, retall=True, **kws) for _ in dist])
+
+        # ensure each polynomial has its own dimension:
+        orth = [[chaospy.setdim(_, len(orth)) for _ in poly] for poly in orth]
+        orth = [[chaospy.rolldim(_, idx) for _ in poly] for idx, poly in enumerate(orth)]
+        orth = [chaospy.poly.base.Poly(_) for _ in zip(*orth)]
+
+        if not retall:
+            return orth
+
+        # stack results:
+        norms = numpy.vstack(norms)
+        coeff1 = numpy.vstack(coeff1)
+        coeff2 = numpy.vstack(coeff2)
+
+        return orth, norms, coeff1, coeff2
 
     try:
         orth, norms, coeff1, coeff2 = _stieltjes_analytical(
@@ -122,6 +159,8 @@ def _stieltjes_approx(dist, order, accuracy, normed, **kws):
         if normed:
             orth[-1] = orth[-1]/numpy.sqrt(norms[-1])
 
+    coeff1.append(inner/norms[-1])
+    coeff2.append(norms[-1]/norms[-2])
     coeff1 = numpy.transpose(coeff1)
     coeff2 = numpy.transpose(coeff2)
     norms = numpy.array(norms[1:]).T

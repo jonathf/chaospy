@@ -1,6 +1,7 @@
 import numpy as np
 
-import chaospy as cp
+from .. import distributions, poly as polynomials
+
 
 def Var(poly, dist=None, **kws):
     """
@@ -17,25 +18,25 @@ def Var(poly, dist=None, **kws):
                 `variation.shape==poly.shape`.
 
     Examples:
-        >>> x = cp.variable()
-        >>> Z = cp.Uniform()
-        >>> print(np.around(cp.Var(Z), 8))
+        >>> x = chaospy.variable()
+        >>> Z = chaospy.Uniform()
+        >>> print(np.around(chaospy.Var(Z), 8))
         0.08333333
-        >>> print(np.around(cp.Var(x**3, Z), 8))
+        >>> print(np.around(chaospy.Var(x**3, Z), 8))
         0.08035714
     """
-    if isinstance(poly, cp.dist.Dist):
-        x = cp.poly.variable(len(poly))
+    if isinstance(poly, distributions.Dist):
+        x = polynomials.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = cp.poly.Poly(poly)
+        poly = polynomials.Poly(poly)
 
     dim = len(dist)
     if poly.dim<dim:
-        cp.poly.setdim(poly, dim)
+        polynomials.setdim(poly, dim)
 
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
 
     keys = poly.keys
     N = len(keys)
@@ -82,26 +83,25 @@ def Std(poly, dist=None, **kws):
                 `variation.shape==poly.shape`.
 
     Examples:
-        >>> x = cp.variable()
-        >>> Z = cp.Uniform()
-        >>> print(np.around(cp.Var(Z), 8))
+        >>> x = chaospy.variable()
+        >>> Z = chaospy.Uniform()
+        >>> print(np.around(chaospy.Var(Z), 8))
         0.08333333
-        >>> print(np.around(cp.Var(x**3, Z), 8))
+        >>> print(np.around(chaospy.Var(x**3, Z), 8))
         0.08035714
     """
-
-    if isinstance(poly, cp.dist.Dist):
-        x = cp.poly.variable(len(poly))
+    if isinstance(poly, distributions.Dist):
+        x = polynomials.variable(len(poly))
         poly, dist = x, poly
     else:
-        poly = cp.poly.Poly(poly)
+        poly = polynomials.Poly(poly)
 
     dim = len(dist)
-    if poly.dim<dim:
-        cp.poly.setdim(poly, dim)
+    if poly.dim < dim:
+        polynomials.setdim(poly, dim)
 
     shape = poly.shape
-    poly = cp.poly.flatten(poly)
+    poly = polynomials.flatten(poly)
 
     keys = poly.keys
     N = len(keys)

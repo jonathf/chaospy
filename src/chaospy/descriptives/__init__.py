@@ -19,7 +19,7 @@ For multivariate distributions::
     ... )
     >>> expected = cp.E(distribution)
     >>> print(expected)
-    [ 0.5  0. ]
+    [0.5 0. ]
 
 
 For simple polynomials, distribution goes as the second argument. In other

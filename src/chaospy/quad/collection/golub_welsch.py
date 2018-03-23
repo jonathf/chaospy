@@ -25,19 +25,19 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
     Examples:
         >>> Z = chaospy.Normal()
         >>> x, w = chaospy.quad_golub_welsch(3, Z)
-        >>> print(x)
-        [[-2.33441422 -0.74196378  0.74196378  2.33441422]]
-        >>> print(w)
-        [ 0.04587585  0.45412415  0.45412415  0.04587585]
+        >>> print(numpy.around(x, 4))
+        [[-2.3344 -0.742   0.742   2.3344]]
+        >>> print(numpy.around(w, 4))
+        [0.0459 0.4541 0.4541 0.0459]
 
         Multivariate
         >>> Z = chaospy.J(chaospy.Uniform(), chaospy.Uniform())
         >>> x, w = chaospy.quad_golub_welsch(1, Z)
-        >>> print(x)
-        [[ 0.21132487  0.21132487  0.78867513  0.78867513]
-         [ 0.21132487  0.78867513  0.21132487  0.78867513]]
-        >>> print(w)
-        [ 0.25  0.25  0.25  0.25]
+        >>> print(numpy.around(x, 4))
+        [[0.2113 0.2113 0.7887 0.7887]
+         [0.2113 0.7887 0.2113 0.7887]]
+        >>> print(numpy.around(w, 4))
+        [0.25 0.25 0.25 0.25]
     """
     order = numpy.array(order)*numpy.ones(len(dist), dtype=int)+1
     _, _, coeff1, coeff2 = chaospy.quad.generate_stieltjes(

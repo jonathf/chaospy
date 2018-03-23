@@ -5,40 +5,40 @@ samples and evaluations. The experiement can be done as follows:
 
 - Select a :ref:`distributions`::
 
-      >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
+    >>> distribution = cp.Iid(cp.Normal(0, 1), 2)
 
 - Generate :ref:`orthogonality`::
 
-      >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
-      >>> print(orthogonal_expansion)
-      [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> orthogonal_expansion = cp.orth_ttr(2, distribution)
+    >>> print(orthogonal_expansion)
+    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
 
 - Generate samples using :ref:`montecarlo` (or alternative absissas from
   :ref:`quadrature`)::
 
-      >>> samples = distribution.sample(
-      ...     2*len(orthogonal_expansion), rule="M")
-      >>> print(samples[:, :4])
-      [[-1.42607687 -1.02007623 -0.73631592 -0.50240222]
-       [ 0.         -0.67448975  0.67448975 -1.15034938]]
+    >>> samples = distribution.sample(
+    ...     2*len(orthogonal_expansion), rule="M")
+    >>> print(samples[:, :4])
+    [[ 0.67448975 -1.15034938  0.31863936 -0.31863936]
+     [-1.42607687 -1.02007623 -0.73631592 -0.50240222]]
 
 - A function evaluated using the nodes generated in the second step::
 
-      >>> def model_solver(param):
-      ...     return [param[0]*param[1], param[0]*np.e**-param[1]+1]
-      >>> solves = [model_solver(sample) for sample in samples.T]
-      >>> print(np.around(solves[:4], 8))
-      [[-0.         -0.42607687]
-       [ 0.68803096 -1.00244135]
-       [-0.49663754  0.62490868]
-       [ 0.57793809 -0.58723759]]
+    >>> def model_solver(param):
+    ...     return [param[0]*param[1], param[0]*np.e**-param[1]+1]
+    >>> solves = [model_solver(sample) for sample in samples.T]
+    >>> print(np.around(solves[:4], 8))
+    [[-0.96187423  3.80745414]
+     [ 1.17344406 -2.19038608]
+     [-0.23461924  1.66539168]
+     [ 0.16008512  0.47338898]]
 
 - Bring it all together using `~chaospy.collocation.fit_regression`::
 
-      >>> approx_model = cp.fit_regression(
-      ...      orthogonal_expansion, samples, solves)
-      >>> print(cp.around(approx_model, 5))
-      [q0q1, 0.15275q0^2-1.23005q0q1+0.16104q1^2+1.214q0+0.044q1+0.86842]
+    >>> approx_model = cp.fit_regression(
+    ...      orthogonal_expansion, samples, solves)
+    >>> print(cp.around(approx_model, 5))
+    [q0q1, 0.0478q0^2-1.4354q0q1+0.1108q1^2+1.22377q0-0.0907q1+0.93973]
 
 In this example, the number of collocation points is selected to be twice the
 number of unknown coefficients :math:`N+1`. This
@@ -81,7 +81,7 @@ for example 1: ``n_nonzero_coefs=1``. In practice::
     >>> approx_model = cp.fit_regression(
     ...     orthogonal_expansion, samples, solves, rule=omp)
     >>> print(cp.around(approx_model, 8))
-    [3.83393982q0q1, 13.16666248]
+    [3.46375077q0q1, 11.63750715]
 
 Note that the option `fit_intercept=False`. This is a prerequisite for
 ``sklearn`` to be compatible with ``chaospy``.
