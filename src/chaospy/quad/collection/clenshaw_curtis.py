@@ -14,10 +14,10 @@ def quad_clenshaw_curtis(
 
     Example:
         >>> abscissas, weights = quad_clenshaw_curtis(3, 0, 1)
-        >>> print(abscissas)
-        [[ 0.    0.25  0.75  1.  ]]
-        >>> print(weights)
-        [ 0.11111111  0.38888889  0.19444444  0.11111111]
+        >>> print(numpy.around(abscissas, 4))
+        [[0.   0.25 0.75 1.  ]]
+        >>> print(numpy.around(weights, 4))
+        [0.1111 0.3889 0.1944 0.1111]
     """
     order = numpy.asarray(order, dtype=int).flatten()
     lower = numpy.asarray(lower).flatten()

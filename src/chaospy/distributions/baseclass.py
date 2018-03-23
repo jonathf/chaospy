@@ -17,7 +17,7 @@ A simple example for constructing a simple uniform distribution::
     >>> Uniform = construct(cdf=cdf, bnd=bnd)
     >>> dist = Uniform(lo=-3, up=3)
     >>> print(dist.fwd([-3, 0, 3]))
-    [ 0.   0.5  1. ]
+    [0.  0.5 1. ]
 
 Here ``cdf`` is the dependent cumulative distribution function as defined in
 equation , ``bnd`` is a function returning the lower and upper bounds, and
@@ -59,7 +59,7 @@ Equivalently constructing the same distribution using subclass:
     ...         return "u(%s%s)" % (lo, up)
     >>> dist = Uniform(-3, 3)
     >>> print(dist.fwd([-3, 0, 3])) # Forward Rosenblatt transformation
-    [ 0.   0.5  1. ]
+    [0.  0.5 1. ]
 
 """
 import types

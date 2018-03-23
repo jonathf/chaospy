@@ -65,12 +65,12 @@ def Beta(a, b, lo=0, up=1):
     Examples:
         >>> f = chaospy.Beta(2, 2, 2, 3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 2.28714073  2.43293108  2.56706892  2.71285927]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 2.60388804  2.21123197  2.86505298  2.48812537]
+        >>> print(numpy.around(f.inv(q), 4))
+        [2.2871 2.4329 2.5671 2.7129]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [2.6039 2.2112 2.8651 2.4881]
         >>> print(f.mom(1))
         2.5
     """
@@ -189,12 +189,12 @@ def Exponential(scale=1, shift=0):
     Examples;:
         >>> f = chaospy.Exponential(1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 0.22314355  0.51082562  0.91629073  1.60943791]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 1.06013104  0.12217548  3.00140562  0.65814961]
+        >>> print(numpy.around(f.inv(q), 4))
+        [0.2231 0.5108 0.9163 1.6094]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [1.0601 0.1222 3.0014 0.6581]
         >>> print(f.mom(1))
         1.0
     """
@@ -335,12 +335,12 @@ def Gamma(shape=1, scale=1, shift=0):
     Examples:
         >>> f = chaospy.Gamma(1, 1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 0.22314355  0.51082562  0.91629073  1.60943791]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 1.06013104  0.12217548  3.00140562  0.65814961]
+        >>> print(numpy.around(f.inv(q), 4))
+        [0.2231 0.5108 0.9163 1.6094]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [1.0601 0.1222 3.0014 0.6581]
         >>> print(f.mom(1))
         1.0
     """
@@ -499,12 +499,12 @@ def Laplace(mu=0, scale=1):
     Examples:
         >>> f = chaospy.Laplace(2, 2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 0.16741854  1.5537129   2.4462871   3.83258146]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 2.73396771 -0.93923119  6.61651689  1.92746607]
+        >>> print(numpy.around(f.inv(q), 4))
+        [0.1674 1.5537 2.4463 3.8326]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [ 2.734  -0.9392  6.6165  1.9275]
         >>> print(f.mom(1))
         2.0
     """
@@ -582,14 +582,14 @@ def Lognormal(mu=0, sigma=1, shift=0, scale=1):
     Examples:
         >>> f = chaospy.Lognormal(0, 1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 0.43101119  0.77619841  1.28833038  2.32012539]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 1.48442856  0.30109692  5.19451094  0.95632796]
-        >>> print(f.mom(1))
-        1.6487212707
+        >>> print(numpy.around(f.inv(q), 4))
+        [0.431  0.7762 1.2883 2.3201]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [1.4844 0.3011 5.1945 0.9563]
+        >>> print(numpy.around(f.mom(1), 4))
+        1.6487
     """
     dist = cores.lognormal(sigma)*scale*numpy.e**mu + shift
     dist.addattr(str="Lognormal(%s,%s,%s,%s)"%(mu,sigma,shift,scale))
@@ -665,16 +665,16 @@ def MvNormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
     Examples:
         >>> f = chaospy.MvNormal([0,0], [[1,.5],[.5,1]])
         >>> q = [[.4,.5,.6],[.4,.5,.6]]
-        >>> print(f.inv(q))
-        [[-0.2533471   0.          0.2533471 ]
-         [-0.34607858  0.          0.34607858]]
-        >>> print(f.fwd(f.inv(q)))
-        [[ 0.4  0.5  0.6]
-         [ 0.4  0.5  0.6]]
-        >>> print(f.sample(3))
-        [[ 0.39502989 -1.20032309  1.64760248]
-         [ 0.15884312  0.38551963  0.1324068 ]]
-        >>> print(f.mom((1,1)))
+        >>> print(numpy.around(f.inv(q), 4))
+        [[-0.2533  0.      0.2533]
+         [-0.3461  0.      0.3461]]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [[0.4 0.5 0.6]
+         [0.4 0.5 0.6]]
+        >>> print(numpy.around(f.sample(3), 4))
+        [[ 0.395  -1.2003  1.6476]
+         [ 0.1588  0.3855  0.1324]]
+        >>> print(numpy.around(f.mom((1,1)), 4))
         0.5
     """
     if numpy.all((numpy.diag(numpy.diag(scale))-scale)==0):
@@ -723,12 +723,12 @@ def Normal(mu=0, sigma=1):
     Examples:
         >>> f = chaospy.Normal(2, 2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 0.31675753  1.49330579  2.50669421  3.68324247]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 2.79005978 -0.40064618  5.29520496  1.91069125]
+        >>> print(numpy.around(f.inv(q), 4))
+        [0.3168 1.4933 2.5067 3.6832]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [ 2.7901 -0.4006  5.2952  1.9107]
         >>> print(f.mom(1))
         2.0
     """
@@ -885,13 +885,13 @@ def Triangle(lo, mid, up):
     Examples:
         >>> f = chaospy.Triangle(2, 3, 4)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 2.63245553  2.89442719  3.10557281  3.36754447]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 3.16764141  2.47959763  3.684668    2.98202994]
-        >>> print(f.mom(1))
+        >>> print(numpy.around(f.inv(q), 4))
+        [2.6325 2.8944 3.1056 3.3675]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [3.1676 2.4796 3.6847 2.982 ]
+        >>> print(numpy.around(f.mom(1), 4))
         3.0
     """
     dist = cores.triangle((mid-lo)*1./(up-lo))*(up-lo) + lo
@@ -953,12 +953,12 @@ def Uniform(lo=0, up=1):
     Examples:
         >>> f = chaospy.Uniform(2, 4)
         >>> q = numpy.linspace(0,1,5)
-        >>> print(f.inv(q))
-        [ 2.   2.5  3.   3.5  4. ]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.    0.25  0.5   0.75  1.  ]
-        >>> print(f.sample(4))
-        [ 3.30717917  2.23001389  3.90056573  2.9643828 ]
+        >>> print(numpy.around(f.inv(q), 4))
+        [2.  2.5 3.  3.5 4. ]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.   0.25 0.5  0.75 1.  ]
+        >>> print(numpy.around(f.sample(4), 4))
+        [3.3072 2.23   3.9006 2.9644]
         >>> print(f.mom(1))
         3.0
     """
@@ -995,14 +995,14 @@ def Weibull(shape=1, scale=1, shift=0):
     Examples:
         >>> f = chaospy.Weibull(2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(f.inv(q))
-        [ 0.47238073  0.71472066  0.95723076  1.26863624]
-        >>> print(f.fwd(f.inv(q)))
-        [ 0.2  0.4  0.6  0.8]
-        >>> print(f.sample(4))
-        [ 1.02962665  0.34953609  1.73245653  0.8112642 ]
-        >>> print(f.mom(1))
-        0.886226925453
+        >>> print(numpy.around(f.inv(q), 4))
+        [0.4724 0.7147 0.9572 1.2686]
+        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(f.sample(4), 4))
+        [1.0296 0.3495 1.7325 0.8113]
+        >>> print(numpy.around(f.mom(1), 4))
+        0.8862
     """
     dist = cores.weibull(shape)*scale + shift
     dist.addattr(str="Weibull(%s,%s,%s)" % (shape, scale, shift))

@@ -24,8 +24,8 @@ def Acf(poly, dist, N=None, **kws):
     Examples:
         >>> poly = chaospy.prange(10)[1:]
         >>> Z = chaospy.Uniform()
-        >>> print(chaospy.Acf(poly, Z, 5))
-        [ 1.          0.99148391  0.9721971   0.94571181  0.91265479]
+        >>> print(numpy.around(chaospy.Acf(poly, Z, 5), 4))
+        [1.     0.9915 0.9722 0.9457 0.9127]
     """
     if N is None:
         N = len(poly)/2 + 1
@@ -154,7 +154,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         >>> qoi_dist = chaospy.QoI_Dist(poly, dist)
         >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
         >>> print(np.around(values, 8))
-        [ 0.29143037  0.39931708  0.29536329]
+        [0.29143037 0.39931708 0.29536329]
     """
     shape = poly.shape
     poly = polynomials.flatten(poly)

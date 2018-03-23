@@ -16,10 +16,10 @@ def quad_genz_keister_18(order):
 
     Example:
         >>> abscissas, weights = quad_genz_keister_18(1)
-        >>> print(abscissas)
-        [-1.73205081  0.          1.73205081]
-        >>> print(weights)
-        [ 0.16666667  0.66666667  0.16666667]
+        >>> print(numpy.around(abscissas, 4))
+        [-1.7321  0.      1.7321]
+        >>> print(numpy.around(weights, 4))
+        [0.1667 0.6667 0.1667]
     """
     order = sorted(GENZ_KEISTER_18.keys())[order]
 

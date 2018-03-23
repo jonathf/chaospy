@@ -33,15 +33,15 @@ def bastos_ohagen(mat, eps=1e-16):
     [[0 1 0]
      [1 0 0]
      [0 0 1]]
-    >>> print(lowtri)
-    [[  2.44948974e+00   0.00000000e+00   0.00000000e+00]
-     [  8.16496581e-01   1.82574186e+00   0.00000000e+00]
-     [  1.22474487e+00  -1.21618839e-16   9.12870929e-01]]
+    >>> print(numpy.around(lowtri, 4))
+    [[ 2.4495  0.      0.    ]
+     [ 0.8165  1.8257  0.    ]
+     [ 1.2247 -0.      0.9129]]
     >>> comp = numpy.dot(perm, lowtri)
-    >>> print(numpy.dot(comp, comp.T))
-    [[ 4.          2.          1.        ]
-     [ 2.          6.          3.        ]
-     [ 1.          3.          2.33333333]]
+    >>> print(numpy.around(numpy.dot(comp, comp.T), 4))
+    [[4.     2.     1.    ]
+     [2.     6.     3.    ]
+     [1.     3.     2.3333]]
     """
     mat_ref = numpy.asfarray(mat)
     mat = mat_ref.copy()

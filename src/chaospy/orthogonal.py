@@ -50,9 +50,9 @@ In the ``chaospy`` toolbox three terms recursion coefficient can be
 generating by calling the ``ttr`` instance method::
 
     >>> dist = chaospy.Uniform(-1,1)
-    >>> print(dist.ttr([0,1,2,3]))
-    [[ 0.          0.          0.          0.        ]
-     [-0.          0.33333333  0.26666667  0.25714286]]
+    >>> print(numpy.around(dist.ttr([0,1,2,3]), 4))
+    [[ 0.      0.      0.      0.    ]
+     [-0.      0.3333  0.2667  0.2571]]
 
 Looking back to section :ref:`distributions` and the ``pc.contruct`` function,
 ``ttr`` can be added as a keyword argument. So tailored recursion coefficients
@@ -111,7 +111,7 @@ recursion scheme can be done through ``orth_ttr``. For example::
 
     >>> dist = chaospy.Iid(chaospy.Gamma(1), 2)
     >>> orths = chaospy.orth_ttr(2, dist)
-    >>> print(orths)
+    >>> print(chaospy.around(orths, 4))
     [1.0, q1-1.0, q0-1.0, q1^2-4.0q1+2.0, q0q1-q0-q1+1.0, q0^2-4.0q0+2.0]
 
 The method will use the ``ttr`` function if available, and discretized
@@ -157,7 +157,7 @@ def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
 
     Examples:
         >>> Z = chaospy.J(chaospy.Normal(), chaospy.Normal())
-        >>> print(chaospy.orth_gs(2, Z))
+        >>> print(chaospy.around(chaospy.orth_gs(2, Z), 4))
         [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
     """
     logger = logging.getLogger(__name__)
@@ -248,7 +248,7 @@ def orth_ttr(
 
     Examples:
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.orth_ttr(4, Z))
+        >>> print(chaospy.around(chaospy.orth_ttr(4, Z), 4))
         [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
     polynomials, norms, _, _ = chaospy.quad.generate_stieltjes(
@@ -383,17 +383,17 @@ def lagrange_polynomial(absicas, sort="GR"):
             Sample points where the Lagrange polynomials shall be defined.
 
     Example:
-        >>> print(lagrange_polynomial([-10, 10]))
+        >>> print(chaospy.around(lagrange_polynomial([-10, 10]), 4))
         [-0.05q0+0.5, 0.05q0+0.5]
-        >>> print(lagrange_polynomial([-1, 0, 1]))
+        >>> print(chaospy.around(lagrange_polynomial([-1, 0, 1]), 4))
         [0.5q0^2-0.5q0, -q0^2+1.0, 0.5q0^2+0.5q0]
         >>> poly = lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
-        >>> print(poly)
+        >>> print(chaospy.around(poly, 4))
         [0.5q0-0.5q1+0.5, -q0+1.0, 0.5q0+0.5q1-0.5]
-        >>> print(poly([1, 0, 1], [0, 1, 2]))
-        [[ 1.  0.  0.]
-         [ 0.  1.  0.]
-         [ 0.  0.  1.]]
+        >>> print(numpy.around(poly([1, 0, 1], [0, 1, 2]), 4))
+        [[1. 0. 0.]
+         [0. 1. 0.]
+         [0. 0. 1.]]
     """
     absicas = numpy.asfarray(absicas)
     if len(absicas.shape) == 1:
@@ -433,9 +433,3 @@ def lagrange_polynomial(absicas, sort="GR"):
         out = chaospy.poly.sum(vec*(coeffs.T), 1)
 
     return out
-
-
-if __name__ == "__main__":
-    import doctest
-    import __init__ as cp
-    doctest.testmod()

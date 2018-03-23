@@ -5,9 +5,9 @@ Example usage
 -------------
 
 Normal usage::
-    >>> print(chaospy.create_latin_hypercube_samples(order=4, dim=2))
-    [[ 0.6633974   0.27875174  0.98757072  0.12054785]
-     [ 0.46811863  0.05308317  0.51017741  0.84929862]]
+    >>> print(numpy.around(chaospy.create_latin_hypercube_samples(order=4, dim=2), 4))
+    [[0.6634 0.2788 0.9876 0.1205]
+     [0.4681 0.0531 0.5102 0.8493]]
 """
 import numpy
 

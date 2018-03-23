@@ -12,10 +12,10 @@ def quad_gauss_legendre(order, lower=0, upper=1, composite=None):
 
     Example:
         >>> abscissas, weights = quad_gauss_legendre(3)
-        >>> print(abscissas)
-        [[ 0.06943184  0.33000948  0.66999052  0.93056816]]
-        >>> print(weights)
-        [ 0.17392742  0.32607258  0.32607258  0.17392742]
+        >>> print(numpy.around(abscissas, 4))
+        [[0.0694 0.33   0.67   0.9306]]
+        >>> print(numpy.around(weights, 4))
+        [0.1739 0.3261 0.3261 0.1739]
     """
     order = numpy.asarray(order, dtype=int).flatten()
     lower = numpy.asarray(lower).flatten()

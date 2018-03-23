@@ -9,19 +9,19 @@ Distribution * a constant::
     >>> distribution = chaospy.Uniform(0, 1) * 4
     >>> print(distribution)
     Uniform(0,1)*4
-    >>> print(distribution.sample(5))
-    [ 2.61435834  0.46002777  3.80113146  1.92876561  3.48989814]
-    >>> print(distribution.fwd([1, 2, 3]))
-    [ 0.25  0.5   0.75]
-    >>> print(distribution.inv(distribution.fwd([1, 2, 3])))
-    [ 1.  2.  3.]
-    >>> print(distribution.pdf([1, 2, 3]))
-    [ 0.25  0.25  0.25]
-    >>> print(distribution.mom([1, 2, 3]))
-    [  2.           5.33333333  16.        ]
-    >>> print(distribution.ttr([1, 2, 3]))
-    [[ 2.          2.          2.        ]
-     [ 1.33333333  1.06666667  1.02857143]]
+    >>> print(numpy.around(distribution.sample(5), 4))
+    [2.6144 0.46   3.8011 1.9288 3.4899]
+    >>> print(numpy.around(distribution.fwd([1, 2, 3]), 4))
+    [0.25 0.5  0.75]
+    >>> print(numpy.around(distribution.inv(distribution.fwd([1, 2, 3])), 4))
+    [1. 2. 3.]
+    >>> print(numpy.around(distribution.pdf([1, 2, 3]), 4))
+    [0.25 0.25 0.25]
+    >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
+    [ 2.      5.3333 16.    ]
+    >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+    [[2.     2.     2.    ]
+     [1.3333 1.0667 1.0286]]
 
 Construct joint addition distribution::
 
@@ -35,30 +35,30 @@ Construct joint addition distribution::
 
 Generate random samples::
 
-    >>> print(joint1.sample(4))
-    [[-0.78766732 -0.95929038 -0.60280554 -0.7668678 ]
-     [ 2.2383463   2.11723285  1.65317582  1.83446598]]
-    >>> print(joint2.sample(4))
-    [[-2.81774348 -2.25646059 -2.93041792 -2.1146628 ]
-     [ 2.68430754  2.10108846  1.21738631  0.06128644]]
+    >>> print(numpy.around(joint1.sample(4), 4))
+    [[-0.7877 -0.9593 -0.6028 -0.7669]
+     [ 2.2383  2.1172  1.6532  1.8345]]
+    >>> print(numpy.around(joint2.sample(4), 4))
+    [[-2.8177 -2.2565 -2.9304 -2.1147]
+     [ 2.6843  2.1011  1.2174  0.0613]]
 
 Forward transformations::
 
     >>> lcorr = numpy.array([-0.9, -0.5, -0.1])
     >>> rcorr = numpy.array([-2.99, -2.5, -2.01])
-    >>> print(joint1.fwd([lcorr, lcorr*rcorr]))
-    [[ 0.1   0.5   0.9 ]
-     [ 0.99  0.5   0.01]]
-    >>> print(joint2.fwd([rcorr, lcorr*rcorr]))
-    [[ 0.01  0.5   0.99]
-     [ 0.9   0.5   0.1 ]]
+    >>> print(numpy.around(joint1.fwd([lcorr, lcorr*rcorr]), 4))
+    [[0.1  0.5  0.9 ]
+     [0.99 0.5  0.01]]
+    >>> print(numpy.around(joint2.fwd([rcorr, lcorr*rcorr]), 4))
+    [[0.01 0.5  0.99]
+     [0.9  0.5  0.1 ]]
 
 Inverse transformations::
 
-    >>> print(joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])))
+    >>> print(numpy.around(joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])), 4))
     [[-0.9   -0.5   -0.1  ]
      [ 2.691  1.25   0.201]]
-    >>> print(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])))
+    >>> print(numpy.around(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])), 4))
     [[-2.99  -2.5   -2.01 ]
      [ 2.691  1.25   0.201]]
 

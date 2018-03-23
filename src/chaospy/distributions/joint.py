@@ -206,13 +206,13 @@ def J(*args):
         Independent
         >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
         >>> print(dist.mom([[0,0,1], [0,2,2]]))
-        [ 1.   1.   0.5]
+        [1.  1.  0.5]
 
         Dependent
         >>> d0 = chaospy.Uniform()
         >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
         >>> print(dist.mom([[0,0,1], [0,1,1]]))
-        [ 1.   1.   0.5]
+        [1.  1.  0.5]
     """
     out = []
     args = list(args)
@@ -275,6 +275,8 @@ class Iid(Dist):
     def __getitem__(self, i):
 
         if isinstance(i, int):
+            if (i >= len(self)) or (i < -len(self)):
+                raise IndexError("dist index out of range")
             return self.prm["dist"]
 
         raise NotImplementedError("index not recogniced")

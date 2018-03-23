@@ -22,15 +22,15 @@ def Cov(poly, dist=None, **kws):
 
     Examples:
         >>> Z = chaospy.MvNormal([0, 0], [[2, .5], [.5, 1]])
-        >>> print(chaospy.Cov(Z))
-        [[ 2.   0.5]
-         [ 0.5  1. ]]
+        >>> print(numpy.around(chaospy.Cov(Z), 4))
+        [[2.  0.5]
+         [0.5 1. ]]
 
         >>> x = chaospy.variable()
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.Cov([x, x**2], Z))
-        [[ 1.  0.]
-         [ 0.  2.]]
+        >>> print(numpy.around(chaospy.Cov([x, x**2], Z), 4))
+        [[1. 0.]
+         [0. 2.]]
     """
     if not isinstance(poly, (distributions.Dist, polynomials.Poly)):
         poly = polynomials.Poly(poly)
@@ -92,15 +92,15 @@ def Corr(poly, dist=None, **kws):
 
     Examples:
         >>> Z = chaospy.MvNormal([3, 4], [[2, .5], [.5, 1]])
-        >>> print(chaospy.Corr(Z))
-        [[ 1.          0.35355339]
-         [ 0.35355339  1.        ]]
+        >>> print(numpy.around(chaospy.Corr(Z), 4))
+        [[1.     0.3536]
+         [0.3536 1.    ]]
 
         >>> x = chaospy.variable()
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.Corr([x, x**2], Z))
-        [[ 1.  0.]
-         [ 0.  1.]]
+        >>> print(numpy.around(chaospy.Corr([x, x**2], Z), 4))
+        [[1. 0.]
+         [0. 1.]]
     """
     if isinstance(poly, distributions.Dist):
         poly, dist = polynomials.variable(len(poly)), poly

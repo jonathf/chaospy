@@ -7,14 +7,14 @@ Examples usage
 Normal usage::
 
     >>> print(create_korobov_samples(order=4, dim=2))
-    [[ 0.2  0.4  0.6  0.8]
-     [ 0.4  0.8  0.2  0.6]]
+    [[0.2 0.4 0.6 0.8]
+     [0.4 0.8 0.2 0.6]]
 
 With custom number base::
 
     >>> print(create_korobov_samples(order=4, dim=2, base=3))
-    [[ 0.2  0.4  0.6  0.8]
-     [ 0.6  0.2  0.8  0.4]]
+    [[0.2 0.4 0.6 0.8]
+     [0.6 0.2 0.8 0.4]]
 """
 import numpy
 
