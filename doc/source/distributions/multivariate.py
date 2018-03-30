@@ -6,6 +6,7 @@ def plot_figures():
     """Plot figures for multivariate distribution section."""
     rc("figure", figsize=[8.,4.])
     rc("figure.subplot", left=.08, top=.95, right=.98)
+    rc("image", cmap="gray")
     seed(1000)
 
     Q1 = cp.Gamma(2)
@@ -20,12 +21,12 @@ def plot_figures():
     ylabel("$q_2$")
     subplot(122)
     Qr = Q.sample(500)
-    scatter(*Qr)
+    scatter(*Qr, s=10, c="k", marker="s")
     xlabel("$Q_1$")
     ylabel("$Q_2$")
     axis([0,5,-6,6])
 
-    savefig("mv1.png"); clf()
+    savefig("multivariate.png"); clf()
 
     Q2 = cp.Gamma(1)
     Q1 = cp.Normal(Q2**2, Q2+1)
@@ -44,7 +45,7 @@ def plot_figures():
     ylabel("$Q_2$")
     axis([-4,7,0,3])
 
-    savefig("mv2.png"); clf()
+    savefig("multivariate2.png"); clf()
 
 
 if __name__ == "__main__":

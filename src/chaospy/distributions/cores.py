@@ -35,24 +35,6 @@ class otdistribution(Dist):
         return self.distribution.__str__()
 
 
-class uniform(Dist):
-
-    def __init__(self):
-        Dist.__init__(self)
-    def _pdf(self, x):
-        return 0.5
-    def _cdf(self, x):
-        return .5*x+.5
-    def _ppf(self, q):
-        return 2*q-1
-    def _bnd(self):
-        return -1.,1.
-    def _mom(self, k):
-        return 1./(k+1)*(k%2==0)
-    def _ttr(self, n):
-        return 0., n*n/(4.*n*n-1)
-    def _str(self):
-        return "uni"
 
 class loguniform(Dist):
 
@@ -1264,8 +1246,7 @@ class powerlognorm(normal):
     def __init__(self, c, s):
         Dist.__init__(self, c=c, s=s)
     def _pdf(self, x, c, s):
-        return c/(x*s)*normal._pdf(self, \
-                np.log(x)/s)*pow(normal._cdf(self, -np.log(x)/s),c*1.0-1.0)
+        return c/(x*s)*normal._pdf(self, np.log(x)/s)*pow(normal._cdf(self, -np.log(x)/s),c*1.0-1.0)
 
     def _cdf(self, x, c, s):
         return 1.0 - pow(normal._cdf(self, -np.log(x)/s),c*1.0)
@@ -1336,17 +1317,22 @@ class truncexpon(Dist):
 class truncnorm(Dist):
 
     def __init__(self, a, b, mu, sigma):
-        Dist.__init__(self, a=a, b=b)
-        self.norm = normal()*sigma+mu
-        self.fa = self.norm.fwd(a)
-        self.fb = self.norm.fwd(b)
-    def _pdf(self, x, a, b):
-        return self.norm.pdf(x) / (self.fb-self.fa)
-    def _cdf(self, x, a, b):
-        return (self.norm.fwd(x) - self.fa) / (self.fb-self.fa)
-    def _ppf(self, q, a, b):
-        return self.norm.inv(q*(self.fb-self.fa) + self.fa)
-    def _bnd(self, a, b):
+        Dist.__init__(self, a=a, b=b, sigma=sigma, mu=mu)
+    def _pdf(self, x, a, b, mu, sigma):
+        fa = special.ndtr((a-mu)/sigma)
+        fb = special.ndtr((b-mu)/sigma)
+        return self.norm.pdf(x) / (fb-fa)
+    def _cdf(self, x, a, b, mu, sigma):
+        fa = special.ndtr((a-mu)/sigma)
+        fb = special.ndtr((b-mu)/sigma)
+        return (self.norm.fwd(x) - fa) / (fb-fa)
+    def _ppf(self, q, a, b, mu, sigma):
+        fa = special.ndtr((a-mu)/sigma)
+        fb = special.ndtr((b-mu)/sigma)
+        q = q*(fb-fa) + fa
+        out = special.ndtri(q)
+        return out
+    def _bnd(self, a, b, mu, sigma):
         return a, b
 
 

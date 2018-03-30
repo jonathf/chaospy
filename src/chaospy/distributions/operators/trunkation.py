@@ -17,12 +17,16 @@ class Trunk(Dist):
             left (Dist, array_like) : Left hand side.
             right (Dist, array_like) : Right hand side.
         """
-        if isinstance(left, Dist):
-            assert not left.dependent()
-            assert numpy.all(left.range()[0] < right)
-        if isinstance(right, Dist):
-            assert not right.dependent()
-            assert numpy.all(left < right.range()[1])
+        # try:
+        #     if isinstance(left, Dist):
+        #         assert not left.dependent()
+        #         assert numpy.all(left.range()[0] < right)
+        #     if isinstance(right, Dist):
+        #         assert not right.dependent()
+        #         assert numpy.all(left < right.range()[1])
+        # except KeyError:
+        #     raise ValueError(
+        #         "truncation of dependent variables not supported.")
 
         left_ = not isinstance(left, Dist) or 1 and len(left)
         right_ = not isinstance(right, Dist) or 1 and len(right)

@@ -1,37 +1,4 @@
-"""
-One of ``chaospy``'s most powerful features is possible to construct advance
-multivariate variables directly through dependencies. To illustrate this,
-consider the following bivariate distribution::
-
-    >>> dist_ind = chaospy.Gamma(1)
-    >>> dist_dep = chaospy.Normal(dist_ind**2, dist_ind+1)
-    >>> distribution = chaospy.J(dist_ind, dist_dep)
-
-In other words, a distribution dependent upon another distribution was created
-simply by inserting it into the constructor of another distribution. The
-resulting bivariate distribution if fully valid with dependent components.
-For example the probability density function functions will in this case look
-as follows::
-
-    >>> x, y = np.meshgrid(np.linspace(-4, 7), np.linspace(0, 3))
-    >>> likelihood = distribution.pdf([x, y])
-
-This method also allows for construct any multivariate probability distribution
-as long as you can fully construct the distribution's conditional decomposition
-as noted in :ref:`rosenblatt`. One only has to construct each univariate
-probability distribution and add dependencies in through the parameter
-structure.
-
-Now it is worth noting a couple of cavats:
-
-* Since the underlying feature to accomplish this is the :ref:`rosenblatt`, the
-  number of unique random variables in the final joint distribution has to be
-  constant. In other words, ``dist_dep`` is not a valid distribution in itself,
-  since it is univariat, but depends on the results of ``dist_ind``.
-* The dependency order does not matter as long as it can defined as an acyclic
-  graph. In other words, ``dist_ind`` can not be dependent upon ``dist_dep`` at
-  the same time as ``dist_dep`` is dependent upon ``dist_ind``.
-"""
+"""Joint probability density function."""
 from copy import copy
 
 import numpy as np
@@ -196,19 +163,16 @@ def J(*args):
     Joint random variable generator.
 
     Args:
-        *args : Dist
+        *args: Dist
             Distribution to join together
 
     Returns:
         Multivariate distribution
 
     Examples:
-        Independent
         >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
         >>> print(dist.mom([[0,0,1], [0,2,2]]))
         [1.  1.  0.5]
-
-        Dependent
         >>> d0 = chaospy.Uniform()
         >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
         >>> print(dist.mom([[0,0,1], [0,1,1]]))

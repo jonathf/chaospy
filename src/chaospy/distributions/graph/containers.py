@@ -110,6 +110,8 @@ class Keys(Container):
     def getitem(self, key):
 
         if not key in self:
+            print(key)
+            print(self.graph.dist.prm)
             raise KeyError()
         val = self.graph.dist.prm[key]
 

@@ -24,7 +24,7 @@ def fwd(dist, x):
     return out
 
 
-def inv(dist, q, maxiter=100, tol=1e-5, **kws):
+def inv(dist, q, maxiter=100, tol=1e-5):
     """Inverse Rosenblatt transformation."""
     q = np.array(q)
     assert np.all(q>=0) and np.all(q<=1), q

@@ -3,17 +3,17 @@
 Copulas
 -------
 
-.. automodule:: chaospy.dist.copulas
+.. automodule:: chaospy.distributions.copulas
 
-.. autofunction:: chaospy.dist.copulas.Gumbel
-.. autofunction:: chaospy.dist.copulas.Clayton
-.. autofunction:: chaospy.dist.copulas.Ali_mikhail_haq
-.. autofunction:: chaospy.dist.copulas.Frank
-.. autofunction:: chaospy.dist.copulas.Joe
-.. autofunction:: chaospy.dist.copulas.Nataf
-.. autofunction:: chaospy.dist.copulas.T_copula
+.. autofunction:: chaospy.distributions.copulas.Gumbel
+.. autofunction:: chaospy.distributions.copulas.Clayton
+.. autofunction:: chaospy.distributions.copulas.Ali_mikhail_haq
+.. autofunction:: chaospy.distributions.copulas.Frank
+.. autofunction:: chaospy.distributions.copulas.Joe
+.. autofunction:: chaospy.distributions.copulas.Nataf
+.. autofunction:: chaospy.distributions.copulas.T_copula
 
 Copula theory
 ~~~~~~~~~~~~~
 
-.. automodule:: chaospy.dist.copulas.baseclass
+.. automodule:: chaospy.distributions.copulas.baseclass

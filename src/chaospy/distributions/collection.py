@@ -712,31 +712,6 @@ def Nakagami(shape=1, scale=1, shift=0):
     return dist
 
 
-def Normal(mu=0, sigma=1):
-    R"""
-    Normal (Gaussian) distribution
-
-    Args:
-        mu (float, Dist) : Mean of the distribution.
-        sigma (float, Dist) : Standard deviation.  sigma > 0
-
-    Examples:
-        >>> f = chaospy.Normal(2, 2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
-        [0.3168 1.4933 2.5067 3.6832]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.sample(4), 4))
-        [ 2.7901 -0.4006  5.2952  1.9107]
-        >>> print(f.mom(1))
-        2.0
-    """
-    dist = cores.normal()*sigma + mu
-    dist.addattr(str="Normal(%s,%s)"%(mu, sigma))
-    return dist
-
-
 def OTDistribution(distribution):
     """
     OpenTURNS distribution.
@@ -953,32 +928,6 @@ def Tukeylambda(shape=0, scale=1, shift=0):
     return dist
 
 
-def Uniform(lo=0, up=1):
-    r"""
-    Uniform distribution
-
-    Args:
-        lo (float, Dist) : Lower threshold of distribution. Must be smaller than up.
-        up (float, Dist) : Upper threshold of distribution.
-
-    Examples:
-        >>> f = chaospy.Uniform(2, 4)
-        >>> q = numpy.linspace(0,1,5)
-        >>> print(numpy.around(f.inv(q), 4))
-        [2.  2.5 3.  3.5 4. ]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
-        [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(f.sample(4), 4))
-        [3.3072 2.23   3.9006 2.9644]
-        >>> print(f.mom(1))
-        3.0
-    """
-
-    dist = cores.uniform()*((up-lo)*.5)+((up+lo)*.5)
-    dist.addattr(str="Uniform(%s,%s)"%(lo,up))
-    return dist
-
-
 def Wald(mu=0, scale=1, shift=0):
     """
     Wald distribution
@@ -1035,7 +984,7 @@ def Wigner(radius=1, shift=0):
 
 def Wrapcauchy(shape=0.5, scale=1, shift=0):
     """
-    Wraped Cauchy distribution
+    Wrapped Cauchy distribution
 
     Args:
         shape (float, Dist) : Shape parameter

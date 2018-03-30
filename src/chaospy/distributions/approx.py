@@ -13,11 +13,13 @@ Functions
     mom         Raw statistical moments (global)
     find_interior_point     Find an interior point (global)
 """
+from __future__ import division
 import numpy
 
 import chaospy.quad
 
 from .baseclass import Dist
+from .graph import calling
 
 
 def pdf(dist, x, G, eps=1.e-7, verbose=False,
@@ -49,15 +51,15 @@ out : numpy.ndarray
 G : Graph
     The chaospy calculation state after approximation is complete.
     """
-
     x = numpy.asfarray(x)
     lo,up = numpy.min(x), numpy.max(x)
     mu = .5*(lo+up)
-    eps = numpy.where(x<mu, eps, -eps)
+    eps = numpy.where(x < mu, eps, -eps)
 
-    G.__call__ = G.fwd_call
+    caller = G._call
+    G._call = calling.CALL_FUNCTIONS["fwd"]
 
-    out = numpy.empty(x.shape)
+    out = numpy.zeros(x.shape)
     for d in range(len(dist)):
         x[d] += eps[d]
         out[d] = G.copy()(x.copy(), dist)[d]
@@ -65,7 +67,7 @@ G : Graph
 
     out = numpy.abs((out-G(x.copy(), dist))/eps)
 
-    G.__call__ = G.pdf_call
+    G._call = caller
 
     if retall:
         return out, G
@@ -154,62 +156,63 @@ itrs : int
 y : numpy.ndarray
     The model forward transformed value in x
     """
-
     dim = len(dist)
-    size = q.size/dim
+    size = q.size // dim
     q = q.reshape(dim, size)
-    lo,up = dist.range(numpy.zeros((dim, size)))
-    lo = lo*numpy.ones((dim,size))
-    up = up*numpy.ones((dim,size))
+    lo, up = dist.range(numpy.zeros((dim, size)))
+    lo = lo*numpy.ones((dim, size))
+    up = up*numpy.ones((dim, size))
 
     span = .5*(up-lo)
-    too_much = numpy.any(dist.fwd(lo)>0, 0)
+    too_much = numpy.any(dist.fwd(lo) > 0, 0)
     while numpy.any(too_much):
-        lo[:,too_much] -= span[:,too_much]
-        too_much[too_much] = numpy.any(dist.fwd(lo)[:,too_much]>0, 0)
+        lo[:, too_much] -= span[:, too_much]
+        too_much[too_much] = numpy.any(dist.fwd(lo)[:, too_much] > 0, 0)
 
-    too_little = numpy.any(dist.fwd(up)<1, 0)
+    too_little = numpy.any(dist.fwd(up) < 1, 0)
     while numpy.any(too_little):
         up[:, too_little] += span[:, too_little]
-        too_little[too_little] = numpy.any(dist.fwd(up)[:,too_little]<1, 0)
+        too_little[too_little] = numpy.any(dist.fwd(up)[:, too_little] < 1, 0)
 
     # Initial values
     x = (up-lo)*q + lo
     flo, fup = -q, 1-q
-    fx = tol*10*numpy.ones((dim,size))
-    div = numpy.any((x<up)*(x>lo), 0)
+    fx = tol*10*numpy.ones((dim, size))
+    div = numpy.any((x < up)|(x > lo), 0)
 
     for iteration in range(1, maxiter+1):
 
         # eval function
-        fx[:,div] = dist.fwd(x)[:,div]-q[:,div]
+        fx[:, div] = dist.fwd(x)[:, div]-q[:, div]
 
         # convergence test
-        div[div] = numpy.any(numpy.abs(fx)>tol, 0)[div]
+        div[div] = numpy.any(numpy.abs(fx) > tol, 0)[div]
         if not numpy.any(div):
             break
 
-        dfx = dist.pdf(x)[:,div]
-        dfx = numpy.where(dfx==0, numpy.inf, dfx)
+        dfx = dist.pdf(x)[:, div]
+        dfx = numpy.where(dfx == 0, numpy.inf, dfx)
 
         # reduce boundaries
-        lo_,up_ = dist.range(x)
-        flo[:,div] = numpy.where(fx<=0, fx, flo)[:,div]
-        lo[:,div] = numpy.where(fx<=0, x, lo)[:,div]
-        lo = numpy.min([lo_, lo], 0)
+        lo_, up_ = dist.range(x)
+        flo[:, div] = numpy.where(fx <= 0, fx, flo)[:, div]
+        lo[:, div] = numpy.where(fx <= 0, x, lo)[:, div]
+        lo = numpy.max([lo_, lo], 0)
 
-        fup[:,div] = numpy.where(fx>=0, fx, fup)[:,div]
-        up[:,div] = numpy.where(fx>=0, x, up)[:,div]
-        up = numpy.max([up_, up], 0)
+        fup[:, div] = numpy.where(fx >= 0, fx, fup)[:, div]
+        up[:, div] = numpy.where(fx >= 0, x, up)[:, div]
+        up = numpy.min([up_, up], 0)
 
         # Newton increment
-        xdx = x[:,div]-fx[:,div]/dfx
+        xdx = x[:, div]-fx[:, div]/dfx
 
         # if new val on interior use Newton
         # else binary search
-        x[:,div] = numpy.where((xdx<up[:,div])*(xdx>lo[:,div]),
-                xdx, .5*(up+lo)[:,div])
+        x[:, div] = numpy.where((xdx < up[:, div])&(xdx > lo[:, div]),
+                xdx, .5*(up+lo)[:, div])
 
+    else:
+        print("Warning: iteration exceeded!")
 
     if retall:
         return x, iteration, dist.fwd(x)
@@ -248,7 +251,7 @@ itrs : int
     """
 
     if not dist.advance:
-        dist.prm, prm = G.K.build(), dist.prm
+        dist.prm, prm = G.keys.build(), dist.prm
         out = inv(dist, q, maxiter, tol, retall, verbose)
         dist.prm = prm
         return out
@@ -365,38 +368,35 @@ antithetic : array_like, optional
     List of bool. Represents the axes to mirror using antithetic
     variable during MCI.
     """
-
     dim = len(dist)
     shape = K.shape
     size = int(K.size/dim)
-    K = K.reshape(dim,size)
+    K = K.reshape(dim, size)
 
-    if dim>1:
+    if dim > 1:
         shape = shape[1:]
 
     order = kws.pop("order", 40)
-    X,W = chaospy.quad.generate_quadrature(order, dist, **kws)
+    X, W = chaospy.quad.generate_quadrature(order, dist, **kws)
 
-
-    grid = numpy.mgrid[:len(X[0]),:size]
+    grid = numpy.mgrid[:len(X[0]), :size]
     X = X.T[grid[0]].T
     K = K.T[grid[1]].T
     out = numpy.prod(X**K, 0)*W
 
-    if not (control_var is None):
+    if control_var is not None:
 
         Y = control_var.ppf(dist.fwd(X))
         mu = control_var.mom(numpy.eye(len(control_var)))
 
-        if mu.size==1 and dim>1:
+        if (mu.size == 1) and (dim > 1):
             mu = mu.repeat(dim)
 
         for d in range(dim):
-            alpha = numpy.cov(out, Y[d])[0,1]/numpy.var(Y[d])
+            alpha = numpy.cov(out, Y[d])[0, 1]/numpy.var(Y[d])
             out -= alpha*(Y[d]-mu)
 
     out = numpy.sum(out, -1)
-
     return out
 
 

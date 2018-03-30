@@ -10,8 +10,8 @@ Import the construction function::
 
 A simple example for constructing a simple uniform distribution::
 
-    >>> def cdf(self, x, lo, up):
-    ...     return (x-lo)/(up-lo)
+    >>> def cdf(self, x_data, lo, up):
+    ...     return (x_data-lo)/(up-lo)
     >>> def bnd(self, lo, up):
     ...     return lo, up
     >>> Uniform = construct(cdf=cdf, bnd=bnd)
@@ -28,10 +28,10 @@ components, or as illustrated: constants.
 In addition to ``cdf`` and ``bnd`` there are a few optional arguments. For
 example a fully featured uniform random variable is defined as follows::
 
-    >>> def pdf(self, x, lo, up):
+    >>> def pdf(self, x_data, lo, up):
     ...     return 1./(up-lo)
-    >>> def ppf(self, q, lo, up):
-    ...     return q*(up-lo) + lo
+    >>> def ppf(self, q_data, lo, up):
+    ...     return q_data*(up-lo) + lo
     >>> Uniform = construct(
     ...     cdf=cdf, bnd=bnd, pdf=pdf, ppf=ppf)
     >>> dist = Uniform(lo=-3, up=3)
@@ -47,14 +47,14 @@ Equivalently constructing the same distribution using subclass:
     >>> class Uniform(Dist):
     ...     def __init__(self, lo=0, up=1):
     ...         Dist.__init__(self, lo=lo, up=up)
-    ...     def _cdf(self, x, lo, up):
-    ...         return (x-lo)/(up-lo)
+    ...     def _cdf(self, x_data, lo, up):
+    ...         return (x_data-lo)/(up-lo)
     ...     def _bnd(self, lo, up):
     ...         return lo, up
-    ...     def _pdf(self, x, lo, up):
+    ...     def _pdf(self, x_data, lo, up):
     ...         return 1./(up-lo)
-    ...     def _ppf(self, q, lo, up):
-    ...         return q*(up-lo) + lo
+    ...     def _ppf(self, q_data, lo, up):
+    ...         return q_data*(up-lo) + lo
     ...     def _str(self, lo, up):
     ...         return "u(%s%s)" % (lo, up)
     >>> dist = Uniform(-3, 3)
@@ -63,33 +63,17 @@ Equivalently constructing the same distribution using subclass:
 
 """
 import types
-import numpy as np
+import numpy
+
+class StochasticallyDependentError(NotImplementedError):
+    """Error related to stochastically dependent variables."""
 
 
 class Dist(object):
-    """
-    The distribution backend class.
-
-    Subclass this module to construct a custom distribution.
-
-    If direct subclass of Dist, two method must be provided:
-
-    * Cumulative distribution function (CDF): ``_cdf(self, x, **prm)``.
-    * Upper and lower bounds ``_bnd(self, **prm)``.
-
-    The following can be provided:
-
-    * Probability density function: ``_pdf(self, x, **prm)``.
-    * CDF inverse: ``_ppf(self, q, **prm)``.
-    * Statistical moment generator: ``_mom(self, k, **prm)``.
-    * TTR coefficients generator: ``_ttr(self, k, **prm)``.
-    * Pretty print of distribution: ``_str(self, **prm)``.
-
-    Alternative use the construct generator
-    :func:`~chaospy.distributions.construct`.
-    """
+    """Baseclass for all probability distributions."""
 
     __array_priority__ = 9000
+    """Numpy override variable."""
 
     def __init__(self, **prm):
         """
@@ -102,7 +86,7 @@ class Dist(object):
         from . import graph
         for key, val in prm.items():
             if not isinstance(val, Dist):
-                prm[key] = np.array(val)
+                prm[key] = numpy.array(val)
 
         self.length = int(prm.pop("_length", 1))
         self.advance = prm.pop("_advance", False)
@@ -110,31 +94,31 @@ class Dist(object):
         self.graph = graph.Graph(self)
         self.dependencies = self.graph.run(self.length, "dep")[0]
 
-    def range(self, x=None, retall=False, verbose=False):
+    def range(self, x_data=None, retall=False, verbose=False):
         """
         Generate the upper and lower bounds of a distribution.
 
         Args:
-            x (array_like, optional) : The bounds might vary over the sample
-                    space. By providing x you can specify where in the space
+            x_data (array_like, optional) : The bounds might vary over the sample
+                    space. By providing x_data you can specify where in the space
                     the bound should be taken.  If omited, a (pseudo-)random
                     sample is used.
 
         Returns:
-            (np.ndarray) : The lower (out[0]) and upper (out[1]) bound where
-                    out.shape=(2,)+x.shape
+            (numpy.ndarray) : The lower (out[0]) and upper (out[1]) bound where
+                    out.shape=(2,)+x_data.shape
         """
         dim = len(self)
-        if x is None:
+        if x_data is None:
             from . import approx
-            x = approx.find_interior_point(self)
+            x_data = approx.find_interior_point(self)
         else:
-            x = np.array(x)
-        shape = x.shape
-        size = int(x.size/dim)
-        x = x.reshape(dim, size)
+            x_data = numpy.array(x_data)
+        shape = x_data.shape
+        size = int(x_data.size/dim)
+        x_data = x_data.reshape(dim, size)
 
-        out, graph = self.graph.run(x, "range")
+        out, graph = self.graph.run(x_data, "range")
         out = out.reshape((2,)+shape)
 
         if verbose>1:
@@ -144,140 +128,175 @@ class Dist(object):
             return out, graph
         return out
 
-    def fwd(self, x):
+    def fwd(self, x_data):
         """
         Forward Rosenblatt transformation.
 
         Args:
-            x (array_like) : Location for the distribution function. x.shape
-                    must be compatible with distribution shape.
+            x_data (numpy.ndarray): Location for the distribution function.
+                ``x_data.shape`` must be compatible with distribution shape.
 
         Returns:
-            (ndarray) : Evaluated distribution function values, where
-                    out.shape==x.shape.
+            numpy.ndarray: Evaluated distribution function values, where
+            ``out.shape==x_data.shape``.
         """
         from . import rosenblatt
-        return rosenblatt.fwd(self, x)
+        return rosenblatt.fwd(self, x_data)
 
-    def cdf(self, x):
+    def cdf(self, x_data):
         """
         Cumulative distribution function.
 
-        Note that chaospy only supports cumulative distribution funcitons in
-        one dimensions.
+        Note that chaospy only supports cumulative distribution functions for
+        stochastically independent distributions.
 
         Args:
-            x (array_like) : Location for the distribution function. x.shape
-                    must be compatible with distribution shape.
+            x_data (numpy.ndarray): Location for the distribution function.
+                Assumes that ``len(x_data) == len(distribution)``.
 
         Returns:
-            (ndarray) : Evaluated distribution function values, where
-                    out.shape==x.shape.
+            numpy.ndarray: Evaluated distribution function values, where output
+            has shape ``x_data.shape`` in one dimension and
+            ``x_data.shape[1:]`` in higher dimensions.
 
         Except:
-            (NotImplementedError) : for distributions with dependent
-                components.
+            StochasticallyDependentError: Distribution has with dependent components.
         """
         if self.dependent():
-            raise NotImplementedError("""\
-Cumulative distribution function is only available for stocastically \
-independent variables""")
+            raise StocasticallyDependentError(
+                "Cumulative distribution do not support dependencies.")
         from . import rosenblatt
-        out = rosenblatt.fwd(self, x)
+        out = rosenblatt.fwd(self, x_data)
         if len(self) > 1:
-            out = np.prod(out, 0)
+            out = numpy.prod(out, 0)
         return out
 
 
-    def inv(self, q, maxiter=100, tol=1e-5, verbose=False, **kws):
+    def inv(self, q_data, max_iterations=100, tollerance=1e-5):
         """
         Inverse Rosenblatt transformation.
 
-        Args:
-            q (array_like) : Probabilities to be inverse. If any values are
-                    outside [0,1], error will be raised. q.shape must be
-                    compatible with diistribution shape.
+        If possible the transformation is done analytically. If not possible,
+        transformation is approximated using an algorithm that alternates
+        between Newton-Raphson and binary search.
 
-        Kwargs:
-            maxiter (int) : Maximum number of iterations
-            tol (float) : Tolerence level
+        Args:
+            q_data (numpy.ndarray): Probabilities to be inverse. If any values
+                are outside ``[0, 1]``, error will be raised. ``q_data.shape``
+                must be compatible with distribution shape.
+            max_iterations (int): If approximation is used, this sets the
+                maximum number of allowed iterations in the Newton-Raphson
+                algorithm.
+            tollerance (float): If approximation is used, this set the error
+                tolerance level required to define a sample as converged.
 
         Returns:
-            (ndarray) : Inverted probability values where out.shape==q.shape.
+            numpy.ndarray: Inverted probability values where
+            ``out.shape == q_data.shape``.
         """
         from . import rosenblatt
-        return rosenblatt.inv(self, q, maxiter, tol, **kws)
+        return rosenblatt.inv(self, q_data, max_iterations, tollerance)
 
-    def pdf(self, x, step=1e-7, verbose=0):
+    def pdf(self, x_data, step=1e-7):
         """
         Probability density function.
 
+        If possible the density will be calculated analytically. If not
+        possible, it will be approximated by approximating the one-dimensional
+        derivative of the forward Rosenblatt transformation and multiplying the
+        component parts. Note that even if the distribution is multivariate,
+        each component of the Rosenblatt is one-dimensional.
+
         Args:
-            x (array_like) : Location for the density function. x.shape must
-                    be compatible with distribution shape.
-            step (float, array_like) : The step length given aproximation is
-                    used. If array provided, elements are used along each
-                    axis.
+            x_data (numpy.ndarray): Location for the density function.
+                ``x_data.shape`` must be compatible with distribution shape.
+            step (float, numpy.ndarray): If approximation is used, the step
+                length given in the approximation of the derivative. If array
+                provided, elements are used along each axis.
 
         Returns:
-            (ndarray) : Evaluated density function values. Shapes are related
-                    through the identity x.shape=dist.shape+out.shape
+            numpy.ndarray: Evaluated density function values. Shapes are
+            related through the identity
+            ``x_data.shape == dist.shape+out.shape``.
         """
         dim = len(self)
-        x = np.array(x)
-        shape = x.shape
-        size = int(x.size/dim)
-        x = x.reshape(dim, size)
-        out = np.zeros((dim, size))
+        x_data = numpy.array(x_data)
+        shape = x_data.shape
+        size = int(x_data.size/dim)
+        x_data = x_data.reshape(dim, size)
+        out = numpy.zeros((dim, size))
 
-        (lo, up), graph = self.graph.run(x, "range")
-        valids = np.prod((x.T >= lo.T)*(x.T <= up.T), 1, dtype=bool)
-        x[:, ~valids] = (.5*(up+lo))[:, ~valids]
-        out = np.zeros((dim,size))
+        (lo, up), graph = self.graph.run(x_data, "range")
+        valids = numpy.prod((x_data.T >= lo.T)*(x_data.T <= up.T), 1, dtype=bool)
+        x_data[:, ~valids] = (.5*(up+lo))[:, ~valids]
+        out = numpy.zeros((dim,size))
 
         try:
-            tmp,graph = self.graph.run(x, "pdf",
-                    eps=step)
+            tmp,graph = self.graph.run(x_data, "pdf", eps=step)
             out[:,valids] = tmp[:,valids]
+
         except NotImplementedError:
             from . import approx
-            tmp, graph = approx.pdf_full(self, x, step, retall=True)
+            tmp, graph = approx.pdf_full(self, x_data, step, retall=True)
             out[:, valids] = tmp[:, valids]
-            if verbose:
-                print("approx %s.pdf")
-        except IndexError:
-            pass
-
-        if verbose>1:
-            print(self.graph)
 
         out = out.reshape(shape)
-        if dim>1:
-            out = np.prod(out, 0)
+        if dim > 1:
+            out = numpy.prod(out, 0)
         return out
 
-    def sample(self, size=(), rule="R", antithetic=None,
-            verbose=False, **kws):
+    def sample(self, size=(), rule="R", antithetic=None):
         """
         Create pseudo-random generated samples.
 
+        By default, the samples are created using standard (pseudo-)random
+        samples. However, if needed, the samples can also be created by either
+        low-discrepancy sequences, and/or variance reduction techniques.
+
+        Changing the sampling scheme, use the following ``rule`` flag:
+
+        +-------+-------------------------------------------------+
+        | key   | Description                                     |
+        +=======+=================================================+
+        | ``C`` | Roots of the first order Chebyshev polynomials. |
+        +-------+-------------------------------------------------+
+        | ``NC``| Chebyshev nodes adjusted to ensure nested.      |
+        +-------+-------------------------------------------------+
+        | ``K`` | Korobov lattice.                                |
+        +-------+-------------------------------------------------+
+        | ``R`` | Classical (Pseudo-)Random samples.              |
+        +-------+-------------------------------------------------+
+        | ``RG``| Regular spaced grid.                            |
+        +-------+-------------------------------------------------+
+        | ``NG``| Nested regular spaced grid.                     |
+        +-------+-------------------------------------------------+
+        | ``L`` | Latin hypercube samples.                        |
+        +-------+-------------------------------------------------+
+        | ``S`` | Sobol low-discrepancy sequence.                 |
+        +-------+-------------------------------------------------+
+        | ``H`` | Halton low-discrepancy sequence.                |
+        +-------+-------------------------------------------------+
+        | ``M`` | Hammersley low-discrepancy sequence.            |
+        +-------+-------------------------------------------------+
+
+        All samples are created on the ``[0, 1]``-hypercube, which then is
+        mapped into the domain of the distribution using the inverse Rosenblatt
+        transformation.
+
         Args:
-            size (int,array_like):
-                The size of the samples to generate.
-            rule (str):
-                Alternative sampling techniques. See
-                :func:`~chaospy.distributions.sampler.generator.generate_samples`.
-            antithetic (bool, array_like):
-                If provided, will be used to setup antithetic variables. If
-                array, defines the axes to mirror.
+            size (int, Tuple[int]): The size of the samples to generate.
+            rule (str): Indicator defining the sampling scheme.
+            antithetic (bool, array_like): If provided, will be used to setup
+                antithetic variables. If array, defines the axes to mirror.
 
         Returns:
-            (ndarray) : Random samples with shape (len(self),)+self.shape
+            numpy.ndarray: Random samples with shape
+            ``(len(self),)+self.shape``.
         """
-        size_ = np.prod(size, dtype=int)
+        size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         if dim > 1:
-            if isinstance(size, (tuple,list,np.ndarray)):
+            if isinstance(size, (tuple, list, numpy.ndarray)):
                 shape = (dim,) + tuple(size)
             else:
                 shape = (dim, size)
@@ -324,7 +343,7 @@ independent variables""")
             (ndarray) : Shapes are related through the identity
                     `k.shape==dist.shape+k.shape`.
         """
-        K = np.array(K, dtype=int)
+        K = numpy.array(K, dtype=int)
         shape = K.shape
         dim = len(self)
 
@@ -356,7 +375,7 @@ independent variables""")
                     out[1] is the second coefficient With
                     `out.shape==(2,)+k.shape`.
         """
-        k = np.array(k, dtype=int)
+        k = numpy.array(k, dtype=int)
         dim = len(self)
         shape = k.shape
         shape = (2,) + shape
@@ -389,9 +408,16 @@ independent variables""")
 
     def __str__(self):
         """X.__str__() <==> str(X)"""
+        if hasattr(self, "_repr"):
+            args = [key + "=" + str(self._repr[key])
+                    for key in sorted(self._repr)]
+            return self.__class__.__name__ + "(" + ", ".join(args) + ")"
         if hasattr(self, "_str"):
             return str(self._str(**self.prm))
         return "D"
+
+    def __repr__(self):
+        return str(self)
 
     def __len__(self):
         """X.__len__() <==> len(X)"""
