@@ -8,7 +8,7 @@ Distribution * a constant::
 
     >>> distribution = chaospy.Uniform(0, 1) * 4
     >>> print(distribution)
-    Uniform(0,1)*4
+    Uniform(lower=0, upper=1)*4
     >>> print(numpy.around(distribution.sample(5), 4))
     [2.6144 0.46   3.8011 1.9288 3.4899]
     >>> print(numpy.around(distribution.fwd([1, 2, 3]), 4))
@@ -29,7 +29,7 @@ Construct joint addition distribution::
     >>> rhs = chaospy.Uniform(-3, -2)
     >>> multiplication = lhs * rhs
     >>> print(multiplication)
-    Uniform(-1,0)*Uniform(-3,-2)
+    Uniform(lower=-1, upper=0)*Uniform(lower=-3, upper=-2)
     >>> joint1 = chaospy.J(lhs, multiplication)
     >>> joint2 = chaospy.J(rhs, multiplication)
 

@@ -4,43 +4,6 @@ Convenience properties found on distribution object during dependency traversal.
 Instead of iterating through each parameter in a distribution ``dist.prm``,
 checking each what each state and acting from there, it is possible to access
 a subset of parameters that fit certain criteria.
-
-For example, to access all parameters that are also distributions, the property
-``dist.graph.dists``::
-
-    >>> dists0 = chaospy.beta(a=1, b=2).graph.dists
-    >>> dists1 = chaospy.beta(a=chaospy.uniform(), b=2).graph.dists
-    >>> dists2 = chaospy.beta(a=chaospy.uniform(), b=chaospy.gamma(1)).graph.dists
-
-These objects can be used to identify how many distributions are present::
-
-    >>> print(len(dists0), len(dists1), len(dists2))
-    0 1 2
-
-To identify specific parameters that are distributions::
-
-    >>> print("a" in dists0, "a" in dists1, "a" in dists2)
-    False True True
-    >>> print("b" in dists0, "b" in dists1, "b" in dists2)
-    False False True
-
-An lastly to extract said parameters::
-
-    >>> print(dists2["b"])
-    gam(1)
-    >>> print(dists1["a"])
-    uni
-
-Giving values not present or illegal values, causes exceptions::
-
-    >>> dists0["b"]
-    Traceback (most recent call last):
-        ...
-    KeyError: "parameter 'b' is not a distribution"
-    >>> dists0["c"]
-    Traceback (most recent call last):
-        ...
-    KeyError: "parameter key 'c' unknown; ('a', 'b') available"
 """
 import numpy
 

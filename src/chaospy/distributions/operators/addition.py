@@ -8,7 +8,7 @@ Distribution and a constant::
 
     >>> distribution = chaospy.Normal(0, 1) + 10
     >>> print(distribution)
-    (Normal(0,1)+10)
+    (Normal(mu=0, sigma=1)+10)
     >>> print(numpy.around(distribution.sample(5), 4))
     [10.395   8.7997 11.6476  9.9553 11.1382]
     >>> print(numpy.around(distribution.fwd([9, 10, 11]), 4))
@@ -29,7 +29,7 @@ Construct joint addition distribution::
     >>> rhs = chaospy.Uniform(3, 4)
     >>> addition = lhs + rhs
     >>> print(addition)
-    (Uniform(2,3)+Uniform(3,4))
+    (Uniform(lower=2, upper=3)+Uniform(lower=3, upper=4))
     >>> joint1 = chaospy.J(lhs, addition)
     >>> joint2 = chaospy.J(rhs, addition)
 

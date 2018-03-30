@@ -61,7 +61,7 @@ resulting bivariate distribution if fully valid with dependent components.
 For example the probability density function functions will in this case look
 as follows::
 
-    >>> x, y = numpy.meshgrid(np.linspace(-4, 7), np.linspace(0, 3))
+    >>> x, y = numpy.meshgrid(numpy.linspace(-4, 7), numpy.linspace(0, 3))
     >>> likelihood = distribution.pdf([x, y])
 
 This method also allows for construct any multivariate probability distribution

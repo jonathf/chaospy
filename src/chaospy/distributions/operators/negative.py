@@ -8,7 +8,7 @@ Invert sign of a distribution::
 
     >>> distribution = -chaospy.Uniform(0, 1)
     >>> print(distribution)
-    (-Uniform(0,1))
+    (-Uniform(lower=0, upper=1))
     >>> print(numpy.around(distribution.sample(5), 4))
     [-0.3464 -0.885  -0.0497 -0.5178 -0.1275]
     >>> print(distribution.fwd([-0.3, -0.2, -0.1]))
