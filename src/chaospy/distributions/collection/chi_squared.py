@@ -6,7 +6,7 @@ from ..baseclass import Dist
 from ..operators.addition import Add
 
 
-class chisquared(Dist):
+class chi_squared(Dist):
     """Central Chi-squared distribution."""
 
     def __init__(self, df, nc):
@@ -31,7 +31,7 @@ class chisquared(Dist):
                 return 0., upper
 
 
-class Chisquared(Add):
+class ChiSquared(Add):
     """
     (Non-central) Chi-squared distribution.
 
@@ -42,9 +42,9 @@ class Chisquared(Add):
         nc (float, Dist) : Non-centrality parameter
 
     Examples:
-        >>> distribution = chaospy.Chisquared(2, 4, 1, 1)
+        >>> distribution = chaospy.ChiSquared(2, 4, 1, 1)
         >>> print(distribution)
-        Chisquared(df=2, nc=1, scale=4, shift=1)
+        ChiSquared(df=2, nc=1, scale=4, shift=1)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> print(numpy.around(distribution.inv(q), 4))
         [ 3.369   6.1849  9.7082 14.5166 22.4295]
@@ -60,4 +60,4 @@ class Chisquared(Add):
 
     def __init__(self, df=1, scale=1, shift=0, nc=0):
         self._repr = {"df": df, "scale": scale, "shift": shift, "nc": nc}
-        Add.__init__(self, left=chisquared(df, nc)*scale, right=shift)
+        Add.__init__(self, left=chi_squared(df, nc)*scale, right=shift)

@@ -71,7 +71,7 @@ class Beta(Add):
         Add.__init__(self, left=beta_(alpha, beta)*(upper-lower), right=lower)
 
 
-class Arcsinus(Add):
+class ArcSinus(Add):
     """
     Generalized Arc-sinus distribution
 
@@ -82,9 +82,9 @@ class Arcsinus(Add):
         upper (float, Dist): Upper threshold
 
     Examples:
-        >>> distribution = chaospy.Arcsinus(0.8, 4, 6)
+        >>> distribution = chaospy.ArcSinus(0.8, 4, 6)
         >>> print(distribution)
-        Arcsinus(lower=4, shape=0.8, upper=6)
+        ArcSinus(lower=4, shape=0.8, upper=6)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> print(numpy.around(distribution.inv(q), 4))
         [4.9875 5.6438 5.9134 5.9885 5.9996]

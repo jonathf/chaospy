@@ -3,12 +3,41 @@ Frontend for the collection distributions.
 
 This modules provides a wrapper with documentation for the dist.cores module.
 """
+import logging
+from functools import wraps
 import numpy
 from scipy.stats import gaussian_kde
 
 from . import cores, joint
 
 
+def OTDistribution(distribution):
+    """
+    OpenTURNS distribution.
+
+    Args:
+        distribution (openturns.Distribution, Dist) : underlying OT distribution
+    """
+    dist = cores.otdistribution(distribution)
+    return dist
+
+
+def deprecation_warning(func):
+    """Add a deprecation warning do each distribution."""
+
+    @wraps(func)
+    def caller(*args, **kwargs):
+        """Docs to be replaced."""
+        logger = logging.getLogger(__name__)
+        logger.warning("""\
+Distribution `chaospy.{}` will be renamed in next version. Please see documentation for the replacement.
+The name should be about the same except for typos, a switch to title case, and some added verbosity.
+        """.format(func.__name__))
+        return func(*args, **kwargs)
+    return caller
+
+
+@deprecation_warning
 def Alpha(shape=1, scale=1, shift=0):
     """
     Alpha distribution.
@@ -23,6 +52,7 @@ def Alpha(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Anglit(loc=0, scale=1):
     """
     Anglit distribution.
@@ -36,12 +66,14 @@ def Anglit(loc=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Arcsinus(shape=0.5, lo=0, up=1):
     """
     Generalized Arc-sinus distribution
 
     shape : float, Dist
-        Shape parameter where 0.5 is the default non-generalized case.
+        Shape parameter where 0.5 is the @deprecation_warning
+default non-generalized case.
     lo : float, Dist
         Lower threshold
     up : float, Dist
@@ -52,6 +84,7 @@ def Arcsinus(shape=0.5, lo=0, up=1):
     return dist
 
 
+@deprecation_warning
 def Beta(a, b, lo=0, up=1):
     R"""
     Beta Probability Distribution.
@@ -79,6 +112,7 @@ def Beta(a, b, lo=0, up=1):
     return dist
 
 
+@deprecation_warning
 def Bradford(shape=1, lo=0, up=1):
     """
     Bradford distribution.
@@ -93,6 +127,7 @@ def Bradford(shape=1, lo=0, up=1):
     return dist
 
 
+@deprecation_warning
 def Burr(c=1, d=1, loc=0, scale=1):
     """
     Burr Type III distribution.
@@ -108,6 +143,7 @@ def Burr(c=1, d=1, loc=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Cauchy(loc=0, scale=1):
     """
     Cauchy distribution.
@@ -121,6 +157,7 @@ def Cauchy(loc=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Chi(df=1, scale=1, shift=0):
     """
     Chi distribution.
@@ -135,6 +172,7 @@ def Chi(df=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Chisquard(df=1, scale=1, shift=0, nc=0):
     """
     (Non-central) Chi-squared distribution.
@@ -150,6 +188,7 @@ def Chisquard(df=1, scale=1, shift=0, nc=0):
     return dist
 
 
+@deprecation_warning
 def Dbl_gamma(shape=1, scale=1, shift=0):
     """
     Double gamma distribution.
@@ -164,6 +203,7 @@ def Dbl_gamma(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Dbl_weibull(shape=1, scale=1, shift=0):
     """
     Double weibull distribution.
@@ -178,6 +218,7 @@ def Dbl_weibull(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Exponential(scale=1, shift=0):
     R"""
     Exponential Probability Distribution
@@ -203,6 +244,7 @@ def Exponential(scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Exponpow(shape=0, scale=1, shift=0):
     """
     Expontial power distribution.
@@ -220,6 +262,7 @@ def Exponpow(shape=0, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Exponweibull(a=1, c=1, scale=1, shift=0):
     """
     Expontiated Weibull distribution.
@@ -235,6 +278,7 @@ def Exponweibull(a=1, c=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def F(n=1, m=1, scale=1, shift=0, nc=0):
     """
     (Non-central) F or Fisher-Snedecor distribution.
@@ -251,6 +295,7 @@ def F(n=1, m=1, scale=1, shift=0, nc=0):
     return dist
 
 
+@deprecation_warning
 def Fatiguelife(shape=1, scale=1, shift=0):
     """
     Fatigue-Life or Birmbaum-Sanders distribution
@@ -265,6 +310,7 @@ def Fatiguelife(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Fisk(shape=1, scale=1, shift=0):
     """
     Fisk or Log-logistic distribution.
@@ -279,6 +325,7 @@ def Fisk(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Foldcauchy(shape=0, scale=1, shift=0):
     """
     Folded Cauchy distribution.
@@ -293,6 +340,7 @@ def Foldcauchy(shape=0, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Foldnormal(mu=0, sigma=1, loc=0):
     """
     Folded normal distribution.
@@ -307,6 +355,7 @@ def Foldnormal(mu=0, sigma=1, loc=0):
     return dist
 
 
+@deprecation_warning
 def Frechet(shape=1, scale=1, shift=0):
     """
     Frechet or Extreme value distribution type 2.
@@ -321,6 +370,7 @@ def Frechet(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Gamma(shape=1, scale=1, shift=0):
     """
     Gamma distribution.
@@ -349,6 +399,7 @@ def Gamma(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Genexpon(a=1, b=1, c=1, scale=1, shift=0):
     """
     Generalized exponential distribution.
@@ -372,6 +423,7 @@ def Genexpon(a=1, b=1, c=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Genextreme(shape=0, scale=1, loc=0):
     """
     Generalized extreme value distribution
@@ -387,6 +439,7 @@ def Genextreme(shape=0, scale=1, loc=0):
     return dist
 
 
+@deprecation_warning
 def Gengamma(shape1, shape2, scale, shift):
     """
     Generalized gamma distribution
@@ -403,6 +456,7 @@ def Gengamma(shape1, shape2, scale, shift):
     return dist
 
 
+@deprecation_warning
 def Genhalflogistic(shape, scale, shift):
     """
     Generalized half-logistic distribution
@@ -417,6 +471,7 @@ def Genhalflogistic(shape, scale, shift):
     return dist
 
 
+@deprecation_warning
 def Gilbrat(scale=1, shift=0):
     """
     Gilbrat distribution.
@@ -432,6 +487,7 @@ def Gilbrat(scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Gompertz(shape, scale, shift):
     """
     Gompertz distribution
@@ -446,6 +502,7 @@ def Gompertz(shape, scale, shift):
     return dist
 
 
+@deprecation_warning
 def Logweibul(scale=1, loc=0):
     """
     Gumbel or Log-Weibull distribution.
@@ -459,6 +516,7 @@ def Logweibul(scale=1, loc=0):
     return dist
 
 
+@deprecation_warning
 def Hypgeosec(loc=0, scale=1):
     """
     hyperbolic secant distribution
@@ -472,6 +530,7 @@ def Hypgeosec(loc=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Kumaraswamy(a, b, lo=0, up=1):
     """
     Kumaraswswamy's double bounded distribution
@@ -487,6 +546,7 @@ def Kumaraswamy(a, b, lo=0, up=1):
     return dist
 
 
+@deprecation_warning
 def Laplace(mu=0, scale=1):
     R"""
     Laplace Probability Distribution
@@ -513,6 +573,7 @@ def Laplace(mu=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Levy(loc=0, scale=1):
     """
     Levy distribution
@@ -526,6 +587,7 @@ def Levy(loc=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Loggamma(shape=1, scale=1, shift=0):
     """
     Log-gamma distribution
@@ -540,6 +602,7 @@ def Loggamma(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Logistic(loc=0, scale=1, skew=1):
     """
     Generalized logistic type 1 distribution
@@ -554,6 +617,7 @@ def Logistic(loc=0, scale=1, skew=1):
     return dist
 
 
+@deprecation_warning
 def Loglaplace(shape=1, scale=1, shift=0):
     """
     Log-laplace distribution
@@ -568,6 +632,7 @@ def Loglaplace(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Lognormal(mu=0, sigma=1, shift=0, scale=1):
     R"""
     Log-normal distribution
@@ -596,6 +661,7 @@ def Lognormal(mu=0, sigma=1, shift=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Loguniform(lo=0, up=1, scale=1, shift=0):
     """
     Log-uniform distribution
@@ -611,6 +677,7 @@ def Loguniform(lo=0, up=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Maxwell(scale=1, shift=0):
     """
     Maxwell-Boltzmann distribution
@@ -625,6 +692,7 @@ def Maxwell(scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Mielke(kappa=1, expo=1, scale=1, shift=0):
     """
     Mielke's beta-kappa distribution
@@ -640,6 +708,7 @@ def Mielke(kappa=1, expo=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def MvLognormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
     """
     Multivariate Log-Normal Distribution.
@@ -654,6 +723,7 @@ def MvLognormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
     return dist
 
 
+@deprecation_warning
 def MvNormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
     """
     Multivariate Normal Distribution
@@ -686,6 +756,7 @@ def MvNormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
     return out
 
 
+@deprecation_warning
 def MvStudent_t(df=1, loc=[0,0], scale=[[1,.5],[.5,1]]):
     """
     Args:
@@ -698,6 +769,7 @@ def MvStudent_t(df=1, loc=[0,0], scale=[[1,.5],[.5,1]]):
     return out
 
 
+@deprecation_warning
 def Nakagami(shape=1, scale=1, shift=0):
     """
     Nakagami-m distribution.
@@ -712,17 +784,7 @@ def Nakagami(shape=1, scale=1, shift=0):
     return dist
 
 
-def OTDistribution(distribution):
-    """
-    OpenTURNS distribution.
-
-    Args:
-        distribution (openturns.Distribution, Dist) : underlying OT distribution
-    """
-    dist = cores.otdistribution(distribution)
-    return dist
-
-
+@deprecation_warning
 def Pareto1(shape=1, scale=1, loc=0):
     """
     Pareto type 1 distribution.
@@ -739,6 +801,7 @@ def Pareto1(shape=1, scale=1, loc=0):
     return dist
 
 
+@deprecation_warning
 def Pareto2(shape=1, scale=1, loc=0):
     """
     Pareto type 2 distribution.
@@ -757,6 +820,7 @@ def Pareto2(shape=1, scale=1, loc=0):
     return dist
 
 
+@deprecation_warning
 def Powerlaw(shape=1, lo=0, up=1):
     """
     Powerlaw distribution
@@ -771,6 +835,7 @@ def Powerlaw(shape=1, lo=0, up=1):
     return dist
 
 
+@deprecation_warning
 def Powerlognormal(shape=1, mu=0, sigma=1, shift=0, scale=1):
     """
     Power log-normal distribution
@@ -789,6 +854,7 @@ def Powerlognormal(shape=1, mu=0, sigma=1, shift=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Powernorm(shape=1, mu=0, scale=1):
     """
     Power normal or Box-Cox distribution.
@@ -803,6 +869,7 @@ def Powernorm(shape=1, mu=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Raised_cosine(loc=0, scale=1):
     """
     Raised cosine distribution
@@ -816,6 +883,7 @@ def Raised_cosine(loc=0, scale=1):
     return dist
 
 
+@deprecation_warning
 def Rayleigh(scale=1, shift=0):
     """
     Rayleigh distribution
@@ -829,6 +897,7 @@ def Rayleigh(scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Reciprocal(lo=1, up=2):
     """
     Reciprocal distribution
@@ -842,6 +911,7 @@ def Reciprocal(lo=1, up=2):
     return dist
 
 
+@deprecation_warning
 def Student_t(df, loc=0, scale=1, nc=0):
     """
     (Non-central) Student-t distribution
@@ -857,6 +927,7 @@ def Student_t(df, loc=0, scale=1, nc=0):
     return dist
 
 
+@deprecation_warning
 def Triangle(lo, mid, up):
     """
     Triangle Distribution.
@@ -885,6 +956,7 @@ def Triangle(lo, mid, up):
     return dist
 
 
+@deprecation_warning
 def Truncexpon(up=1, scale=1, shift=0):
     """
     Truncated exponential distribution.
@@ -899,6 +971,7 @@ def Truncexpon(up=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Truncnorm(lo=-1, up=1, mu=0, sigma=1):
     """
     Truncated normal distribution
@@ -914,6 +987,7 @@ def Truncnorm(lo=-1, up=1, mu=0, sigma=1):
     return dist
 
 
+@deprecation_warning
 def Tukeylambda(shape=0, scale=1, shift=0):
     """
     Tukey-lambda distribution
@@ -928,6 +1002,7 @@ def Tukeylambda(shape=0, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Wald(mu=0, scale=1, shift=0):
     """
     Wald distribution
@@ -943,6 +1018,7 @@ def Wald(mu=0, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Weibull(shape=1, scale=1, shift=0):
     """
     Weibull Distribution
@@ -969,6 +1045,7 @@ def Weibull(shape=1, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Wigner(radius=1, shift=0):
     """
     Wigner (semi-circle) distribution
@@ -982,6 +1059,7 @@ def Wigner(radius=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def Wrapcauchy(shape=0.5, scale=1, shift=0):
     """
     Wrapped Cauchy distribution
@@ -996,6 +1074,7 @@ def Wrapcauchy(shape=0.5, scale=1, shift=0):
     return dist
 
 
+@deprecation_warning
 def SampleDist(samples, lo=None, up=None):
     """
     Distribution based on samples.

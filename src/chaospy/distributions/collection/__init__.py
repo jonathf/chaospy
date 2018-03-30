@@ -1,11 +1,11 @@
 from .alpha import Alpha
 from .anglit import Anglit
-from .beta import Beta, Arcsinus, PowerLaw, Wigner
+from .beta import Beta, ArcSinus, PowerLaw, Wigner
 from .bradford import Bradford
 from .burr import Burr
 from .cauchy import Cauchy
 from .chi import Chi, Maxwell, Rayleigh
-from .chisquared import Chisquared
+from .chi_squared import ChiSquared
 from .double_gamma import DoubleGamma
 from .double_weibull import DoubleWeibull
 from .exponential_power import ExponentialPower
@@ -51,6 +51,7 @@ from .trunc_normal import TruncNormal
 from .tukey_lambda import TukeyLambda
 from .uniform import Uniform
 from .wald import Wald
+from .weibull import Weibull
 from .wrapped_cauchy import WrappedCauchy
 
 from .sample_dist import SampleDist

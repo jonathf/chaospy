@@ -5,19 +5,19 @@ from .baseclass import Dist
 
 from .constructor import construct
 
-from . import (
-    graph, sampler, approx, joint, cores,
-    copulas, collection, operators, rosenblatt,
-)
-
 from .graph import *
 from .sampler import *
 from .approx import *
 from .joint import *
+from .operators import *
 from .cores import *
 from .copulas import *
+from .deprecations import *
 from .collection import *
-from .coll import *
-from .operators import *
+
+from . import (
+    graph, sampler, approx, joint, cores,
+    copulas, collection, operators, rosenblatt,
+)
 
 from numpy.random import seed

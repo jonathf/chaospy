@@ -13,13 +13,13 @@ class weibull(Dist):
         Dist.__init__(self, a=a)
 
     def _pdf(self, x, a):
-        return a*x**(a-1)*np.e**(-x**a)
+        return a*x**(a-1)*numpy.e**(-x**a)
 
     def _cdf(self, x, a):
-        return (1-np.e**(-x**a))
+        return (1-numpy.e**(-x**a))
 
     def _ppf(self, q, a):
-        return (-np.log(1-q+1*(q==1)))**(1./a)*(q!=1) + 30.**(1./a)*(q==1)
+        return (-numpy.log(1-q+1*(q==1)))**(1./a)*(q!=1) + 30.**(1./a)*(q==1)
 
     def _mom(self, k, a):
         return special.gamma(1.+k*1./a)
@@ -39,6 +39,8 @@ class Weibull(Add):
 
     Examples:
         >>> f = chaospy.Weibull(2)
+        >>> print(f)
+        Weibull(scale=1, shape=2, shift=0)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> print(numpy.around(f.inv(q), 4))
         [0.4724 0.7147 0.9572 1.2686]
@@ -52,6 +54,6 @@ class Weibull(Add):
         0.8862
     """
 
-    def __init__(shape=1, scale=1, shift=0):
+    def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(self, left=weibull(shape)*scale, right=shift)
