@@ -16,9 +16,11 @@ class generalized_exponential(Dist):
         return (a+b*(-numpy.expm1(-c*x)))*numpy.exp((-a-b)*x+b*(-numpy.expm1(-c*x))/c)
 
     def _cdf(self, x, a, b, c):
-        return -numpy.expm1((-a-b)*x + b*(-numpy.expm1(-c*x))/c)
+        output = -numpy.expm1((-a-b)*x + b*(-numpy.expm1(-c*x))/c)
+        output = numpy.where(x > 0, output, 0)
+        return output
 
-    def _bnd(self, a, b, c):
+    def _bnd(self, x, a, b, c):
         return 0, 10**10
 
 

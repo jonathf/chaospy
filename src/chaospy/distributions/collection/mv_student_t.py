@@ -54,7 +54,7 @@ class MvStudentT(Dist):
 
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
-        Dist.__init__(self, a=df, C=C, Ci=Ci, loc=loc, _length=len(C))
+        Dist.__init__(self, a=df, C=C, Ci=Ci, loc=loc)
 
     def _cdf(self, x, a, C, Ci, loc):
         x = numpy.dot(Ci, (x.T-loc.T).T)
@@ -77,13 +77,15 @@ class MvStudentT(Dist):
                 (1+numpy.sum(x_*x_,0)/a))
         return out
 
-    def _bnd(self, a, C, Ci, loc):
+    def _bnd(self, x, a, C, Ci, loc):
+        output = numpy.zeros((2,)+x.shape)
+        scale = numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))
+        output.T[:, :, 0] = -10**3*scale + loc
+        output.T[:, :, 1] = 10**3*scale + loc
+        return output
 
-        scale = numpy.sqrt(numpy.diag(numpy.dot(C,C.T)))
-        lo,up = numpy.zeros((2,len(self)))
-        lo.T[:] = (-10**5*scale+loc)
-        up.T[:] = (10**5*scale+loc)
-        return lo,up
+    def __len__(self):
+        return len(self.prm["C"])
 
     # def _mom(self, k, a, C, Ci, loc):
 
@@ -125,8 +127,3 @@ class MvStudentT(Dist):
     #         out += pos*coef*loc_*M[i]
 
     #     return out
-
-    def _dep(self, graph):
-        n = student_t()
-        out = [set([n]) for _ in range(len(self))]
-        return out

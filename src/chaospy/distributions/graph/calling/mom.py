@@ -2,7 +2,6 @@
 """Backend for raw statistical moment generator."""
 import numpy
 
-from ... import approx
 
 
 def mom_call(self, expon, dist):

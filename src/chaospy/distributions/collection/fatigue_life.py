@@ -24,7 +24,7 @@ class fatigue_life(Dist):
         tmp = c*special.ndtri(q)
         return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, self._ppf(1-1e-10, c)
 
 

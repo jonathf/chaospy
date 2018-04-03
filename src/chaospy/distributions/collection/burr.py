@@ -20,7 +20,7 @@ class burr(Dist):
     def _ppf(self, q, alpha, kappa):
         return ((1-q)**(-1./kappa) -1)**(1./alpha)
 
-    def _bnd(self, alpha, kappa):
+    def _bnd(self, x, alpha, kappa):
         return 0, self._ppf(1-1e-10, alpha, kappa)
 
 

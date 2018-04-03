@@ -30,7 +30,7 @@ class log_normal(Dist):
     (numpy.e**(n*a*a)*(numpy.e**(a*a)+1)-1)*numpy.e**(.5*(2*n-1)*a*a), \
                 (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, self._ppf(1-1e-10, a)
 
 
@@ -60,6 +60,9 @@ class LogNormal(Add):
         [1.4844 0.3011 5.1945 0.9563]
         >>> print(numpy.around(f.mom(1), 4))
         1.6487
+        >>> print(numpy.around(f.ttr([1, 2, 3]), 4))
+        [[1.50155000e+01 1.18650900e+02 8.97651100e+02]
+         [4.67080000e+00 3.48830600e+02 2.09298326e+04]]
     """
 
     def __init__(self, mu=0, sigma=1, shift=0, scale=1):

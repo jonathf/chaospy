@@ -2,7 +2,6 @@
 """Inverse Rosenblatt transformation function."""
 import numpy
 
-from ... import approx
 
 
 def inv_call(self, q_data, dist):

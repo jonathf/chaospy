@@ -8,7 +8,7 @@ Distribution and a constant::
 
     >>> distribution = chaospy.Normal(0, 1) + 10
     >>> print(distribution)
-    (Normal(mu=0, sigma=1)+10)
+    Add(Normal(mu=0, sigma=1), 10)
     >>> print(numpy.around(distribution.sample(5), 4))
     [10.395   8.7997 11.6476  9.9553 11.1382]
     >>> print(numpy.around(distribution.fwd([9, 10, 11]), 4))
@@ -29,7 +29,7 @@ Construct joint addition distribution::
     >>> rhs = chaospy.Uniform(3, 4)
     >>> addition = lhs + rhs
     >>> print(addition)
-    (Uniform(lower=2, upper=3)+Uniform(lower=3, upper=4))
+    Add(Uniform(lower=2, upper=3), Uniform(lower=3, upper=4))
     >>> joint1 = chaospy.J(lhs, addition)
     >>> joint2 = chaospy.J(rhs, addition)
 
@@ -69,10 +69,12 @@ Raw moments::
     >>> print(numpy.around(joint2.mom([(0, 1, 1), (1, 0, 1)]), 4))
     [ 6.   3.5 21. ]
 """
+from __future__ import division
 from scipy.misc import comb
 import numpy
 
 from ..baseclass import Dist
+from .. import evaluation
 from .multiply import mul
 
 
@@ -81,115 +83,230 @@ class Add(Dist):
 
     def __init__(self, left, right):
         """
-        Constructor.
-
         Args:
             left (Dist, array_like) : Left hand side.
             right (Dist, array_like) : Right hand side.
         """
-        try:
-            left_ = len(left)
-        except TypeError:
-            left_ = 1
-        except IndexError:
-            left_ = 1
-        try:
-            right_ = len(right)
-        except TypeError:
-            right_ = 1
-        except IndexError:
-            right_ = 1
-        length = max(left_, right_)
-        Dist.__init__(self, left=left, right=right, _length=length, _advance=True)
+        Dist.__init__(self, left=left, right=right)
 
-    def _str(self, left, right):
-        """String representation."""
-        return "(%s+%s)" % (left, right)
+    def _bnd(self, xloc, left, right, cache):
+        """
+        Distribution bounds.
 
-    def _val(self, graph):
-        """Value extraction."""
-        if len(graph.keys) == 2:
-            return graph.keys["left"] + graph.keys["right"]
-        return self
+        Example:
+            >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
+            [[0. 0. 0. 0.]
+             [1. 1. 1. 1.]]
+            >>> print(Add(chaospy.Uniform(), 2).range([-2, 0, 2, 4]))
+            [[2. 2. 2. 2.]
+             [3. 3. 3. 3.]]
+            >>> print(Add(2, chaospy.Uniform()).range([-2, 0, 2, 4]))
+            [[2. 2. 2. 2.]
+             [3. 3. 3. 3.]]
+            >>> print(Add(1, 1).range([-2, 0, 2, 4]))
+            [[2. 2. 2. 2.]
+             [2. 2. 2. 2.]]
+        """
+        if isinstance(left, Dist) and left in cache:
+            left = cache[left]
+        if isinstance(right, Dist) and right in cache:
+            right = cache[right]
 
-    def _bnd(self, xloc, graph):
-        """Distribution bounds."""
-        if "left" in graph.keys and "right" in graph.dists:
-            num, dist = graph.keys["left"], graph.dists["right"]
+        if isinstance(left, Dist):
+            if isinstance(right, Dist):
+                raise evaluation.DependencyError(
+                    "under-defined distribution {} or {}".format(left, right))
+        elif not isinstance(right, Dist):
+            return left+right, left+right
         else:
-            num, dist = graph.keys["right"], graph.dists["left"]
-        lower, upper = graph((xloc.T).T, dist)
-        return (lower.T+num.T).T, (upper.T+num.T).T
+            left, right = right, left
 
-    def _cdf(self, xloc, graph):
-        """Cumulative distribution function."""
-        if "left" in graph.keys and "right" in graph.dists:
-            num, dist = graph.keys["left"], graph.dists["right"]
+        right = numpy.asfarray(right)
+        xloc = (xloc.T-numpy.asfarray(right).T).T
+        lower, upper = evaluation.evaluate_bound(left, xloc, cache)
+        return (lower.T+right.T).T, (upper.T+right.T).T
+
+    def _cdf(self, xloc, left, right, cache):
+        """
+        Cumulative distribution function.
+
+        Example:
+            >>> print(chaospy.Uniform().fwd([-0.5, 0.5, 1.5, 2.5]))
+            [0.  0.5 1.  1. ]
+            >>> print(Add(chaospy.Uniform(), 1).fwd([-0.5, 0.5, 1.5, 2.5]))
+            [0.  0.  0.5 1. ]
+            >>> print(Add(1, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5]))
+            [0.  0.  0.5 1. ]
+            >>> print(Add(1, 1).fwd([-0.5, 0.5, 1.5, 2.5]))
+            [0. 0. 0. 1.]
+        """
+        if isinstance(left, Dist) and left in cache:
+            left = cache[left]
+        if isinstance(right, Dist) and right in cache:
+            right = cache[right]
+
+        if isinstance(left, Dist):
+            if isinstance(right, Dist):
+                raise evaluation.DependencyError(
+                    "under-defined distribution {} or {}".format(left, right))
+        elif not isinstance(right, Dist):
+            return numpy.asfarray(left+right <= xloc)
         else:
-            num, dist = graph.keys["right"], graph.dists["left"]
-        return graph((xloc.T-num.T).T, dist)
+            left, right = right, left
+        xloc = (xloc.T-numpy.asfarray(right).T).T
+        return evaluation.evaluate_forward(left, xloc, cache)
 
-    def _pdf(self, xloc, graph):
-        """Probability density function."""
-        if "left" in graph.keys and "right" in graph.dists:
-            num, dist = graph.keys["left"], graph.dists["right"]
+    def _pdf(self, xloc, left, right, cache):
+        """
+        Probability density function.
+
+        Example:
+            >>> print(chaospy.Uniform().pdf([-2, 0, 2, 4]))
+            [0. 1. 0. 0.]
+            >>> print(Add(chaospy.Uniform(), 2).pdf([-2, 0, 2, 4]))
+            [0. 0. 1. 0.]
+            >>> print(Add(2, chaospy.Uniform()).pdf([-2, 0, 2, 4]))
+            [0. 0. 1. 0.]
+            >>> print(Add(1, 1).pdf([-2, 0, 2, 4])) # Dirac logic
+            [ 0.  0. inf  0.]
+        """
+        if isinstance(left, Dist) and left in cache:
+            left = cache[left]
+        if isinstance(right, Dist) and right in cache:
+            right = cache[right]
+
+        if isinstance(left, Dist):
+            if isinstance(right, Dist):
+                raise evaluation.DependencyError(
+                    "under-defined distribution {} or {}".format(left, right))
+        elif not isinstance(right, Dist):
+            return numpy.inf
         else:
-            num, dist = graph.keys["right"], graph.dists["left"]
-        return graph((xloc.T-num.T).T, dist)
+            left, right = right, left
 
-    def _ppf(self, uloc, graph):
-        """Point percentile function."""
-        if "left" in graph.keys and "right" in graph.dists:
-            num, dist = graph.keys["left"], graph.dists["right"]
+        xloc = (xloc.T-numpy.asfarray(right).T).T
+        return evaluation.evaluate_density(left, xloc, cache)
+
+    def _ppf(self, uloc, left, right, cache):
+        """
+        Point percentile function.
+
+        Example:
+            >>> print(chaospy.Uniform().inv([0.1, 0.2, 0.9]))
+            [0.1 0.2 0.9]
+            >>> print(Add(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9]))
+            [2.1 2.2 2.9]
+            >>> print(Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
+            [2.1 2.2 2.9]
+            >>> print(Add(1, 1).inv([0.1, 0.2, 0.9]))
+            [2. 2. 2.]
+        """
+        if isinstance(left, Dist) and left in cache:
+            left = cache[left]
+        if isinstance(right, Dist) and right in cache:
+            right = cache[right]
+
+        if isinstance(left, Dist):
+            if isinstance(right, Dist):
+                raise evaluation.DependencyError(
+                    "under-defined distribution {} or {}".format(left, right))
+        elif not isinstance(right, Dist):
+            return left+right
         else:
-            num, dist = graph.keys["right"], graph.dists["left"]
-        return (graph(uloc, dist).T + num.T).T
+            left, right = right, left
 
-    def _mom(self, keys, graph):
-        """Statistical moments."""
-        if len(graph.dists) == 2 and \
-                graph.dists["left"].dependent(graph.dists["right"]):
-            raise NotImplementedError("dependency")
+        xloc = evaluation.evaluate_inverse(left, uloc, cache)
+        return (xloc.T + numpy.asfarray(right).T).T
 
-        dim = len(self)
-        kmax = numpy.max(keys, 1)+1
-        keys_ = numpy.mgrid[[slice(0, _, 1) for _ in kmax]]
-        keys_ = keys_.reshape(dim, int(keys_.size/dim))
+    def _mom(self, keys, left, right, cache):
+        """
+        Statistical moments.
 
-        left = []
-        if "left" in graph.dists:
-            left.append(graph(keys_, graph.dists["left"]))
+        Example:
+            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
+            [1.     0.5    0.3333 0.25  ]
+            >>> print(numpy.around(Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
+            [ 1.      2.5     6.3333 16.25  ]
+            >>> print(numpy.around(Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
+            [ 1.      2.5     6.3333 16.25  ]
+            >>> print(numpy.around(Add(1, 1).mom([0, 1, 2, 3]), 4))
+            [1. 2. 4. 8.]
+        """
+        if evaluation.get_dependencies(left, right):
+            raise evaluation.DependencyError(
+                "sum of dependent distributions not feasible: "
+                "{} and {}".format(left, right)
+            )
+
+        keys_ = numpy.mgrid[tuple(slice(0, key+1, 1) for key in keys)]
+        keys_ = keys_.reshape(len(self), -1)
+
+        if isinstance(left, Dist):
+            left = [
+                evaluation.evaluate_moment(left, key, cache)
+                for key in keys_.T
+            ]
         else:
-            left.append(graph.keys["left"]**keys_.T)
-        if "right" in graph.dists:
-            left.append(graph(keys_, graph.dists["right"]))
+            left = list(reversed(numpy.array(left).T**keys_.T))
+        if isinstance(right, Dist):
+            right = [
+                evaluation.evaluate_moment(right, key, cache)
+                for key in keys_.T
+            ]
         else:
-            left.append(graph.keys["right"]**keys_.T)
+            right = list(reversed(numpy.array(right).T**keys_.T))
 
-        if dim == 1:
-            left[0] = left[0].flatten()
-            left[1] = left[1].flatten()
-            keys = keys.flatten()
-
-        out = 0.
+        out = numpy.zeros(keys.shape)
         for idx in range(keys_.shape[1]):
             key = keys_.T[idx]
             coef = comb(keys.T, key)
-            out = out + coef*left[0][idx]*left[1][keys-idx]*(key <= keys.T)
+            out += coef*left[idx]*right[idx]*(key <= keys.T)
 
-        if dim > 1:
+        if len(self) > 1:
             out = numpy.prod(out, 1)
         return out
 
-    def _ttr(self, order, graph):
-        """Three terms recursion coefficients."""
-        if "left" in graph.keys and "right" in graph.dists:
-            num, dist = graph.keys["left"], graph.dists["right"]
-        else:
-            num, dist = graph.keys["right"], graph.dists["left"]
+    def _ttr(self, kloc, left, right, cache):
+        """
+        Three terms recursion coefficients.
 
-        coeffs0, coeffs1 = graph(order, dist)
-        return coeffs0+num, coeffs1
+        Example:
+            >>> print(numpy.around(chaospy.Uniform().ttr([0, 1, 2, 3]), 4))
+            [[ 0.5     0.5     0.5     0.5   ]
+             [-0.      0.0833  0.0667  0.0643]]
+            >>> print(numpy.around(Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]), 4))
+            [[ 2.5     2.5     2.5     2.5   ]
+             [-0.      0.0833  0.0667  0.0643]]
+            >>> print(numpy.around(Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
+            [[ 2.5     2.5     2.5     2.5   ]
+             [-0.      0.0833  0.0667  0.0643]]
+            >>> print(numpy.around(Add(1, 1).ttr([0, 1, 2, 3]), 4))
+            Traceback (most recent call last):
+                ...
+            chaospy.distributions.evaluation.DependencyError: recurrence ...
+        """
+        if isinstance(left, Dist) and isinstance(right, Dist):
+            raise evaluation.DependencyError(
+                "sum of distributions not feasible: "
+                "{} and {}".format(left, right)
+            )
+        elif not isinstance(left, Dist) and not isinstance(right, Dist):
+            raise evaluation.DependencyError(
+                "recurrence coefficients for constants not feasible: "
+                "{}".format(left+right)
+            )
+        elif isinstance(right, Dist):
+            left, right = right, left
+
+        coeff0, coeff1 = evaluation.evaluate_recurrence_coefficients(
+            left, kloc, cache=cache)
+        return coeff0 + numpy.asarray(right), coeff1
+
+    def __str__(self):
+        if self._repr is not None:
+            return super().__str__()
+        return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
+                ", " + str(self.prm["right"]) + ")")
 
 
 def add(left, right):

@@ -21,7 +21,7 @@ class truncexpon(Dist):
     def _ppf(self, q, b):
         return -numpy.log(1-q+q*numpy.exp(-b))
 
-    def _bnd(self, b):
+    def _bnd(self, x, b):
         return 0.0, b
 
 

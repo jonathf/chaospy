@@ -52,5 +52,5 @@ class TruncNormal(Dist):
         fb = special.ndtr((b-mu)/sigma)
         return special.ndtri(q*(fb-fa) + fa)*sigma + mu
 
-    def _bnd(self, a, b, mu, sigma):
+    def _bnd(self, x, a, b, mu, sigma):
         return a, b

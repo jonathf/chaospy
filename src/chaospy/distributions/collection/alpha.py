@@ -21,7 +21,7 @@ class alpha(Dist):
     def _pdf(self, x, a):
         return 1.0/(x**2)/special.ndtr(a)*numpy.e**(.5*(a-1.0/x)**2)/numpy.sqrt(2*numpy.pi)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, self._ppf(1-1e-10, a)
 
 

@@ -8,7 +8,8 @@ from functools import wraps
 import numpy
 from scipy.stats import gaussian_kde
 
-from . import cores, joint
+from . import collection
+
 
 
 def OTDistribution(distribution):
@@ -24,16 +25,15 @@ def OTDistribution(distribution):
 
 def deprecation_warning(func):
     """Add a deprecation warning do each distribution."""
-
     @wraps(func)
     def caller(*args, **kwargs):
         """Docs to be replaced."""
         logger = logging.getLogger(__name__)
+        instance = func(*args, **kwargs)
         logger.warning("""\
-Distribution `chaospy.{}` will be renamed in next version. Please see documentation for the replacement.
-The name should be about the same except for typos, a switch to title case, and some added verbosity.
-        """.format(func.__name__))
-        return func(*args, **kwargs)
+Distribution `chaospy.{}` is renamed to `chaospy.{}`. Please adjust your code.\
+        """.format(func.__name__, instance.__class__.__name__))
+        return instance
     return caller
 
 
@@ -47,9 +47,7 @@ def Alpha(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scale Parameter
         shift (float, Dist) : Location of lower threshold
     """
-    dist = cores.alpha(shape)*scale + shift
-    dist.addattr(str="Alpha(%s,%s,%s)" % (shape, scale, shift))
-    return dist
+    return collection.Alpha(shape, scale, shift)
 
 
 @deprecation_warning
@@ -61,9 +59,7 @@ def Anglit(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = cores.anglit()*scale + loc
-    dist.addattr(str="Anglit(%s,%s)"(loc, scale))
-    return dist
+    return collection.Anglit(loc, scale)
 
 
 @deprecation_warning
@@ -79,9 +75,7 @@ default non-generalized case.
     up : float, Dist
         Upper threshold
     """
-    dist = cores.beta(shape, 1-shape)*(up-lo) + lo
-    dist.addattr(str="Arcsinus(%s,%s,%s)" % (shape, lo, up))
-    return dist
+    return collection.ArcSinus(shape, lo, up)
 
 
 @deprecation_warning
@@ -107,9 +101,7 @@ def Beta(a, b, lo=0, up=1):
         >>> print(f.mom(1))
         2.5
     """
-    dist = cores.beta(a, b)*(up-lo) + lo
-    dist.addattr(str="Beta(%s,%s,%s,%s)" % (a,b,lo,up))
-    return dist
+    return collection.Beta(a, b, lo, up)
 
 
 @deprecation_warning
@@ -122,9 +114,7 @@ def Bradford(shape=1, lo=0, up=1):
         lo (float, Dist) : Location of lower threshold
         up (float, Dist) : Location of upper threshold
     """
-    dist = cores.bradford(c=shape)*(up-lo) + lo
-    dist.addattr(str="Bradford(%s,%s,%s)"%(shape, lo, up))
-    return dist
+    return collection.Bradford(shape, lo, up)
 
 
 @deprecation_warning
@@ -138,9 +128,17 @@ def Burr(c=1, d=1, loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
+<<<<<<< HEAD
     dist = cores.burr(c=c, d=d)*scale + loc
     dist.addattr(str="Burr(%s,%s,%s,%s)"%(c, d, loc, scale))
     return dist
+||||||| merged common ancestors
+    dist = cores.burr(c=1., d=1.)*scale + loc
+    dist.addattr(str="Burr(%s,%s,%s,%s)"%(c, d, loc, scale))
+    return dist
+=======
+    return collection.Burr(c, d, loc, scale)
+>>>>>>> replace graph backend: step 1
 
 
 @deprecation_warning
@@ -152,9 +150,7 @@ def Cauchy(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = cores.cauchy()*scale + loc
-    dist.addattr(str="Cauchy(%s,%s)"%(loc,scale))
-    return dist
+    return collection.Cauchy(loc, scale)
 
 
 @deprecation_warning
@@ -167,9 +163,7 @@ def Chi(df=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.chi(df)*scale + shift
-    dist.addattr(str="Chi(%s,%s,%s)"%(df, scale, shift))
-    return dist
+    return collection.Chi(df, scale, shift)
 
 
 @deprecation_warning
@@ -183,9 +177,7 @@ def Chisquard(df=1, scale=1, shift=0, nc=0):
         shift (float, Dist) : Location parameter
         nc (float, Dist) : Non-centrality parameter
     """
-    dist = cores.chisquared(df, nc)*scale + shift
-    dist.addattr(str="Chisquared(%s,%s,%s,%s)"%(df, nc,scale,shift))
-    return dist
+    return collection.ChiSquard(df, scale, shift, nc)
 
 
 @deprecation_warning
@@ -198,9 +190,7 @@ def Dbl_gamma(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.dbl_gamma(shape)*scale + shift
-    dist.addattr(str="Dbl_gamma(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.DoubleGamma(shape, scale, shift)
 
 
 @deprecation_warning
@@ -213,9 +203,7 @@ def Dbl_weibull(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.dbl_weibull(shape)*scale + shift
-    dist.addattr(str="Dbl_weibull(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.DoubleWeibull(shape, scale, shift)
 
 
 @deprecation_warning
@@ -239,9 +227,7 @@ def Exponential(scale=1, shift=0):
         >>> print(f.mom(1))
         1.0
     """
-    dist = cores.expon()*scale + shift
-    dist.addattr(str="Expon(%s,%s)" % (scale, shift))
-    return dist
+    return collection.Exponential(scale, shift)
 
 
 @deprecation_warning
@@ -257,9 +243,7 @@ def Exponpow(shape=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.exponpow(shape)*scale + shift
-    dist.addattr(str="Exponpow(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.ExponentialPower(shape, scale, shift)
 
 
 @deprecation_warning
@@ -273,9 +257,7 @@ def Exponweibull(a=1, c=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.exponweibull(a, c)*scale + shift
-    dist.addattr(str="Exponweibull(%s,%s,%s,%s)"%(a, c, scale,shift))
-    return dist
+    return collection.ExponentialWeibull(a, c, scale, shift)
 
 
 @deprecation_warning
@@ -290,9 +272,7 @@ def F(n=1, m=1, scale=1, shift=0, nc=0):
         shift (float, Dist) : Location parameter
         nc (float, Dist) : Non-centrality parameter
     """
-    dist = cores.f(n, m, nc)*scale + shift
-    dist.addattr(str="F(%s,%s,%s,%s,%s)"%(n, m, scale, shift, nc))
-    return dist
+    return collection.F(n, m, scale, shift, nc)
 
 
 @deprecation_warning
@@ -305,9 +285,7 @@ def Fatiguelife(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.fatiguelife(shape)*scale + shift
-    dist.addattr(str="Fatiguelife(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.FatigueLife(shape, scale, shift)
 
 
 @deprecation_warning
@@ -320,9 +298,7 @@ def Fisk(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.fisk(c=shape)*scale + shift
-    dist.addattr(str="Fisk(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.Fisk(shape, scale, shift)
 
 
 @deprecation_warning
@@ -335,9 +311,7 @@ def Foldcauchy(shape=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.foldcauchy(shape)*scale + shift
-    dist.addattr(str="Foldcauchy(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.FoldCauchy(shape, scale, shift)
 
 
 @deprecation_warning
@@ -350,9 +324,7 @@ def Foldnormal(mu=0, sigma=1, loc=0):
         sigma (float, Dist) : Scaling parameter (in both normal and fold)
         loc (float, Dist) : Location of fold
     """
-    dist = cores.foldnorm(mu-loc)*sigma + loc
-    dist.addattr(str="Foldnorm(%s,%s,%s)"%(mu, sigma, loc))
-    return dist
+    return collection.FoldNormal(mu, sigma, loc)
 
 
 @deprecation_warning
@@ -365,9 +337,7 @@ def Frechet(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.frechet(shape)*scale + shift
-    dist.addattr(str="Frechet(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.Frechet(shape, scale, shift)
 
 
 @deprecation_warning
@@ -394,9 +364,7 @@ def Gamma(shape=1, scale=1, shift=0):
         >>> print(f.mom(1))
         1.0
     """
-    dist = cores.gamma(shape)*scale + shift
-    dist.addattr(str="Gamma(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.Gamma(shape, scale, shift)
 
 
 @deprecation_warning
@@ -418,9 +386,7 @@ def Genexpon(a=1, b=1, c=1, scale=1, shift=0):
         "The Exponential Distribution: Theory, Methods and Applications",
         N. Balakrishnan, Asit P. Basu.
     """
-    dist = cores.genexpon(a=1, b=1, c=1)*scale + shift
-    dist.addattr(str="Genexpon(%s,%s,%s)"%(a, b, c))
-    return dist
+    return collection.GeneralizedExponential(a, b, c, scale, shift)
 
 
 @deprecation_warning
@@ -434,9 +400,7 @@ def Genextreme(shape=0, scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         loc (float, Dist) : Location parameter
     """
-    dist = cores.genextreme(shape)*scale + loc
-    dist.addattr(str="Genextreme(%s,%s,%s)"%(shape, scale, loc))
-    return dist
+    return collection.GeneralizedExtreme(shape, scale, loc)
 
 
 @deprecation_warning
@@ -450,10 +414,7 @@ def Gengamma(shape1, shape2, scale, shift):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.gengamma(shape1, shape2)*scale + shift
-    dist.addattr(
-        str="Gengamma(%s,%s,%s,%s)"%(shape1,shape2,scale,shift))
-    return dist
+    return collection.GeneralizedGamma(shape1, shape2, scale, shift)
 
 
 @deprecation_warning
@@ -466,9 +427,7 @@ def Genhalflogistic(shape, scale, shift):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.genhalflogistic(shape)*scale + shift
-    dist.addattr(str="Genhalflogistic(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.GeneralizedHalfLogistic(shape, scale, shift)
 
 
 @deprecation_warning
@@ -482,9 +441,7 @@ def Gilbrat(scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.lognormal(1)*scale + shift
-    dist.addattr(str="Gilbrat(%s,%s)"%(scale, shift))
-    return dist
+    return collection.Gilbrat(scale, shift)
 
 
 @deprecation_warning
@@ -497,9 +454,7 @@ def Gompertz(shape, scale, shift):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.gompertz(shape)*scale + shift
-    dist.addattr(str="Gompertz(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.Gompertz(shape, scale, shift)
 
 
 @deprecation_warning
@@ -511,9 +466,7 @@ def Logweibul(scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         loc (float, Dist) : Location parameter
     """
-    dist = cores.gumbel()*scale + loc
-    dist.addattr(str="Gumbel(%s,%s)"%(scale, loc))
-    return dist
+    return collection.LogWeibull(scale, loc)
 
 
 @deprecation_warning
@@ -525,9 +478,7 @@ def Hypgeosec(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scale parameter
     """
-    dist = cores.hypgeosec()*scale + loc
-    dist.addattr(str="Hypgeosec(%s,%s)"%(loc, scale))
-    return dist
+    return collection.HyperbolicSecant(loc, scale)
 
 
 @deprecation_warning
@@ -541,9 +492,7 @@ def Kumaraswamy(a, b, lo=0, up=1):
         lo (float, Dist) : Lower threshold
         up (float, Dist) : Upper threshold
     """
-    dist = cores.kumaraswamy(a,b)*(up-lo) + lo
-    dist.addattr(str="Kumaraswamy(%s,%s,%s,%s)"%(a,b,lo,up))
-    return dist
+    return collection.Kumaraswamy(a, b, lo, up)
 
 
 @deprecation_warning
@@ -568,9 +517,7 @@ def Laplace(mu=0, scale=1):
         >>> print(f.mom(1))
         2.0
     """
-    dist = cores.laplace()*scale + mu
-    dist.addattr(str="Laplace(%s,%s)"%(mu,scale))
-    return dist
+    return collection.Laplace(mu, scale)
 
 
 @deprecation_warning
@@ -582,9 +529,7 @@ def Levy(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = cores.levy()*scale+loc
-    dist.addattr(str="Levy(%s,%s)"%(loc, scale))
-    return dist
+    return collection.Levy(loc, scale)
 
 
 @deprecation_warning
@@ -597,9 +542,7 @@ def Loggamma(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.loggamma(shape)*scale + shift
-    dist.addattr(str="Loggamma(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.LogGamma(shape, scale, shift)
 
 
 @deprecation_warning
@@ -612,9 +555,7 @@ def Logistic(loc=0, scale=1, skew=1):
     scale (float, Dist) : Scale parameter
     skew (float, Dist) : Shape parameter
     """
-    dist = cores.logistic()*scale + loc
-    dist.addattr(str="Logistic(%s,%s)"%(loc, scale))
-    return dist
+    return collection.Logistic(loc, scale, skew)
 
 
 @deprecation_warning
@@ -627,9 +568,7 @@ def Loglaplace(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.loglaplace(shape)*scale + shift
-    dist.addattr(str="Loglaplace(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.LogLaplace(shape, scale, shift)
 
 
 @deprecation_warning
@@ -642,7 +581,7 @@ def Lognormal(mu=0, sigma=1, shift=0, scale=1):
                 scale by mu=log(scale)
         sigma (float, Dist) : Standard deviation of the normal distribution.
         shift (float, Dist) : Location of the lower bound.
-        scale (float, Dist) : Scale parameter. Overlaps with mu by scale=e**mu
+        scale (float, Dist) : Scale parameter. Overlaps with mu by scale**mu
 
     Examples:
         >>> f = chaospy.Lognormal(0, 1)
@@ -656,9 +595,7 @@ def Lognormal(mu=0, sigma=1, shift=0, scale=1):
         >>> print(numpy.around(f.mom(1), 4))
         1.6487
     """
-    dist = cores.lognormal(sigma)*scale*numpy.e**mu + shift
-    dist.addattr(str="Lognormal(%s,%s,%s,%s)"%(mu,sigma,shift,scale))
-    return dist
+    return collection.LogNormal(mu, sigma, shift, scale)
 
 
 @deprecation_warning
@@ -672,9 +609,7 @@ def Loguniform(lo=0, up=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.loguniform(lo, up)*scale + shift
-    dist.addattr(str="Loguniform(%s,%s,%s,%s)" % (lo,up,scale,shift))
-    return dist
+    return collection.LogUniform(lo, up, scale, shift)
 
 
 @deprecation_warning
@@ -687,9 +622,7 @@ def Maxwell(scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.chi(3)*scale + shift
-    dist.addattr(str="Maxwell(%s,%s)"%(scale, shift))
-    return dist
+    return collection.Maxwell(scale, shift)
 
 
 @deprecation_warning
@@ -703,9 +636,7 @@ def Mielke(kappa=1, expo=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.mielke(kappa, expo)*scale + shift
-    dist.addattr(str="Mielke(%s,%s,%s,%s)"%(kappa,expo,scale,shift))
-    return dist
+    return collection.Mielke(kappa, expo, scale, shift)
 
 
 @deprecation_warning
@@ -718,9 +649,7 @@ def MvLognormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
         scale (float, Dist) : Covariance matrix or variance vector if scale is
                 a 1-d vector.
     """
-    dist = cores.mvlognormal(loc, scale)
-    dist.addattr(str="MvLognormal(%s,%s)" % (loc, scale))
-    return dist
+    return collection.MvLognormal(loc, scale)
 
 
 @deprecation_warning
@@ -747,13 +676,7 @@ def MvNormal(loc=[0,0], scale=[[1,.5],[.5,1]]):
         >>> print(numpy.around(f.mom((1,1)), 4))
         0.5
     """
-    if numpy.all((numpy.diag(numpy.diag(scale))-scale)==0):
-        out = joint.J(
-            *[Normal(loc[i], scale[i,i]) for i in range(len(scale))])
-    else:
-        out = cores.mvnormal(loc, scale)
-    out.addattr(str="MvNormal(%s,%s)" % (loc, scale))
-    return out
+    return collection.MvNormal(loc, scale)
 
 
 @deprecation_warning
@@ -764,9 +687,7 @@ def MvStudent_t(df=1, loc=[0,0], scale=[[1,.5],[.5,1]]):
         loc (array_like, Dist) : Location parameter
         scale (array_like) : Covariance matrix
     """
-    out = cores.mvstudentt(df, loc, scale)
-    out.addattr(str="MvStudent_t(%s,%s,%s)" % (df, loc, scale))
-    return out
+    return collection.MvStudentT(df, loc, scale)
 
 
 @deprecation_warning
@@ -779,9 +700,7 @@ def Nakagami(shape=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.nakagami(shape)*scale + shift
-    dist.addattr(str="Nakagami(%s,%s,%s)"%(shape,scale,shift))
-    return dist
+    return collection.Nakagami(shape, scale, shift)
 
 
 @deprecation_warning
@@ -796,9 +715,7 @@ def Pareto1(shape=1, scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.pareto1(shape)*scale + loc
-    dist.addattr(str="Pareto(%s,%s,%s)" % (shape, scale, loc))
-    return dist
+    return collection.Pareto1(shape, scale, loc)
 
 
 @deprecation_warning
@@ -815,9 +732,7 @@ def Pareto2(shape=1, scale=1, loc=0):
         scale (float, Dist) : Scaling parameter
         loc (float, Dist) : Location parameter
     """
-    dist = cores.pareto(shape)*scale + loc
-    dist.addattr(str="Pareto(%s,%s,%s)"%(shape, scale, loc))
-    return dist
+    return collection.Pareto2(shape, scale, loc)
 
 
 @deprecation_warning
@@ -830,9 +745,7 @@ def Powerlaw(shape=1, lo=0, up=1):
         lo (float, Dist) : Location of lower threshold
         up (float, Dist) : Location of upper threshold
     """
-    dist = cores.beta(shape, 1)*(up-lo) + lo
-    dist.addattr(str="Powerlaw(%s,%s,%s)"%(shape, lo, up))
-    return dist
+    return collection.PowerLaw(shape, lo, up)
 
 
 @deprecation_warning
@@ -846,12 +759,9 @@ def Powerlognormal(shape=1, mu=0, sigma=1, shift=0, scale=1):
                 scale by mu=log(scale)
         sigma (float, Dist) : Standard deviation of the normal distribution.
         shift (float, Dist) : Location parameter
-        scale (float, Dist) : Scaling parameter. Overlap with mu in scale=e**mu
+        scale (float, Dist) : Scaling parameter. Overlap with mu in scale**mu
     """
-    dist = cores.powerlognorm(shape, sigma)*scale*numpy.e**mu + shift
-    dist.addattr(str="Powerlognorm(%s,%s,%s,%s,%s)"%\
-            (shape, mu, sigma, shift, scale))
-    return dist
+    return collection.PowerLogNormal(shape, mu, sigma, shift, scale)
 
 
 @deprecation_warning
@@ -864,9 +774,7 @@ def Powernorm(shape=1, mu=0, scale=1):
         mu (float, Dist) : Mean of the normal distribution
         scale (float, Dist) : Standard deviation of the normal distribution
     """
-    dist = cores.powernorm(shape)*scale + mu
-    dist.addattr(str="Powernorm(%s,%s,%s)"%(shape, mu, scale))
-    return dist
+    return collection.PowerNormal(shape, mu, scale)
 
 
 @deprecation_warning
@@ -878,9 +786,7 @@ def Raised_cosine(loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scale parameter
     """
-    dist = cores.raised_cosine()*scale + loc
-    dist.addattr(str="Raised_cosine(%s,%s)"%(loc,scale))
-    return dist
+    return collection.RaisedCosine(loc, scale)
 
 
 @deprecation_warning
@@ -892,9 +798,7 @@ def Rayleigh(scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.chi(2)*scale + shift
-    dist.addattr(str="Rayleigh(%s,%s)"%(scale, shift))
-    return dist
+    return collection.Rayleigh(scale, shift)
 
 
 @deprecation_warning
@@ -906,9 +810,7 @@ def Reciprocal(lo=1, up=2):
         lo (float, Dist) : Location of lower threshold
         up (float, Dist) : Location of upper threshold
     """
-    dist = cores.reciprocal(lo,up)
-    dist.addattr(str="Reciprocal(%s,%s)"%(lo,up))
-    return dist
+    return collection.Reciprocal(lo, up)
 
 
 @deprecation_warning
@@ -922,9 +824,7 @@ def Student_t(df, loc=0, scale=1, nc=0):
         scale (float, Dist) : Scale parameter
         nc (flat, Dist) : Non-centrality parameter
     """
-    dist = cores.student_t(df)*scale + loc
-    dist.addattr(str="Student_t(%s,%s,%s)" % (df, loc, scale))
-    return dist
+    return collection.StudentT(df, loc, scale, nc)
 
 
 @deprecation_warning
@@ -951,9 +851,7 @@ def Triangle(lo, mid, up):
         >>> print(numpy.around(f.mom(1), 4))
         3.0
     """
-    dist = cores.triangle((mid-lo)*1./(up-lo))*(up-lo) + lo
-    dist.addattr(str="Triangle(%s,%s,%s)" % (lo, mid, up))
-    return dist
+    return collection.Triangle(lo, mid, up)
 
 
 @deprecation_warning
@@ -966,9 +864,7 @@ def Truncexpon(up=1, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter in the exponential distribution
         shift (float, Dist) : Location parameter
     """
-    dist = cores.truncexpon((up-shift)/scale)*scale + shift
-    dist.addattr(str="Truncexpon(%s,%s,%s)"%(up, scale, shift))
-    return dist
+    return collection.TruncExponential(up, scale, shift)
 
 
 @deprecation_warning
@@ -982,9 +878,7 @@ def Truncnorm(lo=-1, up=1, mu=0, sigma=1):
         mu (float, Dist) : Mean of normal distribution
         sigma (float, Dist) : Standard deviation of normal distribution
     """
-    dist = cores.truncnorm(lo, up, mu, sigma)
-    dist.addattr(str="Truncnorm(%s,%s,%s,%s)"%(lo,up,mu,sigma))
-    return dist
+    return collection.TruncNormal(lo, up, mu, sigma)
 
 
 @deprecation_warning
@@ -997,9 +891,7 @@ def Tukeylambda(shape=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.tukeylambda(shape)*scale + shift
-    dist.addattr(str="Tukeylambda(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.TukeyLambda(shape, scale, shift)
 
 
 @deprecation_warning
@@ -1013,9 +905,7 @@ def Wald(mu=0, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.wald(mu)*scale + shift
-    dist.addattr(str="Wald(%s,%s,%s)"%(mu, scale, shift))
-    return dist
+    return collection.Wald(mu, scale, shift)
 
 
 @deprecation_warning
@@ -1040,9 +930,7 @@ def Weibull(shape=1, scale=1, shift=0):
         >>> print(numpy.around(f.mom(1), 4))
         0.8862
     """
-    dist = cores.weibull(shape)*scale + shift
-    dist.addattr(str="Weibull(%s,%s,%s)" % (shape, scale, shift))
-    return dist
+    return collection.Weibull(shape, scale, shift)
 
 
 @deprecation_warning
@@ -1054,9 +942,7 @@ def Wigner(radius=1, shift=0):
         radius (float, Dist) : radius of the semi-circle (scale)
         shift (float, Dist) : location of the origen (location)
     """
-    dist = radius*(2*cores.beta(1.5,1.5)-1) + shift
-    dist.addattr(str="Wigner(%s,%s)" % (radius, shift))
-    return dist
+    return collection.Wigner(radius, shift)
 
 
 @deprecation_warning
@@ -1069,9 +955,7 @@ def Wrapcauchy(shape=0.5, scale=1, shift=0):
         scale (float, Dist) : Scaling parameter
         shift (float, Dist) : Location parameter
     """
-    dist = cores.wrapcauchy(shape)*scale + shift
-    dist.addattr(str="Wrapcauchy(%s,%s,%s)"%(shape, scale, shift))
-    return dist
+    return collection.WrappedCauchy(shape, scale, shift)
 
 
 @deprecation_warning
@@ -1088,26 +972,4 @@ def SampleDist(samples, lo=None, up=None):
         lo (float) : Location of lower threshold
         up (float) : Location of upper threshold
     """
-    if lo is None:
-        lo = samples.min()
-    if up is None:
-        up = samples.max()
-
-    try:
-        #construct the kernel density estimator
-        kernel = gaussian_kde(samples, bw_method="scott")
-        dist = cores.kdedist(kernel, lo, up)
-        dist.addattr(str="SampleDist(%s,%s)" % (lo, up))
-
-    #raised by gaussian_kde if dataset is singular matrix
-    except numpy.linalg.LinAlgError:
-        dist = Uniform(lo=-numpy.inf, up=numpy.inf)
-
-    return dist
-
-if __name__=='__main__':
-    import __init__ as cp
-    import numpy as np
-    import doctest
-    doctest.testmod()
-
+    return collection.SampleDist(samples, lo, up)

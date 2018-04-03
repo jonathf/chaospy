@@ -24,9 +24,9 @@ class gamma(Dist):
         return special.gamma(a+k)/special.gamma(a)
 
     def _ttr(self, n, a):
-        return 2*n+a, n*n+n*(a-1)
+        return 2.*n+a, n*n+n*(a-1)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, 40+2*a
 
 
@@ -56,6 +56,9 @@ class Gamma(Add):
         [2.0601 1.1222 4.0014 1.6581]
         >>> print(distribution.mom(1))
         2.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[4. 6. 8.]
+         [1. 4. 9.]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

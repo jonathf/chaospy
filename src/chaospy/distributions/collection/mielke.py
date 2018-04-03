@@ -22,7 +22,7 @@ class mielke(Dist):
         qsk = pow(q,s*1.0/k)
         return pow(qsk/(1.0-qsk),1.0/s)
 
-    def _bnd(self, k, s):
+    def _bnd(self, x, k, s):
         return 0.0, self._ppf(1-1e-10, k, s)
 
 

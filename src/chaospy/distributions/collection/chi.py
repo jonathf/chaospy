@@ -22,7 +22,7 @@ class chi(Dist):
     def _ppf(self, q, df):
         return numpy.sqrt(2*special.gammaincinv(df*0.5,q))
 
-    def _bnd(self, df):
+    def _bnd(self, x, df):
         return 0, self._ppf(1-1e-10, df)
 
     def _mom(self, k, df):

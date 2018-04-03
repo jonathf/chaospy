@@ -16,9 +16,9 @@ def tri_ttr(k, a):
     slowly. However, by splitting the integration into two divided at the
     discontinuity in the derivative, TTR can be made operative.
     """
-    from chaospy.quadrature import clenshaw_curtis
-    q1,w1 = clenshaw_curtis(int(10**3*a), 0, a)
-    q2,w2 = clenshaw_curtis(int(10**3*(1-a)), a, 1)
+    from ...quad import quad_clenshaw_curtis
+    q1, w1 = quad_clenshaw_curtis(int(10**3*a), 0, a)
+    q2, w2 = quad_clenshaw_curtis(int(10**3*(1-a)), a, 1)
     q = numpy.concatenate([q1,q2], 1)
     w = numpy.concatenate([w1,w2])
     w = w*numpy.where(q<a, 2*q/a, 2*(1-q)/(1-a))
@@ -41,7 +41,7 @@ def tri_ttr(k, a):
         norms.append(numpy.sum(y, -1))
 
     A, B = numpy.array(A).T[0], numpy.array(B).T
-    return A, B
+    return A[-1], B[-1]
 
 
 class triangle(Dist):
@@ -66,18 +66,15 @@ class triangle(Dist):
         out = 2*(1.-a_**(k+1))/((k+1)*(k+2)*(1-a_))
         return numpy.where(a==1, 2./(k+2), out)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0., 1.
 
     def _ttr(self, k, a):
-        a = a.item()
-        if a==0: return beta_()._ttr(k, 1, 2)
-        if a==1: return beta_()._ttr(k, 2, 1)
-
-        A,B = tri_ttr(numpy.max(k)+1, a)
-        A = numpy.array([[A[_] for _ in k[0]]])
-        B = numpy.array([[B[_] for _ in k[0]]])
-        return A,B
+        if a == 0:
+            return beta_()._ttr(k, 1, 2)
+        if a == 1:
+            return beta_()._ttr(k, 2, 1)
+        return tri_ttr(k.item()+1, a)
 
 
 class Triangle(Add):
@@ -104,6 +101,9 @@ class Triangle(Add):
         [3.1676 2.4796 3.6847 2.982 ]
         >>> print(numpy.around(f.mom(1), 4))
         3.0
+        >>> print(numpy.around(f.ttr([1, 2, 3]), 4))
+        [[3.     3.     3.    ]
+         [0.1667 0.2333 0.2327]]
     """
 
     def __init__(self, lower, midpoint, upper):

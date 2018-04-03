@@ -23,7 +23,7 @@ class log_laplace(Dist):
     def _ppf(self, q, c):
         return numpy.where(q < 0.5, (2.*q)**(1./c), (2*(1.-q))**(-1./c))
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, self._ppf(1-1e-10, c)
 
 class LogLaplace(Add):

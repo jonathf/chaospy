@@ -13,22 +13,34 @@ class tukey_lambda(Dist):
         Dist.__init__(self, lam=lam)
 
     def _pdf(self, x, lam):
-        Fx = (special.tklmbda(x, lam))
-        Px = Fx**(lam-1.0) + ((1-Fx))**(lam-1.0)
-        Px = 1.0/(Px)
-        return numpy.where((lam <= 0) | (abs(x) < 1.0/(lam)), Px, 0.0)
+        lam = numpy.zeros(x.shape) + lam
+        output = numpy.zeros(x.shape)
+        indices = (lam <= 0) | (numpy.abs(x)*lam < 1)
+        lam = lam[indices]
+        Fx = special.tklmbda(x[indices], lam)
+        Px = 1/(Fx**(lam-1.0) + ((1-Fx))**(lam-1.0))
+        output[indices] = Px
+        return output
 
     def _cdf(self, x, lam):
         return special.tklmbda(x, lam)
 
     def _ppf(self, q, lam):
-        q = q*1.0
-        vals1 = (q**lam - (1-q)**lam)/lam
-        vals2 = numpy.log(q/(1-q))
-        return numpy.where((lam==0)&(q==q), vals2, vals1)
+        output = numpy.zeros(q.shape)
+        lam = numpy.zeros(q.shape) + lam
+        indices = lam != 0
+        q_ = q[indices]
+        lam_ = lam[indices]
+        output[indices] = (q_**lam_ - (1-q_)**lam_)/lam_
+        q_ = q[~indices]
+        output[~indices] = numpy.log(q_/(1-q_))
+        return output
 
-    def _bnd(self, lam):
-        return self._ppf(1e-10, lam), self._ppf(1-1e-10, lam)
+    def _bnd(self, x, lam):
+        return (
+            self._ppf(numpy.array(1e-10), lam),
+            self._ppf(numpy.array(1-1e-10), lam),
+        )
 
 
 class TukeyLambda(Add):

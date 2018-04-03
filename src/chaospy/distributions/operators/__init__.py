@@ -16,3 +16,6 @@ from .trignometric import (
 from .hyperbolic import (
     Sinh, Arcsinh, Cosh, Arccosh, Tanh, Arctanh
 )
+
+from .joint import J
+from .iid import Iid

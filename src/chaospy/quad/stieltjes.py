@@ -6,6 +6,7 @@ import numpy
 import chaospy.poly.base
 import chaospy.poly.collection
 import chaospy.quad
+from .. import distributions
 
 
 def generate_stieltjes(
@@ -59,7 +60,7 @@ def generate_stieltjes(
         >>> print(numpy.around(norms, 4))
         [[1.     0.0833 0.0056]]
     """
-    assert not dist.dependent()
+    assert not distributions.evaluation.get_dependencies(dist)
 
     if len(dist) > 1:
 

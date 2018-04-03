@@ -18,7 +18,7 @@ class pareto2(Dist):
     def _ppf(self, q, c):
         return pow(1.0-q,-1.0/c)-1
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, self._ppf(1-1e-10, c)
 
 

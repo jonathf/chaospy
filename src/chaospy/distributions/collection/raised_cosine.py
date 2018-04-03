@@ -18,7 +18,7 @@ class raised_cosine(Dist):
     def _cdf(self, x):
         return .5 + .5*x + numpy.sin(numpy.pi*x)/(2*numpy.pi)
 
-    def _bnd(self):
+    def _bnd(self, x):
         return -1,1
 
     def _mom(self, k):
@@ -51,7 +51,7 @@ class RaisedCosine(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [2.3134 1.0903 3.1938 1.9644]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.5947
+        2.5947
     """
 
     def __init__(self, loc=0, scale=1):

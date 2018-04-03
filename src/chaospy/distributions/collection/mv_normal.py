@@ -9,11 +9,11 @@ from ..baseclass import Dist
 
 class MvNormal(Dist):
     """
-    Multivariate Normal Distribution
+    Multivariate Normal Distribution.
 
     Args:
-        loc (float, Dist) : Mean vector
-        scale (float, Dist) : Covariance matrix or variance vector if scale is a 1-d vector.
+        loc (float, Dist): Mean vector
+        scale (float, Dist): Covariance matrix or variance vector if scale is a 1-d vector.
 
     Examples:
         >>> distribution = chaospy.MvNormal([1, 2], [[1, 0.6], [0.6, 1]])
@@ -51,42 +51,33 @@ class MvNormal(Dist):
         loc = numpy.asfarray(loc)
         scale = numpy.asfarray(scale)
         assert len(loc) == len(scale)
-        self._repr = {"loc": str(loc.tolist()), "scale": str(scale.tolist())}
+        self._repr = {"loc": loc.tolist(), "scale": scale.tolist()}
 
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
-        Dist.__init__(self, C=C, Ci=Ci, loc=loc,
-                _advance=True, _length=len(C))
+        Dist.__init__(self, C=C, Ci=Ci, loc=loc)
 
-    def _cdf(self, x, graph):
-        Ci, loc = graph.keys["Ci"], graph.keys["loc"]
+    def _cdf(self, x, C, Ci, loc):
         return special.ndtr(numpy.dot(Ci, (x.T-loc.T).T))
 
-    def _ppf(self, q, graph):
-        return (numpy.dot(graph.keys["C"], special.ndtri(q)).T+graph.keys["loc"].T).T
+    def _ppf(self, q, C, Ci, loc):
+        return (numpy.dot(C, special.ndtri(q)).T+loc.T).T
 
-    def _pdf(self, x, graph):
-
-        loc, C, Ci = graph.keys["loc"], graph.keys["C"], graph.keys["Ci"]
+    def _pdf(self, x, C, Ci, loc):
         det = numpy.linalg.det(numpy.dot(C,C.T))
-
         x_ = numpy.dot(Ci.T, (x.T-loc.T).T)
         out = numpy.ones(x.shape)
         out[0] =  numpy.e**(-.5*numpy.sum(x_*x_, 0))/numpy.sqrt((2*numpy.pi)**len(Ci)*det)
         return out
 
-    def _bnd(self, x, graph):
-
-        C, loc = graph.keys["C"], graph.keys["loc"]
+    def _bnd(self, x, C, Ci, loc):
         scale = numpy.sqrt(numpy.diag(numpy.dot(C,C.T)))
         lo,up = numpy.zeros((2,)+x.shape)
         lo.T[:] = (-7.5*scale+loc)
         up.T[:] = (7.5*scale+loc)
-        return lo,up
+        return lo, up
 
-    def _mom(self, k, graph):
-
-        C, loc = graph.keys["C"], graph.keys["loc"]
+    def _mom(self, k, C, Ci, loc):
         scale = numpy.dot(C, C.T)
 
         def mom(k):
@@ -98,7 +89,7 @@ class MvNormal(Dist):
             dim, K = k.shape
             ra = numpy.arange(dim).repeat(K).reshape(dim,K)
 
-            i = numpy.argmax(k!=0, 0)
+            i = numpy.argmax(k != 0, 0)
 
             out = numpy.zeros(k.shape[1:])
             out[:] = numpy.where(numpy.choose(i,k),
@@ -110,23 +101,21 @@ class MvNormal(Dist):
             return out
 
         dim = len(loc)
-        K = numpy.mgrid[[slice(0,_+1,1) for _ in numpy.max(k, 1)]]
-        K = K.reshape(dim, int(K.size/dim))
+        K = numpy.mgrid[[slice(0,_+1,1) for _ in k]]
+        K = K.reshape(dim, -1)
         M = mom(K)
+        out = 0.
 
-        out = numpy.zeros(k.shape[1])
         for i in range(len(M)):
             coef = numpy.prod(misc.comb(k.T, K[:,i]).T, 0)
             diff = k.T - K[:,i]
-            pos = diff>=0
+            pos = diff >= 0
             diff = diff*pos
-            pos = numpy.all(pos, 1)
-            loc_ = numpy.prod(loc**diff, 1)
+            pos = numpy.all(pos)
+            loc_ = numpy.prod(loc**diff)
             out += pos*coef*loc_*M[i]
 
         return out
 
-    def _dep(self, graph):
-        n = normal()
-        out = [set([n]) for _ in range(len(self))]
-        return out
+    def __len__(self):
+        return len(self.prm["C"])

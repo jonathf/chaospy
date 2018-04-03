@@ -29,7 +29,7 @@ class generalized_extreme(Dist):
         x = -numpy.log(-numpy.log(q))
         return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-8, c), self._ppf(1-1e-8, c)
 
 

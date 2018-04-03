@@ -46,7 +46,7 @@ class loguniform(Dist):
         return (np.log(x)-lo)/(up-lo)
     def _ppf(self, q, lo, up):
         return np.e**(q*(up-lo) + lo)
-    def _bnd(self, lo, up):
+    def _bnd(self, x, lo, up):
         return np.e**lo, np.e**up
     def _mom(self, k, lo, up):
         return ((np.e**(up*k)-np.e**(lo*k))/((up-lo)*(k+(k==0))))**(k!=0)
@@ -67,7 +67,7 @@ class normal(Dist):
         return .5*sp.misc.factorial2(k-1)*(1+(-1)**k)
     def _ttr(self, n):
         return 0., 1.*n
-    def _bnd(self):
+    def _bnd(self, x):
         return -7.5, 7.5
     def _str(self):
         return "nor"
@@ -90,7 +90,7 @@ class lognormal(Dist):
         return \
     (np.e**(n*a*a)*(np.e**(a*a)+1)-1)*np.e**(.5*(2*n-1)*a*a), \
                 (np.e**(n*a*a)-1)*np.e**((3*n-2)*a*a)
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, self._ppf(1-1e-10, a)
     def _str(self, a):
         return "lognor(%s)" % a
@@ -110,7 +110,7 @@ class expon(Dist):
         return sp.misc.factorial(k)
     def _ttr(self, n):
         return 2*n+1, n*n
-    def _bnd(self):
+    def _bnd(self, x):
         return 0, 42.
     def _str(self):
         return "expon"
@@ -129,7 +129,7 @@ class gamma(Dist):
         return special.gamma(a+k)/special.gamma(a)
     def _ttr(self, n, a):
         return 2*n+a, n*n+n*(a-1)
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, 40+2*a
     def _str(self, a):
         return "gam(%s)" % a
@@ -146,7 +146,7 @@ class laplace(Dist):
         return .5*sp.misc.factorial(k)*(1+(-1)**k)
     def _ppf(self, x):
         return np.where(x>.5, -np.log(2*(1-x)), np.log(2*x))
-    def _bnd(self):
+    def _bnd(self, x):
         return -32., 32.
     def _str(self):
         return "lap"
@@ -174,7 +174,7 @@ class beta(Dist):
             ((nab-1)*(nab-3)*(nab-2)**2+2.*((n==0)+(n==1)))
         B = np.where((n==0)+(n==1), B1, B2)
         return A, B
-    def _bnd(self, a, b):
+    def _bnd(self, x, a, b):
         return 0., 1.
     def _str(self, a, b):
         return "bet(%s,%s)" % (a,b)
@@ -193,7 +193,7 @@ class weibull(Dist):
             30.**(1./a)*(q==1)
     def _mom(self, k, a):
         return special.gamma(1.+k*1./a)
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, 30.**(1./a)
     def _str(self, a):
         return "wei(%s)" % a
@@ -243,7 +243,7 @@ class triangle(Dist):
         a_ = a*(a!=1)
         out = 2*(1.-a_**(k+1))/((k+1)*(k+2)*(1-a_))
         return np.where(a==1, 2./(k+2), out)
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0., 1.
     def _str(self, a):
         return "tri(%s)" % a
@@ -271,7 +271,7 @@ class triangle(Dist):
 #          return 2*special.btdtri(1.5, 1.5, q)-1
 #      def _mom(self, n):
 #          return ((n+1)%2)*comb(n, n/2)/((.5*n+1)*2**n)
-#      def _bnd(self):
+#      def _bnd(self, x):
 #          return -1.,1.
 #      def _ttr(self, n):
 #          return 0., .25**(n!=0)
@@ -301,7 +301,7 @@ class kumaraswamy(Dist):
     def _str(self, a, b):
         return "kum(%s,%s)" % (a,b)
 
-    def _bnd(self, a, b):
+    def _bnd(self, x, a, b):
         return 0,1
 
 class hypgeosec(Dist):
@@ -338,7 +338,7 @@ class logistic(Dist):
     def _ppf(self, q, c):
         return -np.log(q**(-1/c)-1)
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
 
     def _str(self, c):
@@ -359,7 +359,7 @@ class student_t(Dist):
     def _ppf(self, q, a):
         return special.stdtrit(a, q)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return self._ppf(1e-10, a), self._ppf(1-1e-10, a)
 
     def _mom(self, k, a):
@@ -387,7 +387,7 @@ class raised_cosine(Dist):
     def _cdf(self, x):
         return .5 + .5*x + np.sin(np.pi*x)/(2*np.pi)
 
-    def _bnd(self):
+    def _bnd(self, x):
         return -1,1
 
     def _mom(self, k):
@@ -566,7 +566,7 @@ class mvstudentt(Dist):
                 (1+np.sum(x_*x_,0)/a))
         return out
 
-    def _bnd(self, a, C, Ci, loc):
+    def _bnd(self, x, a, C, Ci, loc):
 
         scale = np.sqrt(np.diag(np.dot(C,C.T)))
         lo,up = np.zeros((2,len(self)))
@@ -704,7 +704,7 @@ class alpha(Dist):
     def _pdf(self, x, a):
         return 1.0/(x**2)/special.ndtr(a)*np.e**(.5*(a-1.0/x)**2)/np.sqrt(2*np.pi)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0,self._ppf(1-1e-10, a)
 
 class anglit(Dist):
@@ -718,7 +718,7 @@ class anglit(Dist):
         return np.sin(x+np.pi/4)**2.0
     def _ppf(self, q):
         return (np.arcsin(np.sqrt(q))-np.pi/4)
-    def _bnd(self):
+    def _bnd(self, x):
         return -np.pi/4, np.pi/4
 
 
@@ -733,7 +733,7 @@ class bradford(Dist):
         return np.log(1.0+c*x) / np.log(c+1.0)
     def _ppf(self, q, c):
         return ((1.0+c)**q-1)/c
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, 1
 
 class burr(Dist):
@@ -746,7 +746,7 @@ class burr(Dist):
         return (1+x**(-c*1.0))**(-d**1.0)
     def _ppf(self, q, c, d):
         return (q**(-1.0/d)-1)**(-1.0/c)
-    def _bnd(self, c, d):
+    def _bnd(self, x, c, d):
         return 0, self._ppf(1-1e-10, c, d)
     def _mom(self, k, c, d):
         return d*special.beta(1-k*1./c, d+k*1./c)
@@ -761,7 +761,7 @@ class fisk(Dist):
         return (1+x**(-c*1.0))**(-1.0)
     def _ppf(self, q, c):
         return (q**(-1.0)-1)**(-1.0/c)
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, self._ppf(1-1e-10, c)
 
 class cauchy(Dist):
@@ -774,7 +774,7 @@ class cauchy(Dist):
         return 0.5 + 1.0/np.pi*np.arctan(x)
     def _ppf(self, q):
         return np.tan(np.pi*q-np.pi/2.0)
-    def _bnd(self):
+    def _bnd(self, x):
         return self._ppf(1e-10), self._ppf(1-1e-10)
 
 class chi(Dist):
@@ -788,7 +788,7 @@ class chi(Dist):
         return special.gammainc(df*0.5,0.5*x*x)
     def _ppf(self, q, df):
         return np.sqrt(2*special.gammaincinv(df*0.5,q))
-    def _bnd(self, df):
+    def _bnd(self, x, df):
         return 0, self._ppf(1-1e-10, df)
     def _mom(self, k, df):
         return 2**(.5*k)*special.gamma(.5*(df+k))\
@@ -811,7 +811,7 @@ class dbl_gamma(Dist):
         fac = special.gammainccinv(a,1-abs(2*q-1))
         return np.where(q>0.5, fac, -fac)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return self._ppf(1e-10, a), self._ppf(1-1e-10, a)
 
 class dbl_weibull(Dist):
@@ -829,7 +829,7 @@ class dbl_weibull(Dist):
         q_ = np.where(q>.5, 1-q, q)
         Cq1 = (-np.log(2*q_))**(1./c)
         return np.where(q>.5, Cq1, -Cq1)
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
 
 
@@ -845,7 +845,7 @@ class erlang(Dist):
         return special.gdtr(1.0,a,x)
     def _ppf(self, q, a):
         return special.gdtrix(1.0, a, q)
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, self._ppf(1-1e-10, a)
 
 class exponweibull(Dist):
@@ -860,7 +860,7 @@ class exponweibull(Dist):
         return (exm1c)**a
     def _ppf(self, q, a, c):
         return (-np.log1p(-q**(1.0/a)))**(1.0/c)
-    def _bnd(self, a, c):
+    def _bnd(self, x, a, c):
         return 0, self._ppf(1-1e-10, a, c)
 
 class exponpow(Dist):
@@ -876,7 +876,7 @@ class exponpow(Dist):
         return -np.expm1(-np.expm1(xb))
     def _ppf(self, q, b):
         return pow(np.log1p(-np.log1p(-q)), 1.0/b)
-    def _bnd(self, b):
+    def _bnd(self, x, b):
         return 0,self._ppf(1-1e-10, b)
 
 class fatiguelife(Dist):
@@ -890,7 +890,7 @@ class fatiguelife(Dist):
     def _ppf(self, q, c):
         tmp = c*special.ndtri(q)
         return 0.25*(tmp + np.sqrt(tmp**2 + 4))**2
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, self._ppf(1-1e-10, c)
 
 class foldcauchy(Dist):
@@ -901,7 +901,7 @@ class foldcauchy(Dist):
         return 1.0/np.pi*(1.0/(1+(x-c)**2) + 1.0/(1+(x+c)**2))
     def _cdf(self, x, c):
         return 1.0/np.pi*(np.arctan(x-c) + np.arctan(x+c))
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, 10**10
 
 
@@ -913,7 +913,7 @@ class foldnorm(Dist):
         return np.sqrt(2.0/np.pi)*np.cosh(c*x)*np.exp(-(x*x+c*c)/2.0)
     def _cdf(self, x, c):
         return special.ndtr(x-c) + special.ndtr(x+c) - 1.0
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, 7.5+c
 
 class frechet(Dist):
@@ -927,7 +927,7 @@ class frechet(Dist):
         return pow(-np.log1p(-q),1.0/c)
     def _mom(self, k, c):
         return special.gamma(1-k*1./c)
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, self._ppf(1-1e-10, c)
 
 
@@ -938,7 +938,7 @@ class genexpon(Dist):
         return (a+b*(-np.expm1(-c*x)))*np.exp((-a-b)*x+b*(-np.expm1(-c*x))/c)
     def _cdf(self, x, a, b, c):
         return -np.expm1((-a-b)*x + b*(-np.expm1(-c*x))/c)
-    def _bnd(self, a, b, c):
+    def _bnd(self, x, a, b, c):
         return 0, 10**10
 
 class genextreme(Dist):
@@ -960,7 +960,7 @@ class genextreme(Dist):
     def _ppf(self, q, c):
         x = -np.log(-np.log(q))
         return np.where((c==0)*(x==x),x,-np.expm1(-c*x)/c)
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
 
 
@@ -982,7 +982,7 @@ class gengamma(Dist):
         return np.where(cond > 0,val1**ic,val2**ic)
     def _mom(self, k, a, c):
         return special.gamma((c+k)*1./a)/special.gamma(c*1./a)
-    def _bnd(self, a, c):
+    def _bnd(self, x, a, c):
         return 0.0, self._ppf(1-1e-10, a, c)
 
 
@@ -1003,7 +1003,7 @@ class genhalflogistic(Dist):
         return (1.0-tmp2) / (1+tmp2)
     def _ppf(self, q, c):
         return 1.0/c*(1-((1.0-q)/(1.0+q))**c)
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, 1/np.where(c<10**-10, 10**-10, c)
 
 
@@ -1018,7 +1018,7 @@ class gompertz(Dist):
         return 1.0-np.exp(-c*(np.exp(x)-1))
     def _ppf(self, q, c):
         return np.log(1-1.0/c*np.log(1-q))
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, self._ppf(1-1e-10, c)
 
 
@@ -1033,7 +1033,7 @@ class gumbel(Dist):
         return np.exp(-np.exp(-x))
     def _ppf(self, q):
         return -np.log(-np.log(q))
-    def _bnd(self):
+    def _bnd(self, x):
         return self._ppf(1e-10), self._ppf(1-1e-10)
 
 
@@ -1048,7 +1048,7 @@ class levy(Dist):
     def _ppf(self, q):
         val = normal._ppf(1-q/2.0)
         return 1.0/(val*val)
-    def _bnd(self):
+    def _bnd(self, x):
         return 0.0, self._ppf(1-1e-10)
 
 
@@ -1062,7 +1062,7 @@ class loggamma(Dist):
         return special.gammainc(c, np.exp(x))
     def _ppf(self, q, c):
         return np.log(special.gammaincinv(c,q))
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
 
 
@@ -1078,7 +1078,7 @@ class loglaplace(Dist):
         return np.where(x < 1, 0.5*x**c, 1-0.5*x**(-c))
     def _ppf(self, q, c):
         return np.where(q < 0.5, (2.0*q)**(1.0/c), (2*(1.0-q))**(-1.0/c))
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, self._ppf(1-1e-10, c)
 
 
@@ -1094,7 +1094,7 @@ class mielke(Dist):
     def _ppf(self, q, k, s):
         qsk = pow(q,s*1.0/k)
         return pow(qsk/(1.0-qsk),1.0/s)
-    def _bnd(self, k, s):
+    def _bnd(self, x, k, s):
         return 0.0, self._ppf(1-1e-10, k, s)
 
 
@@ -1107,7 +1107,7 @@ class nakagami(Dist):
         return special.gammainc(nu,nu*x*x)
     def _ppf(self, q, nu):
         return np.sqrt(1.0/nu*special.gammaincinv(nu,q))
-    def _bnd(self, nu):
+    def _bnd(self, x, nu):
         return 0.0, self._ppf(1-1e-10)
 
 
@@ -1124,7 +1124,7 @@ class chisquared(Dist):
         return special.chndtr(x,df,nc)
     def _ppf(self, q, df, nc):
         return special.chndtrix(q,df,nc)
-    def _bnd(self, df, nc):
+    def _bnd(self, x, df, nc):
         return 0.0, self._ppf(1-1e-10, nc)
 
 #  class f(Dist):
@@ -1142,7 +1142,7 @@ class chisquared(Dist):
 #      def _mom(self, k, n, m):
 #          ga = special.gamma
 #          return (n*1./m)**k*ga(.5*n+k)*ga(.5*m-k)/ga(.5*n)/ga(.5*m)
-#      def _bnd(self, n, m):
+#      def _bnd(self, x, n, m):
 #          return 0, self._ppf(1-1e-10, n, m)
 
 class f(Dist):
@@ -1172,7 +1172,7 @@ class f(Dist):
         return special.ncfdtr(dfn,dfd,nc,x)
     def _ppf(self, q, dfn, dfd, nc):
         return special.ncfdtri(dfn, dfd, nc, q)
-    def _bnd(self, dfn, dfd, nc):
+    def _bnd(self, x, dfn, dfd, nc):
         return 0.0, self._ppf(1-1e-10, dfn, dfd, nc)
 
 
@@ -1200,7 +1200,7 @@ class nct(Dist):
         return special.nctdtr(df, nc, x)
     def _ppf(self, q, df, nc):
         return special.nctdtrit(df, nc, q)
-    def _bnd(self, df, nc):
+    def _bnd(self, x, df, nc):
         return self._ppf(1e-10, df, nc), self._ppf(1-1e-10, df, nc)
 
 
@@ -1215,7 +1215,7 @@ class nct(Dist):
 #      def _ppf(self, q, c):
 #          vals = 1.0/c * (pow(1-q, -c)-1)
 #          return vals
-#      def _bnd(self, c):
+#      def _bnd(self, x, c):
 #          return 1, self._ppf(1-1e-10, c)
 
 class pareto1(Dist):
@@ -1227,7 +1227,7 @@ class pareto1(Dist):
         return 1 -  x**(-b)
     def _ppf(self, q, b):
         return pow(1-q, -1.0/b)
-    def _bnd(self, b):
+    def _bnd(self, x, b):
         return 1.0, self._ppf(1-1e-10, b)
 class pareto2(Dist):
 
@@ -1237,7 +1237,7 @@ class pareto2(Dist):
         return 1.0-1.0/(1.0+x)**c
     def _ppf(self, q, c):
         return pow(1.0-q,-1.0/c)-1
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, self._ppf(1-1e-10, c)
 
 
@@ -1252,7 +1252,7 @@ class powerlognorm(normal):
         return 1.0 - pow(normal._cdf(self, -np.log(x)/s),c*1.0)
     def _ppf(self, q, c, s):
         return np.exp(-s*normal._ppf(self, pow(1.0-q,1.0/c)))
-    def _bnd(self, c, s):
+    def _bnd(self, x, c, s):
         return 0.0, self._ppf(1-1e-10, c, s)
 
 
@@ -1267,7 +1267,7 @@ class powernorm(Dist):
         return 1.0-normal._cdf(-x)**(c*1.0)
     def _ppf(self, q, c):
         return -normal._ppf(pow(1.0-q,1.0/c))
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
 
 class wald(Dist):
@@ -1282,7 +1282,7 @@ class wald(Dist):
         isqx = 1.0/np.sqrt(x)
         return 1.0-normal._cdf(self, isqx*trm1)-\
                 np.exp(2.0/mu)*normal._cdf(self, -isqx*trm2)
-    def _bnd(self, mu):
+    def _bnd(self, x, mu):
         return 0.0, 10**10
 
 class reciprocal(Dist):
@@ -1295,7 +1295,7 @@ class reciprocal(Dist):
         return np.log(x/lo)/np.log(up/lo)
     def _ppf(self, q, lo, up):
         return np.e**(q*np.log(up/lo) + np.log(lo))
-    def _bnd(self, lo, up):
+    def _bnd(self, x, lo, up):
         return lo, up
     def _mom(self, k, lo, up):
         return ((up*np.e**k-lo*np.e**k)/(np.log(up/lo)*(k+(k==0))))**(k!=0)
@@ -1310,7 +1310,7 @@ class truncexpon(Dist):
         return (1.0-np.exp(-x))/(1-np.exp(-b))
     def _ppf(self, q, b):
         return -np.log(1-q+q*np.exp(-b))
-    def _bnd(self, b):
+    def _bnd(self, x, b):
         return 0.0, b
 
 
@@ -1332,7 +1332,7 @@ class truncnorm(Dist):
         q = q*(fb-fa) + fa
         out = special.ndtri(q)
         return out
-    def _bnd(self, a, b, mu, sigma):
+    def _bnd(self, x, a, b, mu, sigma):
         return a, b
 
 
@@ -1355,7 +1355,7 @@ class tukeylambda(Dist):
         vals2 = np.log(q/(1-q))
         return np.where((lam==0)&(q==q), vals2, vals1)
 
-    def _bnd(self, lam):
+    def _bnd(self, x, lam):
         return self._ppf(1e-10, lam), self._ppf(1-1e-10, lam)
 
 
@@ -1394,7 +1394,7 @@ class wrapcauchy(Dist):
         rcq = 2*np.arctan(val*np.tan(np.pi*q))
         rcmq = 2*np.pi-2*np.arctan(val*np.tan(np.pi*(1-q)))
         return np.where(q < 1.0/2, rcq, rcmq)
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0.0, 2*np.pi
 
 class rice(Dist):
@@ -1411,7 +1411,7 @@ class rice(Dist):
     def _ppf(self, q, a):
         return special.chdtrix(np.sqrt(q), 2, a*a)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, special.chndtrix(np.sqrt(1-1e-10), 2, a*a)
 
 class kdedist(Dist):
@@ -1431,7 +1431,7 @@ A distribution that is based on a kernel density estimator (KDE).
     def _pdf(self, x, lo, up):
         return self.kernel(x)
 
-    def _bnd(self, lo, up):
+    def _bnd(self, x, lo, up):
         return (lo, up)
 
     def sample(self, size=(), rule="R", antithetic=None,

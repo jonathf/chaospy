@@ -26,7 +26,7 @@ class hyperbolic_secant(Dist):
         output = numpy.abs([special.euler(k_)[-1] for k_ in k.flatten()])
         return output.reshape(shape)
 
-    def _bnd(self):
+    def _bnd(self, x):
         return self._ppf(1e-10), self._ppf(1-1e-10)
 
 

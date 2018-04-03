@@ -20,7 +20,7 @@ class fisk(Dist):
     def _ppf(self, q, c):
         return (q**(-1.0)-1)**(-1.0/c)
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, self._ppf(1-1e-10, c)
 
 

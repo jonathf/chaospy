@@ -20,7 +20,7 @@ class bradford(Dist):
     def _ppf(self, q, c):
         return ((1.0+c)**q-1)/c
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return 0, 1
 
 

@@ -23,10 +23,15 @@ class double_weibull(Dist):
 
     def _ppf(self, q, c):
         q_ = numpy.where(q>.5, 1-q, q)
-        Cq1 = (-numpy.log(2*q_))**(1./c)
+        c = c*numpy.ones(q_.shape)
+        Cq1 = numpy.ones(q_.shape)
+        indices = q_ == 0
+        Cq1[indices] = 1e10
+        indices = ~indices & (c != 0)
+        Cq1[indices] = (-numpy.log(2*q_[indices]))**(1./c[indices])
         return numpy.where(q>.5, Cq1, -Cq1)
 
-    def _bnd(self, c):
+    def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
 
 

@@ -13,15 +13,23 @@ class wald(Dist):
         Dist.__init__(self, mu=mu)
 
     def _pdf(self, x, mu):
-        return 1.0/numpy.sqrt(2*numpy.pi*x)*numpy.exp(-(1-mu*x)**2.0 / (2*x*mu**2.0))
+        out = numpy.zeros(x.shape)
+        indices = x > 0
+        out[indices] = 1.0/numpy.sqrt(2*numpy.pi*x[indices])
+        out[indices] *= numpy.exp(-(1-mu*x[indices])**2.0 / (2*x[indices]*mu**2.0))
+        return out
 
     def _cdf(self, x, mu):
         trm1 = 1./mu - x
         trm2 = 1./mu + x
-        isqx = 1./numpy.sqrt(x)
-        return 1.-special.ndtr(isqx*trm1)-numpy.exp(2.0/mu)*special.ndtr(-isqx*trm2)
+        isqx = numpy.tile(numpy.inf, x.shape)
+        indices = x > 0
+        isqx[indices] = 1./numpy.sqrt(x[indices])
+        out = 1.-special.ndtr(isqx*trm1)
+        out -= numpy.exp(2.0/mu)*special.ndtr(-isqx*trm2)
+        return out
 
-    def _bnd(self, mu):
+    def _bnd(self, x, mu):
         return 0.0, 10**10
 
 
@@ -48,7 +56,7 @@ class Wald(Add):
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.3242 0.2262 0.138  0.063 ]
         >>> print(numpy.around(distribution.sample(4), 4))
-        [ 4.9997  2.4662 11.33    3.848 ]
+        [ 4.9997  2.4662 11.3302  3.848 ]
     """
 
     def __init__(self, mu=0, scale=1, shift=0):

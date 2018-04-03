@@ -24,7 +24,7 @@ class chi_squared(Dist):
     def _ppf(self, q, df, nc):
         return special.chndtrix(q, df, nc)
 
-    def _bnd(self, df, nc):
+    def _bnd(self, x, df, nc):
         for expon in range(12, -1, -1):
             upper = self._ppf(1-10**-expon, df, nc)
             if not numpy.isnan(upper).item():

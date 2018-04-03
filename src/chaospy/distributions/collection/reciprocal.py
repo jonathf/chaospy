@@ -44,7 +44,7 @@ class Reciprocal(Dist):
     def _ppf(self, q, lower, upper):
         return numpy.e**(q*numpy.log(upper/lower) + numpy.log(lower))
 
-    def _bnd(self, lower, upper):
+    def _bnd(self, x, lower, upper):
         return lower, upper
 
     def _mom(self, k, lower, upper):

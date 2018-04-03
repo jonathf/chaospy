@@ -27,7 +27,7 @@ class normal(Dist):
     def _ttr(self, n):
         return 0., 1.*n
 
-    def _bnd(self):
+    def _bnd(self, x):
         return -7.5, 7.5
 
 
@@ -54,6 +54,9 @@ class Normal(Add):
         [ 2.7901 -0.4006  5.2952  1.9107]
         >>> print(f.mom(1))
         2.0
+        >>> print(f.ttr([1, 2, 3]))
+        [[ 2.  2.  2.]
+         [ 4.  8. 12.]]
     """
 
     def __init__(self, mu=0, sigma=1):

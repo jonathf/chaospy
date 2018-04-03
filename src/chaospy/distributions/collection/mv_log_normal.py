@@ -1,10 +1,8 @@
 """Multivariate Log-Normal Distribution."""
 import numpy
-
-from .normal import normal
+from scipy import special
 
 from ..baseclass import Dist
-from ..joint import Iid
 
 
 class MvLogNormal(Dist):
@@ -54,46 +52,27 @@ class MvLogNormal(Dist):
         assert len(loc) == len(scale)
         self._repr = {"loc": str(loc.tolist()), "scale": str(scale.tolist())}
 
-        dist = Iid(normal(), len(loc))
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
-        Dist.__init__(self, dist=dist, loc=loc, C=C, Ci=Ci,
-                scale=scale, _length=len(scale), _advance=True)
+        Dist.__init__(self, loc=loc, C=C, Ci=Ci, scale=scale)
 
-    def _cdf(self, x, graph):
+    def _cdf(self, x, loc, C, Ci, scale):
         y = numpy.log(numpy.abs(x) + 1.*(x<=0))
-        out = graph(numpy.dot(graph.keys["Ci"], (y.T-graph.keys["loc"].T).T),
-                graph.dists["dist"])
-        return numpy.where(x<=0, 0., out)
+        out = special.ndtr(numpy.dot(Ci, (y.T-loc.T).T))
+        return numpy.where(x <= 0, 0., out)
 
-    def _ppf(self, q, graph):
-        return numpy.e**(numpy.dot(graph.keys["C"], \
-                graph(q, graph.dists["dist"])).T+graph.keys["loc"].T).T
+    def _ppf(self, q, loc, C, Ci, scale):
+        return numpy.e**(numpy.dot(C, special.ndtri(q)).T+loc.T).T
 
-    def _mom(self, k, graph):
-        scale, loc = graph.keys["scale"], graph.keys["loc"]
-        return numpy.e**(numpy.dot(k.T, loc).T+ \
-            .5*numpy.diag(numpy.dot(k.T, numpy.dot(scale, k))))
+    def _mom(self, k, loc, C, Ci, scale):
+        output =  numpy.dot(k, loc)
+        output += .5*numpy.dot(numpy.dot(k, scale), k)
+        output =  numpy.e**(output)
+        return output
 
-    def _bnd(self, x, graph):
-        loc, scale = graph.keys["loc"], graph.keys["scale"]
+    def _bnd(self, x, loc, C, Ci, scale):
         up = (7.1*numpy.sqrt(numpy.diag(scale))*x.T**0 + loc.T).T
         return 0*up, numpy.e**up
 
-    def _val(self, graph):
-        if "dist" in graph.keys:
-            return (numpy.dot(graph.keys["dist"].T,
-                              graph.keys["C"].T)+graph.keys["loc"].T).T
-        return self
-
-    def _dep(self, graph):
-        dist = graph.dists["dist"]
-        S = graph(dist)
-        out = [set() for _ in range(len(self))]
-        C = graph.keys["C"]
-
-        for i in range(len(self)):
-            for j in range(len(self)):
-                if C[i, j]:
-                    out[i].update(S[j])
-        return out
+    def __len__(self):
+        return len(self.prm["C"])

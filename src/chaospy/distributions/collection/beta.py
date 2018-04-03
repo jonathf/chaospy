@@ -34,7 +34,7 @@ class beta_(Dist):
         B = numpy.where((n==0)+(n==1), B1, B2)
         return A, B
 
-    def _bnd(self, a, b):
+    def _bnd(self, x, a, b):
         return 0., 1.
 
 
@@ -63,6 +63,9 @@ class Beta(Add):
         [2.6039 2.2112 2.8651 2.4881]
         >>> print(f.mom(1))
         2.5
+        >>> print(f.ttr([0, 1, 2]))
+        [[2.5        2.5        2.5       ]
+         [0.05       0.05       0.05714286]]
     """
 
     def __init__(self, alpha, beta, lower=0, upper=1):

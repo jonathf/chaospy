@@ -48,7 +48,8 @@ together in `chaospy`.
 """
 import numpy
 
-from .. import Dist
+from ..baseclass import Dist
+from .. import evaluation
 
 
 class Copula(Dist):
@@ -59,24 +60,34 @@ class Copula(Dist):
             dist (Dist) : Distribution to wrap the copula around.
             trans (Dist) : The copula wrapper `[0,1]^D \into [0,1]^D`.
         """
-        Dist.__init__(self, dist=dist, trans=trans,
-                _advance=True, _length=len(trans))
+        Dist.__init__(self, dist=dist, trans=trans)
 
-    def _cdf(self, x, graph):
-        dist, trans = graph.dists["dist"], graph.dists["trans"]
-        q = graph(graph(x, dist), trans)
-        return q
+    def _cdf(self, x, dist, trans, cache):
+        return evaluation.evaluate_forward(
+            trans, evaluation.evaluate_forward(
+                dist, x, cache=cache), cache=cache)
 
-    def _bnd(self, x, graph):
-        return graph(x, graph.dists["dist"])
+    def _bnd(self, x, dist, trans, cache):
+        return evaluation.evaluate_bound(dist, x, cache=cache)
 
-    def _ppf(self, q, graph):
-        dist, trans = graph.dists["dist"], graph.dists["trans"]
-        return graph(graph(q, trans), dist)
+    def _ppf(self, qloc, dist, trans, cache):
+        qloc = evaluation.evaluate_inverse(trans, qloc, cache=cache)
+        xloc = evaluation.evaluate_inverse(dist, qloc, cache=cache)
+        return xloc
 
-    def _pdf(self, x, graph):
-        dist, trans = graph.dists["dist"], graph.dists["trans"]
-        return graph(graph.fwd_as_pdf(x, dist), trans)*graph(x, dist)
+    def _pdf(self, x, dist, trans, cache):
+        density = evaluation.evaluate_density(dist, x, cache=cache.copy())
+        return evaluation.evaluate_density(
+            trans, evaluation.evaluate_forward(
+                dist, x, cache=cache), cache=cache)*density
+
+    def __len__(self):
+        return len(self.prm["dist"])
+
+    def __str__(self):
+        args = [key + "=" + str(self._repr[key]) for key in sorted(self._repr)]
+        return (self.__class__.__name__ + "(" + str(self.prm["dist"]) +
+                ", " + ", ".join(args) + ")")
 
 
 class Archimedean(Dist):
@@ -91,12 +102,13 @@ class Archimedean(Dist):
         for i in range(1, len(x)):
 
             q = x[:i+1].copy()
-            lo, up = 0,1
+            lo, up = 0, 1
             dq = numpy.zeros(i+1)
             dq[i] = eps
             flo, fup = -q[i],1-q[i]
 
             for iteration in range(1, 10):
+
                 fq = self._diff(q[:i+1], th, eps)
                 dfq = self._diff((q[:i+1].T+dq).T, th, eps)
                 dfq = (dfq-fq)/eps
@@ -157,7 +169,7 @@ class Archimedean(Dist):
         foo = lambda y: self.igen(numpy.sum(self.gen(y, th), 0), th)
 
         out1 = out2 = 0.
-        sign = 1 - 2*(x>.5).T
+        sign = 1 - 2*(x > .5).T
         for I in numpy.ndindex(*((2,)*(len(x)-1)+(1,))):
 
             eps_ = numpy.array(I)*eps
@@ -172,4 +184,4 @@ class Archimedean(Dist):
 
 
     def _bnd(self, **prm):
-        return 0,1
+        return 0, 1

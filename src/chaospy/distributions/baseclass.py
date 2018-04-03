@@ -65,6 +65,9 @@ Equivalently constructing the same distribution using subclass:
 import types
 import numpy
 
+from . import evaluation, approximation
+
+
 class StochasticallyDependentError(NotImplementedError):
     """Error related to stochastically dependent variables."""
 
@@ -74,6 +77,7 @@ class Dist(object):
 
     __array_priority__ = 9000
     """Numpy override variable."""
+    _repr = None
 
     def __init__(self, **prm):
         """
@@ -83,18 +87,20 @@ class Dist(object):
             **prm (array_like) : Other optional parameters. Will be assumed when
                     calling any sub-functions.
         """
-        from . import graph
-        for key, val in prm.items():
-            if not isinstance(val, Dist):
-                prm[key] = numpy.array(val)
-
-        self.length = int(prm.pop("_length", 1))
-        self.advance = prm.pop("_advance", False)
         self.prm = prm.copy()
-        self.graph = graph.Graph(self)
-        self.dependencies = self.graph.run(self.length, "dep")[0]
+        # from . import graph
+        # for key, val in prm.items():
+        #     if not isinstance(val, Dist):
+        #         prm[key] = numpy.array(val)
 
-    def range(self, x_data=None, retall=False, verbose=False):
+        # self.length = int(prm.pop("_length", 1))
+        # self.advance = prm.pop("_advance", False)
+        # self.prm = prm.copy()
+        # self.graph = graph.Graph(self)
+        # self.dependencies = self.graph.run(self.length, "dep")[0]
+
+
+    def range(self, x_data=None):
         """
         Generate the upper and lower bounds of a distribution.
 
@@ -108,25 +114,18 @@ class Dist(object):
             (numpy.ndarray) : The lower (out[0]) and upper (out[1]) bound where
                     out.shape=(2,)+x_data.shape
         """
-        dim = len(self)
         if x_data is None:
-            from . import approx
-            x_data = approx.find_interior_point(self)
-        else:
-            x_data = numpy.array(x_data)
+            try:
+                x_data = evaluation.evaluate_inverse(
+                    self, numpy.array([[0.5]]*len(self)))
+            except evaluation.DependencyError:
+                x_data = approximation.find_interior_point(self)
+        x_data = numpy.asfarray(x_data)
         shape = x_data.shape
-        size = int(x_data.size/dim)
-        x_data = x_data.reshape(dim, size)
-
-        out, graph = self.graph.run(x_data, "range")
-        out = out.reshape((2,)+shape)
-
-        if verbose>1:
-            print(graph)
-
-        if retall:
-            return out, graph
-        return out
+        x_data = x_data.reshape(len(self), -1)
+        q_data = evaluation.evaluate_bound(self, x_data)
+        q_data = q_data.reshape((2,)+shape)
+        return q_data
 
     def fwd(self, x_data):
         """
@@ -140,8 +139,21 @@ class Dist(object):
             numpy.ndarray: Evaluated distribution function values, where
             ``out.shape==x_data.shape``.
         """
-        from . import rosenblatt
-        return rosenblatt.fwd(self, x_data)
+        x_data = numpy.asfarray(x_data)
+        shape = x_data.shape
+        x_data = x_data.reshape(len(self), -1)
+
+        lower, upper = evaluation.evaluate_bound(self, x_data)
+        q_data = numpy.zeros(x_data.shape)
+        indices = x_data > upper
+        q_data[indices] = 1
+        indices = ~indices & (x_data >= lower)
+
+        q_data[indices] = numpy.clip(evaluation.evaluate_forward(
+            self, x_data), a_min=0, a_max=1)[indices]
+
+        q_data = q_data.reshape(shape)
+        return q_data
 
     def cdf(self, x_data):
         """
@@ -162,15 +174,13 @@ class Dist(object):
         Except:
             StochasticallyDependentError: Distribution has with dependent components.
         """
-        if self.dependent():
-            raise StocasticallyDependentError(
-                "Cumulative distribution do not support dependencies.")
-        from . import rosenblatt
-        out = rosenblatt.fwd(self, x_data)
+        if len(self) > 1 and evaluation.get_dependencies(*self):
+            raise evaluation.DependencyError(
+                "Cumulative distribution does not support dependencies.")
+        q_data = self.fwd(x_data)
         if len(self) > 1:
-            out = numpy.prod(out, 0)
-        return out
-
+            q_data = numpy.prod(q_data, 0)
+        return q_data
 
     def inv(self, q_data, max_iterations=100, tollerance=1e-5):
         """
@@ -194,8 +204,15 @@ class Dist(object):
             numpy.ndarray: Inverted probability values where
             ``out.shape == q_data.shape``.
         """
-        from . import rosenblatt
-        return rosenblatt.inv(self, q_data, max_iterations, tollerance)
+        q_data = numpy.asfarray(q_data)
+        assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
+        shape = q_data.shape
+        q_data = q_data.reshape(len(self), -1)
+        x_data = evaluation.evaluate_inverse(self, q_data)
+        lower, upper = evaluation.evaluate_bound(self, x_data)
+        x_data = numpy.clip(x_data, a_min=lower, a_max=upper)
+        x_data = x_data.reshape(shape)
+        return x_data
 
     def pdf(self, x_data, step=1e-7):
         """
@@ -219,31 +236,18 @@ class Dist(object):
             related through the identity
             ``x_data.shape == dist.shape+out.shape``.
         """
-        dim = len(self)
-        x_data = numpy.array(x_data)
+        x_data = numpy.asfarray(x_data)
         shape = x_data.shape
-        size = int(x_data.size/dim)
-        x_data = x_data.reshape(dim, size)
-        out = numpy.zeros((dim, size))
+        x_data = x_data.reshape(len(self), -1)
 
-        (lo, up), graph = self.graph.run(x_data, "range")
-        valids = numpy.prod((x_data.T >= lo.T)*(x_data.T <= up.T), 1, dtype=bool)
-        x_data[:, ~valids] = (.5*(up+lo))[:, ~valids]
-        out = numpy.zeros((dim,size))
-
-        try:
-            tmp,graph = self.graph.run(x_data, "pdf", eps=step)
-            out[:,valids] = tmp[:,valids]
-
-        except NotImplementedError:
-            from . import approx
-            tmp, graph = approx.pdf_full(self, x_data, step, retall=True)
-            out[:, valids] = tmp[:, valids]
-
-        out = out.reshape(shape)
-        if dim > 1:
-            out = numpy.prod(out, 0)
-        return out
+        lower, upper = evaluation.evaluate_bound(self, x_data)
+        f_data = numpy.zeros(x_data.shape)
+        indices = (x_data <= upper) & (x_data >= lower)
+        f_data[indices] = evaluation.evaluate_density(self, x_data)[indices]
+        f_data = f_data.reshape(shape)
+        if len(self) > 1:
+            f_data = numpy.prod(f_data, 0)
+        return f_data
 
     def sample(self, size=(), rule="R", antithetic=None):
         """
@@ -343,7 +347,7 @@ class Dist(object):
             (ndarray) : Shapes are related through the identity
                     `k.shape==dist.shape+k.shape`.
         """
-        K = numpy.array(K, dtype=int)
+        K = numpy.asarray(K, dtype=int)
         shape = K.shape
         dim = len(self)
 
@@ -353,15 +357,16 @@ class Dist(object):
         size = int(K.size/dim)
         K = K.reshape(dim, size)
 
-        try:
-            out, _ = self.graph.run(K, "mom", **kws)
-        except NotImplementedError:
-            from . import approx
-            out = approx.mom(self, K, **kws)
-
+        cache = {}
+        out = [evaluation.evaluate_moment(self, kdata, cache) for kdata in K.T]
+        out = numpy.array(out)
         return out.reshape(shape)
 
-    def ttr(self, k, acc=10**3, verbose=1):
+    def _ttr(self, *args, **kws):
+        """Default moment generator, throws error."""
+        raise evaluation.DependencyError("component lack support")
+
+    def ttr(self, kloc, acc=10**3, verbose=1):
         """
         Three terms relation's coefficient generator
 
@@ -375,19 +380,19 @@ class Dist(object):
                     out[1] is the second coefficient With
                     `out.shape==(2,)+k.shape`.
         """
-        k = numpy.array(k, dtype=int)
-        dim = len(self)
-        shape = k.shape
-        shape = (2,) + shape
-        size = int(k.size/dim)
-        k = k.reshape(dim, size)
+        kloc = numpy.asarray(kloc, dtype=int)
+        shape = kloc.shape
+        kloc = kloc.reshape(len(self), -1)
+        cache = {}
+        out = [evaluation.evaluate_recurrence_coefficients(self, k)
+               for k in kloc.T]
+        out = numpy.array(out).T
+        return out.reshape((2,)+shape)
 
-        out, graph = self.graph.run(k, "ttr")
-        return out.reshape(shape)
 
-    def _ttr(self, *args, **kws):
+    def _ttr(self, kloc, cache, **kws):
         """Default TTR generator, throws error."""
-        raise NotImplementedError
+        raise evaluation.DependencyError("component lack support")
 
     def _dep(self, graph):
         """
@@ -405,23 +410,21 @@ class Dist(object):
                 out[idx].update(set_[idx])
         return out
 
-
     def __str__(self):
         """X.__str__() <==> str(X)"""
         if hasattr(self, "_repr"):
-            args = [key + "=" + str(self._repr[key])
-                    for key in sorted(self._repr)]
-            return self.__class__.__name__ + "(" + ", ".join(args) + ")"
-        if hasattr(self, "_str"):
-            return str(self._str(**self.prm))
-        return "D"
+            kwargs = self._repr
+        else:
+            kwargs = self.prm
+        args = [key + "=" + str(kwargs[key]) for key in sorted(kwargs)]
+        return self.__class__.__name__ + "(" + ", ".join(args) + ")"
 
     def __repr__(self):
         return str(self)
 
     def __len__(self):
         """X.__len__() <==> len(X)"""
-        return self.length
+        return 1
 
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""

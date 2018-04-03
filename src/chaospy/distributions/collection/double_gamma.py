@@ -24,7 +24,7 @@ class double_gamma(Dist):
         fac = special.gammainccinv(a,1-abs(2*q-1))
         return numpy.where(q>0.5, fac, -fac)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return self._ppf(1e-10, a), self._ppf(1-1e-10, a)
 
 
@@ -50,7 +50,7 @@ class DoubleGamma(Add):
         [0.     0.0392 0.     0.0392 0.    ]
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 6.4679 -9.2251 17.5874  0.8239]
-        >>> print(distribution.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.0
     """
 

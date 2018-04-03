@@ -1,0 +1,227 @@
+import inspect
+
+import networkx
+import numpy
+
+from . import baseclass, approximation
+from .. import quad
+
+
+class DependencyError(ValueError):
+    """Error that occurs with bad stochastic dependency structures."""
+
+
+def sorted_dependencies(dist, reverse=False):
+    graph = networkx.DiGraph()
+    graph.add_node(dist)
+    dist_collection = [dist]
+    while dist_collection:
+
+        cur_dist = dist_collection.pop()
+
+        values = (value for value in cur_dist.prm.values()
+                  if isinstance(value, baseclass.Dist))
+        for value in values:
+            if value not in graph.node:
+                graph.add_node(value)
+                dist_collection.append(value)
+            graph.add_edge(cur_dist, value)
+
+    if not networkx.is_directed_acyclic_graph(graph):
+        raise DependencyError("cycles in dependency structure.")
+
+    sorting = list(networkx.topological_sort(graph))
+    if reverse:
+        sorting = reversed(sorting)
+
+    for dist in sorting:
+        yield dist
+
+
+def has_argument(key, method):
+    try:
+        args = inspect.signature(method).parameters
+    except AttributeError:
+        args = inspect.getargspec(method).args
+    return key in args
+
+
+def get_dependencies(*distributions):
+    distributions = [
+        set(sorted_dependencies(dist)) for dist in distributions
+        if isinstance(dist, baseclass.Dist)
+    ]
+    if len(distributions) <= 1:
+        return set()
+    intersections = set.intersection(*distributions)
+    return intersections
+
+
+def load_inputs(
+        distribution,
+        cache,
+        params,
+        methodname="",
+):
+    if cache is None:
+        cache = {}
+    if params is None:
+        params = distribution.prm
+    params = params.copy()
+
+    if methodname:
+
+        # self aware and should handle things itself:
+        if has_argument("cache", getattr(distribution, methodname)):
+            params["cache"] = cache
+
+        # dumb distribution and just wants to evaluate:
+        else:
+            for key, value in params.items():
+                if isinstance(value, baseclass.Dist):
+                    if value in cache:
+                        params[key] = cache[value]
+                    else:
+                        raise DependencyError(
+                            "under-defined distribution {}.".format(value))
+
+    return cache, params
+
+
+def evaluate_density(
+        distribution,
+        x_data,
+        cache=None,
+        params=None,
+):
+    out = numpy.zeros(x_data.shape)
+    if hasattr(distribution, "_pdf"):
+        cache, params = load_inputs(distribution, cache, params, "_pdf")
+        out[:] = distribution._pdf(x_data, **params)
+
+    else:
+        cache, params = load_inputs(distribution, cache, params)
+        out[:] = approximation.approximate_density(
+            distribution, x_data, params, cache)
+
+    if distribution in cache:
+        return numpy.where(x_data == cache[distribution], out, 0)
+    cache[distribution] = x_data
+
+    return out
+
+
+def evaluate_forward(
+        distribution,
+        x_data,
+        cache=None,
+        params=None,
+):
+    cache, params = load_inputs(distribution, cache, params, "_cdf")
+    cache[distribution] = x_data
+    out = numpy.zeros(x_data.shape)
+    out[:] = distribution._cdf(x_data.copy(), **params)
+    return out
+
+
+def evaluate_inverse(
+        distribution,
+        q_data,
+        cache=None,
+        params=None
+):
+    out = numpy.zeros(q_data.shape)
+    if hasattr(distribution, "_ppf"):
+        cache, params = load_inputs(distribution, cache, params, "_ppf")
+        out[:] = distribution._ppf(q_data.copy(), **params)
+    else:
+        cache, params = load_inputs(distribution, cache, params, "_cdf")
+        out[:] = approximation.approximate_inverse(
+            distribution, q_data, cache=cache, params=params)
+    cache[distribution] = out
+    return out
+
+
+def evaluate_bound(
+        distribution,
+        x_data,
+        cache=None,
+        params=None,
+):
+    cache, params = load_inputs(distribution, cache, params, "_bnd")
+    cache[distribution] = x_data
+    out = numpy.zeros((2,) + x_data.shape)
+    out[0], out[1] = distribution._bnd(x_data.copy(), **params)
+    return out
+
+
+def evaluate_moment(distribution, k_data, cache):
+
+    if numpy.all(k_data == 0):
+        return 1.
+    if (tuple(k_data), distribution) in cache:
+        return cache[(tuple(k_data), distribution)]
+
+    params = distribution.prm.copy()
+
+    # self aware and should handle things itself:
+    if has_argument("cache", distribution._mom):
+        params["cache"] = cache
+
+    # dumb distribution and just wants to evaluate:
+    else:
+        for key, value in params.items():
+            if isinstance(value, baseclass.Dist):
+                if (k_data, value) in cache:
+                    params[key] = cache[(tuple(k_data), value)]
+                else:
+                    raise DependencyError(
+                        "under-defined distribution {}.".format(value))
+
+    try:
+        out = float(distribution._mom(k_data, **params))
+    except DependencyError:
+        return approximation.approximate_moment(distribution, k_data)
+
+    cache[(tuple(k_data), distribution)] = out
+    return out
+
+
+def evaluate_recurrence_coefficients(
+        distribution,
+        k_data,
+        cache=None,
+        params=None,
+):
+    cache, params = load_inputs(distribution, cache, params)
+    if (tuple(k_data), distribution) in cache:
+        return cache[(tuple(k_data), distribution)]
+
+    # self aware and should handle things itself:
+    if has_argument("cache", distribution._ttr):
+        params["cache"] = cache
+
+    # dumb distribution and just wants to evaluate:
+    else:
+        for key, value in params.items():
+            if isinstance(value, baseclass.Dist):
+                if (tuple(k_data), value) in cache:
+                    params[key] = cache[(tuple(k_data), value)]
+                else:
+                    raise DependencyError(
+                        "under-defined distribution {}.".format(value))
+
+    try:
+        coeff1, coeff2 = distribution._ttr(k_data, **params)
+
+    except DependencyError:
+        _, _, coeff1, coeff2 = quad.stieltjes._stieltjes_approx(
+            distribution, order=numpy.max(k_data), accuracy=100, normed=False)
+        coeff1 = coeff1[k_data]
+        coeff2 = coeff2[k_data]
+
+    out = numpy.zeros((2,) + k_data.shape)
+    out.T[:, 0] = numpy.asarray(coeff1).T
+    out.T[:, 1] = numpy.asarray(coeff2).T
+
+    return out

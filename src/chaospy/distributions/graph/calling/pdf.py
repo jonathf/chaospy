@@ -2,7 +2,6 @@
 """Probability density function."""
 import numpy
 
-from ... import approx
 
 def pdf_call(self, x_data, dist):
     "PDF call backend wrapper"

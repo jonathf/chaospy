@@ -18,7 +18,7 @@ class uniform(Dist):
     def _ppf(self, q):
         return 2*q-1
 
-    def _bnd(self):
+    def _bnd(self, x):
         return -1.,1.
 
     def _mom(self, k):
@@ -52,6 +52,9 @@ class Uniform(Add):
         [3.3072 2.23   3.9006 2.9644]
         >>> print(distribution.mom(1))
         3.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[3.     3.     3.    ]
+         [0.3333 0.2667 0.2571]]
     """
 
     def __init__(self, lower=0, upper=1):

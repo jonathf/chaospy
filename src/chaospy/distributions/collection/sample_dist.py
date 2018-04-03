@@ -23,7 +23,7 @@ class sample_dist(Dist):
     def _pdf(self, x, lo, up):
         return self.kernel(x)
 
-    def _bnd(self, lo, up):
+    def _bnd(self, x, lo, up):
         return (lo, up)
 
     def sample(self, size=(), rule="R", antithetic=None,

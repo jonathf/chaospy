@@ -24,7 +24,7 @@ class laplace(Dist):
     def _ppf(self, x):
         return numpy.where(x>.5, -numpy.log(2*(1-x)), numpy.log(2*x))
 
-    def _bnd(self):
+    def _bnd(self, x):
         return -32., 32.
 
 

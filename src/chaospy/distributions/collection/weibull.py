@@ -24,7 +24,7 @@ class weibull(Dist):
     def _mom(self, k, a):
         return special.gamma(1.+k*1./a)
 
-    def _bnd(self, a):
+    def _bnd(self, x, a):
         return 0, 30.**(1./a)
 
 

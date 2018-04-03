@@ -21,7 +21,7 @@ class log_weibull(Dist):
     def _ppf(self, q):
         return -numpy.log(-numpy.log(q))
 
-    def _bnd(self):
+    def _bnd(self, x):
         return self._ppf(1e-10), self._ppf(1-1e-10)
 
 

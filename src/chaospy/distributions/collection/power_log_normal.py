@@ -22,7 +22,7 @@ class power_log_normal(Dist):
     def _ppf(self, q, c, s):
         return numpy.exp(-s*special.ndtri(pow(1.-q, 1./c)))
 
-    def _bnd(self, c, s):
+    def _bnd(self, x, c, s):
         return 0., self._ppf(1-1e-10, c, s)
 
 

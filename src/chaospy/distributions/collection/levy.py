@@ -22,7 +22,7 @@ class levy(Dist):
         val = special.ndtri(1-q/2.0)
         return 1.0/(val*val)
 
-    def _bnd(self):
+    def _bnd(self, x):
         return 0., self._ppf(1-1e-10)
 
 
