@@ -45,6 +45,12 @@ class MvNormal(Dist):
          [ 3.1476  0.6411  1.5946  1.7647]]
         >>> print(numpy.around(distribution.mom((1, 2)), 4))
         7.4
+        >>> print(numpy.around(distribution.ttr([[1, 1, 2], [1, 2, 2]]), 4))
+        [[[1.   1.   1.  ]
+          [1.36 1.36 2.72]]
+        <BLANKLINE>
+         [[2.   2.   2.  ]
+          [0.64 1.28 1.28]]]
     """
 
     def __init__(self, loc=[0, 0], scale=[[1, .5], [.5, 1]]):

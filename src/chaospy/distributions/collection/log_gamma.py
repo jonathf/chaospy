@@ -49,6 +49,9 @@ class LogGamma(Add):
         [ 2.6074 -0.0932  4.1166  1.9675]
         >>> print(numpy.around(distribution.mom(1), 4))
         -6.8955
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 0.5924 -0.8925 -2.5379]
+         [ 2.5797  6.6525 12.5947]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

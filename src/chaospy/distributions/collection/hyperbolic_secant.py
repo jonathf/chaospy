@@ -51,8 +51,11 @@ class HyperbolicSecant(Add):
         [0.1469 0.2378 0.2378 0.1469]
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.6397 -0.1648  5.2439  1.9287]
-        >>> print(distribution.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 2.      2.      2.    ]
+         [ 4.     16.0001 35.9976]]
     """
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}

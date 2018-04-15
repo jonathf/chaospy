@@ -47,8 +47,11 @@ class TruncExponential(Add):
         [0.6354 0.5729 0.5104 0.4479 0.3854]
         >>> print(numpy.around(distribution.sample(4), 4))
         [1.1891 0.1852 1.873  0.8415]
-        >>> print(distribution.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         1.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[1.0163 1.0024 1.0008]
+         [0.3292 0.2671 0.2572]]
     """
 
     def __init__(self, upper=1, scale=1, shift=0):

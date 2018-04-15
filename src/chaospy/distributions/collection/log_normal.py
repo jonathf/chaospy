@@ -46,21 +46,21 @@ class LogNormal(Add):
         scale (float, Dist) : Scale parameter. Overlaps with mu by scale=e**mu
 
     Examples:
-        >>> f = chaospy.LogNormal(0, 1)
-        >>> print(f)
+        >>> distribution = chaospy.LogNormal(0, 1)
+        >>> print(distribution)
         LogNormal(mu=0, scale=1, shift=0, sigma=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [0.431  0.7762 1.2883 2.3201]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.6495 0.4977 0.2999 0.1207]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [1.4844 0.3011 5.1945 0.9563]
-        >>> print(numpy.around(f.mom(1), 4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         1.6487
-        >>> print(numpy.around(f.ttr([1, 2, 3]), 4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[1.50155000e+01 1.18650900e+02 8.97651100e+02]
          [4.67080000e+00 3.48830600e+02 2.09298326e+04]]
     """
@@ -96,6 +96,9 @@ class Gilbrat(Add):
         [ 6.4533  2.9033 17.5835  4.869 ]
         >>> print(numpy.around(distribution.mom(1), 4))
         6.9462
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[4.70464000e+01 3.57952700e+02 2.69495320e+03]
+         [4.20370000e+01 3.13947580e+03 1.88368494e+05]]
     """
     def __init__(self, scale=1, shift=0):
         self._repr = {"scale": scale, "shift": shift}

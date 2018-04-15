@@ -45,19 +45,19 @@ class StudentT(Add):
         scale (float, Dist) : Scale parameter
 
     Examples:
-        >>> f = chaospy.StudentT(2, 2, 2)
-        >>> print(f)
+        >>> distribution = chaospy.StudentT(2, 2, 2)
+        >>> print(distribution)
         StudentT(df=2, loc=2, scale=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [-0.1213  1.4226  2.5774  4.1213]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.0905 0.1663 0.1663 0.0905]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.913  -1.4132  7.8594  1.8992]
-        >>> print(f.mom(1))
+        >>> print(distribution.mom(1))
         2.0
     """
 

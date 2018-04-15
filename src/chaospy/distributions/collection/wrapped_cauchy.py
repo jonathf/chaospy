@@ -72,6 +72,9 @@ class WrappedCauchy(Add):
         [29.4606  6.3357 30.9928 14.8313]
         >>> print(numpy.around(distribution.mom(1), 4))
         18.5664
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 18.5664  18.5664  18.5664]
+         [121.4247  12.6649  47.0276]]
     """
 
     def __init__(self, shape=0.5, scale=1, shift=0):

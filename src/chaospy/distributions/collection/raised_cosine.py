@@ -52,6 +52,9 @@ class RaisedCosine(Add):
         [2.3134 1.0903 3.1938 1.9644]
         >>> print(numpy.around(distribution.mom(1), 4))
         2.5947
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[2.     2.     2.    ]
+         [0.5228 0.7351 0.8339]]
     """
 
     def __init__(self, loc=0, scale=1):

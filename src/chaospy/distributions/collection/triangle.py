@@ -89,19 +89,19 @@ class Triangle(Add):
         upper (float, Dist) : Upper bound
 
     Examples:
-        >>> f = chaospy.Triangle(2, 3, 4)
+        >>> distribution = chaospy.Triangle(2, 3, 4)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [2.6325 2.8944 3.1056 3.3675]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.6325 0.8944 0.8944 0.6325]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [3.1676 2.4796 3.6847 2.982 ]
-        >>> print(numpy.around(f.mom(1), 4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         3.0
-        >>> print(numpy.around(f.ttr([1, 2, 3]), 4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[3.     3.     3.    ]
          [0.1667 0.2333 0.2327]]
     """

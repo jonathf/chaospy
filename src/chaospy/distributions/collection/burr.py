@@ -1,4 +1,6 @@
-"""Burr Type XII or Singh-Maddala distribution."""
+"""Burr Type III distribution."""
+import numpy
+
 from ..baseclass import Dist
 from ..operators.addition import Add
 
@@ -10,15 +12,23 @@ class burr(Dist):
         Dist.__init__(self, alpha=alpha, kappa=kappa)
 
     def _pdf(self, x, alpha, kappa):
-        output = alpha*kappa*x**(-alpha-1.0)
-        output /= (1+x**alpha)**(kappa+1)
+        output = numpy.zeros(x.shape)
+        indices = x > 0
+        output[indices] = alpha*kappa*x[indices]**(-alpha-1.0)
+        output[indices] /= (1+x[indices]**alpha)**(kappa+1)
         return output
 
     def _cdf(self, x, alpha, kappa):
-        return 1-(1+x**alpha)**-kappa
+        output = numpy.zeros(x.shape)
+        indices = x > 0
+        output[indices] = 1-(1+x[indices]**alpha)**-kappa
+        return output
 
     def _ppf(self, q, alpha, kappa):
         return ((1-q)**(-1./kappa) -1)**(1./alpha)
+
+    def _mom(self, k, alpha, kappa):
+        return kappa*special.beta(1-k*1./alpha, kappa+k*1./alpha)
 
     def _bnd(self, x, alpha, kappa):
         return 0, self._ppf(1-1e-10, alpha, kappa)
@@ -35,18 +45,20 @@ class Burr(Add):
         scale (float, Dist): Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Burr(1.2, 1.2, 4, 2)
+        >>> distribution = chaospy.Burr(100, 1.2, 4, 2)
         >>> print(distribution)
-        Burr(alpha=1.2, kappa=1.2, loc=4, scale=2)
+        Burr(alpha=100, kappa=1.2, loc=4, scale=2)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> print(numpy.around(distribution.inv(q), 4))
-        [4.4435 4.9358 5.6291 6.8009 9.6146]
+        [5.9642 5.9819 5.9951 6.0081 6.0249]
         >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.1667 0.3333 0.5    0.6667 0.8333]
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [1.41648e+01 1.82020e+00 3.17300e-01 4.58000e-02 2.80000e-03]
+        [266.5437  71.6255  21.5893   5.3229   0.643 ]
         >>> print(numpy.around(distribution.sample(4), 4))
-        [ 6.6775  4.311  18.9718  5.5396]
+        [6.007  5.9558 6.0489 5.9937]
+        >>> print(numpy.around(distribution.mom(1), 4))
+        5.2115
     """
 
     def __init__(self, alpha=1, kappa=1, loc=0, scale=1):

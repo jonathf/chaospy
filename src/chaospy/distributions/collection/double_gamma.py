@@ -52,6 +52,9 @@ class DoubleGamma(Add):
         [ 6.4679 -9.2251 17.5874  0.8239]
         >>> print(numpy.around(distribution.mom(1), 4))
         2.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[  2.       2.       2.    ]
+         [ 96.0478 218.7713 514.9597]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

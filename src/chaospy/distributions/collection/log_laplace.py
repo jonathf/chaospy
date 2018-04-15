@@ -36,20 +36,23 @@ class LogLaplace(Add):
         shift (float, Dist) : Location parameter
 
     Examples:
-        >>> f = chaospy.LogLaplace(2, 2, 2)
-        >>> print(f)
+        >>> distribution = chaospy.LogLaplace(2, 2, 2)
+        >>> print(distribution)
         LogLaplace(scale=2, shape=2, shift=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [3.2649 3.7889 4.2361 5.1623]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.3162 0.4472 0.3578 0.1265]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [4.4028 2.9592 8.3425 3.9641]
-        >>> print(numpy.around(f.mom(1), 4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         70712.6752
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[1.50754850e+04 8.55924444e+04 7.34709025e+04]
+         [3.75253000e+01 8.38737855e+08 1.22092854e+09]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

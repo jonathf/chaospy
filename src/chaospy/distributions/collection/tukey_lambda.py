@@ -67,6 +67,9 @@ class TukeyLambda(Add):
         [ 3.2697 -2.0812  7.9008  1.8575]
         >>> print(numpy.around(distribution.mom(1), 4))
         2.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 2.      2.      2.    ]
+         [13.1595 42.1102 91.3601]]
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

@@ -52,6 +52,9 @@ class Frechet(Add):
         [3.0393 1.9924 3.8849 2.7397]
         >>> print(numpy.around(distribution.mom(1), 4))
         3.7082
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[2.8951 3.039  3.1808]
+         [0.4213 0.7168 0.9441]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

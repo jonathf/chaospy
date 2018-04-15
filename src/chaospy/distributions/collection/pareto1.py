@@ -37,20 +37,18 @@ class Pareto1(Add):
         shift (float, Dist): Location parameter
 
     Examples:
-        >>> f = chaospy.Pareto1(2, 2, 2)
-        >>> print(f)
+        >>> distribution = chaospy.Pareto1(2, 2, 2)
+        >>> print(distribution)
         Pareto1(loc=2, scale=2, shape=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [4.2361 4.582  5.1623 6.4721]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.7155 0.4648 0.253  0.0894]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 5.3981  4.126  10.9697  4.7794]
-        >>> print(numpy.around(f.mom(1), 4))
-        100002.9959
     """
 
     def __init__(self, shape=1, scale=1, loc=0):

@@ -56,6 +56,9 @@ class ChiSquared(Add):
         [14.0669  2.595  35.6294  9.2851]
         >>> print(numpy.around(distribution.mom(1), 4))
         86.7956
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 32.9987  51.6111  68.9408]
+         [127.9989 431.8147 888.9531]]
     """
 
     def __init__(self, df=1, scale=1, shift=0, nc=0):

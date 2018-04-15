@@ -49,23 +49,23 @@ class Beta(Add):
         upper (float, Dist): Upper threshold
 
     Examples:
-        >>> f = chaospy.Beta(2, 2, 2, 3)
-        >>> print(f)
+        >>> distribution = chaospy.Beta(2, 2, 2, 3)
+        >>> print(distribution)
         Beta(alpha=2, beta=2, lower=2, upper=3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [2.2871 2.4329 2.5671 2.7129]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [1.2281 1.473  1.473  1.2281]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [2.6039 2.2112 2.8651 2.4881]
-        >>> print(f.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.5
-        >>> print(f.ttr([0, 1, 2]))
-        [[2.5        2.5        2.5       ]
-         [0.05       0.05       0.05714286]]
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[2.5    2.5    2.5   ]
+         [0.05   0.0571 0.0595]]
     """
 
     def __init__(self, alpha, beta, lower=0, upper=1):

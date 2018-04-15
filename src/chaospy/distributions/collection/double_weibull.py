@@ -59,6 +59,9 @@ class DoubleWeibull(Add):
         [ 4.4232 -2.8491  8.0772  1.2382]
         >>> print(numpy.around(distribution.mom(1), 4))
         2.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 2.      2.      2.    ]
+         [16.0001 15.9407 32.1195]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

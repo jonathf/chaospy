@@ -54,6 +54,9 @@ class ExponentialPower(Add):
         [2.7003 1.679  3.3551 2.4223]
         >>> print(numpy.around(distribution.mom(1), 4))
         2.783
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[2.3851 2.4491 2.5043]
+         [0.3363 0.4539 0.5185]]
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

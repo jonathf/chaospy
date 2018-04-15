@@ -74,8 +74,7 @@ from scipy.misc import comb
 import numpy
 
 from ..baseclass import Dist
-from .. import evaluation
-from .multiply import mul
+from .. import evaluation, deprecations
 
 
 class Add(Dist):
@@ -97,13 +96,13 @@ class Add(Dist):
             >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
             [[0. 0. 0. 0.]
              [1. 1. 1. 1.]]
-            >>> print(Add(chaospy.Uniform(), 2).range([-2, 0, 2, 4]))
+            >>> print(chaospy.Add(chaospy.Uniform(), 2).range([-2, 0, 2, 4]))
             [[2. 2. 2. 2.]
              [3. 3. 3. 3.]]
-            >>> print(Add(2, chaospy.Uniform()).range([-2, 0, 2, 4]))
+            >>> print(chaospy.Add(2, chaospy.Uniform()).range([-2, 0, 2, 4]))
             [[2. 2. 2. 2.]
              [3. 3. 3. 3.]]
-            >>> print(Add(1, 1).range([-2, 0, 2, 4]))
+            >>> print(chaospy.Add(1, 1).range([-2, 0, 2, 4]))
             [[2. 2. 2. 2.]
              [2. 2. 2. 2.]]
         """
@@ -133,11 +132,11 @@ class Add(Dist):
         Example:
             >>> print(chaospy.Uniform().fwd([-0.5, 0.5, 1.5, 2.5]))
             [0.  0.5 1.  1. ]
-            >>> print(Add(chaospy.Uniform(), 1).fwd([-0.5, 0.5, 1.5, 2.5]))
+            >>> print(chaospy.Add(chaospy.Uniform(), 1).fwd([-0.5, 0.5, 1.5, 2.5]))
             [0.  0.  0.5 1. ]
-            >>> print(Add(1, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5]))
+            >>> print(chaospy.Add(1, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5]))
             [0.  0.  0.5 1. ]
-            >>> print(Add(1, 1).fwd([-0.5, 0.5, 1.5, 2.5]))
+            >>> print(chaospy.Add(1, 1).fwd([-0.5, 0.5, 1.5, 2.5]))
             [0. 0. 0. 1.]
         """
         if isinstance(left, Dist) and left in cache:
@@ -163,11 +162,11 @@ class Add(Dist):
         Example:
             >>> print(chaospy.Uniform().pdf([-2, 0, 2, 4]))
             [0. 1. 0. 0.]
-            >>> print(Add(chaospy.Uniform(), 2).pdf([-2, 0, 2, 4]))
+            >>> print(chaospy.Add(chaospy.Uniform(), 2).pdf([-2, 0, 2, 4]))
             [0. 0. 1. 0.]
-            >>> print(Add(2, chaospy.Uniform()).pdf([-2, 0, 2, 4]))
+            >>> print(chaospy.Add(2, chaospy.Uniform()).pdf([-2, 0, 2, 4]))
             [0. 0. 1. 0.]
-            >>> print(Add(1, 1).pdf([-2, 0, 2, 4])) # Dirac logic
+            >>> print(chaospy.Add(1, 1).pdf([-2, 0, 2, 4])) # Dirac logic
             [ 0.  0. inf  0.]
         """
         if isinstance(left, Dist) and left in cache:
@@ -194,11 +193,11 @@ class Add(Dist):
         Example:
             >>> print(chaospy.Uniform().inv([0.1, 0.2, 0.9]))
             [0.1 0.2 0.9]
-            >>> print(Add(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9]))
+            >>> print(chaospy.Add(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9]))
             [2.1 2.2 2.9]
-            >>> print(Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
+            >>> print(chaospy.Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
             [2.1 2.2 2.9]
-            >>> print(Add(1, 1).inv([0.1, 0.2, 0.9]))
+            >>> print(chaospy.Add(1, 1).inv([0.1, 0.2, 0.9]))
             [2. 2. 2.]
         """
         if isinstance(left, Dist) and left in cache:
@@ -225,11 +224,11 @@ class Add(Dist):
         Example:
             >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
             [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
             [ 1.      2.5     6.3333 16.25  ]
-            >>> print(numpy.around(Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
             [ 1.      2.5     6.3333 16.25  ]
-            >>> print(numpy.around(Add(1, 1).mom([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(1, 1).mom([0, 1, 2, 3]), 4))
             [1. 2. 4. 8.]
         """
         if evaluation.get_dependencies(left, right):
@@ -274,28 +273,29 @@ class Add(Dist):
             >>> print(numpy.around(chaospy.Uniform().ttr([0, 1, 2, 3]), 4))
             [[ 0.5     0.5     0.5     0.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]), 4))
             [[ 2.5     2.5     2.5     2.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
             [[ 2.5     2.5     2.5     2.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(Add(1, 1).ttr([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(1, 1).ttr([0, 1, 2, 3]), 4))
             Traceback (most recent call last):
                 ...
             chaospy.distributions.evaluation.DependencyError: recurrence ...
         """
-        if isinstance(left, Dist) and isinstance(right, Dist):
-            raise evaluation.DependencyError(
-                "sum of distributions not feasible: "
-                "{} and {}".format(left, right)
-            )
-        elif not isinstance(left, Dist) and not isinstance(right, Dist):
-            raise evaluation.DependencyError(
-                "recurrence coefficients for constants not feasible: "
-                "{}".format(left+right)
-            )
-        elif isinstance(right, Dist):
+        if isinstance(left, Dist):
+            if isinstance(right, Dist):
+                raise evaluation.DependencyError(
+                    "sum of distributions not feasible: "
+                    "{} and {}".format(left, right)
+                )
+        else:
+            if not isinstance(right, Dist):
+                raise evaluation.DependencyError(
+                    "recurrence coefficients for constants not feasible: "
+                    "{}".format(left+right)
+                )
             left, right = right, left
 
         coeff0, coeff1 = evaluation.evaluate_recurrence_coefficients(
@@ -303,35 +303,11 @@ class Add(Dist):
         return coeff0 + numpy.asarray(right), coeff1
 
     def __str__(self):
-        if self._repr is not None:
-            return super().__str__()
-        return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
-                ", " + str(self.prm["right"]) + ")")
+        if self._repr is None:
+            return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
+                    ", " + str(self.prm["right"]) + ")")
+        return super().__str__()
 
-
+@deprecations.deprecation_warning
 def add(left, right):
-    """
-    Distribution addition.
-
-    Args:
-        left (Dist, array_like) : left hand side.
-        right (Dist, array_like) : right hand side.
-    """
-    if left is right:
-        return mul(2, left)
-
-    if isinstance(left, Dist):
-        if not isinstance(right, Dist):
-            right = numpy.array(right)
-            if right.size == 1 and right == 0:
-                return left
-
-    elif isinstance(right, Dist):
-        left = numpy.array(left)
-        if left.size == 1 and left == 0:
-            return right
-
-    else:
-        return left+right
-
-    return Add(left=left, right=right)
+    return Add(left, right)

@@ -40,21 +40,21 @@ class Normal(Add):
         sigma (float, Dist) : Standard deviation.  sigma > 0
 
     Examples:
-        >>> f = chaospy.Normal(2, 2)
-        >>> print(f)
+        >>> distribution = chaospy.Normal(2, 2)
+        >>> print(distribution)
         Normal(mu=2, sigma=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [0.3168 1.4933 2.5067 3.6832]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.14   0.1932 0.1932 0.14  ]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.7901 -0.4006  5.2952  1.9107]
-        >>> print(f.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.0
-        >>> print(f.ttr([1, 2, 3]))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 2.  2.  2.]
          [ 4.  8. 12.]]
     """

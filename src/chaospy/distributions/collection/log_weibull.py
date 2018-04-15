@@ -48,6 +48,9 @@ class LogWeibull(Add):
         [3.71   0.4572 7.952  2.631 ]
         >>> print(numpy.around(distribution.mom(1), 4))
         21.8892
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 6.0775  9.5552 13.213 ]
+         [ 6.5797 20.4065 42.3767]]
     """
     def __init__(self, scale=1, loc=0):
         self._repr = {"scale": scale, "loc": loc}

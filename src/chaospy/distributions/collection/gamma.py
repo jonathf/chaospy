@@ -75,18 +75,21 @@ class Exponential(Add):
         shift (float, Dist) : Location of the lower bound.
 
     Examples;:
-        >>> f = chaospy.Exponential(2, 3)
-        >>> print(f)
+        >>> distribution = chaospy.Exponential(2, 3)
+        >>> print(distribution)
         Exponential(scale=2, shift=3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [3.4463 4.0217 4.8326 6.2189]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [5.1203 3.2444 9.0028 4.3163]
-        >>> print(f.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         5.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 9. 13. 17.]
+         [ 4. 16. 36.]]
     """
 
     def __init__(self, scale=1, shift=0):

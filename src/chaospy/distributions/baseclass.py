@@ -1,66 +1,29 @@
 """
-Constructing custom probability distributions is done in one of two ways:
-Sublcassing the :class:`~chaospy.distributions.Dist` or by calling
-:func:`~chaospy.distributions.construct`. They work about the same except for one
-methods are defined, while in the other, functions.
-
-Import the construction function::
-
-    >>> from chaospy.distributions import construct, Dist
-
-A simple example for constructing a simple uniform distribution::
-
-    >>> def cdf(self, x_data, lo, up):
-    ...     return (x_data-lo)/(up-lo)
-    >>> def bnd(self, lo, up):
-    ...     return lo, up
-    >>> Uniform = construct(cdf=cdf, bnd=bnd)
-    >>> dist = Uniform(lo=-3, up=3)
-    >>> print(dist.fwd([-3, 0, 3]))
-    [0.  0.5 1. ]
-
-Here ``cdf`` is the dependent cumulative distribution function as defined in
-equation , ``bnd`` is a function returning the lower and upper bounds, and
-``a`` and ``b`` are distribution parameters.  They take either other
-components, or as illustrated: constants.
-
-
-In addition to ``cdf`` and ``bnd`` there are a few optional arguments. For
-example a fully featured uniform random variable is defined as follows::
-
-    >>> def pdf(self, x_data, lo, up):
-    ...     return 1./(up-lo)
-    >>> def ppf(self, q_data, lo, up):
-    ...     return q_data*(up-lo) + lo
-    >>> Uniform = construct(
-    ...     cdf=cdf, bnd=bnd, pdf=pdf, ppf=ppf)
-    >>> dist = Uniform(lo=-3, up=3)
-
-There ``pdf`` is probability distribution function and ``ppf`` if the point
-percentile function.  These are methods that provides needed functionality for
-probabilistic collocation. If they are not provided during construct, they are
-estimated as far as possible.
-
-Equivalently constructing the same distribution using subclass:
-:func:`~chaospy.distributions.construct`::
+Constructing custom probability distributions is done by subclassing the
+distribution 
 
     >>> class Uniform(Dist):
     ...     def __init__(self, lo=0, up=1):
+    ...         '''Initializer.'''
     ...         Dist.__init__(self, lo=lo, up=up)
     ...     def _cdf(self, x_data, lo, up):
+    ...         '''Cumulative distribution function.'''
     ...         return (x_data-lo)/(up-lo)
-    ...     def _bnd(self, lo, up):
+    ...     def _bnd(self, x_data, lo, up):
+    ...         '''Lower and upper bounds.'''
     ...         return lo, up
     ...     def _pdf(self, x_data, lo, up):
+    ...         '''Probability density function.'''
     ...         return 1./(up-lo)
     ...     def _ppf(self, q_data, lo, up):
+    ...         '''Point percentile function.'''
     ...         return q_data*(up-lo) + lo
-    ...     def _str(self, lo, up):
-    ...         return "u(%s%s)" % (lo, up)
+
+Usage is then straight forward::
+
     >>> dist = Uniform(-3, 3)
     >>> print(dist.fwd([-3, 0, 3])) # Forward Rosenblatt transformation
     [0.  0.5 1. ]
-
 """
 import types
 import numpy
@@ -82,22 +45,10 @@ class Dist(object):
     def __init__(self, **prm):
         """
         Args:
-            _length (int) : Length of the distribution
-            _advanced (bool) : If True, activate advanced mode
-            **prm (array_like) : Other optional parameters. Will be assumed when
-                    calling any sub-functions.
+            **prm (array_like) : Other optional parameters. Will be assumed
+                when calling any sub-functions.
         """
         self.prm = prm.copy()
-        # from . import graph
-        # for key, val in prm.items():
-        #     if not isinstance(val, Dist):
-        #         prm[key] = numpy.array(val)
-
-        # self.length = int(prm.pop("_length", 1))
-        # self.advance = prm.pop("_advance", False)
-        # self.prm = prm.copy()
-        # self.graph = graph.Graph(self)
-        # self.dependencies = self.graph.run(self.length, "dep")[0]
 
 
     def range(self, x_data=None):
@@ -120,9 +71,12 @@ class Dist(object):
                     self, numpy.array([[0.5]]*len(self)))
             except evaluation.DependencyError:
                 x_data = approximation.find_interior_point(self)
-        x_data = numpy.asfarray(x_data)
-        shape = x_data.shape
-        x_data = x_data.reshape(len(self), -1)
+            shape = (len(self),)
+        else:
+            x_data = numpy.asfarray(x_data)
+            shape = x_data.shape
+            x_data = x_data.reshape(len(self), -1)
+
         q_data = evaluation.evaluate_bound(self, x_data)
         q_data = q_data.reshape((2,)+shape)
         return q_data
@@ -362,7 +316,7 @@ class Dist(object):
         out = numpy.array(out)
         return out.reshape(shape)
 
-    def _ttr(self, *args, **kws):
+    def _mom(self, *args, **kws):
         """Default moment generator, throws error."""
         raise evaluation.DependencyError("component lack support")
 
@@ -392,7 +346,7 @@ class Dist(object):
 
     def _ttr(self, kloc, cache, **kws):
         """Default TTR generator, throws error."""
-        raise evaluation.DependencyError("component lack support")
+        raise NotImplementedError()
 
     def _dep(self, graph):
         """
@@ -412,7 +366,7 @@ class Dist(object):
 
     def __str__(self):
         """X.__str__() <==> str(X)"""
-        if hasattr(self, "_repr"):
+        if self._repr is not None:
             kwargs = self._repr
         else:
             kwargs = self.prm
@@ -429,152 +383,94 @@ class Dist(object):
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""
         from . import operators
-        return operators.add(self, X)
+        return operators.Add(self, X)
 
     def __radd__(self, X):
         """Y.__radd__(X) <==> Y+X"""
         from . import operators
-        return operators.add(self, X)
+        return operators.Add(self, X)
 
     def __sub__(self, X):
         """Y.__sub__(X) <==> X-Y"""
         from . import operators
-        return operators.add(self, -X)
+        return operators.Add(self, -X)
 
     def __rsub__(self, X):
         """Y.__rsub__(X) <==> Y-X"""
         from . import operators
-        return operators.add(X, -self)
+        return operators.Add(X, -self)
 
     def __neg__(self):
         """X.__neg__() <==> -X"""
         from . import operators
-        return operators.neg(self)
+        return operators.Neg(self)
 
     def __mul__(self, X):
         """Y.__mul__(X) <==> X*Y"""
         from . import operators
-        return operators.mul(self, X)
+        return operators.Mul(self, X)
 
     def __rmul__(self, X):
         """Y.__rmul__(X) <==> Y*X"""
         from . import operators
-        return operators.mul(self, X)
+        return operators.Mul(X, self)
 
     def __div__(self, X):
         """Y.__div__(X) <==> Y/X"""
         from . import operators
-        return operators.mul(self, X**-1)
+        return operators.Mul(self, X**-1)
 
     def __rdiv__(self, X):
         """Y.__rdiv__(X) <==> X/Y"""
         from . import operators
-        return operators.mul(X, self**-1)
+        return operators.Mul(X, self**-1)
 
     def __floordiv__(self, X):
         """Y.__floordiv__(X) <==> Y/X"""
         from . import operators
-        return operators.mul(self, X**-1)
+        return operators.Mul(self, X**-1)
 
     def __rfloordiv__(self, X):
         """Y.__rfloordiv__(X) <==> X/Y"""
         from . import operators
-        return operators.mul(X, self**-1)
+        return operators.Mul(X, self**-1)
 
     def __truediv__(self, X):
         """Y.__truediv__(X) <==> Y/X"""
         from . import operators
-        return operators.mul(self, X**-1)
+        return operators.Mul(self, X**-1)
 
     def __rtruediv__(self, X):
         """Y.__rtruediv__(X) <==> X/Y"""
         from . import operators
-        return operators.mul(X, self**-1)
+        return operators.Mul(X, self**-1)
 
     def __pow__(self, X):
         """Y.__pow__(X) <==> Y**X"""
         from . import operators
-        return operators.pow(self, X)
+        return operators.Pow(self, X)
 
     def __rpow__(self, X):
         """Y.__rpow__(X) <==> X**Y"""
         from . import operators
-        return operators.pow(X, self)
+        return operators.Pow(X, self)
 
     def __le__(self, X):
         """Y.__le__(X) <==> Y<=X"""
         from . import operators
-        return operators.trunk(self, X)
+        return operators.Trunc(self, X)
 
     def __lt__(self, X):
         """Y.__lt__(X) <==> Y<X"""
         from . import operators
-        return operators.trunk(self, X)
+        return operators.Trunc(self, X)
 
     def __ge__(self, X):
         """Y.__ge__(X) <==> Y>=X"""
         from . import operators
-        return operators.trunk(X, self)
+        return operators.Trunc(X, self)
 
     def __gt__(self, X):
         """Y.__gt__(X) <==> Y>X"""
         from . import operators
-        return operators.trunk(X, self)
-
-    def addattr(self, **kws):
-        """
-        Add attribution to distribution
-
-        Kwargs:
-            pdf (callable) : Probability density function.
-            cdf (callable) : Cumulative distribution function.
-            ppf (callable) : Point percentile function.
-            mom (callable) : Raw statistical moments.
-            ttr (callable) : Three term recursion coefficient generator.
-            val (callable) : If auxiliary variable, try to return the values
-                    of it's underlying variables, else return self.
-            str (callable, str) : Pretty print of module.
-            dep (callable) : Dependency structure (if non-trivial).
-        """
-        for key,val in kws.items():
-            if key == "str" and isinstance(val, str):
-                val_ = val
-                val = lambda *a,**k: val_
-            setattr(self, "_"+key, types.MethodType(val, self))
-
-
-    def dependent(self, *args):
-        """
-        Determine dependency structure in module
-
-        Args:
-            arg, [...] (optional) : If omited, internal dependency will be
-                    determined.  If included, dependency between self and args
-                    will be used.
-
-        Returns:
-            (bool) : True if distribution is dependent.
-        """
-        sets, graph = self.graph.run(None, "dep")
-
-        if args:
-
-            sets_ = set()
-            for set_ in sets:
-                sets_ = sets_.union(set_)
-            sets = [sets_]
-
-            for arg in args:
-                sets_ = set()
-                for set_ in arg.graph.run(None, "dep"):
-                    sets_ = sets_.union(set_)
-                sets.append(sets_)
-
-        as_seperated = sum([len(set_) for set_ in sets])
-
-        as_joined = set()
-        for set_ in sets:
-            as_joined = as_joined.union(set_)
-        as_joined = len(as_joined)
-
-        return as_seperated != as_joined
+        return operators.Trunc(X, self)

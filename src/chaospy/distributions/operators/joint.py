@@ -159,6 +159,9 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(numpy.around(dist.ttr([1, 1]), 4))
+            Traceback (most recent call last):
+                ...
+            chaospy.distributions.evaluation.DependencyError: Joint ...
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
             raise evaluation.DependencyError(
@@ -170,8 +173,8 @@ class J(Dist):
             idx = self.inverse_map[dist]
             kloc_ = kloc[idx].reshape(1)
             values = evaluation.evaluate_recurrence_coefficients(
-                dist, kloc_, cache=cache)[:, 0]
-            output[:, idx] = values
+                dist, kloc_, cache=cache)
+            output.T[idx] = values.T
         return output
 
 

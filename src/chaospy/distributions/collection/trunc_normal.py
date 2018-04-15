@@ -28,6 +28,9 @@ class TruncNormal(Dist):
         [1.1687 1.1419 1.0601 0.9189 0.7089]
         >>> print(numpy.around(distribution.sample(4), 4))
         [3.1841 2.1971 3.8643 2.8501]
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 2.7127  3.0112  2.6317]
+         [17.6868 36.7831 38.9048]]
     """
 
     def __init__(self, lower=-1, upper=1, mu=0, sigma=1):

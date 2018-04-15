@@ -149,9 +149,9 @@ def evaluate_bound(
         params=None,
 ):
     cache, params = load_inputs(distribution, cache, params, "_bnd")
-    cache[distribution] = x_data
     out = numpy.zeros((2,) + x_data.shape)
     out[0], out[1] = distribution._bnd(x_data.copy(), **params)
+    cache[distribution] = out
     return out
 
 
@@ -172,7 +172,7 @@ def evaluate_moment(distribution, k_data, cache):
     else:
         for key, value in params.items():
             if isinstance(value, baseclass.Dist):
-                if (k_data, value) in cache:
+                if (tuple(k_data), value) in cache:
                     params[key] = cache[(tuple(k_data), value)]
                 else:
                     raise DependencyError(
@@ -214,14 +214,17 @@ def evaluate_recurrence_coefficients(
     try:
         coeff1, coeff2 = distribution._ttr(k_data, **params)
 
-    except DependencyError:
+    except NotImplementedError:
         _, _, coeff1, coeff2 = quad.stieltjes._stieltjes_approx(
             distribution, order=numpy.max(k_data), accuracy=100, normed=False)
-        coeff1 = coeff1[k_data]
-        coeff2 = coeff2[k_data]
+        range_ = numpy.arange(len(distribution), dtype=int)
+        coeff1 = coeff1[range_, k_data]
+        coeff2 = coeff2[range_, k_data]
 
     out = numpy.zeros((2,) + k_data.shape)
     out.T[:, 0] = numpy.asarray(coeff1).T
     out.T[:, 1] = numpy.asarray(coeff2).T
+    if len(distribution) == 1:
+        out = out[:, 0]
 
     return out

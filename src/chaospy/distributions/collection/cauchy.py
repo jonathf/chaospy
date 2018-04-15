@@ -45,6 +45,8 @@ class Cauchy(Add):
         [0.0199 0.0597 0.0796 0.0597 0.0199]
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 4.0953 -8.585  27.4011  1.776 ]
+        >>> print(numpy.around(distribution.mom(1), 4))
+        2.0
     """
 
     def __init__(self, loc=0, scale=1):

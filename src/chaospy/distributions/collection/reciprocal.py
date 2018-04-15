@@ -29,6 +29,9 @@ class Reciprocal(Dist):
         [3.1462 2.166  3.8645 2.7937]
         >>> print(numpy.around(distribution.mom(1), 4))
         7.8433
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[3.023  3.0033 3.0011]
+         [0.3307 0.2664 0.257 ]]
     """
 
     def __init__(self, lower=0, upper=1):

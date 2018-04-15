@@ -35,20 +35,23 @@ class Logistic(Add):
         skew (float, Dist): Shape parameter
 
     Examples:
-        >>> f = chaospy.Logistic(2, 2, 2)
-        >>> print(f)
+        >>> distribution = chaospy.Logistic(2, 2, 2)
+        >>> print(distribution)
         Logistic(loc=2, scale=2, skew=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(f.inv(q), 4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [1.5761 3.0855 4.4689 6.2736]
-        >>> print(numpy.around(f.fwd(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(f.pdf(f.inv(q)), 4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.0553 0.0735 0.0676 0.0422]
-        >>> print(numpy.around(f.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [4.8799 0.6656 9.3128 3.6415]
-        >>> print(numpy.around(f.mom(1), 4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         14.2061
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[ 7.378   6.7092 11.1254]
+         [ 5.0797 25.1775 61.184 ]]
     """
     def __init__(self, loc=0, scale=1, skew=1):
         self._repr = {"loc": loc, "scale": scale, "skew": skew}

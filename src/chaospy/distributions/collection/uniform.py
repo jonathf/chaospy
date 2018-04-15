@@ -50,7 +50,7 @@ class Uniform(Add):
         [0.5 0.5 0.5 0.5 0.5]
         >>> print(numpy.around(distribution.sample(4), 4))
         [3.3072 2.23   3.9006 2.9644]
-        >>> print(distribution.mom(1))
+        >>> print(numpy.around(distribution.mom(1), 4))
         3.0
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[3.     3.     3.    ]
