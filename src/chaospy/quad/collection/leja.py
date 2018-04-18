@@ -38,7 +38,7 @@ def quad_leja(order, dist):
 
     lower, upper = dist.range()
     abscissas = [lower, dist.mom(1), upper]
-    for _ in range(order):
+    for _ in range(int(order)):
 
         obj = create_objective(dist, abscissas)
         opts, vals = zip(
