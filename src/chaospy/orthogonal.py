@@ -219,37 +219,39 @@ def orth_ttr(
         order, dist, normed=False, sort="GR", retall=False,
         cross_truncation=1., **kws):
     """
-    Create orthogonal polynomial expansion from three terms recursion formula.
+Create orthogonal polynomial expansion from three terms recursion formula.
 
-    Args:
-        order (int):
-            Order of polynomial expansion.
-        dist (Dist):
-            Distribution space where polynomials are orthogonal If dist.ttr
-            exists, it will be used, othervice Clenshaw-Curtis integration will
-            be used.  Must be stochastically independent.
-        normed (bool):
-            If True orthonormal polynomials will be used instead of monic.
-        sort (str):
-            Polynomial sorting. Same as in basis.
-        retall (bool):
-            If true return norms as well.
-        cross_truncation (float):
-            Use hyperbolic cross truncation scheme to reduce the number of
-            terms in expansion.
-        kws (optional):
-            Keyword argument passed to stieltjes method.
+Args:
+    order (int):
+        Order of polynomial expansion.
+    dist (Dist):
+        Distribution space where polynomials are orthogonal If dist.ttr
+        exists, it will be used. Must be stochastically independent.
+    normed (bool):
+        If True orthonormal polynomials will be used.
+    sort (str):
+        Polynomial sorting. Same as in basis.
+    retall (bool):
+        If true return numerical stabalized norms as well. Roughly the same as
+        ``cp.E(orth**2, dist)``.
+    cross_truncation (float):
+        Use hyperbolic cross truncation scheme to reduce the number of
+        terms in expansion. only include terms where the exponents ``K``
+        satisified the equation
+        ``order >= sum(K**(1/cross_truncation))**cross_truncation``.
+    **kws (optional):
+        Keyword argument passed to Stieltjes function ``generate_stieltjes``.
 
-    Returns:
-        orth (Poly, numpy.ndarray):
-            Orthogonal polynomial expansion and norms of the orthogonal
-            expansion on the form E(orth**2, dist). Calculated using recurrence
-            coefficients for stability.
+Returns:
+    orth (Poly, numpy.ndarray):
+        Orthogonal polynomial expansion and norms of the orthogonal
+        expansion on the form E(orth**2, dist). Calculated using recurrence
+        coefficients for stability.
 
-    Examples:
-        >>> Z = chaospy.Normal()
-        >>> print(chaospy.around(chaospy.orth_ttr(4, Z), 4))
-        [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
+Examples:
+    >>> Z = chaospy.Normal()
+    >>> print(chaospy.around(chaospy.orth_ttr(4, Z), 4))
+    [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
     polynomials, norms, _, _ = chaospy.quad.generate_stieltjes(
         dist=dist, order=order, retall=True, **kws)

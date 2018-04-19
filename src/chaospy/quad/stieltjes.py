@@ -11,25 +11,29 @@ import chaospy.quad
 def generate_stieltjes(
         dist, order, accuracy=100, normed=False, retall=False, **kws):
     """
-    Discretized Stieltjes method.
+    Discretized Stieltjes' method.
 
     Args:
-        dist (Dist) : Distribution defining the space to create weights for.
-        order (int) : The polynomial order create.
-        accuracy (int) : The quadrature order of the Clenshaw-Curtis nodes to
+        dist (Dist):
+            Distribution defining the space to create weights for.
+        order (int):
+            The polynomial order create.
+        accuracy (int):
+            The quadrature order of the Clenshaw-Curtis nodes to
             use at each step, if approximation is used.
-        retall (bool) : If included, more values are returned
+        retall (bool):
+            If included, more values are returned
 
     Returns:
-        (list) : List of polynomials, norms of polynomials and three terms
+        (list): List of polynomials, norms of polynomials and three terms
             coefficients. The list created from the method with
-            `len(orth)==order+1`. If `len(dist)>1`, then each polynomials are
-            multivariate.
-        (numpy.ndarray, numpy.ndarray, numpy.ndarray) : If `retall` is true,
+            ``len(orth) == order+1``. If ``len(dist) > 1``, then each
+            polynomials are multivariate.
+        (numpy.ndarray, numpy.ndarray, numpy.ndarray): If ``retall`` is true,
             also return polynomial norms and the three term coefficients.
-            The norms of the polynomials with `norms.shape=(dim,order+1)` where
-            `dim` are the number of dimensions in dist.  The coefficients have
-            `shape=(dim,order+1)`.
+            The norms of the polynomials with ``norms.shape = (dim, order+1)``
+            where ``dim`` are the number of dimensions in dist.  The
+            coefficients have ``shape == (dim, order+1)``.
 
     Examples:
         >>> dist = chaospy.J(chaospy.Normal(), chaospy.Weibull())
@@ -65,7 +69,7 @@ def generate_stieltjes(
 
         # ensure each polynomial has its own dimension:
         orth = [[chaospy.setdim(_, len(orth)) for _ in poly] for poly in orth]
-        orth = [[chaospy.rolldim(_, idx) for _ in poly] for idx, poly in enumerate(orth)]
+        orth = [[chaospy.rolldim(_, len(dist)-idx) for _ in poly] for idx, poly in enumerate(orth)]
         orth = [chaospy.poly.base.Poly(_) for _ in zip(*orth)]
 
         if not retall:
