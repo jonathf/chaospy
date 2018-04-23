@@ -87,7 +87,7 @@ Note that the option `fit_intercept=False`. This is a prerequisite for
 ``sklearn`` to be compatible with ``chaospy``.
 """
 import numpy as np
-from scipy import linalg, optimize
+from scipy import linalg
 
 import chaospy as cp
 
@@ -257,7 +257,9 @@ def rlstsq(coef_mat, ordinate, order=1, alpha=None, cross=False):
 
             return (gamma + (1-gamma)*mu2)*skew
 
-        alpha = optimize.fmin(rgcv_error, 1, disp=0)
+        alphas = 10.**-np.arange(0, 16)
+        evals = np.array([rgcv_error(alpha) for alpha in alphas])
+        alpha = alphas[np.argmin(evals)]
 
     out = linalg.inv(
         np.dot(coef_mat.T, coef_mat) + alpha*np.dot(tikhmat.T, tikhmat))
