@@ -1,3 +1,4 @@
+import logging
 import inspect
 
 import networkx
@@ -120,6 +121,7 @@ def evaluate_forward(
         cache=None,
         params=None,
 ):
+    assert len(x_data) == len(distribution)
     cache, params = load_inputs(distribution, cache, params, "_cdf")
     cache[distribution] = x_data
     out = numpy.zeros(x_data.shape)
@@ -152,11 +154,30 @@ def evaluate_bound(
         cache=None,
         params=None,
 ):
+    assert len(x_data) == len(distribution)
+    assert len(x_data.shape) == 2
+    logger = logging.getLogger(__name__)
     cache, params = load_inputs(distribution, cache, params, "_bnd")
     out = numpy.zeros((2,) + x_data.shape)
-    tmp = distribution._bnd(x_data.copy(), **params)
-    out.T[:, :, 0] = tmp[0]
-    out.T[:, :, 1] = tmp[1]
+    lower, upper = distribution._bnd(x_data.copy(), **params)
+    lower = numpy.asfarray(lower)
+    upper = numpy.asfarray(upper)
+
+    try:
+        out.T[:, :, 0] = lower.T
+    except ValueError:
+        logger.exception(
+            "method %s._bnd returned wrong shape: %s",
+            distribution, lower.shape)
+        raise
+    try:
+        out.T[:, :, 1] = upper.T
+    except ValueError:
+        logger.exception(
+            "method %s._bnd returned wrong shape: %s",
+            distribution, upper.shape)
+        raise
+
     cache[distribution] = out
     return out
 

@@ -31,22 +31,30 @@ Construct joint addition distribution::
     >>> print(multiplication)
     Mul(Uniform(lower=-1, upper=0), Uniform(lower=-3, upper=-2))
     >>> joint1 = chaospy.J(lhs, multiplication)
-    >>> joint2 = chaospy.J(rhs, multiplication)
     >>> print(joint1.range())
-    [[-1.  2.]
+    [[-1.  0.]
      [ 0.  3.]]
+    >>> joint2 = chaospy.J(rhs, multiplication)
     >>> print(joint2.range())
-    [[-3.  -0. ]
-     [-2.   2.5]]
+    [[-3. -0.]
+     [-2.  3.]]
+    >>> joint3 = chaospy.J(multiplication, lhs)
+    >>> print(joint3.range())
+    [[ 0. -1.]
+     [ 3.  0.]]
+    >>> joint4 = chaospy.J(multiplication, rhs)
+    >>> print(joint4.range())
+    [[-0. -3.]
+     [ 3. -2.]]
 
 Generate random samples::
 
     >>> print(numpy.around(joint1.sample(4), 4))
     [[-0.7877 -0.9593 -0.6028 -0.7669]
-     [ 2.363   2.8779  1.8084  2.3006]]
+     [ 2.2383  2.1172  1.6532  1.8345]]
     >>> print(numpy.around(joint2.sample(4), 4))
     [[-2.8177 -2.2565 -2.9304 -2.1147]
-     [ 2.8177  2.2565  2.9304  2.1147]]
+     [ 2.6843  2.1011  1.2174  0.0613]]
 
 Forward transformations::
 
@@ -71,9 +79,13 @@ Inverse transformations::
 Raw moments::
 
     >>> print(joint1.mom([(0, 1, 1), (1, 0, 1)]))
-    [ 1.25  -0.5   -0.625]
+    [ 1.5  -0.5  -0.75]
     >>> print(joint2.mom([(0, 1, 1), (1, 0, 1)]))
-    [ 1.25  -2.5   -3.125]
+    [ 1.5  -2.5  -3.75]
+    >>> print(joint3.mom([(0, 1, 1), (1, 0, 1)]))
+    [-0.5   1.5  -0.75]
+    >>> print(joint4.mom([(0, 1, 1), (1, 0, 1)]))
+    [-2.5   1.5  -3.75]
 """
 import numpy
 
@@ -160,7 +172,8 @@ class Mul(Dist):
             left = numpy.asfarray(left)
             if self.matrix:
                 Ci = numpy.linalg.inv(left)
-                xloc = numpy.dot(Ci, xloc).T
+                xloc = numpy.dot(Ci, xloc)
+                assert len(xloc) == len(right)
 
             elif len(left.shape) == 3:
                 left_ = numpy.mean(left, 0)
@@ -172,14 +185,21 @@ class Mul(Dist):
                 valids = left != 0
                 xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
+            assert len(xloc) == len(right)
             lower, upper = evaluation.evaluate_bound(right, xloc, cache)
             if self.matrix:
-                lower = numpy.dot(lower, left).T
-                upper = numpy.dot(upper, left).T
+                lower = numpy.dot(lower.T, left.T).T
+                upper = numpy.dot(upper.T, left.T).T
 
             elif len(left.shape) == 3:
                 lower = numpy.where(left[0]*lower > 0, left[0]*lower, left[1]*lower)
                 upper = numpy.where(left[1]*upper > 0, left[1]*upper, left[0]*upper)
+                lower, upper = (
+                    numpy.where(lower < upper, lower, upper),
+                    numpy.where(lower < upper, upper, lower),
+                )
+                lower[(left[0] < 0) & (lower > 0)] = 0.
+                assert len(lower) == len(right)
 
             else:
                 lower *= left
@@ -194,10 +214,11 @@ class Mul(Dist):
         right = numpy.asfarray(right)
         if self.matrix:
             Ci = numpy.linalg.inv(right)
-            xloc = numpy.dot(xloc.T, Ci)
+            xloc = numpy.dot(xloc.T, Ci.T).T
+            assert len(left) == len(xloc)
 
         elif len(right.shape) == 3:
-            right_ = numpy.mean(right_, 0)
+            right_ = numpy.mean(right, 0)
             valids = right_ != 0
             xloc.T[valids.T] = xloc.T[valids.T]/right_.T[valids.T]
 
@@ -206,18 +227,21 @@ class Mul(Dist):
             valids = right != 0
             xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
 
+        assert len(left) == len(xloc)
         lower, upper = evaluation.evaluate_bound(left, xloc, cache)
-        lower, upper = (
-            numpy.where(lower < upper, lower, upper),
-            numpy.where(lower < upper, upper, lower),
-        )
         if self.matrix:
-            lower = numpy.dot(lower, right).T
-            upper = numpy.dot(upper, right).T
+            lower = numpy.dot(lower.T, right.T).T
+            upper = numpy.dot(upper.T, right.T).T
 
         elif len(right.shape) == 3:
             lower = numpy.where(right[0]*lower > 0, right[0]*lower, right[1]*lower)
             upper = numpy.where(right[1]*upper > 0, right[1]*upper, right[0]*upper)
+
+            lower, upper = (
+                numpy.where(lower < upper, lower, upper),
+                numpy.where(lower < upper, upper, lower),
+            )
+            lower[(right[0] < 0) & (lower > 0)] = 0.
 
         else:
             lower *= right
@@ -226,6 +250,8 @@ class Mul(Dist):
             numpy.where(lower < upper, lower, upper),
             numpy.where(lower < upper, upper, lower),
         )
+        assert lower.shape == xloc.shape
+        assert upper.shape == xloc.shape
         return lower, upper
 
     def _cdf(self, xloc, left, right, cache):
@@ -266,7 +292,8 @@ class Mul(Dist):
         else:
             if self.matrix:
                 Ci = numpy.linalg.inv(left)
-                xloc = numpy.dot(Ci, xloc).T
+                xloc = numpy.dot(Ci, xloc)
+                assert len(xloc) == len(numpy.dot(Ci, xloc))
 
             else:
                 left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
@@ -274,25 +301,24 @@ class Mul(Dist):
                 xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
             uloc = evaluation.evaluate_forward(right, xloc, cache)
-            if self.matrix:
-                uloc = uloc.T
-            else:
+            if not self.matrix:
                 uloc = numpy.where(left.T >= 0, uloc.T, 1-uloc.T).T
+            assert uloc.shape == xloc.shape
             return uloc
 
         if self.matrix:
             Ci = numpy.linalg.inv(right)
-            xloc = numpy.dot(xloc.T, Ci)
+            xloc = numpy.dot(xloc.T, Ci).T
         else:
             right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
             valids = right != 0
             xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
 
+        assert len(left) == len(xloc)
         uloc = evaluation.evaluate_forward(left, xloc, cache)
-        if self.matrix:
-            uloc = uloc.T
-        else:
+        if not self.matrix:
             uloc = numpy.where(right.T >= 0, uloc.T, 1-uloc.T).T
+        assert uloc.shape == xloc.shape
         return uloc
 
     def _ppf(self, uloc, left, right, cache):
@@ -348,6 +374,7 @@ class Mul(Dist):
             xloc = numpy.dot(xloc.T, right).T
         else:
             xloc *= right
+        assert uloc.shape == xloc.shape
         return xloc
 
     def _pdf(self, xloc, left, right, cache):
@@ -413,6 +440,7 @@ class Mul(Dist):
             pdf = numpy.dot(pdf.T, Ci).T
         else:
             pdf.T[valids.T] /= right.T[valids.T]
+        assert pdf.shape == xloc.shape
         return pdf
 
     def _mom(self, key, left, right, cache):

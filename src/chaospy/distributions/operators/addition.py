@@ -121,9 +121,26 @@ class Add(Dist):
             left, right = right, left
 
         right = numpy.asfarray(right)
-        xloc = (xloc.T-numpy.asfarray(right).T).T
-        lower, upper = evaluation.evaluate_bound(left, xloc, cache)
-        return (lower.T+right.T).T, (upper.T+right.T).T
+        if len(right.shape) == 3:
+            xloc_ = (xloc.T-right[0].T).T
+            lower, upper = evaluation.evaluate_bound(left, xloc_, cache.copy())
+            lower0, upper0 = (lower.T+right[0].T).T, (upper.T+right[0].T).T
+
+            xloc_ = (xloc.T-right[1].T).T
+            lower, upper = evaluation.evaluate_bound(left, xloc_, cache)
+            lower1, upper1 = (lower.T+right[1].T).T, (upper.T+right[1].T).T
+
+            lower = numpy.min([lower0, lower1], 0)
+            upper = numpy.max([upper0, upper1], 0)
+
+        else:
+            xloc_ = (xloc.T-right.T).T
+            lower, upper = evaluation.evaluate_bound(left, xloc_, cache.copy())
+            lower, upper = (lower.T+right.T).T, (upper.T+right.T).T
+
+        assert lower.shape == xloc.shape
+        assert upper.shape == xloc.shape
+        return lower, upper
 
     def _cdf(self, xloc, left, right, cache):
         """
@@ -153,7 +170,9 @@ class Add(Dist):
         else:
             left, right = right, left
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        return evaluation.evaluate_forward(left, xloc, cache)
+        output = evaluation.evaluate_forward(left, xloc, cache)
+        assert output.shape == xloc.shape
+        return output
 
     def _pdf(self, xloc, left, right, cache):
         """
@@ -184,7 +203,9 @@ class Add(Dist):
             left, right = right, left
 
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        return evaluation.evaluate_density(left, xloc, cache)
+        output = evaluation.evaluate_density(left, xloc, cache)
+        assert output.shape == xloc.shape
+        return output
 
     def _ppf(self, uloc, left, right, cache):
         """
@@ -215,7 +236,8 @@ class Add(Dist):
             left, right = right, left
 
         xloc = evaluation.evaluate_inverse(left, uloc, cache)
-        return (xloc.T + numpy.asfarray(right).T).T
+        output = (xloc.T + numpy.asfarray(right).T).T
+        return output
 
     def _mom(self, keys, left, right, cache):
         """

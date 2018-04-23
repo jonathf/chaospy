@@ -46,6 +46,7 @@ class J(Dist):
             xloc_ = xloc[idx].reshape(1, -1)
             uloc[idx] = evaluation.evaluate_forward(
                 dist, xloc_, cache=cache)[0]
+        assert uloc.shape == xloc.shape
         return uloc
 
     def _bnd(self, xloc, cache, **kwargs):
@@ -61,11 +62,11 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(dist.range([[-0.5, 0.5, 1.5], [0, 1, 2]]))
-            [[[ 0.   0.   0. ]
-              [-0.5  0.5  1.5]]
+            [[[0. 0. 0.]
+              [0. 0. 0.]]
             <BLANKLINE>
-             [[ 1.   1.   1. ]
-              [ 0.5  1.5  2.5]]]
+             [[1. 1. 1.]
+              [2. 2. 2.]]]
         """
         uloc = numpy.zeros((2,)+xloc.shape)
         for dist in evaluation.sorted_dependencies(self, reverse=True):
