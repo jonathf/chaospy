@@ -123,7 +123,7 @@ def approximate_inverse(
         qloc,
         params=None,
         cache=None,
-        iterations=1000,
+        iterations=100,
         tol=1e-5,
         seed=None,
 ):
@@ -160,6 +160,7 @@ def approximate_inverse(
         [[ 987.1845  991.5838 1012.8155]]
     """
     logger = logging.getLogger(__name__)
+    logger.debug("init approximate_inverse")
 
     # lots of initial values:
     xloc, xlower, xupper = find_interior_point(
@@ -172,37 +173,40 @@ def approximate_inverse(
     uupper = 1-qloc
     indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
-    for _ in range(iterations):
+    for idx in range(2*iterations):
 
         # evaluate function:
         uloc[:, indices] = (evaluation.evaluate_forward(
             distribution, xloc, cache=cache, params=params)-qloc)[:, indices]
 
         # convergence criteria:
-        indices[indices] = numpy.any(numpy.abs(uloc) > tol, 0)[indices]
+        indices[indices] = numpy.any(numpy.abs(xupper-xlower) > tol, 0)[indices]
+        logger.debug(
+            "iter: %s : %s : %s (%s)",
+            numpy.mean(xlower, -1),
+            numpy.mean(xloc, -1),
+            numpy.mean(xupper, -1),
+            numpy.mean(indices),
+        )
         if not numpy.any(indices):
             break
 
-        # evaluation derivative:
-        derivative = evaluation.evaluate_density(
-            distribution, xloc, cache=cache, params=params)[:, indices]
-        derivative = numpy.where(derivative, derivative, numpy.inf)
-
-        xlower_, xupper_ = evaluation.evaluate_bound(
-            distribution, xloc, params=params, cache=cache)
-
-        # arrow down lower boundary:
+        # narrow down lower boundary:
         ulower[:, indices] = numpy.where(uloc <= 0, uloc, ulower)[:, indices]
         xlower[:, indices] = numpy.where(uloc <= 0, xloc, xlower)[:, indices]
-        xlower = numpy.where(xlower_ < xlower, xlower, xlower_)
 
-        # arrow down upper boundary:
+        # narrow down upper boundary:
         uupper[:, indices] = numpy.where(uloc >= 0, uloc, uupper)[:, indices]
         xupper[:, indices] = numpy.where(uloc >= 0, xloc, xupper)[:, indices]
-        xupper = numpy.where(xupper_ < xupper, xupper_, xupper)
 
-        # Newton increment:
-        xloc_ = xloc[:, indices] - uloc[:, indices] / derivative
+        # Newton increment every second iteration:
+        xloc_ = numpy.inf
+        if idx % 2 == 0:
+            derivative = evaluation.evaluate_density(
+                distribution, xloc, cache=cache, params=params)[:, indices]
+            derivative = numpy.where(derivative, derivative, numpy.inf)
+
+            xloc_ = xloc[:, indices] - uloc[:, indices] / derivative
 
         # use binary search if Newton increment is outside bounds:
         xloc[:, indices] = numpy.where(
@@ -214,7 +218,7 @@ def approximate_inverse(
             "Too many iterations required to estimate inverse.")
         logger.info("{} out of {} did not converge.".format(
             numpy.sum(indices), len(indices)))
-
+    logger.debug("end approximate_inverse")
     return xloc
 
 

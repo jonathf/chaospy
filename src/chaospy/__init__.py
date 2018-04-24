@@ -29,4 +29,5 @@ from chaospy.saltelli import *
 from chaospy.descriptives import *
 from chaospy.regression import *
 
-logging.basicConfig(level=logging.INFO, filename=os.devnull, filemode="w")
+LOGPATH = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
+logging.basicConfig(level=logging.DEBUG, filename=LOGPATH, filemode="w")
