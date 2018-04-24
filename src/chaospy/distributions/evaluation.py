@@ -3,7 +3,6 @@ import inspect
 import networkx
 import numpy
 
-from . import baseclass, approximation
 from .. import quad
 
 
@@ -12,6 +11,7 @@ class DependencyError(ValueError):
 
 
 def sorted_dependencies(dist, reverse=False):
+    from . import baseclass
     graph = networkx.DiGraph()
     graph.add_node(dist)
     dist_collection = [dist]
@@ -47,6 +47,7 @@ def has_argument(key, method):
 
 
 def get_dependencies(*distributions):
+    from . import baseclass
     distributions = [
         set(sorted_dependencies(dist)) for dist in distributions
         if isinstance(dist, baseclass.Dist)
@@ -63,6 +64,7 @@ def load_inputs(
         params,
         methodname="",
 ):
+    from . import baseclass
     if cache is None:
         cache = {}
     if params is None:
@@ -100,6 +102,7 @@ def evaluate_density(
         out[:] = distribution._pdf(x_data, **params)
 
     else:
+        from . import approximation
         cache, params = load_inputs(distribution, cache, params)
         out[:] = approximation.approximate_density(
             distribution, x_data, params, cache)
@@ -135,6 +138,7 @@ def evaluate_inverse(
         cache, params = load_inputs(distribution, cache, params, "_ppf")
         out[:] = distribution._ppf(q_data.copy(), **params)
     else:
+        from . import approximation
         cache, params = load_inputs(distribution, cache, params, "_cdf")
         out[:] = approximation.approximate_inverse(
             distribution, q_data, cache=cache, params=params)
@@ -150,13 +154,16 @@ def evaluate_bound(
 ):
     cache, params = load_inputs(distribution, cache, params, "_bnd")
     out = numpy.zeros((2,) + x_data.shape)
-    out[0], out[1] = distribution._bnd(x_data.copy(), **params)
+    tmp = distribution._bnd(x_data.copy(), **params)
+    out.T[:, :, 0] = tmp[0]
+    out.T[:, :, 1] = tmp[1]
     cache[distribution] = out
     return out
 
 
 def evaluate_moment(distribution, k_data, cache):
 
+    from . import baseclass
     if numpy.all(k_data == 0):
         return 1.
     if (tuple(k_data), distribution) in cache:
@@ -181,6 +188,7 @@ def evaluate_moment(distribution, k_data, cache):
     try:
         out = float(distribution._mom(k_data, **params))
     except DependencyError:
+        from . import approximation
         return approximation.approximate_moment(distribution, k_data)
 
     cache[(tuple(k_data), distribution)] = out
@@ -193,6 +201,7 @@ def evaluate_recurrence_coefficients(
         cache=None,
         params=None,
 ):
+    from . import baseclass
     cache, params = load_inputs(distribution, cache, params)
     if (tuple(k_data), distribution) in cache:
         return cache[(tuple(k_data), distribution)]

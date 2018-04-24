@@ -1,3 +1,4 @@
+import logging
 from functools import partial
 import numpy
 
@@ -36,6 +37,15 @@ def find_interior_point(
 
 
     Example:
+        >>> distribution = chaospy.MvNormal([1, 2, 3], numpy.eye(3)+.03)
+        >>> midpoint, lower, upper = find_interior_point(
+        ...     distribution, retall=True, seed=1234)
+        >>> print(lower.T)
+        [[-64. -64. -64.]]
+        >>> print(numpy.around(midpoint, 4).T)
+        [[  0.6784 -33.7687 -19.0182]]
+        >>> print(upper.T)
+        [[16. 16. 16.]]
         >>> distribution = chaospy.Uniform(1000, 1010)
         >>> midpoint, lower, upper = find_interior_point(
         ...     distribution, retall=True, seed=1234)
@@ -66,7 +76,7 @@ def find_interior_point(
     for _ in range(iterations):
 
         rand = numpy.random.random(dim)
-        proposal = rand*lower + (1-rand)*upper
+        proposal = (rand*lower.T + (1-rand)*upper.T).T
         evals = forward(x_data=proposal)
 
         indices0 = evals > 0
@@ -113,7 +123,7 @@ def approximate_inverse(
         qloc,
         params=None,
         cache=None,
-        iterations=100,
+        iterations=1000,
         tol=1e-5,
         seed=None,
 ):
@@ -149,6 +159,8 @@ def approximate_inverse(
         >>> print(numpy.around(distribution.inv(qloc), 4))
         [[ 987.1845  991.5838 1012.8155]]
     """
+    logger = logging.getLogger(__name__)
+
     # lots of initial values:
     xloc, xlower, xupper = find_interior_point(
         distribution, cache=cache, params=params, retall=True, seed=seed)
@@ -198,8 +210,10 @@ def approximate_inverse(
             xloc_, 0.5*(xupper+xlower)[:, indices])
 
     else:
-        raise evaluation.DependencyError(
+        logger.warning(
             "Too many iterations required to estimate inverse.")
+        logger.info("{} out of {} did not converge.".format(
+            numpy.sum(indices), len(indices)))
 
     return xloc
 
@@ -210,7 +224,7 @@ def approximate_moment(
         K,
         retall=False,
         control_var=None,
-        **kws,
+        **kws
 ):
     """
     Approximation method for estimation of raw statistical moments.

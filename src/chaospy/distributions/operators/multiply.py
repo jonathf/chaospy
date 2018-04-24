@@ -76,7 +76,6 @@ Raw moments::
     [ 1.25  -2.5   -3.125]
 """
 import numpy
-from contextlib import suppress
 
 from ..baseclass import Dist
 from .. import evaluation, deprecations
@@ -470,9 +469,10 @@ class Mul(Dist):
                 ", " + str(self.prm["right"]) + ")")
 
     def __len__(self):
-        with suppress(TypeError):
+        try:
             return len(self.prm["left"])
-        return 1
+        except TypeError:
+            return 1
 
 
 
