@@ -59,6 +59,6 @@ class Wald(Add):
         [ 4.9997  2.4662 11.3302  3.848 ]
     """
 
-    def __init__(self, mu=0, scale=1, shift=0):
+    def __init__(self, mu=1, scale=1, shift=0):
         self._repr = {"mu": mu, "scale": scale, "shift": shift}
         Add.__init__(self, left=wald(mu)*scale, right=shift)

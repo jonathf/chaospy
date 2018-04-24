@@ -34,7 +34,7 @@ class Reciprocal(Dist):
          [0.3307 0.2664 0.257 ]]
     """
 
-    def __init__(self, lower=0, upper=1):
+    def __init__(self, lower=1, upper=2):
         self._repr = {"lower": lower, "upper": upper}
         Dist.__init__(self, lower=lower, upper=upper)
 

@@ -106,7 +106,7 @@ class Triangle(Add):
          [0.1667 0.2333 0.2327]]
     """
 
-    def __init__(self, lower, midpoint, upper):
+    def __init__(self, lower=-1, midpoint=0, upper=1):
         self._repr = {"lower": lower, "midpoint": midpoint, "upper": upper}
         midpoint = (midpoint-lower)*1./(upper-lower)
         Add.__init__(self, left=triangle(midpoint)*(upper-lower), right=lower)

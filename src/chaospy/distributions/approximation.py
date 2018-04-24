@@ -160,7 +160,7 @@ def approximate_inverse(
         [[ 987.1845  991.5838 1012.8155]]
     """
     logger = logging.getLogger(__name__)
-    logger.debug("init approximate_inverse")
+    logger.debug("init approximate_inverse: %s", distribution)
 
     # lots of initial values:
     xloc, xlower, xupper = find_interior_point(
@@ -218,7 +218,7 @@ def approximate_inverse(
             "Too many iterations required to estimate inverse.")
         logger.info("{} out of {} did not converge.".format(
             numpy.sum(indices), len(indices)))
-    logger.debug("end approximate_inverse")
+    logger.debug("end approximate_inverse: %s", distribution)
     return xloc
 
 

@@ -48,7 +48,7 @@ class sample_dist(Dist):
         try:
             out = out.reshape(shape)
         except:
-            if len(self)==1:
+            if len(self) == 1:
                 out = out.flatten()
             else:
                 out = out.reshape(dim, out.size/dim)
@@ -78,7 +78,6 @@ def SampleDist(samples, lo=None, up=None):
         #construct the kernel density estimator
         kernel = gaussian_kde(samples, bw_method="scott")
         dist = sample_dist(kernel, lo, up)
-        dist.addattr(str="SampleDist(%s,%s)" % (lo, up))
 
     #raised by gaussian_kde if dataset is singular matrix
     except numpy.linalg.LinAlgError:

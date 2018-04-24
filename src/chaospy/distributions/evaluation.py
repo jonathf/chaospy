@@ -97,6 +97,8 @@ def evaluate_density(
         cache=None,
         params=None,
 ):
+    logger = logging.getLogger(__name__)
+    logger.debug("init evaluate_density: %s", distribution)
     out = numpy.zeros(x_data.shape)
     if hasattr(distribution, "_pdf"):
         cache, params = load_inputs(distribution, cache, params, "_pdf")
@@ -109,9 +111,10 @@ def evaluate_density(
             distribution, x_data, params, cache)
 
     if distribution in cache:
-        return numpy.where(x_data == cache[distribution], out, 0)
-    cache[distribution] = x_data
-
+        out = numpy.where(x_data == cache[distribution], out, 0)
+    else:
+        cache[distribution] = x_data
+    logger.debug("end evaluate_density: %s", distribution)
     return out
 
 
@@ -122,10 +125,14 @@ def evaluate_forward(
         params=None,
 ):
     assert len(x_data) == len(distribution)
+    logger = logging.getLogger(__name__)
+    logger.debug("init evaluate_forward: %s", distribution)
+
     cache, params = load_inputs(distribution, cache, params, "_cdf")
     cache[distribution] = x_data
     out = numpy.zeros(x_data.shape)
     out[:] = distribution._cdf(x_data.copy(), **params)
+    logger.debug("end evaluate_forward: %s", distribution)
     return out
 
 
@@ -135,16 +142,22 @@ def evaluate_inverse(
         cache=None,
         params=None
 ):
+    logger = logging.getLogger(__name__)
+    logger.debug("init evaluate_inverse: %s", distribution)
+
     out = numpy.zeros(q_data.shape)
     if hasattr(distribution, "_ppf"):
         cache, params = load_inputs(distribution, cache, params, "_ppf")
         out[:] = distribution._ppf(q_data.copy(), **params)
     else:
+        logger.info(
+            "distribution %s has no _ppf method; approximating.", distribution)
         from . import approximation
         cache, params = load_inputs(distribution, cache, params, "_cdf")
         out[:] = approximation.approximate_inverse(
             distribution, q_data, cache=cache, params=params)
     cache[distribution] = out
+    logger.debug("end evaluate_inverse: %s", distribution)
     return out
 
 
@@ -157,6 +170,8 @@ def evaluate_bound(
     assert len(x_data) == len(distribution)
     assert len(x_data.shape) == 2
     logger = logging.getLogger(__name__)
+    logger.debug("init evaluate_bound: %s", distribution)
+
     cache, params = load_inputs(distribution, cache, params, "_bnd")
     out = numpy.zeros((2,) + x_data.shape)
     lower, upper = distribution._bnd(x_data.copy(), **params)
@@ -179,15 +194,20 @@ def evaluate_bound(
         raise
 
     cache[distribution] = out
+    logger.debug("end evaluate_bound: %s", distribution)
     return out
 
 
 def evaluate_moment(distribution, k_data, cache):
+    logger = logging.getLogger(__name__)
+    logger.debug("init evaluate_moment: %s", distribution)
 
     from . import baseclass
     if numpy.all(k_data == 0):
+        logger.debug("end evaluate_moment: %s", distribution)
         return 1.
     if (tuple(k_data), distribution) in cache:
+        logger.debug("end evaluate_moment: %s", distribution)
         return cache[(tuple(k_data), distribution)]
 
     params = distribution.prm.copy()
@@ -210,9 +230,11 @@ def evaluate_moment(distribution, k_data, cache):
         out = float(distribution._mom(k_data, **params))
     except DependencyError:
         from . import approximation
-        return approximation.approximate_moment(distribution, k_data)
+        out = approximation.approximate_moment(distribution, k_data)
 
     cache[(tuple(k_data), distribution)] = out
+
+    logger.debug("end evaluate_moment: %s", distribution)
     return out
 
 
@@ -222,9 +244,13 @@ def evaluate_recurrence_coefficients(
         cache=None,
         params=None,
 ):
+    logger = logging.getLogger(__name__)
+    logger.debug("init evaluate_recurrence_coefficients: %s", distribution)
+
     from . import baseclass
     cache, params = load_inputs(distribution, cache, params)
     if (tuple(k_data), distribution) in cache:
+        logger.debug("end evaluate_recurrence_coefficients: %s", distribution)
         return cache[(tuple(k_data), distribution)]
 
     # self aware and should handle things itself:
@@ -257,4 +283,5 @@ def evaluate_recurrence_coefficients(
     if len(distribution) == 1:
         out = out[:, 0]
 
+    logger.debug("end evaluate_recurrence_coefficients: %s", distribution)
     return out

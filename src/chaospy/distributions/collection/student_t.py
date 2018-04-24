@@ -26,7 +26,7 @@ class student_t(Dist):
         return self._ppf(1e-10, a), self._ppf(1-1e-10, a)
 
     def _mom(self, k, a):
-        if numpy.any(a<=k):
+        if numpy.any(a < k):
             raise ValueError("too high mom for student-t")
         out = special.gamma(.5*k+.5)* \
                 special.gamma(.5*a-.5*k)*a**(.5*k)
@@ -61,6 +61,6 @@ class StudentT(Add):
         2.0
     """
 
-    def __init__(self, df, loc=0, scale=1):
+    def __init__(self, df=1, loc=0, scale=1):
         self._repr = {"df": df, "loc": loc, "scale": scale}
         Add.__init__(self, left=student_t(df)*scale, right=loc)
