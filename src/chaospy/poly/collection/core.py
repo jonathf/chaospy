@@ -50,9 +50,9 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
         (Poly) : Polynomial array.
 
     Examples:
-        >>> print(cp.basis(4, 4, 2))
+        >>> print(chaospy.basis(4, 4, 2))
         [q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
-        >>> print(cp.basis([1, 1], [2, 2]))
+        >>> print(chaospy.basis([1, 1], [2, 2]))
         [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
     """
     if stop is None:
@@ -129,13 +129,13 @@ def cutoff(poly, *args):
             the bound `low <= order < high` are removed.
 
     Examples:
-        >>> poly = cp.prange(4, 1) + cp.prange(4, 2)[::-1]
+        >>> poly = chaospy.prange(4, 1) + chaospy.prange(4, 2)[::-1]
         >>> print(poly)
-        [q1^3+1, q0+q1^2, q0^2+q1, q0^3+1]
-        >>> print(cp.cutoff(poly, 3))
-        [1, q0+q1^2, q0^2+q1, 1]
-        >>> print(cp.cutoff(poly, 1, 3))
-        [0, q0+q1^2, q0^2+q1, 0]
+        [q1^3+1, q1^2+q0, q0^2+q1, q0^3+1]
+        >>> print(chaospy.cutoff(poly, 3))
+        [1, q1^2+q0, q0^2+q1, 1]
+        >>> print(chaospy.cutoff(poly, 1, 3))
+        [0, q1^2+q0, q0^2+q1, 0]
     """
     if len(args) == 1:
         low, high = 0, args[0]
@@ -395,12 +395,12 @@ def around(A, decimals=0):
         (Poly, array_like) : Same type as A.
 
     Examples:
-        >>> P = cp.prange(3)*2**-numpy.arange(0, 6, 2, float)
+        >>> P = chaospy.prange(3)*2**-numpy.arange(0, 6, 2, float)
         >>> print(P)
         [1.0, 0.25q0, 0.0625q0^2]
-        >>> print(cp.around(P))
+        >>> print(chaospy.around(P))
         [1.0, 0.0, 0.0]
-        >>> print(cp.around(P, 2))
+        >>> print(chaospy.around(P, 2))
         [1.0, 0.25q0, 0.06q0^2]
     """
     if isinstance(A, Poly):
@@ -444,8 +444,36 @@ def trace(A, offset=0, ax1=0, ax2=1):
     return numpy.trace(A, offset, ax1, ax2)
 
 
-import chaospy as cp  # pylint: disable=unused-import
+def prune(A, threshold):
+    """
+    Remove coefficients that is not larger than a given threshold.
 
-if __name__=='__main__':
-    import doctest
-    doctest.testmod()
+    Args:
+        A (Poly): Input data.
+        threshold (float): Threshold for which values to cut.
+
+    Returns:
+        (Poly) : Same type as A.
+
+    Examples:
+        >>> P = chaospy.sum(chaospy.prange(3)*2**-numpy.arange(0, 6, 2, float))
+        >>> print(P)
+        0.0625q0^2+0.25q0+1.0
+        >>> print(chaospy.prune(P, 0.1))
+        0.25q0+1.0
+        >>> print(chaospy.prune(P, 0.5))
+        1.0
+        >>> print(chaospy.prune(P, 1.5))
+        0.0
+    """
+    if isinstance(A, Poly):
+        B = A.A.copy()
+        for key in A.keys:
+            values = B[key].copy()
+            values[numpy.abs(values) < threshold] = 0.
+            B[key] = values
+        return Poly(B, A.dim, A.shape, A.dtype)
+
+    A = A.copy()
+    A[numpy.abs(A) < threshold] = 0.
+    return A
