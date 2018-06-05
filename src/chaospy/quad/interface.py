@@ -70,24 +70,6 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
     assert len(abscissas.shape) == 2
 
     if isdist and not sparse:
-        abscissas, weights = normalize_weights(abscissas, weights)
+        weights /= np.sum(weights)
 
-    return abscissas, weights
-
-
-def normalize_weights(abscissas, weights):
-    """
-    Clean up abscissas and weights.
-
-    Ensure weight sum is 1. Remove entries for infintesimal small weigths.
-    """
-    weights_sum = np.sum(weights)
-
-    eps = 1
-    while (weights_sum - np.sum(weights[weights > eps])) > 1e-18:
-        eps *= .1
-
-    valid = weights > eps
-    abscissas, weights = abscissas[:, valid], weights[valid]
-    weights /= np.sum(weights)
     return abscissas, weights
