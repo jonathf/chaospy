@@ -35,7 +35,7 @@ A quadrature rule where the distribution is the weight function::
     [0.7111 0.2785 0.0104]
 """
 from .combine import combine
-from .interface import generate_quadrature, normalize_weights
+from .interface import generate_quadrature
 
 from .stieltjes import generate_stieltjes
 from .collection import *
