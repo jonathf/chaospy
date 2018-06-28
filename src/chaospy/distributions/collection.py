@@ -737,6 +737,17 @@ def Normal(mu=0, sigma=1):
     return dist
 
 
+def OTDistribution(distribution):
+    """
+    OpenTURNS distribution.
+
+    Args:
+        distribution (openturns.Distribution, Dist) : underlying OT distribution
+    """
+    dist = cores.otdistribution(distribution)
+    return dist
+
+
 def Pareto1(shape=1, scale=1, loc=0):
     """
     Pareto type 1 distribution.
