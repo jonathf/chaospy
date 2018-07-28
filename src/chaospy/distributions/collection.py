@@ -95,7 +95,7 @@ def Bradford(shape=1, lo=0, up=1):
 
 def Burr(c=1, d=1, loc=0, scale=1):
     """
-    Burr Type XII or Singh-Maddala distribution.
+    Burr Type III distribution.
 
     Args:
         c (float, Dist) : Shape parameter

@@ -765,7 +765,9 @@ class burr(Dist):
     def _ppf(self, q, c, d):
         return (q**(-1.0/d)-1)**(-1.0/c)
     def _bnd(self, c, d):
-        return 0, self._ppf(1-1e-10)
+        return 0, self._ppf(1-1e-10, c, d)
+    def _mom(self, k, c, d):
+        return d*special.beta(1-k*1./c, d+k*1./c)
 
 class fisk(Dist):
 
