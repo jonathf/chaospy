@@ -103,7 +103,7 @@ def Burr(c=1, d=1, loc=0, scale=1):
         loc (float, Dist) : Location parameter
         scale (float, Dist) : Scaling parameter
     """
-    dist = cores.burr(c=1., d=1.)*scale + loc
+    dist = cores.burr(c=c, d=d)*scale + loc
     dist.addattr(str="Burr(%s,%s,%s,%s)"%(c, d, loc, scale))
     return dist
 
