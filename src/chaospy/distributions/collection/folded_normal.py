@@ -43,7 +43,7 @@ class FoldedNormal(Add):
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.1417 0.1934 0.1932 0.14  ]
         >>> print(numpy.around(distribution.sample(4), 4))
-        [5.7901 2.6245 8.2951 4.9109]
+        [5.7901 2.6245 8.2952 4.9109]
         >>> print(numpy.around(distribution.mom(1), 4))
         10.5
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))

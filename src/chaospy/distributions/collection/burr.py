@@ -1,5 +1,6 @@
 """Burr Type III distribution."""
 import numpy
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -58,7 +59,7 @@ class Burr(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [6.007  5.9558 6.0489 5.9937]
         >>> print(numpy.around(distribution.mom(1), 4))
-        5.2115
+        6.0061
     """
 
     def __init__(self, alpha=1, kappa=1, loc=0, scale=1):

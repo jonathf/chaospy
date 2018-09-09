@@ -35,12 +35,6 @@ class ChiSquared(Add):
     """
     (Non-central) Chi-squared distribution.
 
-    Args:
-        df (float, Dist) : Degrees of freedom
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
-        nc (float, Dist) : Non-centrality parameter
-
     Examples:
         >>> distribution = chaospy.ChiSquared(2, 4, 1, 1)
         >>> print(distribution)
@@ -55,12 +49,19 @@ class ChiSquared(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [14.0669  2.595  35.6294  9.2851]
         >>> print(numpy.around(distribution.mom(1), 4))
-        86.7956
+        134.9406
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[ 32.9987  51.6111  68.9408]
-         [127.9989 431.8147 888.9531]]
+        [[ 33.      51.6666  69.8034]
+         [128.     432.     895.9962]]
     """
 
     def __init__(self, df=1, scale=1, shift=0, nc=0):
+        """
+        Args:
+            df (float, Dist) : Degrees of freedom
+            scale (float, Dist) : Scaling parameter
+            shift (float, Dist) : Location parameter
+            nc (float, Dist) : Non-centrality parameter
+        """
         self._repr = {"df": df, "scale": scale, "shift": shift, "nc": nc}
         Add.__init__(self, left=chi_squared(df, nc)*scale, right=shift)
