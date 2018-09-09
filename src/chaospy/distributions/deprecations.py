@@ -7,18 +7,6 @@ import logging
 from functools import wraps
 
 
-
-def OTDistribution(distribution):
-    """
-    OpenTURNS distribution.
-
-    Args:
-        distribution (openturns.Distribution, Dist) : underlying OT distribution
-    """
-    dist = cores.otdistribution(distribution)
-    return dist
-
-
 def deprecation_warning(func):
     """Add a deprecation warning do each distribution."""
     @wraps(func)

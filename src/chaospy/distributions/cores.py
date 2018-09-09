@@ -14,26 +14,6 @@ from scipy import special
 from .baseclass import Dist
 from . import joint
 
-class otdistribution(Dist):
-    def __init__(self, distribution):
-        Dist.__init__(self)
-        if distribution.getDimension() != 1:
-            raise Exception("Only 1D OpenTURNS distribution are supported for now")
-        self.distribution = distribution
-    def _pdf(self, x):
-        return np.array(self.distribution.computePDF(np.atleast_2d(x).T).asPoint())
-    def _cdf(self, x):
-        return np.array(self.distribution.computeCDF(np.atleast_2d(x).T).asPoint())
-    def _ppf(self, q):
-        return np.array(self.distribution.computeQuantile(q[0]).asPoint())
-    def _bnd(self):
-        rng = self.distribution.getRange()
-        return rng.getLowerBound()[0], rng.getUpperBound()[0]
-    def _mom(self, k):
-        return self.getMoment(k)[0]
-    def _str(self):
-        return self.distribution.__str__()
-
 
 
 class loguniform(Dist):
