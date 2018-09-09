@@ -124,7 +124,8 @@ def evaluate_forward(
         cache=None,
         params=None,
 ):
-    assert len(x_data) == len(distribution)
+    assert len(x_data) == len(distribution), (
+        "distribution %s is not of length %d" % (distribution, len(x_data)))
     logger = logging.getLogger(__name__)
     logger.debug("init evaluate_forward: %s", distribution)
 
@@ -201,6 +202,8 @@ def evaluate_bound(
 def evaluate_moment(distribution, k_data, cache):
     logger = logging.getLogger(__name__)
     logger.debug("init evaluate_moment: %s", distribution)
+    assert len(k_data) == len(distribution), (
+        "distribution %s is not of length %d" % (distribution, len(k_data)))
 
     from . import baseclass
     if numpy.all(k_data == 0):

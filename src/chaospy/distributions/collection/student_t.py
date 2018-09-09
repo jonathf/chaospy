@@ -35,6 +35,7 @@ class student_t(Dist):
     def _ttr(self, k, a):
         return 0., k*a*(a-k+1.)/ ((a-2*k)*(a-2*k+2))
 
+
 class StudentT(Add):
     """
     (Non-central) Student-t distribution.

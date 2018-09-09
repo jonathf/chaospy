@@ -81,6 +81,10 @@ class Copula(Dist):
             trans, evaluation.evaluate_forward(
                 dist, x, cache=cache), cache=cache)*density
 
+    def _mom(self, x, dist, trans, cache):
+        raise evaluation.DependencyError(
+            "Joint distribution with dependencies not supported.")
+
     def __len__(self):
         return len(self.prm["dist"])
 
