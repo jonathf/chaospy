@@ -1,11 +1,10 @@
 """
-Uncertainty Quantifican Toolbox
-===============================
+Uncertainty Quantification Toolbox
+==================================
 
-This module contains tools for performing uncertainty
-quantification of models.
+This module contains tools for performing uncertainty quantification of models.
 """
-
+from chaospy.version import __version__
 import chaospy.bertran
 import chaospy.chol
 import chaospy.descriptives
