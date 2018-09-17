@@ -14,17 +14,17 @@ Example usage
 Standard usage::
 
     >>> set_state(1000)
-    >>> print(numpy.around(create_sobol_samples(order=2, dim=2), 4))
+    >>> print(numpy.around(create_sobol_samples(order=3, dim=2), 4))
     [[0.2197 0.7197 0.9697]
      [0.0967 0.5967 0.3467]]
-    >>> print(numpy.around(create_sobol_samples(order=2, dim=2), 4))
+    >>> print(numpy.around(create_sobol_samples(order=3, dim=2), 4))
     [[0.4697 0.3447 0.8447]
      [0.8467 0.4717 0.9717]]
-    >>> print(numpy.around(create_sobol_samples(order=2, dim=3), 4))
+    >>> print(numpy.around(create_sobol_samples(order=3, dim=3), 4))
     [[0.5947 0.0947 0.0635]
      [0.2217 0.7217 0.1904]
      [0.9229 0.4229 0.0166]]
-    >>> print(numpy.around(create_sobol_samples(order=2, dim=6), 4))
+    >>> print(numpy.around(create_sobol_samples(order=3, dim=6), 4))
     [[0.5635 0.8135 0.3135]
      [0.6904 0.4404 0.9404]
      [0.5166 0.7666 0.2666]
@@ -137,17 +137,17 @@ def create_sobol_samples(order, dim, seed=None):
 
     Returns:
         quasi (numpy.ndarray):
-            Quasi-random vector with ``shape == (dim, order+1)``.
+            Quasi-random vector with ``shape == (dim, order)``.
     """
     assert 0 < dim < DIM_MAX, "dim in [1, 40]"
 
     # global RANDOM_SEED  # pylint: disable=global-statement
     # if seed is None:
     #     seed = RANDOM_SEED
-    # RANDOM_SEED += order+1
+    # RANDOM_SEED += order
     set_state(seed_value=seed)
     seed = RANDOM_SEED
-    set_state(step=order+1)
+    set_state(step=order)
 
     # Initialize row 1 of V.
     samples = SOURCE_SAMPLES.copy()
@@ -190,8 +190,8 @@ def create_sobol_samples(order, dim, seed=None):
         lastq[:] = lastq ^ samples[:, lowbit]
 
     #Calculate the new components of QUASI.
-    quasi = numpy.empty((dim, order+1))
-    for idx in range(order+1):
+    quasi = numpy.empty((dim, order))
+    for idx in range(order):
         lowbit = len(bin(seed+idx)[2:].split("0")[-1])
         quasi[:, idx] = lastq * recipd
         lastq[:] = lastq ^ samples[:, lowbit]
