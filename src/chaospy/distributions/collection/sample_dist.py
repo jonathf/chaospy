@@ -15,7 +15,7 @@ class sample_dist(Dist):
         super(sample_dist, self).__init__(lo=lo, up=up)
 
     def _cdf(self, x, lo, up):
-        cdf_vals = np.zeros(x.shape)
+        cdf_vals = numpy.zeros(x.shape)
         for i in range(0, len(x)):
             cdf_vals[i] = [self.kernel.integrate_box_1d(0, x_i) for x_i in x[i]]
         return cdf_vals
@@ -34,10 +34,10 @@ class sample_dist(Dist):
             given by the KDE itself.
         """
 
-        size_ = np.prod(size, dtype=int)
+        size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         if dim>1:
-            if isinstance(size, (tuple,list,np.ndarray)):
+            if isinstance(size, (tuple,list,numpy.ndarray)):
                 shape = (dim,) + tuple(size)
             else:
                 shape = (dim, size)
@@ -68,7 +68,19 @@ def SampleDist(samples, lo=None, up=None):
             Sample values to construction of the KDE
         lo (float) : Location of lower threshold
         up (float) : Location of upper threshold
+
+    Example:
+        >>> distribution = chaospy.SampleDist([0, 1, 1, 1, 2])
+        >>> print(distribution)
+        sample_dist(lo=0, up=2)
+        >>> q = numpy.linspace(0, 1, 5)
+        >>> print(numpy.around(distribution.inv(q), 4))
+        [0.     0.7299 1.2295 1.9181 2.    ]
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        [0.   0.25 0.5  0.75 1.  ]
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
     """
+    samples = numpy.asarray(samples)
     if lo is None:
         lo = samples.min()
     if up is None:

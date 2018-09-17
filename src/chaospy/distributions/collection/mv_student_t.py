@@ -56,6 +56,7 @@ class MvStudentT(Dist):
         loc = numpy.asfarray(loc)
         scale = numpy.asfarray(scale)
         assert len(loc) == len(scale)
+        self.length = len(loc)
         self._repr = {"df": df, "loc": loc.tolist(), "scale": scale.tolist()}
 
         C = numpy.linalg.cholesky(scale)
@@ -91,7 +92,7 @@ class MvStudentT(Dist):
         return output
 
     def __len__(self):
-        return len(self.prm["C"])
+        return self.length
 
     # def _mom(self, k, a, C, Ci, loc):
 

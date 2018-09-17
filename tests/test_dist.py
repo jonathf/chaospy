@@ -1,6 +1,7 @@
 """Testing basic distributions and their operations
 """
 import math
+from contextlib import suppress
 from inspect import isclass
 
 import numpy as np
@@ -11,10 +12,13 @@ import chaospy as cp
 from chaospy.distributions import collection
 
 
-DISTRIBUTIONS = tuple(
-    attr for attr in (getattr(collection, name) for name in dir(collection))
-    if isclass(attr) and issubclass(attr, cp.Dist)
-)
+DISTRIBUTIONS = ()
+for name in dir(collection):
+    attr = getattr(collection, name)
+    if isclass(attr) and issubclass(attr, cp.Dist):
+        with suppress(TypeError):
+            attr()
+            DISTRIBUTIONS = DISTRIBUTIONS + (attr,)
 
 @pytest.fixture(params=DISTRIBUTIONS)
 def distribution(request):
