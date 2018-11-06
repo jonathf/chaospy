@@ -4,7 +4,7 @@ Basic tools for Bertran index manipulation.
 import functools
 
 import numpy
-import scipy.misc
+import scipy.special
 
 import chaospy.bertran
 
@@ -43,7 +43,7 @@ def terms(order, dim):
         The number of terms in an expansion of upper order `M` and
         number of dimensions `dim`.
     """
-    return int(scipy.misc.comb(order+dim, dim, 1))
+    return int(scipy.special.comb(order+dim, dim, 1))
 
 
 def multi_index(idx, dim):
