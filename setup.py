@@ -19,7 +19,7 @@ setup(
     url='https://github.com/jonathf/chaospy',
     author="Jonathan Feinberg",
     author_email="jonathf@gmail.com",
-    license='BSD',
+    license='MIT',
     platforms='any',
     packages=find_packages("src"),
     package_dir={"": "src"},
