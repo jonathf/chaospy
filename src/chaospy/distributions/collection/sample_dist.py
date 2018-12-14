@@ -1,6 +1,5 @@
 """A distribution that is based on a kernel density estimator (KDE)."""
 import numpy
-from scipy import special
 from scipy.stats import gaussian_kde
 
 from ..baseclass import Dist
@@ -10,14 +9,18 @@ from ..operators.addition import Add
 
 class sample_dist(Dist):
     """A distribution that is based on a kernel density estimator (KDE)."""
-    def __init__(self, kernel, lo, up):
-        self.kernel = kernel
+    def __init__(self, samples, lo, up):
+        self.samples = samples
+        self.kernel = gaussian_kde(samples, bw_method="scott")
+        self.flo = self.kernel.integrate_box_1d(0, lo)
+        self.fup = self.kernel.integrate_box_1d(0, up)
         super(sample_dist, self).__init__(lo=lo, up=up)
 
     def _cdf(self, x, lo, up):
         cdf_vals = numpy.zeros(x.shape)
         for i in range(0, len(x)):
             cdf_vals[i] = [self.kernel.integrate_box_1d(0, x_i) for x_i in x[i]]
+        cdf_vals = (cdf_vals - self.flo) / (self.fup - self.flo)
         return cdf_vals
 
     def _pdf(self, x, lo, up):
@@ -25,35 +28,6 @@ class sample_dist(Dist):
 
     def _bnd(self, x, lo, up):
         return (lo, up)
-
-    def sample(self, size=(), rule="R", antithetic=None,
-            verbose=False, **kws):
-        """
-            Overwrite sample() function, because the constructed Dist that is
-            based on the KDE is only working with the random sampling that is
-            given by the KDE itself.
-        """
-
-        size_ = numpy.prod(size, dtype=int)
-        dim = len(self)
-        if dim>1:
-            if isinstance(size, (tuple,list,numpy.ndarray)):
-                shape = (dim,) + tuple(size)
-            else:
-                shape = (dim, size)
-        else:
-            shape = size
-
-        out = self.kernel.resample(size_)[0]
-        try:
-            out = out.reshape(shape)
-        except:
-            if len(self) == 1:
-                out = out.flatten()
-            else:
-                out = out.reshape(dim, out.size/dim)
-
-        return out
 
 
 def SampleDist(samples, lo=None, up=None):
@@ -75,10 +49,18 @@ def SampleDist(samples, lo=None, up=None):
         sample_dist(lo=0, up=2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> print(numpy.around(distribution.inv(q), 4))
-        [0.     0.7299 1.2295 1.9181 2.    ]
+        [0.     0.6016 1.     1.3984 2.    ]
         >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.   0.25 0.5  0.75 1.  ]
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        [0.2254 0.4272 0.5135 0.4272 0.2254]
+        >>> print(numpy.around(distribution.sample(4), 4))
+        [1.2354 0.3248 1.845  0.9733]
+        >>> print(numpy.around(distribution.mom(1), 4))
+        1.0
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        [[1.3835 0.7983 1.1872]
+         [0.2429 0.2693 0.4102]]
     """
     samples = numpy.asarray(samples)
     if lo is None:
@@ -88,8 +70,7 @@ def SampleDist(samples, lo=None, up=None):
 
     try:
         #construct the kernel density estimator
-        kernel = gaussian_kde(samples, bw_method="scott")
-        dist = sample_dist(kernel, lo, up)
+        dist = sample_dist(samples, lo, up)
 
     #raised by gaussian_kde if dataset is singular matrix
     except numpy.linalg.LinAlgError:
