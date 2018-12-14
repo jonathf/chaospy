@@ -60,3 +60,6 @@ class HyperbolicSecant(Add):
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}
         Add.__init__(self, left=hyperbolic_secant()*scale, right=loc)
+
+
+Hypgeosec = HyperbolicSecant

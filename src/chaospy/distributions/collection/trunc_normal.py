@@ -57,3 +57,6 @@ class TruncNormal(Dist):
 
     def _bnd(self, x, a, b, mu, sigma):
         return a, b
+
+
+Truncnorm = TruncNormal

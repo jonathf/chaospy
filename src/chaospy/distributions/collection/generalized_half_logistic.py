@@ -62,3 +62,7 @@ class GeneralizedHalfLogistic(Add):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=generalized_half_logistic(shape)*scale, right=shift)
+
+
+
+Genhalflogistic = GeneralizedHalfLogistic

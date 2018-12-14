@@ -58,3 +58,6 @@ class LogLaplace(Add):
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(self, left=log_laplace(shape)*scale, right=shift)
+
+
+Loglaplace = LogLaplace

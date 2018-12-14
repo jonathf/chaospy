@@ -65,3 +65,6 @@ class ChiSquared(Add):
         """
         self._repr = {"df": df, "scale": scale, "shift": shift, "nc": nc}
         Add.__init__(self, left=chi_squared(df, nc)*scale, right=shift)
+
+
+Chisquared = ChiSquared

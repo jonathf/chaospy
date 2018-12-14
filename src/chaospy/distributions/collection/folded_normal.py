@@ -54,3 +54,6 @@ class FoldedNormal(Add):
     def __init__(self, mu=0, sigma=1, loc=0):
         self._repr = {"mu": mu, "sigma": sigma, "loc": loc}
         Add.__init__(self, left= folded_normal(mu-loc)*sigma, right=loc)
+
+
+Foldnormal = FoldedNormal

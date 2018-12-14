@@ -58,3 +58,6 @@ class TruncExponential(Add):
         self._repr = {"upper": upper, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=truncexpon((upper-shift)/scale)*scale, right=shift)
+
+
+Truncexpon = TruncExponential

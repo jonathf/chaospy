@@ -60,3 +60,6 @@ class LogUniform(Add):
     def __init__(self, lower=0, upper=1, scale=1, shift=0):
         self._repr = {"lower": lower, "upper": upper, "scale": scale, "shift": shift}
         Add.__init__(self, left=log_uniform(lower, upper)*scale, right=shift)
+
+
+Loguniform = LogUniform

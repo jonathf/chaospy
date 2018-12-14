@@ -61,3 +61,6 @@ class GeneralizedExponential(Add):
         self._repr = {"a": a, "b": b, "c": c, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=generalized_exponential(a, b, c)*scale, right=shift)
+
+
+Genexpon = GeneralizedExponential

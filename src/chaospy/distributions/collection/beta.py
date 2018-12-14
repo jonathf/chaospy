@@ -106,6 +106,8 @@ class ArcSinus(Add):
         Add.__init__(
             self, left=beta_(shape, 1-shape)*(upper-lower), right=lower)
 
+Arcsinus = ArcSinus
+
 
 class PowerLaw(Add):
     """
@@ -136,6 +138,9 @@ class PowerLaw(Add):
     def __init__(self, shape=1, lower=0, upper=1):
         self._repr = {"shape": shape, "lower": lower, "upper": upper}
         Add.__init__(self, left=beta_(shape, 1)*(upper-lower), right=lower)
+
+
+Powerlaw = PowerLaw
 
 
 class Wigner(Add):

@@ -76,3 +76,6 @@ class MvLogNormal(Dist):
 
     def __len__(self):
         return len(self.prm["C"])
+
+
+MvLognormal = MvLogNormal

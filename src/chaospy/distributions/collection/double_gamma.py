@@ -60,3 +60,6 @@ class DoubleGamma(Add):
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(self, left=double_gamma(shape)*scale, right=shift)
+
+
+Dbl_gamma = DoubleGamma

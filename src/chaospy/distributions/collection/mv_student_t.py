@@ -134,3 +134,6 @@ class MvStudentT(Dist):
     #         out += pos*coef*loc_*M[i]
 
     #     return out
+
+
+MvStudent_t = MvStudentT

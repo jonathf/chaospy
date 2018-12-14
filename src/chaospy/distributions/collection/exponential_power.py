@@ -62,3 +62,6 @@ class ExponentialPower(Add):
     def __init__(self, shape=0, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(self, left=exponential_power(shape)*scale, right=shift)
+
+
+Exponpow = ExponentialPower

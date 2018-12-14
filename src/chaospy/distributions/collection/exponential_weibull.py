@@ -60,3 +60,6 @@ class ExponentialWeibull(Add):
             "alpha": alpha, "kappa": kappa, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=exponential_weibull(alpha, kappa)*scale, right=shift)
+
+
+Exponweibull = ExponentialWeibull

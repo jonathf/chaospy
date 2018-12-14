@@ -57,3 +57,6 @@ class PowerLogNormal(Add):
             "shape": shape, "mu": mu, "sigma": sigma, "shift": shift, "scale": scale}
         Add.__init__(self, left=power_log_normal(
             shape, sigma)*scale*numpy.e**mu, right=shift)
+
+
+PowerLognormal = PowerLogNormal

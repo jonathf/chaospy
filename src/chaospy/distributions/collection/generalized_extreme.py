@@ -66,3 +66,6 @@ class GeneralizedExtreme(Add):
     def __init__(self, shape=0, scale=1, loc=0):
         self._repr = {"shape": shape, "scale": scale, "loc": loc}
         Add.__init__(self, left=generalized_extreme(shape)*scale, right=loc)
+
+
+Genextreme = GeneralizedExtreme

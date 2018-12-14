@@ -71,6 +71,9 @@ class LogNormal(Add):
         Add.__init__(self, left=left, right=shift)
 
 
+Lognormal = LogNormal
+
+
 class Gilbrat(Add):
     """
     Gilbrat distribution.
