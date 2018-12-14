@@ -254,7 +254,7 @@ Examples:
     [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
     polynomials, norms, _, _ = chaospy.quad.generate_stieltjes(
-        dist=dist, order=order, retall=True, **kws)
+        dist=dist, order=numpy.max(order), retall=True, **kws)
 
     if normed:
         for idx, poly in enumerate(polynomials):

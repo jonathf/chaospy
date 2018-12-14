@@ -141,7 +141,7 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
         local.append(list(idxm))
         total.append(idxm)
 
-    for _ in range(start, stop):
+    for _ in range(start, numpy.max(stop)):
 
         local_, local = local, []
         for idxm in local_:
@@ -156,6 +156,10 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
                 local.append(idxm[:])
                 total.append(tuple(idxm))
                 idxm[idxj] -= 1
+
+    if not isinstance(stop, int):
+        stop = numpy.array(stop)
+        total = [idx for idx in total if numpy.all(stop >= idx)]
 
     if "G" in sort:
         total = sorted(total, key=sum)
@@ -179,7 +183,7 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
 
     for pos, idx in reversed(list(enumerate(total))):
         idx = numpy.array(idx)
-        if numpy.any(numpy.sum(idx**(1./cross_truncation)) > stop**(1./cross_truncation)):
+        if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
             del total[pos]
 
 
