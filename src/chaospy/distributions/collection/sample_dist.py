@@ -4,6 +4,7 @@ from scipy.stats import gaussian_kde
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .uniform import Uniform
 
 
 
@@ -74,6 +75,6 @@ def SampleDist(samples, lo=None, up=None):
 
     #raised by gaussian_kde if dataset is singular matrix
     except numpy.linalg.LinAlgError:
-        dist = Uniform(lo=-numpy.inf, up=numpy.inf)
+        dist = Uniform(lower=-numpy.inf, upper=numpy.inf)
 
     return dist
