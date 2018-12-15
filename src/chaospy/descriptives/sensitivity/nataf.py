@@ -1,91 +1,10 @@
-import numpy as np
+"""Variance based decomposition on the Nataf Copula."""
+import numpy
 
 import chaospy
 
-from .second1d import Var
-from .first import E_cond
-from .first import E as E_total
-
-def Sens_m(poly, dist, **kws):
-    """
-    Variance-based decomposition
-    AKA Sobol' indices
-
-    First order sensitivity indices
-    """
-
-    dim = len(dist)
-    if poly.dim<dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
-
-    zero = [0]*dim
-    out = np.zeros((dim,) + poly.shape)
-    V = Var(poly, dist, **kws)
-    for i in range(dim):
-        zero[i] = 1
-        out[i] = Var(E_cond(poly, zero, dist, **kws),
-                     dist, **kws)/(V+(V == 0))*(V != 0)
-        zero[i] = 0
-    return out
-
-
-def Sens_m2(poly, dist, **kws):
-    """
-    Variance-based decomposition
-    AKA Sobol' indices
-
-    Second order sensitivity indices
-    """
-    dim = len(dist)
-    if poly.dim<dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
-
-    zero = [0]*dim
-    out = np.zeros((dim, dim) + poly.shape)
-
-    mean = E_total(poly, dist)
-    V_total = Var(poly, dist)
-    E_cond_i = [None]*dim
-    V_E_cond_i = [None]*dim
-    for i in range(dim):
-        zero[i] = 1
-        E_cond_i[i] = E_cond(poly, zero, dist, **kws) 
-        V_E_cond_i[i] = Var(E_cond_i[i], dist, **kws)
-        zero[i] = 0
-             
-    for i in range(dim):
-        zero[i] = 1
-        for j in range(i+1, dim):
-            zero[j] = 1
-            E_cond_ij = E_cond(poly, zero, dist, **kws)
-            out[j, i] = out[i, j] = (Var(E_cond_ij, dist, **kws)-V_E_cond_i[i] - V_E_cond_i[j]) /(V_total+(V_total == 0))*(V_total != 0)
-            zero[j] = 0
-
-        zero[i] = 0
-
-    return out
-
-
-def Sens_t(poly, dist, **kws):
-    """
-    Variance-based decomposition
-    AKA Sobol' indices
-
-    Total effect sensitivity index
-    """
-    dim = len(dist)
-    if poly.dim<dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
-
-    zero = [1]*dim
-    out = np.zeros((dim,) + poly.shape, dtype=float)
-    V = Var(poly, dist, **kws)
-    for i in range(dim):
-        zero[i] = 0
-        out[i] = (V-Var(E_cond(poly, zero, dist, **kws),
-            dist, **kws))/(V+(V==0))**(V!=0)
-        zero[i] = 1
-    return out
+from ..conditional import E_cond
+from ..variance import Var
 
 
 def Sens_m_nataf(order, dist, samples, vals, **kws):
@@ -102,16 +21,16 @@ def Sens_m_nataf(order, dist, samples, vals, **kws):
         vals (array_like): Evaluations of the model for given samples.
 
     Returns:
-        np.ndarray: Sensitivity indices with
-                `shape==(len(dist),) + vals.shape[1:]`
+        (ndarray) :
+            Sensitivity indices with shape ``(len(dist),) + vals.shape[1:]``.
     """
     assert dist.__class__.__name__ == "Copula"
     trans = dist.prm["trans"]
     assert trans.__class__.__name__ == "nataf"
-    vals = np.array(vals)
+    vals = numpy.array(vals)
 
     cov = trans.prm["C"]
-    cov = np.dot(cov, cov.T)
+    cov = numpy.dot(cov, cov.T)
 
     marginal = dist.prm["dist"]
     dim = len(dist)
@@ -129,7 +48,7 @@ def Sens_m_nataf(order, dist, samples, vals, **kws):
 
     V = Var(poly, marginal, **kws)
 
-    out = np.zeros((dim,) + poly.shape)
+    out = numpy.zeros((dim,) + poly.shape)
     out[0] = Var(E_cond(poly, index, marginal, **kws),
                  marginal, **kws)/(V+(V == 0))*(V != 0)
 
@@ -164,17 +83,16 @@ def Sens_t_nataf(order, dist, samples, vals, **kws):
         vals (array_like): Evaluations of the model for given samples.
 
     Returns:
-        np.ndarray: Sensitivity indices with
-                `shape==(len(dist),)+vals.shape[1:]`
+        (ndarray) :
+            Sensitivity indices with shape ``(len(dist),)+vals.shape[1:]``.
     """
-
     assert dist.__class__.__name__ == "Copula"
     trans = dist.prm["trans"]
     assert trans.__class__.__name__ == "nataf"
-    vals = np.array(vals)
+    vals = nump.array(vals)
 
     cov = trans.prm["C"]
-    cov = np.dot(cov, cov.T)
+    cov = nump.dot(cov, cov.T)
 
     marginal = dist.prm["dist"]
     dim = len(dist)
@@ -192,7 +110,7 @@ def Sens_t_nataf(order, dist, samples, vals, **kws):
 
     V = Var(poly, marginal, **kws)
 
-    out = np.zeros((dim,) + poly.shape)
+    out = nump.zeros((dim,) + poly.shape)
     out[0] = (V-Var(E_cond(poly, index, marginal, **kws),
                     marginal, **kws))/(V+(V == 0))**(V != 0)
 
@@ -226,18 +144,18 @@ def Sens_nataf(order, dist, samples, vals, **kws):
         vals (array_like): Evaluations of the model for given samples.
 
     Returns:
-        np.ndarray: Sensitivity indices with
-                `shape==(2, len(dist),)+vals.shape[1:]`. First component is
+        (ndarray) :
+            Sensitivity indices with shape
+                `kjl`(2, len(dist),)+vals.shape[1:]`. First component is
                 main and second is total.
     """
-
     assert dist.__class__.__name__ == "Copula"
     trans = dist.prm["trans"]
     assert trans.__class__.__name__ == "nataf"
-    vals = np.array(vals)
+    vals = nump.array(vals)
 
     cov = trans.prm["C"]
-    cov = np.dot(cov, cov.T)
+    cov = nump.dot(cov, cov.T)
 
     marginal = dist.prm["dist"]
     dim = len(dist)
@@ -256,7 +174,7 @@ def Sens_nataf(order, dist, samples, vals, **kws):
 
     V = Var(poly, marginal, **kws)
 
-    out = np.zeros((2, dim,) + poly.shape)
+    out = nump.zeros((2, dim,) + poly.shape)
     out[0, 0] = (V - Var(E_cond(poly, index0, marginal, **kws),
                         marginal, **kws))/(V+(V == 0))**(V != 0)
     out[1, 0] = Var(E_cond(poly, index1, marginal, **kws),
