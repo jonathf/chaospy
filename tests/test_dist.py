@@ -17,8 +17,8 @@ for name in dir(collection):
     attr = getattr(collection, name)
     if isclass(attr) and issubclass(attr, cp.Dist):
         with suppress(TypeError):
-            attr()
-            DISTRIBUTIONS = DISTRIBUTIONS + (attr,)
+            if len(attr()) == 1:
+                DISTRIBUTIONS = DISTRIBUTIONS + (attr,)
 
 @pytest.fixture(params=DISTRIBUTIONS)
 def distribution(request):
@@ -34,30 +34,28 @@ def test_dist_add(distribution):
     np.testing.assert_allclose(dist2_e, base_e, rtol=1e-05, atol=1e-08)
 
 
-# def test_dist_sub():
+def test_dist_sub(distribution):
+    """Test distribution subtraction."""
+    dist1_e = cp.E(distribution() - 3.0)
+    dist2_e = cp.E(3.0 - distribution())
+    base_e = cp.E(distribution()) - 3.0
+    np.testing.assert_allclose(dist1_e, -dist2_e, rtol=1e-05, atol=1e-08)
+    np.testing.assert_allclose(dist2_e, -base_e, rtol=1e-05, atol=1e-08)
 
-#     for name, dist in zip(dist_names, dists):
-#         dist1_e = cp.E(dist() - 3.0)
-#         dist2_e = cp.E(3.0 - dist())
-#         base_e = cp.E(dist()) - 3.0
-#         np.testing.assert_allclose(dist1_e, -dist2_e, rtol=1e-05, atol=1e-08)
-#         np.testing.assert_allclose(dist2_e, -base_e, rtol=1e-05, atol=1e-08)
 
+def test_dist_mul(distribution):
+    """Test distribution multiplication."""
+    dist1_e = cp.E(distribution() * 9.0)
+    dist2_e = cp.E(9.0 * distribution())
+    base_e = cp.E(distribution()) * 9.0
+    np.testing.assert_allclose(dist1_e, dist2_e, rtol=1e-05, atol=1e-08)
+    np.testing.assert_allclose(dist2_e, base_e, rtol=1e-05, atol=1e-08)
 
-# def test_dist_mul():
-
-#     for name, dist in zip(dist_names, dists):
-#         dist1_e = cp.E(dist() * 9.0)
-#         dist2_e = cp.E(9.0 * dist())
-#         base_e = cp.E(dist()) * 9.0
-#         np.testing.assert_allclose(dist1_e, dist2_e, rtol=1e-05, atol=1e-08)
-#         np.testing.assert_allclose(dist2_e, base_e, rtol=1e-05, atol=1e-08)
-
-#         dist1_e = cp.E(dist() * 0.1)
-#         dist2_e = cp.E(0.1 * dist())
-#         base_e = cp.E(dist()) * 0.1
-#         np.testing.assert_allclose(dist1_e, dist2_e, rtol=1e-05, atol=1e-08)
-#         np.testing.assert_allclose(dist2_e, base_e, rtol=1e-05, atol=1e-08)
+    dist1_e = cp.E(distribution() * 0.1)
+    dist2_e = cp.E(0.1 * distribution())
+    base_e = cp.E(distribution()) * 0.1
+    np.testing.assert_allclose(dist1_e, dist2_e, rtol=1e-05, atol=1e-08)
+    np.testing.assert_allclose(dist2_e, base_e, rtol=1e-05, atol=1e-08)
 
 
 # def test_weibull_rayleigh():
