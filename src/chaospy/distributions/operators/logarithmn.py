@@ -68,3 +68,17 @@ class Logn(Dist):
     def __str__(self):
         return (self.__class__.__name__ + "(" + str(self.prm["dist"]) + ", " +
                 str(self.prm["base"]) + ")")
+
+    def _fwd_cache(self, cache):
+        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
+        base = evaluation.get_forward_cache(self.prm["base"], cache)
+        if not isinstance(dist, Dist) and not isinstance(base, Dist):
+            return numpy.log(dist) / numpy.log(base)
+        return self
+
+    def _inv_cache(self, cache):
+        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
+        base = evaluation.get_forward_cache(self.prm["base"], cache)
+        if not isinstance(dist, Dist) and not isinstance(base, Dist):
+            return base**dist
+        return self

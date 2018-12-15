@@ -106,10 +106,8 @@ class Add(Dist):
             [[2. 2. 2. 2.]
              [2. 2. 2. 2.]]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -156,10 +154,8 @@ class Add(Dist):
             >>> print(chaospy.Add(1, 1).fwd([-0.5, 0.5, 1.5, 2.5]))
             [0. 0. 0. 1.]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -188,10 +184,8 @@ class Add(Dist):
             >>> print(chaospy.Add(1, 1).pdf([-2, 0, 2, 4])) # Dirac logic
             [ 0.  0. inf  0.]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -221,10 +215,8 @@ class Add(Dist):
             >>> print(chaospy.Add(1, 1).inv([0.1, 0.2, 0.9]))
             [2. 2. 2.]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_inverse_cache(left, cache)
+        right = evaluation.get_inverse_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -329,6 +321,13 @@ class Add(Dist):
             return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
                     ", " + str(self.prm["right"]) + ")")
         return super().__str__()
+
+    def _fwd_cache(self, cache):
+        left = evaluation.get_forward_cache(self.prm["left"], cache)
+        right = evaluation.get_forward_cache(self.prm["right"], cache)
+        if not isinstance(left, Dist) and not isinstance(right, Dist):
+            return left+right
+        return self
 
 @deprecations.deprecation_warning
 def add(left, right):

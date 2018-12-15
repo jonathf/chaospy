@@ -58,3 +58,15 @@ class Arcsinh(Dist):
 
     def __str__(self):
         return self.__class__.__name__ + "(" + str(self.prm["dist"]) + ")"
+
+    def _fwd_cache(self, cache):
+        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
+        if not isinstance(dist, Dist):
+            return numpy.arcsinh(dist)
+        return self
+
+    def _inv_cache(self, cache):
+        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
+        if not isinstance(dist, Dist):
+            return numpy.sinh(dist)
+        return self

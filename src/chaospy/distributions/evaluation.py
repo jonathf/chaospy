@@ -91,6 +91,33 @@ def load_inputs(
     return cache, params
 
 
+def get_forward_cache(
+        distribution,
+        cache,
+):
+    from . import baseclass
+    if not isinstance(distribution, baseclass.Dist):
+        return distribution
+    if distribution in cache:
+        return cache[distribution]
+    if hasattr(distribution, "_fwd_cache"):
+        return distribution._fwd_cache(cache)
+    return distribution
+
+def get_inverse_cache(
+        distribution,
+        cache,
+):
+    from . import baseclass
+    if not isinstance(distribution, baseclass.Dist):
+        return distribution
+    if distribution in cache:
+        return cache[distribution]
+    if hasattr(distribution, "_inv_cache"):
+        return distribution._inv_cache(cache)
+    return distribution
+
+
 def evaluate_density(
         distribution,
         x_data,

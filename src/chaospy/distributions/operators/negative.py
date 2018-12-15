@@ -71,6 +71,18 @@ class Neg(Dist):
         """String representation."""
         return self.__class__.__name__ + "(" + str(self.prm["dist"]) + ")"
 
+    def _fwd_cache(self, cache):
+        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
+        if not isinstance(dist, Dist):
+            return -dist
+        return self
+
+    def _inv_cache(self, cache):
+        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
+        if not isinstance(dist, Dist):
+            return -dist
+        return self
+
 
 
 @deprecations.deprecation_warning

@@ -157,10 +157,8 @@ class Mul(Dist):
              [[1. 1. 1.]
               [2. 2. 2.]]]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -276,10 +274,8 @@ class Mul(Dist):
             [[0.5  0.6  1.  ]
              [0.25 0.3  0.75]]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -397,10 +393,8 @@ class Mul(Dist):
             >>> print(dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
             [0.5 0.5 0. ]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -501,6 +495,13 @@ class Mul(Dist):
             return len(self.prm["left"])
         except TypeError:
             return 1
+
+    def _fwd_cache(self, cache):
+        left = evaluation.get_forward_cache(self.prm["left"], cache)
+        right = evaluation.get_forward_cache(self.prm["right"], cache)
+        if not isinstance(left, Dist) and not isinstance(right, Dist):
+            return left*right
+        return self
 
 
 
