@@ -9,10 +9,9 @@ from .deprecations import *
 from .collection import *
 from .copulas import *
 from .evaluation import *
+from .constructor import construct
 
 from . import (
     sampler, evaluation, approximation,
-    copulas, collection, operators
+    copulas, collection, operators, construct
 )
-
-from numpy.random import seed

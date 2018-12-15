@@ -13,7 +13,6 @@ class Iid(Dist):
     Examples:
         >>> X = chaospy.Normal()
         >>> Y = chaospy.Iid(X, 4)
-        >>> chaospy.seed(1000)
         >>> print(Y.sample())
         [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
         """
