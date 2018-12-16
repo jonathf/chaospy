@@ -30,6 +30,33 @@ class sample_dist(Dist):
     def _bnd(self, x, lo, up):
         return (lo, up)
 
+    def sample(self, size=(), rule="R", antithetic=None, verbose=False, **kws):
+        """
+        Overwrite sample() function, because the constructed Dist that is
+        based on the KDE is only working with the random sampling that is
+        given by the KDE itself.
+        """
+        size_ = numpy.prod(size, dtype=int)
+        dim = len(self)
+        if dim > 1:
+            if isinstance(size, (tuple,list,numpy.ndarray)):
+                shape = (dim,) + tuple(size)
+            else:
+                shape = (dim, size)
+        else:
+            shape = size
+
+        out = self.kernel.resample(size_)[0]
+        try:
+            out = out.reshape(shape)
+        except:
+            if len(self) == 1:
+                out = out.flatten()
+            else:
+                out = out.reshape(dim, out.size/dim)
+
+        return out
+
 
 def SampleDist(samples, lo=None, up=None):
     """
@@ -56,7 +83,7 @@ def SampleDist(samples, lo=None, up=None):
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.2254 0.4272 0.5135 0.4272 0.2254]
         >>> print(numpy.around(distribution.sample(4), 4))
-        [1.2354 0.3248 1.845  0.9733]
+        [-0.4123  1.1645 -0.0131  1.3302]
         >>> print(numpy.around(distribution.mom(1), 4))
         1.0
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
