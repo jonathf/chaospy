@@ -2,9 +2,9 @@
 import numpy
 from scipy import special, misc
 
-from .student_t import student_t
-
 from ..baseclass import Dist
+from .student_t import student_t
+from .deprecate import deprecation_warning
 
 
 class MvStudentT(Dist):
@@ -136,4 +136,4 @@ class MvStudentT(Dist):
     #     return out
 
 
-MvStudent_t = MvStudentT
+MvStudent_t = deprecation_warning(MvStudentT, "MvStudent_t")

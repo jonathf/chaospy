@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class student_t(Dist):
@@ -67,4 +68,4 @@ class StudentT(Add):
         Add.__init__(self, left=student_t(df)*scale, right=loc)
 
 
-Student_t = StudentT
+Student_t = deprecation_warning(StudentT, "Student_t")

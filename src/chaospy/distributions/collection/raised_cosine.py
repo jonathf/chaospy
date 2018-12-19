@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class raised_cosine(Dist):
@@ -62,4 +63,4 @@ class RaisedCosine(Add):
         Add.__init__(self, left=raised_cosine()*scale, right=loc)
 
 
-Raised_cosine = RaisedCosine
+Raised_cosine = deprecation_warning(RaisedCosine, "Raised_cosine")

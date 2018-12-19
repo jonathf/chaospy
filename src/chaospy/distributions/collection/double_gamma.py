@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class double_gamma(Dist):
@@ -62,4 +63,4 @@ class DoubleGamma(Add):
         Add.__init__(self, left=double_gamma(shape)*scale, right=shift)
 
 
-Dbl_gamma = DoubleGamma
+Dbl_gamma = deprecation_warning(DoubleGamma, "Dbl_gamma")

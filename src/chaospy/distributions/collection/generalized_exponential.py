@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class generalized_exponential(Dist):
@@ -63,4 +64,4 @@ class GeneralizedExponential(Add):
             self, left=generalized_exponential(a, b, c)*scale, right=shift)
 
 
-Genexpon = GeneralizedExponential
+Genexpon = deprecation_warning(GeneralizedExponential, "Genexpon")

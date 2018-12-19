@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class power_log_normal(Dist):
@@ -59,4 +60,4 @@ class PowerLogNormal(Add):
             shape, sigma)*scale*numpy.e**mu, right=shift)
 
 
-PowerLognormal = PowerLogNormal
+PowerLognormal = deprecation_warning(PowerLogNormal, "PowerLognormal")

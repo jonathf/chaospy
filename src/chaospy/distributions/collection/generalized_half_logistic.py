@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class generalized_half_logistic(Dist):
@@ -65,4 +66,4 @@ class GeneralizedHalfLogistic(Add):
 
 
 
-Genhalflogistic = GeneralizedHalfLogistic
+Genhalflogistic = deprecation_warning(GeneralizedHalfLogistic, "Genhalflogistic")

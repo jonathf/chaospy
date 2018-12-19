@@ -3,6 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
+from .deprecate import deprecation_warning
 
 
 class TruncNormal(Dist):
@@ -59,4 +60,4 @@ class TruncNormal(Dist):
         return a, b
 
 
-Truncnorm = TruncNormal
+Truncnorm = deprecation_warning(TruncNormal, "Truncnorm")

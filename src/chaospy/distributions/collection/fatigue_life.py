@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class fatigue_life(Dist):
@@ -58,4 +59,4 @@ class FatigueLife(Add):
         Add.__init__(self, left=fatigue_life(shape)*scale, right=shift)
 
 
-Fatiguelife = FatigueLife
+Fatiguelife = deprecation_warning(FatigueLife, "Fatiguelife")

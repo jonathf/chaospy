@@ -3,6 +3,7 @@ import numpy
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class exponential_power(Dist):
@@ -64,4 +65,4 @@ class ExponentialPower(Add):
         Add.__init__(self, left=exponential_power(shape)*scale, right=shift)
 
 
-Exponpow = ExponentialPower
+Exponpow = deprecation_warning(ExponentialPower, "Exponpow")

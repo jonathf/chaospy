@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class chi_squared(Dist):
@@ -67,4 +68,4 @@ class ChiSquared(Add):
         Add.__init__(self, left=chi_squared(df, nc)*scale, right=shift)
 
 
-Chisquared = ChiSquared
+Chisquared = deprecation_warning(ChiSquared, "Chisquared")

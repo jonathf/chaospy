@@ -4,6 +4,7 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
+from .deprecate import deprecation_warning
 
 
 class double_weibull(Dist):
@@ -69,4 +70,4 @@ class DoubleWeibull(Add):
         Add.__init__(self, left=double_weibull(shape)*scale, right=shift)
 
 
-Dbl_weibull = DoubleWeibull
+Dbl_weibull = deprecation_warning(DoubleWeibull, "Dbl_weibull")
