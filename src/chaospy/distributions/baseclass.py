@@ -45,10 +45,11 @@ class Dist(object):
     def __init__(self, **prm):
         """
         Args:
-            **prm (array_like) : Other optional parameters. Will be assumed
-                when calling any sub-functions.
+            prm (array_like):
+                Other optional parameters. Will be assumed when calling any
+                sub-functions.
         """
-        self.prm = prm.copy()
+        self.prm = prm
 
 
     def range(self, x_data=None):
@@ -56,14 +57,15 @@ class Dist(object):
         Generate the upper and lower bounds of a distribution.
 
         Args:
-            x_data (array_like, optional) : The bounds might vary over the sample
-                    space. By providing x_data you can specify where in the space
-                    the bound should be taken.  If omited, a (pseudo-)random
-                    sample is used.
+            x_data (array_like, optional) :
+                The bounds might vary over the sample space. By providing
+                x_data you can specify where in the space the bound should be
+                taken.  If omited, a (pseudo-)random sample is used.
 
         Returns:
-            (numpy.ndarray) : The lower (out[0]) and upper (out[1]) bound where
-                    out.shape=(2,)+x_data.shape
+            (numpy.ndarray):
+                The lower (out[0]) and upper (out[1]) bound where
+                out.shape=(2,)+x_data.shape
         """
         if x_data is None:
             try:
@@ -117,13 +119,15 @@ class Dist(object):
         stochastically independent distributions.
 
         Args:
-            x_data (numpy.ndarray): Location for the distribution function.
-                Assumes that ``len(x_data) == len(distribution)``.
+            x_data (numpy.ndarray):
+                Location for the distribution function. Assumes that
+                ``len(x_data) == len(distribution)``.
 
         Returns:
-            numpy.ndarray: Evaluated distribution function values, where output
-            has shape ``x_data.shape`` in one dimension and
-            ``x_data.shape[1:]`` in higher dimensions.
+            numpy.ndarray:
+                Evaluated distribution function values, where output has shape
+                ``x_data.shape`` in one dimension and ``x_data.shape[1:]`` in
+                higher dimensions.
 
         Except:
             StochasticallyDependentError: Distribution has with dependent components.
@@ -145,14 +149,16 @@ class Dist(object):
         between Newton-Raphson and binary search.
 
         Args:
-            q_data (numpy.ndarray): Probabilities to be inverse. If any values
-                are outside ``[0, 1]``, error will be raised. ``q_data.shape``
-                must be compatible with distribution shape.
-            max_iterations (int): If approximation is used, this sets the
-                maximum number of allowed iterations in the Newton-Raphson
-                algorithm.
-            tollerance (float): If approximation is used, this set the error
-                tolerance level required to define a sample as converged.
+            q_data (numpy.ndarray):
+                Probabilities to be inverse. If any values are outside ``[0,
+                1]``, error will be raised. ``q_data.shape`` must be compatible
+                with distribution shape.
+            max_iterations (int):
+                If approximation is used, this sets the maximum number of
+                allowed iterations in the Newton-Raphson algorithm.
+            tollerance (float):
+                If approximation is used, this set the error tolerance level
+                required to define a sample as converged.
 
         Returns:
             numpy.ndarray: Inverted probability values where
@@ -179,11 +185,13 @@ class Dist(object):
         each component of the Rosenblatt is one-dimensional.
 
         Args:
-            x_data (numpy.ndarray): Location for the density function.
-                ``x_data.shape`` must be compatible with distribution shape.
-            step (float, numpy.ndarray): If approximation is used, the step
-                length given in the approximation of the derivative. If array
-                provided, elements are used along each axis.
+            x_data (numpy.ndarray):
+                Location for the density function. ``x_data.shape`` must be
+                compatible with distribution shape.
+            step (float, numpy.ndarray):
+                If approximation is used, the step length given in the
+                approximation of the derivative. If array provided, elements
+                are used along each axis.
 
         Returns:
             numpy.ndarray: Evaluated density function values. Shapes are
@@ -242,14 +250,17 @@ class Dist(object):
         transformation.
 
         Args:
-            size (int, Tuple[int]): The size of the samples to generate.
-            rule (str): Indicator defining the sampling scheme.
-            antithetic (bool, array_like): If provided, will be used to setup
-                antithetic variables. If array, defines the axes to mirror.
+            size (int, Tuple[int]):
+                The size of the samples to generate.
+            rule (str):
+                Indicator defining the sampling scheme.
+            antithetic (bool, array_like):
+                If provided, will be used to setup antithetic variables. If
+                array, defines the axes to mirror.
 
         Returns:
-            numpy.ndarray: Random samples with shape
-            ``(len(self),)+self.shape``.
+            numpy.ndarray:
+                Random samples with shape ``(len(self),)+self.shape``.
         """
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)
@@ -283,23 +294,26 @@ class Dist(object):
         will be used.
 
         Args:
-            K (array_like) : Index of the raw moments. k.shape must be
-                    compatible with distribution shape.  Sampling scheme when
-                    performing Monte Carlo
-            rule (str) : rule for estimating the moment if the analytical
-                    method fails.
-            composit (int, array_like optional) : If provided, composit
-                    quadrature will be used.  Ignored in the case if
-                    gaussian=True.  If int provided, determines number of even
-                    domain splits. If array of ints, determines number of even
-                    domain splits along each axis. If array of arrays/floats,
-                    determines location of splits.
-            antithetic (array_like, optional) : List of bool. Represents the
-                    axes to mirror using antithetic variable during MCI.
+            K (array_like):
+                Index of the raw moments. k.shape must be compatible with
+                distribution shape.  Sampling scheme when performing Monte
+                Carlo
+            rule (str):
+                rule for estimating the moment if the analytical method fails.
+            composit (int, array_like optional):
+                If provided, composit quadrature will be used.  Ignored in the
+                case if gaussian=True.  If int provided, determines number of
+                even domain splits. If array of ints, determines number of even
+                domain splits along each axis. If array of arrays/floats,
+                determines location of splits.
+            antithetic (array_like, optional):
+                List of bool. Represents the axes to mirror using antithetic
+                variable during MCI.
 
         Returns:
-            (ndarray) : Shapes are related through the identity
-                    `k.shape==dist.shape+k.shape`.
+            (ndarray):
+                Shapes are related through the identity
+                `k.shape==dist.shape+k.shape`.
         """
         K = numpy.asarray(K, dtype=int)
         shape = K.shape
@@ -325,14 +339,16 @@ class Dist(object):
         Three terms relation's coefficient generator
 
         Args:
-            k (array_like, int) : The order of the coefficients.
-            acc (int) : Accuracy of discretized Stieltjes if analytical
-                    methods are unavailable.
+            k (array_like, int):
+                The order of the coefficients.
+            acc (int):
+                Accuracy of discretized Stieltjes if analytical methods are
+                unavailable.
 
         Returns:
-            (Recurrence coefficients) : Where out[0] is the first (A) and
-                    out[1] is the second coefficient With
-                    `out.shape==(2,)+k.shape`.
+            (Recurrence coefficients):
+                Where out[0] is the first (A) and out[1] is the second
+                coefficient With `out.shape==(2,)+k.shape`.
         """
         kloc = numpy.asarray(kloc, dtype=int)
         shape = kloc.shape
@@ -347,22 +363,6 @@ class Dist(object):
     def _ttr(self, kloc, cache, **kws):
         """Default TTR generator, throws error."""
         raise NotImplementedError()
-
-    def _dep(self, graph):
-        """
-        Default dependency module backend.
-
-        See graph for advanced distributions.
-        """
-        sets = [graph(dist) for dist in graph.dists]
-        if len(self)==1:
-            out = [set([self])]
-        else:
-            out = [set([]) for _ in range(len(self))]
-        for set_ in sets:
-            for idx in range(len(self)):
-                out[idx].update(set_[idx])
-        return out
 
     def __str__(self):
         """X.__str__() <==> str(X)"""
