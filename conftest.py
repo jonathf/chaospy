@@ -28,6 +28,8 @@ def workspace(global_setup, workspace_folder, doctest_namespace):
     # give access to expected modules in all doctest:
     import numpy
     doctest_namespace["numpy"] = numpy
+    import scipy
+    doctest_namespace["scipy"] = scipy
     import chaospy
     doctest_namespace["chaospy"] = chaospy
 

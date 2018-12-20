@@ -69,7 +69,7 @@ class Dist(object):
             try:
                 x_data = evaluation.evaluate_inverse(
                     self, numpy.array([[0.5]]*len(self)))
-            except evaluation.DependencyError:
+            except StochasticallyDependentError:
                 x_data = approximation.find_interior_point(self)
             shape = (len(self),)
         else:
@@ -129,7 +129,7 @@ class Dist(object):
             StochasticallyDependentError: Distribution has with dependent components.
         """
         if len(self) > 1 and evaluation.get_dependencies(*self):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "Cumulative distribution does not support dependencies.")
         q_data = self.fwd(x_data)
         if len(self) > 1:
@@ -318,7 +318,7 @@ class Dist(object):
 
     def _mom(self, *args, **kws):
         """Default moment generator, throws error."""
-        raise evaluation.DependencyError("component lack support")
+        raise StochasticallyDependentError("component lack support")
 
     def ttr(self, kloc, acc=10**3, verbose=1):
         """

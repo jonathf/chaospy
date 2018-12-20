@@ -8,7 +8,7 @@ from .. import quad
 
 def find_interior_point(
         distribution,
-        params=None,
+        parameters=None,
         cache=None,
         iterations=1000,
         retall=False,
@@ -21,7 +21,7 @@ def find_interior_point(
 
     Args:
         distribution (Dist): Distribution to find interior on.
-        params (Optional[Dict[Dist, numpy.ndarray]]): Parameters for the
+        parameters (Optional[Dict[Dist, numpy.ndarray]]): Parameters for the
             distribution.
         cache (Optional[Dict[Dist, numpy.ndarray]]): Memory cache for the
             location in the evaluation so far.
@@ -56,7 +56,7 @@ def find_interior_point(
     numpy.random.seed(seed)
 
     forward = partial(evaluation.evaluate_forward, cache=cache,
-                      distribution=distribution, params=params)
+                      distribution=distribution, parameters=parameters)
 
     dim = len(distribution)
     upper = numpy.ones((dim, 1))
@@ -121,7 +121,7 @@ def find_interior_point(
 def approximate_inverse(
         distribution,
         qloc,
-        params=None,
+        parameters=None,
         cache=None,
         iterations=100,
         tol=1e-5,
@@ -139,7 +139,7 @@ def approximate_inverse(
             ``qloc.shape == (dim,size)`` where dim is the number of dimensions
             in distribution and size is the number of values to calculate
             simultaneously.
-        params (Optional[Dict[Dist, numpy.ndarray]]): Parameters for the
+        parameters (Optional[Dict[Dist, numpy.ndarray]]): Parameters for the
             distribution.
         cache (Optional[Dict[Dist, numpy.ndarray]]): Memory cache for the
             location in the evaluation so far.
@@ -164,7 +164,7 @@ def approximate_inverse(
 
     # lots of initial values:
     xloc, xlower, xupper = find_interior_point(
-        distribution, cache=cache, params=params, retall=True, seed=seed)
+        distribution, cache=cache, parameters=parameters, retall=True, seed=seed)
     xloc = (xloc.T * numpy.zeros(qloc.shape).T).T
     xlower = (xlower.T + numpy.zeros(qloc.shape).T).T
     xupper = (xupper.T + numpy.zeros(qloc.shape).T).T
@@ -177,7 +177,7 @@ def approximate_inverse(
 
         # evaluate function:
         uloc[:, indices] = (evaluation.evaluate_forward(
-            distribution, xloc, cache=cache, params=params)-qloc)[:, indices]
+            distribution, xloc, cache=cache, parameters=parameters)-qloc)[:, indices]
 
         # convergence criteria:
         indices[indices] = numpy.any(numpy.abs(xupper-xlower) > tol, 0)[indices]
@@ -203,7 +203,7 @@ def approximate_inverse(
         xloc_ = numpy.inf
         if idx % 2 == 0:
             derivative = evaluation.evaluate_density(
-                distribution, xloc, cache=cache, params=params)[:, indices]
+                distribution, xloc, cache=cache, parameters=parameters)[:, indices]
             derivative = numpy.where(derivative, derivative, numpy.inf)
 
             xloc_ = xloc[:, indices] - uloc[:, indices] / derivative
@@ -228,6 +228,7 @@ def approximate_moment(
         K,
         retall=False,
         control_var=None,
+        rule="G",
         **kws
 ):
     """
@@ -288,7 +289,7 @@ def approximate_moment(
         shape = shape[1:]
 
     order = kws.pop("order", 40)
-    X, W = quad.generate_quadrature(order, dist, **kws)
+    X, W = quad.generate_quadrature(order, dist, rule=rule, **kws)
 
     grid = numpy.mgrid[:len(X[0]), :size]
     X = X.T[grid[0]].T
@@ -314,7 +315,7 @@ def approximate_moment(
 def approximate_density(
         dist,
         xloc,
-        params=None,
+        parameters=None,
         cache=None,
         eps=1.e-7
 ):
@@ -345,8 +346,8 @@ def approximate_density(
         >>> print(numpy.around(distribution.pdf(xloc), 4))
         [[0.0242 0.0399 0.0242]]
     """
-    if params is None:
-        params = dist.prm.copy()
+    if parameters is None:
+        parameters = dist.prm.copy()
     if cache is None:
         cache = {}
 
@@ -356,11 +357,11 @@ def approximate_density(
     eps = numpy.where(xloc < mu, eps, -eps)*xloc
 
     floc = evaluation.evaluate_forward(
-        dist, xloc, params=params.copy(), cache=cache.copy())
+        dist, xloc, parameters=parameters.copy(), cache=cache.copy())
     for d in range(len(dist)):
         xloc[d] += eps[d]
         tmp = evaluation.evaluate_forward(
-            dist, xloc, params=params.copy(), cache=cache.copy())
+            dist, xloc, parameters=parameters.copy(), cache=cache.copy())
         floc[d] -= tmp[d]
         xloc[d] -= eps[d]
 

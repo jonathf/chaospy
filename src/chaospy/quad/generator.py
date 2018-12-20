@@ -87,7 +87,3 @@ def create_mv_rule(tensorprod_rule, dim):
         return tensorprod_rule(order, part=part)
 
     return mv_rule
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
