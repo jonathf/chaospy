@@ -47,8 +47,6 @@ class Levy(Add):
         [0.1847 0.0834 0.0251 0.0031]
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 11.9303   2.8051 516.4406   6.0494]
-        >>> print(distribution.mom(1) > 1e10) # undefined
-        True
     """
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}

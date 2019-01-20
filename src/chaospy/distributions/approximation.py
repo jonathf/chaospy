@@ -222,13 +222,13 @@ def approximate_inverse(
     return xloc
 
 
-
 def approximate_moment(
         dist,
         K,
         retall=False,
         control_var=None,
-        rule="G",
+        rule="F",
+        order=1000,
         **kws
 ):
     """
@@ -288,7 +288,6 @@ def approximate_moment(
     if dim > 1:
         shape = shape[1:]
 
-    order = kws.pop("order", 40)
     X, W = quad.generate_quadrature(order, dist, rule=rule, **kws)
 
     grid = numpy.mgrid[:len(X[0]), :size]

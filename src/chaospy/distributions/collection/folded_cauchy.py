@@ -44,8 +44,6 @@ class FoldedCauchy(Add):
         [0.0915 0.1603 0.1306 0.0393]
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 8.4584  3.9544 27.8887  7.2135]
-        >>> print(distribution.mom(1) > 10**9) # undefined
-        True
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

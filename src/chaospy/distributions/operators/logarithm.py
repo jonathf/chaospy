@@ -26,7 +26,7 @@ class Log(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.5029 0.1089 0.668  0.3935]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.3466
+        0.3863
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.3863 0.3389 0.3454]
          [1.     0.0391 0.0321]]

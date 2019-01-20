@@ -63,7 +63,7 @@ class Clayton(Copula):
         [[0.6536 0.115  0.9503 0.4822]
          [0.9043 0.0852 0.3288 0.4633]]
         >>> print(numpy.around(distribution.mom((1, 2)), 4))
-        0.1667
+        0.2196
     """
 
     def __init__(self, dist, theta=2., eps=1e-6):

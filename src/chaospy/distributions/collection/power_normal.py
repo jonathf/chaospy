@@ -50,7 +50,7 @@ class PowerNormal(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 1.5523 -1.122   3.5244  0.8368]
         >>> print(numpy.around(distribution.mom(1), 4))
-        -0.2021
+        0.8716
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[0.6455 0.4421 0.2628]
          [2.7268 5.5707 8.4597]]

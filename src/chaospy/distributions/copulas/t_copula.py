@@ -63,8 +63,6 @@ class TCopula(Copula):
         >>> print(numpy.around(copula.sample(4), 4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.8783 0.1053 0.2107 0.4021]]
-        >>> print(numpy.around(copula.mom((1, 2)), 4))
-        0.1667
     """
 
     def __init__(self, dist, df, R):

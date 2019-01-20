@@ -48,7 +48,7 @@ class LogWeibull(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [3.71   0.4572 7.952  2.631 ]
         >>> print(numpy.around(distribution.mom(1), 4))
-        21.8892
+        3.1544
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 6.0775  9.5552 13.213 ]
          [ 6.5797 20.4065 42.3767]]

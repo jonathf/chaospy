@@ -47,7 +47,7 @@ class Fisk(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [3.4714 2.013  6.3474 2.9531]
         >>> print(numpy.around(distribution.mom(1), 4))
-        2155.4346
+        3.4184
     """
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}

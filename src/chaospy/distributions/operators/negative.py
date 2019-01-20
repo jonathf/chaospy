@@ -26,7 +26,7 @@ Invert sign of a distribution::
 """
 import numpy
 from ..baseclass import Dist
-from .. import evaluation, deprecations
+from .. import evaluation
 
 
 class Neg(Dist):
@@ -84,8 +84,6 @@ class Neg(Dist):
         return self
 
 
-
-@deprecations.deprecation_warning
 def neg(left):
     """
     Negative of a distribution.

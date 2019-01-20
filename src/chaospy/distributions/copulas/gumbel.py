@@ -69,8 +69,6 @@ class Gumbel(Copula):
         >>> print(numpy.around(distribution.sample(4), 4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.3151 0.665  0.1675 0.3745]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
-        0.1667
     """
 
     def __init__(self, dist, theta, eps=1e-6):

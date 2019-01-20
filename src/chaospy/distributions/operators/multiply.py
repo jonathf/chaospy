@@ -23,7 +23,7 @@ Distribution * a constant::
     [[2.     2.     2.    ]
      [1.3333 1.0667 1.0286]]
 
-Construct joint addition distribution::
+Construct joint multiplication distribution::
 
     >>> lhs = chaospy.Uniform(-1, 0)
     >>> rhs = chaospy.Uniform(-3, -2)
@@ -75,22 +75,11 @@ Inverse transformations::
     >>> print(numpy.around(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])), 4))
     [[-2.99  -2.5   -2.01 ]
      [ 2.691  1.25   0.201]]
-
-Raw moments::
-
-    >>> print(joint1.mom([(0, 1, 1), (1, 0, 1)]))
-    [ 1.5  -0.5  -0.75]
-    >>> print(joint2.mom([(0, 1, 1), (1, 0, 1)]))
-    [ 1.5  -2.5  -3.75]
-    >>> print(joint3.mom([(0, 1, 1), (1, 0, 1)]))
-    [-0.5   1.5  -0.75]
-    >>> print(joint4.mom([(0, 1, 1), (1, 0, 1)]))
-    [-2.5   1.5  -3.75]
 """
 import numpy
 
 from ..baseclass import Dist
-from .. import evaluation, deprecations
+from .. import evaluation
 
 
 class Mul(Dist):
@@ -184,7 +173,7 @@ class Mul(Dist):
                 xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
             assert len(xloc) == len(right)
-            lower, upper = evaluation.evaluate_bound(right, xloc, cache)
+            lower, upper = evaluation.evaluate_bound(right, xloc, cache=cache)
             if self.matrix:
                 lower = numpy.dot(lower.T, left.T).T
                 upper = numpy.dot(upper.T, left.T).T
@@ -226,7 +215,7 @@ class Mul(Dist):
             xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
 
         assert len(left) == len(xloc)
-        lower, upper = evaluation.evaluate_bound(left, xloc, cache)
+        lower, upper = evaluation.evaluate_bound(left, xloc, cache=cache)
         if self.matrix:
             lower = numpy.dot(lower.T, right.T).T
             upper = numpy.dot(upper.T, right.T).T
@@ -296,7 +285,7 @@ class Mul(Dist):
                 valids = left != 0
                 xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
-            uloc = evaluation.evaluate_forward(right, xloc, cache)
+            uloc = evaluation.evaluate_forward(right, xloc, cache=cache)
             if not self.matrix:
                 uloc = numpy.where(left.T >= 0, uloc.T, 1-uloc.T).T
             assert uloc.shape == xloc.shape
@@ -311,7 +300,7 @@ class Mul(Dist):
             xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
 
         assert len(left) == len(xloc)
-        uloc = evaluation.evaluate_forward(left, xloc, cache)
+        uloc = evaluation.evaluate_forward(left, xloc, cache=cache)
         if not self.matrix:
             uloc = numpy.where(right.T >= 0, uloc.T, 1-uloc.T).T
         assert uloc.shape == xloc.shape
@@ -356,7 +345,7 @@ class Mul(Dist):
         else:
             if not self.matrix:
                 uloc = numpy.where(numpy.asfarray(left).T > 0, uloc.T, 1-uloc.T).T
-            xloc = evaluation.evaluate_inverse(right, uloc, cache)
+            xloc = evaluation.evaluate_inverse(right, uloc, cache=cache)
             if self.matrix:
                 xloc = numpy.dot(left, xloc)
             else:
@@ -365,7 +354,7 @@ class Mul(Dist):
 
         if not self.matrix:
             uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
-        xloc = evaluation.evaluate_inverse(left, uloc, cache)
+        xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
         if self.matrix:
             xloc = numpy.dot(xloc.T, right).T
         else:
@@ -413,7 +402,7 @@ class Mul(Dist):
                 valids = left != 0
                 xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
-            pdf = evaluation.evaluate_density(right, xloc, cache)
+            pdf = evaluation.evaluate_density(right, xloc, cache=cache)
             if self.matrix:
                 pdf = numpy.dot(Ci, pdf)
             else:
@@ -429,7 +418,7 @@ class Mul(Dist):
             xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
             xloc.T[~valids.T] = numpy.inf
 
-        pdf = evaluation.evaluate_density(left, xloc, cache)
+        pdf = evaluation.evaluate_density(left, xloc, cache=cache)
         if self.matrix:
             pdf = numpy.dot(pdf.T, Ci).T
         else:
@@ -460,11 +449,11 @@ class Mul(Dist):
             )
 
         if isinstance(left, Dist):
-            left = evaluation.evaluate_moment(left, key, cache)
+            left = evaluation.evaluate_moment(left, key, cache=cache)
         else:
             left = (numpy.array(left).T**key).T
         if isinstance(right, Dist):
-            right = evaluation.evaluate_moment(right, key, cache)
+            right = evaluation.evaluate_moment(right, key, cache=cache)
         else:
             right = (numpy.array(right).T**key).T
         return numpy.sum(left*right)
@@ -504,8 +493,6 @@ class Mul(Dist):
         return self
 
 
-
-@deprecations.deprecation_warning
 def mul(left, right):
     """
     Distribution multiplication.

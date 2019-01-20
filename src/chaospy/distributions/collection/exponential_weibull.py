@@ -51,7 +51,7 @@ class ExponentialWeibull(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [3.5711 2.2872 4.8376 3.1776]
         >>> print(numpy.around(distribution.mom(1), 4))
-        5.8702
+        3.2916
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[3.731  4.1391 4.5115]
          [0.7486 1.4897 2.2135]]

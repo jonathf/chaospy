@@ -26,7 +26,7 @@ class Arccosh(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [1.0887 0.4751 1.2878 0.9463]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.6585
+        0.9019
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.9019 0.7012 0.6772]
          [1.     0.0933 0.1037]]

@@ -26,7 +26,7 @@ class Cos(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.9406 0.6333 0.9988 0.8689]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.7702
+        0.8413
     """
 
     def __init__(self, dist):
@@ -35,8 +35,9 @@ class Cos(Dist):
 
     def _pdf(self, x, dist, cache):
         """Probability density function."""
-        return evaluation.evaluate_density(
-            dist, numpy.arccos(x), cache=cache)/numpy.sqrt(1-x*x)
+        output = evaluation.evaluate_density(dist, numpy.arccos(x), cache=cache)
+        output /= numpy.where(numpy.isin(x, [-1, 1]), numpy.inf, numpy.sqrt(1-x*x))
+        return output
 
     def _cdf(self, x, dist, cache):
         return 1-evaluation.evaluate_forward(dist, numpy.arccos(x), cache=cache)

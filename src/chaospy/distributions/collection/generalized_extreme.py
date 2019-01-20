@@ -58,7 +58,7 @@ class GeneralizedExtreme(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.6154 -4.0776  2.6666  2.4079]
         >>> print(numpy.around(distribution.mom(1), 4))
-        -2080.8442
+        -2.0561
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[-3.49760700e+02 -1.58194810e+03 -2.18959610e+03]
          [ 2.93680700e+02  1.70912245e+05  1.05594663e+06]]

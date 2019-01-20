@@ -25,7 +25,7 @@ class Arcsin(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.7123 0.1153 1.2541 0.5032]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.7854
+        0.5708
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.5708 0.7302 0.7625]
          [1.     0.1416 0.1492]]

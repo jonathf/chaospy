@@ -22,13 +22,13 @@ Illegal dependencies:
     >>> dist.sample()
     Traceback (most recent call last):
         ...
-    chaospy.distributions.evaluation.DependencyError: truncated variable ...
+    chaospy.distributions.baseclass.StochasticallyDependentError: truncated variable ...
 """
 import numpy
 
 from .joint import J
-from ..baseclass import Dist
-from .. import evaluation, deprecations
+from ..baseclass import Dist, StochasticallyDependentError
+from .. import evaluation
 
 
 class Trunc(Dist):
@@ -45,12 +45,12 @@ class Trunc(Dist):
         if isinstance(left, Dist) and len(left) > 1:
             if (not isinstance(left, J) or
                     evaluation.get_dependencies(*list(left.inverse_map))):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
         if isinstance(right, Dist) and len(right) > 1:
             if (not isinstance(right, J) or
                     evaluation.get_dependencies(*list(right.inverse_map))):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
 
         assert isinstance(left, Dist) or isinstance(right, Dist)
@@ -75,7 +75,7 @@ class Trunc(Dist):
             if left in cache:
                 left = cache[left]
             else:
-                left = evaluation.evaluate_bound(left, xloc, cache)
+                left = evaluation.evaluate_bound(left, xloc, cache=cache)
         else:
             left = (numpy.array(left).T * numpy.ones((2,)+xloc.shape).T).T
 
@@ -83,7 +83,7 @@ class Trunc(Dist):
             if right in cache:
                 right = cache[right]
             else:
-                right = evaluation.evaluate_bound(right, xloc, cache)
+                right = evaluation.evaluate_bound(right, xloc, cache=cache)
         else:
             right = (numpy.array(right).T * numpy.ones((2,)+xloc.shape).T).T
 
@@ -108,17 +108,17 @@ class Trunc(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
         else:
             left = (numpy.array(left).T*numpy.ones(xloc.shape).T).T
-            uloc1 = evaluation.evaluate_forward(right, left, cache.copy())
-            uloc2 = evaluation.evaluate_forward(right, xloc, cache)
+            uloc1 = evaluation.evaluate_forward(right, left, cache=cache.copy())
+            uloc2 = evaluation.evaluate_forward(right, xloc, cache=cache)
             return (uloc2-uloc1)/(1-uloc1)
 
         right = (numpy.array(right).T*numpy.ones(xloc.shape).T).T
-        uloc1 = evaluation.evaluate_forward(left, right, cache.copy())
-        uloc2 = evaluation.evaluate_forward(left, xloc, cache)
+        uloc1 = evaluation.evaluate_forward(left, right, cache=cache.copy())
+        uloc2 = evaluation.evaluate_forward(left, xloc, cache=cache)
         return uloc2/uloc1
 
     def _pdf(self, xloc, left, right, cache):
@@ -146,17 +146,17 @@ class Trunc(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
         else:
             left = (numpy.array(left).T*numpy.ones(xloc.shape).T).T
-            uloc1 = evaluation.evaluate_forward(right, left, cache.copy())
-            uloc2 = evaluation.evaluate_density(right, xloc, cache)
+            uloc1 = evaluation.evaluate_forward(right, left, cache=cache.copy())
+            uloc2 = evaluation.evaluate_density(right, xloc, cache=cache)
             return uloc2/(1-uloc1)
 
         right = (numpy.array(right).T*numpy.ones(xloc.shape).T).T
-        uloc1 = evaluation.evaluate_forward(left, right, cache.copy())
-        uloc2 = evaluation.evaluate_density(left, xloc, cache)
+        uloc1 = evaluation.evaluate_forward(left, right, cache=cache.copy())
+        uloc2 = evaluation.evaluate_density(left, xloc, cache=cache)
         return uloc2/uloc1
 
 
@@ -179,28 +179,26 @@ class Trunc(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
         elif not isinstance(right, Dist):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "truncated variable indirectly depends on underlying variable")
         else:
             left = (numpy.array(left).T*numpy.ones(q.shape).T).T
             uloc = evaluation.evaluate_forward(right, left)
-            return evaluation.evaluate_inverse(right, q*(1-uloc)+uloc, cache)
+            return evaluation.evaluate_inverse(right, q*(1-uloc)+uloc, cache=cache)
 
         right = (numpy.array(right).T*numpy.ones(q.shape).T).T
-        uloc = evaluation.evaluate_forward(left, right, cache.copy())
-        return evaluation.evaluate_inverse(left, q*uloc, cache)
+        uloc = evaluation.evaluate_forward(left, right, cache=cache.copy())
+        return evaluation.evaluate_inverse(left, q*uloc, cache=cache)
 
     def __str__(self):
         return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
                 ", " + str(self.prm["right"]) + ")")
 
-@deprecations.deprecation_warning
 def Trunk(left, right):
     return Trunc(left, right)
 
-@deprecations.deprecation_warning
 def trunk(left, right):
     return Trunc(left, right)

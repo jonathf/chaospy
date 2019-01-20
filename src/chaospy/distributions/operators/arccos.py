@@ -26,7 +26,7 @@ class Arccos(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [1.2171 0.4843 1.5211 1.0265]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.7854
+        1.0
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[1.     0.8406 0.8083]
          [1.     0.1416 0.1492]]

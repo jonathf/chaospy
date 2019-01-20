@@ -16,6 +16,7 @@ class fatigue_life(Dist):
     def _pdf(self, x, c):
         output = (x+1)/(2*c*numpy.sqrt(2*numpy.pi*x**3))
         output *= numpy.exp(-(x-1)**2/(2.0*x*c**2))
+        output[(x == 0) & numpy.isnan(output)] = 0
         return output
 
     def _cdf(self, x, c):
@@ -52,7 +53,7 @@ class FatigueLife(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 5.3231  1.2621 26.5603  2.8292]
         >>> print(numpy.around(distribution.mom(1), 4))
-        164.8605
+        7.0
     """
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}

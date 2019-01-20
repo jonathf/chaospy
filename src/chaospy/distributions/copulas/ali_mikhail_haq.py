@@ -58,7 +58,7 @@ class AliMikhailHaq(Copula):
         [[0.6536 0.115  0.9503 0.4822]
          [0.8886 0.1432 0.0725 0.4046]]
         >>> print(numpy.around(distribution.mom((1, 2)), 4))
-        0.1667
+        0.1822
     """
 
     def __init__(self, dist, theta=0.5, eps=1e-6):

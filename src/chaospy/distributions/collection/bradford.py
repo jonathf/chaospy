@@ -47,7 +47,7 @@ class Bradford(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [5.171  4.1748 5.8704 4.8192]
         >>> print(numpy.around(distribution.mom(1), 4))
-        5.0
+        4.9026
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[5.0195 5.0028 5.0009]
          [0.3314 0.2664 0.2571]]

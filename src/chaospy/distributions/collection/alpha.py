@@ -47,8 +47,6 @@ class Alpha(Add):
         [11.7723  5.4345  3.361   2.2848  1.4892]
         >>> print(numpy.around(distribution.sample(4), 4))
         [4.304  4.1556 4.9362 4.2413]
-        >>> print(distribution.mom(1) > 1e8) # actually undefined.
-        True
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

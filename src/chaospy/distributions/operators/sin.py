@@ -25,7 +25,7 @@ class Sin(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.608  0.1148 0.8136 0.4637]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.4207
+        0.4597
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.4597 0.4138 0.4192]
          [1.     0.0614 0.0466]]

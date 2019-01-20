@@ -10,7 +10,7 @@ A quadrature rule where the limits are defined by floats::
     >>> print(numpy.around(abscissas, 4))
     [[0.   0.25 0.75 1.  ]]
     >>> print(numpy.around(weights, 4))
-    [0.1111 0.3889 0.1944 0.1111]
+    [0.0556 0.4444 0.4444 0.0556]
 
 A quadrature rule in higher dimensions through the main interface::
 

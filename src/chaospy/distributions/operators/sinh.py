@@ -25,7 +25,7 @@ class Sinh(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.7011 0.1153 1.0999 0.5011]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.5876
+        0.5431
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.5431 0.5971 0.5885]
          [1.     0.1118 0.0927]]

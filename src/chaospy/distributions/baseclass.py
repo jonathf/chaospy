@@ -31,7 +31,7 @@ import numpy
 from . import evaluation, approximation
 
 
-class StochasticallyDependentError(NotImplementedError):
+class StochasticallyDependentError(Exception):
     """Error related to stochastically dependent variables."""
 
 

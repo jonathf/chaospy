@@ -48,7 +48,7 @@ class Nakagami(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [4.1137 3.076  5.0824 3.8012]
         >>> print(numpy.around(distribution.mom(1), 4))
-        5.6286
+        3.88
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[4.1568 4.4181 4.6622]
          [0.4657 0.8824 1.2706]]

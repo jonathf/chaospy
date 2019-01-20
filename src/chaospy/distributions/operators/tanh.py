@@ -26,7 +26,7 @@ class Tanh(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.5741 0.1145 0.7399 0.448 ]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.3808
+        0.4065
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.3519 0.4807 0.2854]
          [1.     0.0456 0.0385]]

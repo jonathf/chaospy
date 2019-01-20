@@ -26,7 +26,7 @@ class Log10(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [0.2184 0.0473 0.2901 0.1709]
         >>> print(numpy.around(distribution.mom(1), 4))
-        0.1505
+        0.1678
         >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.1678 0.1472 0.15  ]
          [1.     0.0074 0.0061]]

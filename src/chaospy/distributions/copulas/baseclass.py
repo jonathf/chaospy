@@ -48,7 +48,7 @@ together in `chaospy`.
 """
 import numpy
 
-from ..baseclass import Dist
+from ..baseclass import Dist, StochasticallyDependentError
 from .. import evaluation
 
 
@@ -63,9 +63,9 @@ class Copula(Dist):
         Dist.__init__(self, dist=dist, trans=trans)
 
     def _cdf(self, x, dist, trans, cache):
-        return evaluation.evaluate_forward(
-            trans, evaluation.evaluate_forward(
-                dist, x, cache=cache), cache=cache)
+        output = evaluation.evaluate_forward(dist, x, cache=cache)
+        output = evaluation.evaluate_forward(trans, output, cache=cache)
+        return output
 
     def _bnd(self, x, dist, trans, cache):
         return evaluation.evaluate_bound(dist, x, cache=cache)
@@ -82,7 +82,7 @@ class Copula(Dist):
                 dist, x, cache=cache), cache=cache)*density
 
     def _mom(self, x, dist, trans, cache):
-        raise evaluation.DependencyError(
+        raise StochasticallyDependentError(
             "Joint distribution with dependencies not supported.")
 
     def __len__(self):
@@ -98,7 +98,7 @@ class Archimedean(Dist):
     """
     Archimedean copula superclass.
 
-    Subset this to generate an archimedean.
+    Subset this to generate an Archimedean copula.
     """
 
     def _ppf(self, x, th, eps):
@@ -153,7 +153,7 @@ class Archimedean(Dist):
     def _pdf(self, x, th, eps):
         out = numpy.ones(x.shape)
         sign = 1-2*(x>.5)
-        for i in range(1,len(x)):
+        for i in range(1, len(x)):
             x[i] += eps*sign[i]
             out[i] = self._diff(x[:i+1], th, eps)
             x[i] -= eps*sign[i]

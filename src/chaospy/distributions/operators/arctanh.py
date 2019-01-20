@@ -23,11 +23,11 @@ class Arctanh(Dist):
         >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [10.1111 99.     99.     10.1111]
+        [0.91 0.99 0.99 0.91]
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 0.1548 -0.4059  0.4851 -0.0178]
         >>> print(numpy.around(distribution.mom(2), 4))
-        0.1006
+        0.093
     """
 
     def __init__(self, dist):
@@ -36,7 +36,7 @@ class Arctanh(Dist):
 
     def _pdf(self, x, dist, cache):
         return evaluation.evaluate_density(
-            dist, numpy.tanh(x), cache=cache)/numpy.sinh(x)**2
+            dist, numpy.tanh(x), cache=cache)/numpy.cosh(x)**2
 
     def _cdf(self, x, dist, cache):
         return evaluation.evaluate_forward(dist, numpy.tanh(x), cache=cache)

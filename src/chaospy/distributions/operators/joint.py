@@ -1,7 +1,7 @@
 """Joint distribution constructor."""
 import numpy
 
-from ..baseclass import Dist
+from ..baseclass import Dist, StochasticallyDependentError
 from .. import evaluation
 
 
@@ -134,7 +134,7 @@ class J(Dist):
             0.5
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "Joint distribution with dependencies not supported.")
         output = 1.
         for dist in evaluation.sorted_dependencies(self):
@@ -162,10 +162,10 @@ class J(Dist):
             >>> print(numpy.around(dist.ttr([1, 1]), 4))
             Traceback (most recent call last):
                 ...
-            chaospy.distributions.evaluation.DependencyError: Joint ...
+            chaospy.distributions.baseclass.StochasticallyDependentError: Joint ...
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "Joint distribution with dependencies not supported.")
         output = numpy.zeros((2,)+kloc.shape)
         for dist in evaluation.sorted_dependencies(self):

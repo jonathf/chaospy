@@ -26,7 +26,7 @@ class Arctan(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [ 0.1524 -0.3675  0.4231 -0.0178]
         >>> print(numpy.around(distribution.mom(2), 4))
-        0.0717
+        0.076
     """
 
     def __init__(self, dist):

@@ -45,10 +45,8 @@ class Anglit(Add):
         [0.     0.2165 0.25   0.2165 0.    ]
         >>> print(numpy.around(distribution.sample(4), 4))
         [2.6245 0.2424 4.2421 1.9288]
-        >>> print(numpy.around(distribution.mom(1), 4))
-        2.0
         >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
-        [ 2.      7.2899 27.7392]
+        [ 2.      5.8696 19.2176]
     """
 
     def __init__(self, loc=0, scale=1):

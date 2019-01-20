@@ -1,7 +1,7 @@
 """Power operator."""
 import numpy
 
-from ..baseclass import Dist
+from ..baseclass import Dist, StochasticallyDependentError
 from .. import evaluation
 
 
@@ -49,7 +49,7 @@ class Pow(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
         elif not isinstance(right, Dist):
             return left**right, left**right
@@ -124,7 +124,7 @@ class Pow(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
 
         elif not isinstance(right, Dist):
@@ -175,7 +175,7 @@ class Pow(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
         elif not isinstance(right, Dist):
             return left**right
@@ -217,7 +217,7 @@ class Pow(Dist):
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
 
         elif not isinstance(right, Dist):
@@ -257,24 +257,24 @@ class Pow(Dist):
             >>> print(numpy.around(chaospy.Pow(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
             [1.     0.3333 0.2    0.1429]
             >>> print(numpy.around(chaospy.Pow(chaospy.Uniform(1, 2), -1).mom([0, 1, 2, 3]), 4))
-            [1.     0.75   0.5833 0.4688]
+            [1.     0.6931 0.5    0.375 ]
             >>> print(numpy.around(chaospy.Pow(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
-            [1.     1.5    2.3333 3.75  ]
+            [1.     1.4427 2.164  3.3663]
             >>> print(numpy.around(chaospy.Pow(2, chaospy.Uniform(-1, 0)).mom([0, 1, 2, 3]), 4))
-            [1.     0.75   0.5833 0.4688]
+            [1.     0.7213 0.541  0.4208]
             >>> print(numpy.around(chaospy.Pow(2, 1).mom([0, 1, 2, 3]), 4))
             [1. 2. 4. 8.]
         """
         if isinstance(right, Dist):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "distribution as exponent not supported.")
         if not isinstance(left, Dist):
             return left**(right*k)
         if numpy.any(right < 0):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "distribution to negative power not supported.")
         if not numpy.allclose(right, numpy.array(right, dtype=int)):
-            raise evaluation.DependencyError(
+            raise StochasticallyDependentError(
                 "distribution to fractional power not supported.")
         return evaluation.evaluate_moment(left, k*right, cache=cache)
 

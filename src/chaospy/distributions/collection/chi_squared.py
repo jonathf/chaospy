@@ -50,7 +50,7 @@ class ChiSquared(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [14.0669  2.595  35.6294  9.2851]
         >>> print(numpy.around(distribution.mom(1), 4))
-        134.9406
+        13.0001
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 33.      51.6666  69.8034]
          [128.     432.     895.9962]]

@@ -56,7 +56,7 @@ class Frank(Copula):
         [[0.6536 0.115  0.9503 0.4822]
          [0.8854 0.1587 0.0646 0.395 ]]
         >>> print(numpy.around(distribution.mom((1, 2)), 4))
-        0.1667
+        0.1804
     """
 
     def __init__(self, dist, theta=1., eps=1e-4):

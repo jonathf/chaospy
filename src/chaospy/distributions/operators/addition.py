@@ -73,8 +73,8 @@ from __future__ import division
 from scipy.misc import comb
 import numpy
 
-from ..baseclass import Dist
-from .. import evaluation, deprecations
+from ..baseclass import Dist, StochasticallyDependentError
+from .. import evaluation
 
 
 class Add(Dist):
@@ -121,11 +121,11 @@ class Add(Dist):
         right = numpy.asfarray(right)
         if len(right.shape) == 3:
             xloc_ = (xloc.T-right[0].T).T
-            lower, upper = evaluation.evaluate_bound(left, xloc_, cache.copy())
+            lower, upper = evaluation.evaluate_bound(left, xloc_, cache=cache.copy())
             lower0, upper0 = (lower.T+right[0].T).T, (upper.T+right[0].T).T
 
             xloc_ = (xloc.T-right[1].T).T
-            lower, upper = evaluation.evaluate_bound(left, xloc_, cache)
+            lower, upper = evaluation.evaluate_bound(left, xloc_, cache=cache)
             lower1, upper1 = (lower.T+right[1].T).T, (upper.T+right[1].T).T
 
             lower = numpy.min([lower0, lower1], 0)
@@ -133,7 +133,7 @@ class Add(Dist):
 
         else:
             xloc_ = (xloc.T-right.T).T
-            lower, upper = evaluation.evaluate_bound(left, xloc_, cache.copy())
+            lower, upper = evaluation.evaluate_bound(left, xloc_, cache=cache.copy())
             lower, upper = (lower.T+right.T).T, (upper.T+right.T).T
 
         assert lower.shape == xloc.shape
@@ -166,7 +166,7 @@ class Add(Dist):
         else:
             left, right = right, left
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        output = evaluation.evaluate_forward(left, xloc, cache)
+        output = evaluation.evaluate_forward(left, xloc, cache=cache)
         assert output.shape == xloc.shape
         return output
 
@@ -197,7 +197,7 @@ class Add(Dist):
             left, right = right, left
 
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        output = evaluation.evaluate_density(left, xloc, cache)
+        output = evaluation.evaluate_density(left, xloc, cache=cache)
         assert output.shape == xloc.shape
         return output
 
@@ -227,7 +227,7 @@ class Add(Dist):
         else:
             left, right = right, left
 
-        xloc = evaluation.evaluate_inverse(left, uloc, cache)
+        xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
         output = (xloc.T + numpy.asfarray(right).T).T
         return output
 
@@ -256,14 +256,14 @@ class Add(Dist):
 
         if isinstance(left, Dist):
             left = [
-                evaluation.evaluate_moment(left, key, cache)
+                evaluation.evaluate_moment(left, key, cache=cache)
                 for key in keys_.T
             ]
         else:
             left = list(reversed(numpy.array(left).T**keys_.T))
         if isinstance(right, Dist):
             right = [
-                evaluation.evaluate_moment(right, key, cache)
+                evaluation.evaluate_moment(right, key, cache=cache)
                 for key in keys_.T
             ]
         else:
@@ -296,17 +296,17 @@ class Add(Dist):
             >>> print(numpy.around(chaospy.Add(1, 1).ttr([0, 1, 2, 3]), 4))
             Traceback (most recent call last):
                 ...
-            chaospy.distributions.evaluation.DependencyError: recurrence ...
+            chaospy.distributions.baseclass.StochasticallyDependentError: recurrence ...
         """
         if isinstance(left, Dist):
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "sum of distributions not feasible: "
                     "{} and {}".format(left, right)
                 )
         else:
             if not isinstance(right, Dist):
-                raise evaluation.DependencyError(
+                raise StochasticallyDependentError(
                     "recurrence coefficients for constants not feasible: "
                     "{}".format(left+right)
                 )
@@ -329,6 +329,6 @@ class Add(Dist):
             return left+right
         return self
 
-@deprecations.deprecation_warning
+
 def add(left, right):
     return Add(left, right)

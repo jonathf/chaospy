@@ -5,7 +5,6 @@ from scipy import special
 from ..baseclass import Dist
 from ..operators.addition import Add
 from .deprecate import deprecation_warning
-from .deprecate import deprecation_warning
 
 
 class beta_(Dist):

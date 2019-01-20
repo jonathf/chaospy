@@ -26,7 +26,7 @@ class Cosh(Dist):
         >>> print(numpy.around(distribution.sample(4), 4))
         [1.2213 1.0066 1.4865 1.1185]
         >>> print(numpy.around(distribution.mom(1), 4))
-        1.2715
+        1.1754
     """
 
     def __init__(self, dist):
@@ -35,8 +35,9 @@ class Cosh(Dist):
 
     def _pdf(self, x, dist, cache):
         """Probability density function."""
-        return evaluation.evaluate_density(
-            dist, numpy.arccosh(x), cache=cache)/numpy.sqrt(x*x-1)
+        output = evaluation.evaluate_density(dist, numpy.arccosh(x), cache=cache)
+        output /= numpy.where(x != 1, numpy.sqrt(x*x-1), numpy.inf)
+        return output
 
     def _cdf(self, x, dist, cache):
         return evaluation.evaluate_forward(dist, numpy.arccosh(x), cache=cache)

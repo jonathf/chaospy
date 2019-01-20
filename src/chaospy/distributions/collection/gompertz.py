@@ -49,7 +49,7 @@ class Gompertz(Add):
         >>> print(numpy.around(distribution.sample(4), 4))
         [2.6052 2.0798 3.3868 2.3967]
         >>> print(numpy.around(distribution.mom(1), 4))
-        4.1605
+        2.5242
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[3.034  3.3243 3.5329]
          [0.1878 0.3655 0.5218]]

@@ -43,20 +43,20 @@ class GeneralizedHalfLogistic(Add):
         shift (float, Dist) : Location parameter
 
     Examples:
-        >>> distribution = chaospy.GeneralizedHalfLogistic(3, 2, 2)
+        >>> distribution = chaospy.GeneralizedHalfLogistic(1, 2, 2)
         >>> print(distribution)
-        GeneralizedHalfLogistic(scale=2, shape=3, shift=2)
+        GeneralizedHalfLogistic(scale=2, shape=1, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> print(numpy.around(distribution.inv(q), 4))
-        [2.4691 2.6142 2.6562 2.6658]
+        [2.6667 3.1429 3.5    3.7778]
         >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [ 0.81    2.6678 10.24   65.61  ]
+        [0.36 0.49 0.64 0.81]
         >>> print(numpy.around(distribution.sample(4), 4))
-        [2.6605 2.3333 2.6667 2.6382]
+        [3.581  2.4126 3.949  3.3013]
         >>> print(numpy.around(distribution.mom(1), 4))
-        2.3333
+        3.2274
     """
 
     def __init__(self, shape, scale, shift):
