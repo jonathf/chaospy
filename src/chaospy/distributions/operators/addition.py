@@ -70,7 +70,7 @@ Raw moments::
     [ 6.   3.5 21. ]
 """
 from __future__ import division
-from scipy.misc import comb
+from scipy.special import comb
 import numpy
 
 from ..baseclass import Dist, StochasticallyDependentError

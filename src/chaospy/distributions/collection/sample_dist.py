@@ -82,7 +82,7 @@ def SampleDist(samples, lo=None, up=None):
         [0.   0.25 0.5  0.75 1.  ]
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.2254 0.4272 0.5135 0.4272 0.2254]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(numpy.around(distribution.sample(4), 4)) # doctest: +SKIP
         [-0.4123  1.1645 -0.0131  1.3302]
         >>> print(numpy.around(distribution.mom(1), 4))
         1.0

@@ -70,7 +70,7 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
     assert len(abscissas.shape) == 2
 
     if isdist:
-        if rule.upper() != "G":
+        if rule != "golub_welsch":
             if dim == 1:
                 weights *= domain.pdf(abscissas).flatten()
             else:
