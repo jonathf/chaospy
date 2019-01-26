@@ -7,7 +7,6 @@ Installation should be straight forward::
 
     pip install chaospy
 
-
 Alternatively, to get the most current version, the code can be installed from
 Github as follows::
 

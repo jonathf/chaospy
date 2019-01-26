@@ -2,6 +2,7 @@
 Basic tools for Bertran index manipulation.
 """
 import functools
+from contextlib import suppress
 
 import numpy
 import scipy.special
@@ -183,9 +184,9 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
 
     for pos, idx in reversed(list(enumerate(total))):
         idx = numpy.array(idx)
-        if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
-            del total[pos]
-
+        with suppress(OverflowError):
+            if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
+                del total[pos]
 
     return total
 

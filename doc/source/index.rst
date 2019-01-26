@@ -18,12 +18,13 @@ Table of contents
    :maxdepth: 2
 
    installation
-   tutorial
-   distributions/index.rst
-   polynomials
-   descriptives
-   integration
-   advanced
-   cookbook
 
-   bibliography
+.. tutorial
+.. distributions/index.rst
+.. polynomials
+.. descriptives
+.. integration
+.. advanced
+.. cookbook
+
+.. bibliography

@@ -11,7 +11,13 @@ scipy = "*"
 [dev-packages]
 pytest = "*"
 pylint = "*"
-ipython = "*"
+sphinx = "*"
+codecov = "*"
+pytest-cov = "*"
+coverage = "*"
+sphinxcontrib-bibtex = "*"
+seaborn = "*"
+scikit-learn = "*"
 
 [requires]
 python_version = "3.6"
