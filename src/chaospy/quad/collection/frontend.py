@@ -14,6 +14,8 @@ Frontend collection.
     Hermite Genz-Keizter 16 rule. Nested. Valid to order 8.
 ``Patterson``, ``P``
     Gauss-Patterson quadrature rule. Nested. Valid to order 8.
+``Fejer``, ``F``
+    Fejér quadrature. Same as Clenshaw-Curtis, but without the endpoints.
 """
 import inspect
 import numpy
@@ -24,6 +26,7 @@ from .gauss_legendre import quad_gauss_legendre
 from .genz_keister import quad_genz_keister
 from .golub_welsch import quad_golub_welsch
 from .leja import quad_leja
+from .fejer import quad_fejer
 
 QUAD_FUNCTIONS = {
     "clenshaw_curtis": quad_clenshaw_curtis,
@@ -32,6 +35,7 @@ QUAD_FUNCTIONS = {
     "genz_keister": quad_genz_keister,
     "golub_welsch": quad_golub_welsch,
     "leja": quad_leja,
+    "fejer": quad_fejer,
 }
 
 QUAD_SHORT_NAMES = {
@@ -41,6 +45,7 @@ QUAD_SHORT_NAMES = {
     "z": "genz_keister",
     "g": "golub_welsch",
     "j": "leja",
+    "f": "fejer",
 }
 
 

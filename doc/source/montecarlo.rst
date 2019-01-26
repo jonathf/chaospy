@@ -3,5 +3,5 @@
 (Pseudo-)Random Sampling
 ------------------------
 
-.. automodule:: chaospy.dist.sampler
-.. autofunction:: chaospy.dist.samplegen
+.. automodule:: chaospy.distributions.sampler
+.. autofunction:: chaospy.distributions.sampler.generator.generate_samples

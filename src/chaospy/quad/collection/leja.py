@@ -20,7 +20,10 @@ def quad_leja(order, dist):
         >>> print(numpy.around(weights, 4))
         [0.022  0.1629 0.6506 0.1645]
     """
-    assert not dist.dependent()
+    from chaospy.distributions import evaluation
+    if len(dist) > 1 and evaluation.get_dependencies(*list(dist)):
+        raise evaluation.DependencyError(
+            "Leja quadrature do not supper distribution with dependencies.")
 
     if len(dist) > 1:
         if isinstance(order, int):

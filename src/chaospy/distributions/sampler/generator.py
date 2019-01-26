@@ -1,22 +1,6 @@
 """
 Front end for generating psuedo-random samples.
 
-All sampling methods:
-
-Key     Name
-------  ----------------
-``C``   Chebyshev nodes
-``NC``  Nested Chebyshev
-``K``   Korobov
-``R``   (Pseudo-)Random
-``RG``  Regular grid
-``NG``  Nested grid
-``L``   Latin hypercube
-``S``   Sobol
-``H``   Halton
-``M``   Hammersley
-------  ----------------
-
 Example usage
 -------------
 

@@ -66,9 +66,8 @@ def quad_gauss_patterson(order, dist):
     lower, upper = dist.range()
 
     abscissas = .5*(abscissas*(upper-lower)+upper+lower)
-    weights *= dist.pdf(abscissas)
-    weights /= numpy.sum(weights)
     abscissas = abscissas.reshape(1, abscissas.size)
+    weights /= numpy.sum(weights)
 
     return abscissas, weights
 

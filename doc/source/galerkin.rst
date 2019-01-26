@@ -190,4 +190,4 @@ Lastly, this can be used to calculate statistical properties::
 Alternatively, these values can also be calculated on directly from the
 Fourier coefficients.
 
-.. [f1] Here we could put in the formal definition of orthogonality with weighted function space, but that it outside the scope of this tutorial.
+.. [#f1] Here we could put in the formal definition of orthogonality with weighted function space, but that it outside the scope of this tutorial.

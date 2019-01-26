@@ -1,18 +1,15 @@
 .. _installation:
 
 Installation
-------------
+============
 
 Installation should be straight forward::
 
     pip install chaospy
 
 
-From Source
-~~~~~~~~~~~
-
-Alternativly, to get the most current version, the code can be installed from
-github as follows::
+Alternatively, to get the most current version, the code can be installed from
+Github as follows::
 
     git clone git@github.com:jonathf/chaospy.git
     cd chaospy
@@ -22,7 +19,7 @@ github as follows::
 The last command might need ``sudo`` prefix, depending on your python setup.
 
 Optional Packages
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Optionally, to support more regression methods, install the Scikit-learn
 package::

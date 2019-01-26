@@ -9,10 +9,10 @@ size = 20 # <10**5
 
 
 class normal(cp.Dist):
-    "stripped down normal distribution"
+    """stripped down normal distribution."""
     def _cdf(self, x):
         return special.ndtr(x)
-    def _bnd(self):
+    def _bnd(self, x):
         return -7.5, 7.5
 
 
@@ -71,8 +71,7 @@ def test_quadrature():
 
 def test_approx_quadrature():
     dist = cp.Iid(normal(), dim)
-    gq = cp.generate_quadrature
-    nodes, weights = gq(order, dist, rule="C")
+    nodes, weights = cp.generate_quadrature(order, dist, rule="C")
 
 
 def test_integration():

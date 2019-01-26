@@ -17,8 +17,9 @@ Table of contents
 .. toctree::
    :maxdepth: 2
 
-   introduction
-   distributions
+   installation
+   tutorial
+   distributions/index.rst
    polynomials
    descriptives
    integration

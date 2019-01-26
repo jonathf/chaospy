@@ -59,7 +59,8 @@ def generate_stieltjes(
         >>> print(numpy.around(norms, 4))
         [[1.     0.0833 0.0056]]
     """
-    assert not dist.dependent()
+    from .. import distributions
+    assert not distributions.evaluation.get_dependencies(dist)
 
     if len(dist) > 1:
 
@@ -90,6 +91,8 @@ def generate_stieltjes(
             dist, order, accuracy, normed, **kws)
 
     if retall:
+        assert not numpy.any(numpy.isnan(coeff1))
+        assert not numpy.any(numpy.isnan(coeff2))
         return orth, norms, coeff1, coeff2
     return orth
 
@@ -97,13 +100,8 @@ def generate_stieltjes(
 def _stieltjes_analytical(dist, order, normed):
     """Stieltjes' method with analytical recurrence coefficients."""
     dimensions = len(dist)
-    mom_order = numpy.arange(
-        order+1
-    ).repeat(
-        dimensions
-    ).reshape(
-        order+1, dimensions
-    ).T
+    mom_order = numpy.arange(order+1).repeat(dimensions)
+    mom_order = mom_order.reshape(order+1, dimensions).T
     coeff1, coeff2 = dist.ttr(mom_order)
     coeff2[:, 0] = 1.
 

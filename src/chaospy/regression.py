@@ -76,11 +76,11 @@ result to have at most one non-zero coefficient. To implement it use the
 keyword ``rule="OMP"``, and to force the number of coefficients to be
 for example 1: ``n_nonzero_coefs=1``. In practice::
 
-    >>> from sklearn.linear_model import OrthogonalMatchingPursuit
-    >>> omp = OrthogonalMatchingPursuit(fit_intercept=False, n_nonzero_coefs=1)
-    >>> approx_model = cp.fit_regression(
+    >>> from sklearn.linear_model import OrthogonalMatchingPursuit  # doctest: +SKIP
+    >>> omp = OrthogonalMatchingPursuit(fit_intercept=False, n_nonzero_coefs=1)  # doctest: +SKIP
+    >>> approx_model = cp.fit_regression(  # doctest: +SKIP
     ...     orthogonal_expansion, samples, solves, rule=omp)
-    >>> print(cp.around(approx_model, 8))
+    >>> print(cp.around(approx_model, 8))  # doctest: +SKIP
     [3.46375077q0q1, 11.63750715]
 
 Note that the option `fit_intercept=False`. This is a prerequisite for

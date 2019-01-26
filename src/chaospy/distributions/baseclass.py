@@ -1,283 +1,271 @@
 """
-Constructing custom probability distributions is done in one of two ways:
-Sublcassing the :class:`~chaospy.distributions.Dist` or by calling
-:func:`~chaospy.distributions.construct`. They work about the same except for one
-methods are defined, while in the other, functions.
-
-Import the construction function::
-
-    >>> from chaospy.distributions import construct, Dist
-
-A simple example for constructing a simple uniform distribution::
-
-    >>> def cdf(self, x, lo, up):
-    ...     return (x-lo)/(up-lo)
-    >>> def bnd(self, lo, up):
-    ...     return lo, up
-    >>> Uniform = construct(cdf=cdf, bnd=bnd)
-    >>> dist = Uniform(lo=-3, up=3)
-    >>> print(dist.fwd([-3, 0, 3]))
-    [0.  0.5 1. ]
-
-Here ``cdf`` is the dependent cumulative distribution function as defined in
-equation , ``bnd`` is a function returning the lower and upper bounds, and
-``a`` and ``b`` are distribution parameters.  They take either other
-components, or as illustrated: constants.
-
-
-In addition to ``cdf`` and ``bnd`` there are a few optional arguments. For
-example a fully featured uniform random variable is defined as follows::
-
-    >>> def pdf(self, x, lo, up):
-    ...     return 1./(up-lo)
-    >>> def ppf(self, q, lo, up):
-    ...     return q*(up-lo) + lo
-    >>> Uniform = construct(
-    ...     cdf=cdf, bnd=bnd, pdf=pdf, ppf=ppf)
-    >>> dist = Uniform(lo=-3, up=3)
-
-There ``pdf`` is probability distribution function and ``ppf`` if the point
-percentile function.  These are methods that provides needed functionality for
-probabilistic collocation. If they are not provided during construct, they are
-estimated as far as possible.
-
-Equivalently constructing the same distribution using subclass:
-:func:`~chaospy.distributions.construct`::
+Constructing custom probability distributions is done by subclassing the
+distribution 
 
     >>> class Uniform(Dist):
     ...     def __init__(self, lo=0, up=1):
+    ...         '''Initializer.'''
     ...         Dist.__init__(self, lo=lo, up=up)
-    ...     def _cdf(self, x, lo, up):
-    ...         return (x-lo)/(up-lo)
-    ...     def _bnd(self, lo, up):
+    ...     def _cdf(self, x_data, lo, up):
+    ...         '''Cumulative distribution function.'''
+    ...         return (x_data-lo)/(up-lo)
+    ...     def _bnd(self, x_data, lo, up):
+    ...         '''Lower and upper bounds.'''
     ...         return lo, up
-    ...     def _pdf(self, x, lo, up):
+    ...     def _pdf(self, x_data, lo, up):
+    ...         '''Probability density function.'''
     ...         return 1./(up-lo)
-    ...     def _ppf(self, q, lo, up):
-    ...         return q*(up-lo) + lo
-    ...     def _str(self, lo, up):
-    ...         return "u(%s%s)" % (lo, up)
+    ...     def _ppf(self, q_data, lo, up):
+    ...         '''Point percentile function.'''
+    ...         return q_data*(up-lo) + lo
+
+Usage is then straight forward::
+
     >>> dist = Uniform(-3, 3)
     >>> print(dist.fwd([-3, 0, 3])) # Forward Rosenblatt transformation
     [0.  0.5 1. ]
-
 """
 import types
-import numpy as np
+import numpy
+
+from . import evaluation, approximation
+
+
+class StochasticallyDependentError(Exception):
+    """Error related to stochastically dependent variables."""
 
 
 class Dist(object):
-    """
-    The distribution backend class.
-
-    Subclass this module to construct a custom distribution.
-
-    If direct subclass of Dist, two method must be provided:
-
-    * Cumulative distribution function (CDF): ``_cdf(self, x, **prm)``.
-    * Upper and lower bounds ``_bnd(self, **prm)``.
-
-    The following can be provided:
-
-    * Probability density function: ``_pdf(self, x, **prm)``.
-    * CDF inverse: ``_ppf(self, q, **prm)``.
-    * Statistical moment generator: ``_mom(self, k, **prm)``.
-    * TTR coefficients generator: ``_ttr(self, k, **prm)``.
-    * Pretty print of distribution: ``_str(self, **prm)``.
-
-    Alternative use the construct generator
-    :func:`~chaospy.distributions.construct`.
-    """
+    """Baseclass for all probability distributions."""
 
     __array_priority__ = 9000
+    """Numpy override variable."""
+    _repr = None
 
     def __init__(self, **prm):
         """
         Args:
-            _length (int) : Length of the distribution
-            _advanced (bool) : If True, activate advanced mode
-            **prm (array_like) : Other optional parameters. Will be assumed when
-                    calling any sub-functions.
+            prm (array_like):
+                Other optional parameters. Will be assumed when calling any
+                sub-functions.
         """
-        from . import graph
-        for key, val in prm.items():
-            if not isinstance(val, Dist):
-                prm[key] = np.array(val)
+        self.prm = prm
 
-        self.length = int(prm.pop("_length", 1))
-        self.advance = prm.pop("_advance", False)
-        self.prm = prm.copy()
-        self.graph = graph.Graph(self)
-        self.dependencies = self.graph.run(self.length, "dep")[0]
 
-    def range(self, x=None, retall=False, verbose=False):
+    def range(self, x_data=None):
         """
         Generate the upper and lower bounds of a distribution.
 
         Args:
-            x (array_like, optional) : The bounds might vary over the sample
-                    space. By providing x you can specify where in the space
-                    the bound should be taken.  If omited, a (pseudo-)random
-                    sample is used.
+            x_data (array_like, optional) :
+                The bounds might vary over the sample space. By providing
+                x_data you can specify where in the space the bound should be
+                taken.  If omited, a (pseudo-)random sample is used.
 
         Returns:
-            (np.ndarray) : The lower (out[0]) and upper (out[1]) bound where
-                    out.shape=(2,)+x.shape
+            (numpy.ndarray):
+                The lower (out[0]) and upper (out[1]) bound where
+                out.shape=(2,)+x_data.shape
         """
-        dim = len(self)
-        if x is None:
-            from . import approx
-            x = approx.find_interior_point(self)
+        if x_data is None:
+            try:
+                x_data = evaluation.evaluate_inverse(
+                    self, numpy.array([[0.5]]*len(self)))
+            except StochasticallyDependentError:
+                x_data = approximation.find_interior_point(self)
+            shape = (len(self),)
         else:
-            x = np.array(x)
-        shape = x.shape
-        size = int(x.size/dim)
-        x = x.reshape(dim, size)
+            x_data = numpy.asfarray(x_data)
+            shape = x_data.shape
+            x_data = x_data.reshape(len(self), -1)
 
-        out, graph = self.graph.run(x, "range")
-        out = out.reshape((2,)+shape)
+        q_data = evaluation.evaluate_bound(self, x_data)
+        q_data = q_data.reshape((2,)+shape)
+        return q_data
 
-        if verbose>1:
-            print(graph)
-
-        if retall:
-            return out, graph
-        return out
-
-    def fwd(self, x):
+    def fwd(self, x_data):
         """
         Forward Rosenblatt transformation.
 
         Args:
-            x (array_like) : Location for the distribution function. x.shape
-                    must be compatible with distribution shape.
+            x_data (numpy.ndarray): Location for the distribution function.
+                ``x_data.shape`` must be compatible with distribution shape.
 
         Returns:
-            (ndarray) : Evaluated distribution function values, where
-                    out.shape==x.shape.
+            numpy.ndarray: Evaluated distribution function values, where
+            ``out.shape==x_data.shape``.
         """
-        from . import rosenblatt
-        return rosenblatt.fwd(self, x)
+        x_data = numpy.asfarray(x_data)
+        shape = x_data.shape
+        x_data = x_data.reshape(len(self), -1)
 
-    def cdf(self, x):
+        lower, upper = evaluation.evaluate_bound(self, x_data)
+        q_data = numpy.zeros(x_data.shape)
+        indices = x_data > upper
+        q_data[indices] = 1
+        indices = ~indices & (x_data >= lower)
+
+        q_data[indices] = numpy.clip(evaluation.evaluate_forward(
+            self, x_data), a_min=0, a_max=1)[indices]
+
+        q_data = q_data.reshape(shape)
+        return q_data
+
+    def cdf(self, x_data):
         """
         Cumulative distribution function.
 
-        Note that chaospy only supports cumulative distribution funcitons in
-        one dimensions.
+        Note that chaospy only supports cumulative distribution functions for
+        stochastically independent distributions.
 
         Args:
-            x (array_like) : Location for the distribution function. x.shape
-                    must be compatible with distribution shape.
+            x_data (numpy.ndarray):
+                Location for the distribution function. Assumes that
+                ``len(x_data) == len(distribution)``.
 
         Returns:
-            (ndarray) : Evaluated distribution function values, where
-                    out.shape==x.shape.
+            numpy.ndarray:
+                Evaluated distribution function values, where output has shape
+                ``x_data.shape`` in one dimension and ``x_data.shape[1:]`` in
+                higher dimensions.
 
         Except:
-            (NotImplementedError) : for distributions with dependent
-                components.
+            StochasticallyDependentError: Distribution has with dependent components.
         """
-        if self.dependent():
-            raise NotImplementedError("""\
-Cumulative distribution function is only available for stocastically \
-independent variables""")
-        from . import rosenblatt
-        out = rosenblatt.fwd(self, x)
+        if len(self) > 1 and evaluation.get_dependencies(*self):
+            raise StochasticallyDependentError(
+                "Cumulative distribution does not support dependencies.")
+        q_data = self.fwd(x_data)
         if len(self) > 1:
-            out = np.prod(out, 0)
-        return out
+            q_data = numpy.prod(q_data, 0)
+        return q_data
 
-
-    def inv(self, q, maxiter=100, tol=1e-5, verbose=False, **kws):
+    def inv(self, q_data, max_iterations=100, tollerance=1e-5):
         """
         Inverse Rosenblatt transformation.
 
-        Args:
-            q (array_like) : Probabilities to be inverse. If any values are
-                    outside [0,1], error will be raised. q.shape must be
-                    compatible with diistribution shape.
+        If possible the transformation is done analytically. If not possible,
+        transformation is approximated using an algorithm that alternates
+        between Newton-Raphson and binary search.
 
-        Kwargs:
-            maxiter (int) : Maximum number of iterations
-            tol (float) : Tolerence level
+        Args:
+            q_data (numpy.ndarray):
+                Probabilities to be inverse. If any values are outside ``[0,
+                1]``, error will be raised. ``q_data.shape`` must be compatible
+                with distribution shape.
+            max_iterations (int):
+                If approximation is used, this sets the maximum number of
+                allowed iterations in the Newton-Raphson algorithm.
+            tollerance (float):
+                If approximation is used, this set the error tolerance level
+                required to define a sample as converged.
 
         Returns:
-            (ndarray) : Inverted probability values where out.shape==q.shape.
+            numpy.ndarray: Inverted probability values where
+            ``out.shape == q_data.shape``.
         """
-        from . import rosenblatt
-        return rosenblatt.inv(self, q, maxiter, tol, **kws)
+        q_data = numpy.asfarray(q_data)
+        assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
+        shape = q_data.shape
+        q_data = q_data.reshape(len(self), -1)
+        x_data = evaluation.evaluate_inverse(self, q_data)
+        lower, upper = evaluation.evaluate_bound(self, x_data)
+        x_data = numpy.clip(x_data, a_min=lower, a_max=upper)
+        x_data = x_data.reshape(shape)
+        return x_data
 
-    def pdf(self, x, step=1e-7, verbose=0):
+    def pdf(self, x_data, step=1e-7):
         """
         Probability density function.
 
+        If possible the density will be calculated analytically. If not
+        possible, it will be approximated by approximating the one-dimensional
+        derivative of the forward Rosenblatt transformation and multiplying the
+        component parts. Note that even if the distribution is multivariate,
+        each component of the Rosenblatt is one-dimensional.
+
         Args:
-            x (array_like) : Location for the density function. x.shape must
-                    be compatible with distribution shape.
-            step (float, array_like) : The step length given aproximation is
-                    used. If array provided, elements are used along each
-                    axis.
+            x_data (numpy.ndarray):
+                Location for the density function. ``x_data.shape`` must be
+                compatible with distribution shape.
+            step (float, numpy.ndarray):
+                If approximation is used, the step length given in the
+                approximation of the derivative. If array provided, elements
+                are used along each axis.
 
         Returns:
-            (ndarray) : Evaluated density function values. Shapes are related
-                    through the identity x.shape=dist.shape+out.shape
+            numpy.ndarray: Evaluated density function values. Shapes are
+            related through the identity
+            ``x_data.shape == dist.shape+out.shape``.
         """
-        dim = len(self)
-        x = np.array(x)
-        shape = x.shape
-        size = int(x.size/dim)
-        x = x.reshape(dim, size)
-        out = np.zeros((dim, size))
+        x_data = numpy.asfarray(x_data)
+        shape = x_data.shape
+        x_data = x_data.reshape(len(self), -1)
 
-        (lo, up), graph = self.graph.run(x, "range")
-        valids = np.prod((x.T >= lo.T)*(x.T <= up.T), 1, dtype=bool)
-        x[:, ~valids] = (.5*(up+lo))[:, ~valids]
-        out = np.zeros((dim,size))
+        lower, upper = evaluation.evaluate_bound(self, x_data)
+        f_data = numpy.zeros(x_data.shape)
+        indices = (x_data <= upper) & (x_data >= lower)
+        f_data[indices] = evaluation.evaluate_density(self, x_data)[indices]
+        f_data = f_data.reshape(shape)
+        if len(self) > 1:
+            f_data = numpy.prod(f_data, 0)
+        return f_data
 
-        try:
-            tmp,graph = self.graph.run(x, "pdf",
-                    eps=step)
-            out[:,valids] = tmp[:,valids]
-        except NotImplementedError:
-            from . import approx
-            tmp, graph = approx.pdf_full(self, x, step, retall=True)
-            out[:, valids] = tmp[:, valids]
-            if verbose:
-                print("approx %s.pdf")
-        except IndexError:
-            pass
-
-        if verbose>1:
-            print(self.graph)
-
-        out = out.reshape(shape)
-        if dim>1:
-            out = np.prod(out, 0)
-        return out
-
-    def sample(self, size=(), rule="R", antithetic=None,
-            verbose=False, **kws):
+    def sample(self, size=(), rule="R", antithetic=None):
         """
         Create pseudo-random generated samples.
 
+        By default, the samples are created using standard (pseudo-)random
+        samples. However, if needed, the samples can also be created by either
+        low-discrepancy sequences, and/or variance reduction techniques.
+
+        Changing the sampling scheme, use the following ``rule`` flag:
+
+        +-------+-------------------------------------------------+
+        | key   | Description                                     |
+        +=======+=================================================+
+        | ``C`` | Roots of the first order Chebyshev polynomials. |
+        +-------+-------------------------------------------------+
+        | ``NC``| Chebyshev nodes adjusted to ensure nested.      |
+        +-------+-------------------------------------------------+
+        | ``K`` | Korobov lattice.                                |
+        +-------+-------------------------------------------------+
+        | ``R`` | Classical (Pseudo-)Random samples.              |
+        +-------+-------------------------------------------------+
+        | ``RG``| Regular spaced grid.                            |
+        +-------+-------------------------------------------------+
+        | ``NG``| Nested regular spaced grid.                     |
+        +-------+-------------------------------------------------+
+        | ``L`` | Latin hypercube samples.                        |
+        +-------+-------------------------------------------------+
+        | ``S`` | Sobol low-discrepancy sequence.                 |
+        +-------+-------------------------------------------------+
+        | ``H`` | Halton low-discrepancy sequence.                |
+        +-------+-------------------------------------------------+
+        | ``M`` | Hammersley low-discrepancy sequence.            |
+        +-------+-------------------------------------------------+
+
+        All samples are created on the ``[0, 1]``-hypercube, which then is
+        mapped into the domain of the distribution using the inverse Rosenblatt
+        transformation.
+
         Args:
-            size (int,array_like):
+            size (int, Tuple[int]):
                 The size of the samples to generate.
             rule (str):
-                Alternative sampling techniques. See
-                :func:`~chaospy.distributions.sampler.generator.generate_samples`.
+                Indicator defining the sampling scheme.
             antithetic (bool, array_like):
                 If provided, will be used to setup antithetic variables. If
                 array, defines the axes to mirror.
 
         Returns:
-            (ndarray) : Random samples with shape (len(self),)+self.shape
+            numpy.ndarray:
+                Random samples with shape ``(len(self),)+self.shape``.
         """
-        size_ = np.prod(size, dtype=int)
+        size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         if dim > 1:
-            if isinstance(size, (tuple,list,np.ndarray)):
+            if isinstance(size, (tuple, list, numpy.ndarray)):
                 shape = (dim,) + tuple(size)
             else:
                 shape = (dim, size)
@@ -306,25 +294,28 @@ independent variables""")
         will be used.
 
         Args:
-            K (array_like) : Index of the raw moments. k.shape must be
-                    compatible with distribution shape.  Sampling scheme when
-                    performing Monte Carlo
-            rule (str) : rule for estimating the moment if the analytical
-                    method fails.
-            composit (int, array_like optional) : If provided, composit
-                    quadrature will be used.  Ignored in the case if
-                    gaussian=True.  If int provided, determines number of even
-                    domain splits. If array of ints, determines number of even
-                    domain splits along each axis. If array of arrays/floats,
-                    determines location of splits.
-            antithetic (array_like, optional) : List of bool. Represents the
-                    axes to mirror using antithetic variable during MCI.
+            K (array_like):
+                Index of the raw moments. k.shape must be compatible with
+                distribution shape.  Sampling scheme when performing Monte
+                Carlo
+            rule (str):
+                rule for estimating the moment if the analytical method fails.
+            composit (int, array_like optional):
+                If provided, composit quadrature will be used.  Ignored in the
+                case if gaussian=True.  If int provided, determines number of
+                even domain splits. If array of ints, determines number of even
+                domain splits along each axis. If array of arrays/floats,
+                determines location of splits.
+            antithetic (array_like, optional):
+                List of bool. Represents the axes to mirror using antithetic
+                variable during MCI.
 
         Returns:
-            (ndarray) : Shapes are related through the identity
-                    `k.shape==dist.shape+k.shape`.
+            (ndarray):
+                Shapes are related through the identity
+                `k.shape==dist.shape+k.shape`.
         """
-        K = np.array(K, dtype=int)
+        K = numpy.asarray(K, dtype=int)
         shape = K.shape
         dim = len(self)
 
@@ -334,218 +325,152 @@ independent variables""")
         size = int(K.size/dim)
         K = K.reshape(dim, size)
 
-        try:
-            out, _ = self.graph.run(K, "mom", **kws)
-        except NotImplementedError:
-            from . import approx
-            out = approx.mom(self, K, **kws)
-
+        cache = {}
+        out = [evaluation.evaluate_moment(self, kdata, cache) for kdata in K.T]
+        out = numpy.array(out)
         return out.reshape(shape)
 
-    def ttr(self, k, acc=10**3, verbose=1):
+    def _mom(self, *args, **kws):
+        """Default moment generator, throws error."""
+        raise StochasticallyDependentError("component lack support")
+
+    def ttr(self, kloc, acc=10**3, verbose=1):
         """
         Three terms relation's coefficient generator
 
         Args:
-            k (array_like, int) : The order of the coefficients.
-            acc (int) : Accuracy of discretized Stieltjes if analytical
-                    methods are unavailable.
+            k (array_like, int):
+                The order of the coefficients.
+            acc (int):
+                Accuracy of discretized Stieltjes if analytical methods are
+                unavailable.
 
         Returns:
-            (Recurrence coefficients) : Where out[0] is the first (A) and
-                    out[1] is the second coefficient With
-                    `out.shape==(2,)+k.shape`.
+            (Recurrence coefficients):
+                Where out[0] is the first (A) and out[1] is the second
+                coefficient With `out.shape==(2,)+k.shape`.
         """
-        k = np.array(k, dtype=int)
-        dim = len(self)
-        shape = k.shape
-        shape = (2,) + shape
-        size = int(k.size/dim)
-        k = k.reshape(dim, size)
+        kloc = numpy.asarray(kloc, dtype=int)
+        shape = kloc.shape
+        kloc = kloc.reshape(len(self), -1)
+        cache = {}
+        out = [evaluation.evaluate_recurrence_coefficients(self, k)
+               for k in kloc.T]
+        out = numpy.array(out).T
+        return out.reshape((2,)+shape)
 
-        out, graph = self.graph.run(k, "ttr")
-        return out.reshape(shape)
 
-    def _ttr(self, *args, **kws):
+    def _ttr(self, kloc, cache, **kws):
         """Default TTR generator, throws error."""
-        raise NotImplementedError
-
-    def _dep(self, graph):
-        """
-        Default dependency module backend.
-
-        See graph for advanced distributions.
-        """
-        sets = [graph(dist) for dist in graph.dists]
-        if len(self)==1:
-            out = [set([self])]
-        else:
-            out = [set([]) for _ in range(len(self))]
-        for set_ in sets:
-            for idx in range(len(self)):
-                out[idx].update(set_[idx])
-        return out
-
+        raise NotImplementedError()
 
     def __str__(self):
         """X.__str__() <==> str(X)"""
-        if hasattr(self, "_str"):
-            return str(self._str(**self.prm))
-        return "D"
+        if self._repr is not None:
+            kwargs = self._repr
+        else:
+            kwargs = self.prm
+        args = [key + "=" + str(kwargs[key]) for key in sorted(kwargs)]
+        return self.__class__.__name__ + "(" + ", ".join(args) + ")"
+
+    def __repr__(self):
+        return str(self)
 
     def __len__(self):
         """X.__len__() <==> len(X)"""
-        return self.length
+        return 1
 
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""
         from . import operators
-        return operators.add(self, X)
+        return operators.Add(self, X)
 
     def __radd__(self, X):
         """Y.__radd__(X) <==> Y+X"""
         from . import operators
-        return operators.add(self, X)
+        return operators.Add(self, X)
 
     def __sub__(self, X):
         """Y.__sub__(X) <==> X-Y"""
         from . import operators
-        return operators.add(self, -X)
+        return operators.Add(self, -X)
 
     def __rsub__(self, X):
         """Y.__rsub__(X) <==> Y-X"""
         from . import operators
-        return operators.add(X, -self)
+        return operators.Add(X, -self)
 
     def __neg__(self):
         """X.__neg__() <==> -X"""
         from . import operators
-        return operators.neg(self)
+        return operators.Neg(self)
 
     def __mul__(self, X):
         """Y.__mul__(X) <==> X*Y"""
         from . import operators
-        return operators.mul(self, X)
+        return operators.Mul(self, X)
 
     def __rmul__(self, X):
         """Y.__rmul__(X) <==> Y*X"""
         from . import operators
-        return operators.mul(self, X)
+        return operators.Mul(X, self)
 
     def __div__(self, X):
         """Y.__div__(X) <==> Y/X"""
         from . import operators
-        return operators.mul(self, X**-1)
+        return operators.Mul(self, X**-1)
 
     def __rdiv__(self, X):
         """Y.__rdiv__(X) <==> X/Y"""
         from . import operators
-        return operators.mul(X, self**-1)
+        return operators.Mul(X, self**-1)
 
     def __floordiv__(self, X):
         """Y.__floordiv__(X) <==> Y/X"""
         from . import operators
-        return operators.mul(self, X**-1)
+        return operators.Mul(self, X**-1)
 
     def __rfloordiv__(self, X):
         """Y.__rfloordiv__(X) <==> X/Y"""
         from . import operators
-        return operators.mul(X, self**-1)
+        return operators.Mul(X, self**-1)
 
     def __truediv__(self, X):
         """Y.__truediv__(X) <==> Y/X"""
         from . import operators
-        return operators.mul(self, X**-1)
+        return operators.Mul(self, X**-1)
 
     def __rtruediv__(self, X):
         """Y.__rtruediv__(X) <==> X/Y"""
         from . import operators
-        return operators.mul(X, self**-1)
+        return operators.Mul(X, self**-1)
 
     def __pow__(self, X):
         """Y.__pow__(X) <==> Y**X"""
         from . import operators
-        return operators.pow(self, X)
+        return operators.Pow(self, X)
 
     def __rpow__(self, X):
         """Y.__rpow__(X) <==> X**Y"""
         from . import operators
-        return operators.pow(X, self)
+        return operators.Pow(X, self)
 
     def __le__(self, X):
         """Y.__le__(X) <==> Y<=X"""
         from . import operators
-        return operators.trunk(self, X)
+        return operators.Trunc(self, X)
 
     def __lt__(self, X):
         """Y.__lt__(X) <==> Y<X"""
         from . import operators
-        return operators.trunk(self, X)
+        return operators.Trunc(self, X)
 
     def __ge__(self, X):
         """Y.__ge__(X) <==> Y>=X"""
         from . import operators
-        return operators.trunk(X, self)
+        return operators.Trunc(X, self)
 
     def __gt__(self, X):
         """Y.__gt__(X) <==> Y>X"""
         from . import operators
-        return operators.trunk(X, self)
-
-    def addattr(self, **kws):
-        """
-        Add attribution to distribution
-
-        Kwargs:
-            pdf (callable) : Probability density function.
-            cdf (callable) : Cumulative distribution function.
-            ppf (callable) : Point percentile function.
-            mom (callable) : Raw statistical moments.
-            ttr (callable) : Three term recursion coefficient generator.
-            val (callable) : If auxiliary variable, try to return the values
-                    of it's underlying variables, else return self.
-            str (callable, str) : Pretty print of module.
-            dep (callable) : Dependency structure (if non-trivial).
-        """
-        for key,val in kws.items():
-            if key == "str" and isinstance(val, str):
-                val_ = val
-                val = lambda *a,**k: val_
-            setattr(self, "_"+key, types.MethodType(val, self))
-
-
-    def dependent(self, *args):
-        """
-        Determine dependency structure in module
-
-        Args:
-            arg, [...] (optional) : If omited, internal dependency will be
-                    determined.  If included, dependency between self and args
-                    will be used.
-
-        Returns:
-            (bool) : True if distribution is dependent.
-        """
-        sets, graph = self.graph.run(None, "dep")
-
-        if args:
-
-            sets_ = set()
-            for set_ in sets:
-                sets_ = sets_.union(set_)
-            sets = [sets_]
-
-            for arg in args:
-                sets_ = set()
-                for set_ in arg.graph.run(None, "dep"):
-                    sets_ = sets_.union(set_)
-                sets.append(sets_)
-
-        as_seperated = sum([len(set_) for set_ in sets])
-
-        as_joined = set()
-        for set_ in sets:
-            as_joined = as_joined.union(set_)
-        as_joined = len(as_joined)
-
-        return as_seperated != as_joined
+        return operators.Trunc(X, self)

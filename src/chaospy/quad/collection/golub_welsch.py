@@ -64,7 +64,7 @@ def _golbub_welsch(orders, coeff1, coeff2):
 
     for dim, order in enumerate(orders):
         if order:
-            bands = numpy.empty((2, order))
+            bands = numpy.zeros((2, order))
             bands[0] = coeff1[dim, :order]
             bands[1, :-1] = numpy.sqrt(coeff2[dim, 1:order])
             vals, vecs = scipy.linalg.eig_banded(bands, lower=True)
@@ -79,7 +79,3 @@ def _golbub_welsch(orders, coeff1, coeff2):
         abscisas.append(abscisa)
         weights.append(weight)
     return abscisas, weights
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

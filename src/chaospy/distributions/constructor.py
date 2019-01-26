@@ -1,5 +1,21 @@
 """
 Custom distribution constructor.
+
+Example usage
+-------------
+
+Construct distribution from scratch::
+
+    >>> MyUniform = chaospy.construct(
+    ...     cdf=lambda self, x, lo, up: (x - lo) / (up - lo),
+    ...     bnd=lambda self, x, lo, up: (lo, up)
+    ... )
+
+Evaluate distribution::
+
+    >>> uniform = MyUniform(lo=-1, up=1)
+    >>> print(uniform.pdf(numpy.linspace(-2, 2, 16)))
+    [0.  0.  0.  0.  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.  0.  0.  0. ]
 """
 import types
 from .baseclass import Dist
@@ -7,11 +23,12 @@ from .baseclass import Dist
 LEGAL_ATTRS = {
     "cdf": "_cdf", "bnd": "_bnd",
     "pdf": "_pdf", "ppf": "_ppf", "mom": "_mom",
-    "ttr": "_ttr", "val": "_val", "doc": "__doc__",
+    "ttr": "_ttr", "fwd_cache": "_fwd_cache", "inv_cache": "_inv_cache",
+    "doc": "__doc__",
     "str": "_str"
 }
 
-def construct(parent=None, defaults=None, advance=False, length=1, **kwargs):
+def construct(parent=None, defaults=None, **kwargs):
     """
     Random variable constructor.
 
@@ -35,15 +52,6 @@ def construct(parent=None, defaults=None, advance=False, length=1, **kwargs):
             Raw moment generator.
         ttr (callable, optional):
             Three terms recursion coefficient generator
-        val (callable, optional):
-            Value function for transferable distributions.
-        dep (callable, optional):
-            Dependency structure.
-        advance (bool):
-            If True, advance mode is used. See dist.graph for details.
-        length (int):
-            If constructing an multivariate random variable, this sets the
-            assumed length. Defaults to 1.
         init (callable, optional):
             Custom constructor method.
 
@@ -67,8 +75,6 @@ def construct(parent=None, defaults=None, advance=False, length=1, **kwargs):
     defaults = defaults if defaults else {}
     for key in defaults:
         assert key in LEGAL_ATTRS, "invalid default value {}".format(key)
-    defaults["_length"] = length
-    defaults["_advance"] = advance
 
     def custom_distribution(**kws):
 

@@ -30,7 +30,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
     >>> def model_solver(q):
     ...     return [q[0]*q[1], q[0]*numpy.e**-q[1]+1]
-    >>> solves = [model_solver(absissa) for absissa in absissas.T]
+    >>> solves = [model_solver(ab) for ab in absissas.T]
     >>> print(numpy.around(solves[:4], 8))
     [[ 3.         -8.7899559 ]
      [-0.         -0.73205081]
@@ -42,8 +42,8 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
     >>> approx = chaospy.fit_quadrature(
     ...     expansion, absissas, weights, solves)
-    >>> print(chaospy.around(approx, 8))
-    [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
+    >>> print(chaospy.around(approx, 4))
+    [q0q1, -1.5806q0q1+1.6382q0+1.0]
 
 Note that in this case the function output is
 bivariate. The software is designed to create an approximation of any
@@ -64,8 +64,8 @@ can be added::
     >>> expansion, norms = chaospy.orth_ttr(2, distribution, retall=True)
     >>> approx2 = chaospy.fit_quadrature(
     ...     expansion, absissas, weights, solves, norms=norms)
-    >>> print(chaospy.around(approx2, 8))
-    [q0q1, -1.58058656q0q1+1.63819248q0+1.0]
+    >>> print(chaospy.around(approx2, 4))
+    [q0q1, -1.5806q0q1+1.6382q0+1.0]
 
 Note that at low polynomial order, the error is very small. For example the
 largest coefficient between the two approximation::
@@ -125,8 +125,7 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
     vals1 = [(val*solves.T*weights).T for val in ovals]
 
     if norms is None:
-        vals2 = [(val**2*weights).T for val in ovals]
-        norms = numpy.sum(vals2, 1)
+        norms = numpy.sum(ovals**2*weights, -1)
     else:
         norms = numpy.array(norms).flatten()
         assert len(norms) == len(orth)

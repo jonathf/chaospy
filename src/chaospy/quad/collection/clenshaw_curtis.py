@@ -1,5 +1,27 @@
-"""
+r"""
 Clenshaw-Curtis quadrature method.
+
+Example usage
+-------------
+
+The first few orders with linear growth rule::
+
+    >>> for order in [0, 1, 2, 3]:
+    ...     abscissas, weights = quad_clenshaw_curtis(order)
+    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    0 [[0.5]] [1.]
+    1 [[0. 1.]] [0.5 0.5]
+    2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    3 [[0.   0.25 0.75 1.  ]] [0.056 0.444 0.444 0.056]
+
+The first few orders with exponential growth rule::
+
+    >>> for order in [0, 1, 2]:
+    ...     abscissas, weights = quad_clenshaw_curtis(order, growth=True)
+    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    0 [[0.5]] [1.]
+    1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    2 [[0.    0.146 0.5   0.854 1.   ]] [0.033 0.267 0.4   0.267 0.033]
 """
 from __future__ import division
 
@@ -7,8 +29,7 @@ import numpy
 import chaospy.quad
 
 
-def quad_clenshaw_curtis(
-        order, lower=0, upper=1, growth=False, composite=1, part=None):
+def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False, part=None):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
@@ -17,7 +38,7 @@ def quad_clenshaw_curtis(
         >>> print(numpy.around(abscissas, 4))
         [[0.   0.25 0.75 1.  ]]
         >>> print(numpy.around(weights, 4))
-        [0.1111 0.3889 0.1944 0.1111]
+        [0.0556 0.4444 0.4444 0.0556]
     """
     order = numpy.asarray(order, dtype=int).flatten()
     lower = numpy.asarray(lower).flatten()
@@ -29,16 +50,7 @@ def quad_clenshaw_curtis(
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    if isinstance(composite, int):
-        composite = numpy.array([numpy.linspace(0, 1, composite+1)]*dim)
-
-    else:
-        composite = numpy.asarray(composite)
-        if not composite.shape:
-            composite = composite.flatten()
-        if len(composite.shape) == 1:
-            composite = numpy.array([composite])
-        composite = ((composite.T-lower)/(upper-lower)).T
+    composite = numpy.array([numpy.arange(2)]*dim)
 
     if growth:
         results = [
@@ -66,44 +78,38 @@ def quad_clenshaw_curtis(
 
 
 def _clenshaw_curtis(order, composite=None):
-    """Backend method."""
+    r"""
+    Backend method.
+
+    Examples:
+        >>> print(*_clenshaw_curtis(0))
+        [0.5] [1.]
+        >>> print(*_clenshaw_curtis(1))
+        [0. 1.] [0.5 0.5]
+        >>> print(*_clenshaw_curtis(2))
+        [0.  0.5 1. ] [0.16666667 0.66666667 0.16666667]
+        >>> print(*_clenshaw_curtis(3))
+        [0.   0.25 0.75 1.  ] [0.05555556 0.44444444 0.44444444 0.05555556]
+        >>> print(*_clenshaw_curtis(4), sep="\n")
+        [0.         0.14644661 0.5        0.85355339 1.        ]
+        [0.03333333 0.26666667 0.4        0.26666667 0.03333333]
+        >>> print(*_clenshaw_curtis(5), sep="\n")
+        [0.        0.0954915 0.3454915 0.6545085 0.9045085 1.       ]
+        [0.02       0.18037152 0.29962848 0.29962848 0.18037152 0.02      ]
+    """
     if order == 0:
         return numpy.array([.5]), numpy.array([1.])
 
-    abscis = -numpy.cos(numpy.arange(order+1)*numpy.pi/order)
-    abscis[numpy.abs(abscis) < 1e-14] = 0
+    theta = (order-numpy.arange(order+1))*numpy.pi/order
+    abscisas = 0.5*numpy.cos(theta) + 0.5
 
-    grid = numpy.meshgrid(*[numpy.arange(order//2+1)]*2)
-    premat = 2./order*numpy.cos(2*grid[0]*grid[1]*numpy.pi/order)
-    premat[:, 0] *= .5
-    premat[:, -1] *= .5
+    N, K = numpy.mgrid[:order+1, :order//2]
+    weights = 2*numpy.cos(2*(K+1)*theta[N])/(4*K*(K+2)+3)
+    if order % 2 == 0:
+        weights[:, -1] *= 0.5
+    weights = (1-numpy.sum(weights, -1)) / order
 
-    prevec = 2./(1-numpy.arange(0, order+1, 2)**2)
-    prevec[0] *= .5
-    prevec[-1] *= .5
+    weights[0] /= 2
+    weights[-1] /= 2
 
-    weight = numpy.dot(premat.T, prevec)
-    weight = numpy.concatenate((weight, weight[-1-1*(order%2 == 0)::-1]))
-    weight[order // 2] *= 2
-
-    abscis = .5*abscis+.5
-    weight *= .5
-
-    length = len(abscis)
-
-    if composite is None:
-        composite = []
-    composite = list(set(composite))
-    composite = [c for c in composite if (c < 1) and (c > 0)]
-    composite.sort()
-    composite = [0] + composite + [1]
-
-    abscissas = numpy.zeros((length-1)*(len(composite)-1)+1)
-    weights = numpy.zeros((length-1)*(len(composite)-1)+1)
-    for dim in range(len(composite)-1):
-        abscissas[dim*length-dim:(dim+1)*length-dim] = \
-                abscis*(composite[dim+1]-composite[dim]) + composite[dim]
-        weights[dim*length-dim:(dim+1)*length-dim] += \
-            weight*(composite[dim+1]-composite[dim])
-
-    return abscissas, weights
+    return abscisas, weights
