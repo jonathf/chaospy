@@ -1,6 +1,6 @@
 """
 Constructing custom probability distributions is done by subclassing the
-distribution 
+distribution :class:`~chaospy.distributions.baseclass.Dist`::
 
     >>> class Uniform(Dist):
     ...     def __init__(self, lo=0, up=1):
@@ -24,6 +24,16 @@ Usage is then straight forward::
     >>> dist = Uniform(-3, 3)
     >>> print(dist.fwd([-3, 0, 3])) # Forward Rosenblatt transformation
     [0.  0.5 1. ]
+
+Here the two methods ``_cdf`` and ``_bnd`` are absolute requirements, while all
+the others are nice to have. In addition to the once listed, it is also
+possible to define the following methods:
+
+``_mom``
+    Method for creating raw statistical moments, used by the ``mom`` method.
+``_ttr``
+    Method for creating coefficients from three terms recursion method, used to
+    perform "analytical" Stiltjes' method.
 """
 import types
 import numpy

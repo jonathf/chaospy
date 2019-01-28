@@ -1,27 +1,47 @@
 """
 Fejér quadrature method.
 
+The same method as :ref:`clenshaw_curtis`, but without the end-points. This
+makes this a better method for performing quadrature on infinite intervals, as
+the evaluation does not contain illegal values.
+
 Example usage
 -------------
 
 The first few orders with linear growth rule::
 
+    >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
-    ...     abscissas, weights = quad_fejer(order)
-    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="F")
+    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
     0 [[0.5]] [1.]
-    1 [[0.25 0.75]] [0.444 0.444]
-    2 [[0.146 0.5   0.854]] [0.267 0.4   0.267]
-    3 [[0.095 0.345 0.655 0.905]] [0.18 0.3  0.3  0.18]
+    1 [[0.25 0.75]] [0.5 0.5]
+    2 [[0.146 0.5   0.854]] [0.286 0.429 0.286]
+    3 [[0.095 0.345 0.655 0.905]] [0.188 0.312 0.312 0.188]
 
 The first few orders with exponential growth rule::
 
     >>> for order in [0, 1, 2]:
-    ...     abscissas, weights = quad_fejer(order, growth=True)
-    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="F", growth=True)
+    ...     print(order, numpy.around(X, 2), numpy.around(W, 2))
     0 [[0.5]] [1.]
-    1 [[0.146 0.5   0.854]] [0.267 0.4   0.267]
-    2 [[0.038 0.146 0.309 0.5   0.691 0.854 0.962]] [0.073 0.14  0.181 0.197 0.181 0.14  0.073]
+    1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]
+    2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]] [0.07 0.14 0.18 0.2  0.18 0.14 0.07]
+
+Applying the rule using Smolyak sparse grid::
+
+    >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
+    >>> X, W = chaospy.generate_quadrature(
+    ...     2, distribution, rule="F", growth=True, sparse=True)
+    >>> print(numpy.around(X, 3))
+    [[0.5   0.146 0.5   0.854 0.5   0.038 0.146 0.309 0.5   0.691 0.854 0.962
+      0.5   0.146 0.5   0.854 0.5  ]
+     [0.038 0.146 0.146 0.146 0.309 0.5   0.5   0.5   0.5   0.5   0.5   0.5
+      0.691 0.854 0.854 0.854 0.962]]
+    >>> print(numpy.around(W, 3))
+    [ 0.073  0.071 -0.02   0.071  0.181  0.073 -0.02   0.181 -0.246  0.181
+     -0.02   0.073  0.181  0.071 -0.02   0.071  0.073]
 """
 from __future__ import division
 

@@ -25,11 +25,11 @@ def quad_gauss_patterson(order, dist):
         (numpy.ndarray numpy.ndarray) : Abscissas and weights.
 
     Example:
-        >>> absci, weights = chaospy.quad_gauss_patterson(3, chaospy.Uniform(0, 1))
-        >>> print(numpy.around(absci, 4))
+        >>> X, W = chaospy.quad_gauss_patterson(3, chaospy.Uniform(0, 1))
+        >>> print(numpy.around(X, 4))
         [[0.0031 0.0198 0.0558 0.1127 0.1894 0.2829 0.3883 0.5    0.6117 0.7171
           0.8106 0.8873 0.9442 0.9802 0.9969]]
-        >>> print(numpy.around(weights, 4))
+        >>> print(numpy.around(W, 4))
         [0.0085 0.0258 0.0465 0.0672 0.0858 0.1003 0.1096 0.1128 0.1096 0.1003
          0.0858 0.0672 0.0465 0.0258 0.0085]
 

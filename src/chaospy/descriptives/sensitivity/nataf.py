@@ -132,7 +132,7 @@ def Sens_t_nataf(order, dist, samples, vals, **kws):
 
 def Sens_nataf(order, dist, samples, vals, **kws):
     """
-    Variance-based decomposition thorugh the Nataf distribution.
+    Variance-based decomposition through the Nataf distribution.
 
     Main and total order sensitivity indices
 

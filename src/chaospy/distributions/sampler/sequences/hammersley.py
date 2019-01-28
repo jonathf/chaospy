@@ -42,7 +42,7 @@ Using custom prime bases::
      [0.64   0.84   0.08  ]
      [0.25   0.5    0.75  ]]
 
-.. Hammersley set: https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Hammersley_set
+.. _Hammersley set: https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Hammersley_set
 """
 import numpy
 

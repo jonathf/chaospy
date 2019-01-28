@@ -11,8 +11,8 @@ Python 2 and 3.
 
 A article in Elsevier Journal of Computational Science has been published
 introducing the software: `here
-<http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.  If you are to use this
-software in work that is published, please cite this paper.
+<http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.  If you are using this
+software in work that will be published, please cite this paper.
 
 Installation
 ------------

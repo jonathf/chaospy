@@ -1,38 +1,24 @@
 """
-Methods for performing Gaussian quadrature.
+Quadrature methods, or numerical integration, is broad class of algorithm for
+performing integration of any function ``g`` that are defined without requiring
+an analytical definition. In the scope of ``chaospy`` we limit this scope to
+focus on methods that can be reduced to the following approximation:
 
-Examples
---------
-A quadrature rule where the limits are defined by floats::
+.. math::
+    \int g(x) p(x) dx = \sum_{n=1}^N W_n g(X_n)
 
-    >>> abscissas, weights = chaospy.quad_clenshaw_curtis(
-    ...         order=3, lower=0., upper=1.)
-    >>> print(numpy.around(abscissas, 4))
-    [[0.   0.25 0.75 1.  ]]
-    >>> print(numpy.around(weights, 4))
-    [0.0556 0.4444 0.4444 0.0556]
+Here :math:`p(x)` is an weight function, which for our use would be an
+probability distribution, and :math:`W_n` and :math:`X_n` are respectively
+quadrature weights and abscissas used to define the approximation.
 
-A quadrature rule in higher dimensions through the main interface::
+This simplest example of such an approximation is Monte Carlo integration. In
+such a method, you only need to select :math:`W_n=1/N` and :math:`X_n` to be
+independent identical distributed samples drawn from the distribution of
+:math:`p(x)`.
 
-    >>> lower = [0., 0.]
-    >>> upper = [1., 1.]
-    >>> abscissas, weights = chaospy.generate_quadrature(
-    ...         order=1, domain=(lower, upper), rule="gauss_legendre")
-    >>> print(numpy.around(abscissas, 4))
-    [[0.2113 0.2113 0.7887 0.7887]
-     [0.2113 0.7887 0.2113 0.7887]]
-    >>> print(numpy.around(weights, 4))
-    [0.25 0.25 0.25 0.25]
-
-A quadrature rule where the distribution is the weight function::
-
-    >>> dist = chaospy.Gamma()
-    >>> abscissas, weights = chaospy.quad_golub_welsch(
-    ...         order=2, dist=dist)
-    >>> print(numpy.around(abscissas, 4))
-    [[0.4158 2.2943 6.2899]]
-    >>> print(numpy.around(weights, 4))
-    [0.7111 0.2785 0.0104]
+However, except for very high dimensional problems, Monte Carlo is quite an
+inefficient way to perform numerical integration, and there exist quite a few
+methods that performs better in most low-dimensional settings.
 """
 from .combine import combine
 from .interface import generate_quadrature

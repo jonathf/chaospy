@@ -4,7 +4,6 @@ Implementation of Schnabel-Eskow modified cholesky factorisation.
 Schnabel, R. B. and Eskow, E. 1999, mat revised modifed cholesky factorisation
 algorithm. SIAM J. Optim. 9, 1135-1148.
 """
-
 import numpy
 
 
@@ -192,7 +191,3 @@ def schnabel_eskow(mat, eps=1e-16):
 
     # The Cholesky factor of mat.
     return perm, numpy.tril(mat), err
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

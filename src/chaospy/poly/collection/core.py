@@ -3,7 +3,7 @@ Collection of tools for manipulation polynomial.
 """
 
 import numpy
-from scipy.misc import comb, factorial as fac
+from scipy.special import comb, factorial as fac
 
 import chaospy.poly.dimension
 import chaospy.bertran

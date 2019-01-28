@@ -1,4 +1,0 @@
-.. _rosenblatt:
-
-Rosenblatt Transformations
---------------------------

@@ -43,8 +43,3 @@ def quad_genz_keister(order, dist, rule=24):
     abscissas = abscissas.reshape(1, abscissas.size)
 
     return abscissas, weights
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

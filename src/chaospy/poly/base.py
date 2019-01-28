@@ -1,6 +1,6 @@
 """Polynomial base class Poly."""
 import re
-import numpy as np
+import numpy
 
 import chaospy.poly
 
@@ -24,14 +24,20 @@ class Poly(object):
     Can also represent sets of polynomials.
 
     Examples:
-        >>> print(chaospy.Poly({(1,): np.array(1)}))
+        >>> print(chaospy.Poly({(1,): numpy.array(1)}))
         q0
-        >>> x,y = chaospy.variable(2)
+        >>> x, y = chaospy.variable(2)
         >>> print(x**2 + x*y + 2)
         q0^2+q0q1+2
-        >>> g = -3*x+x**2
-        >>> print(g([1, 2, 3], [1, 2, 3]))
-        [-2 -2  0]
+        >>> poly = -3*x + x**2 + y
+        >>> print(poly.coefficients)
+        [ 1 -3  1]
+        >>> print(poly.exponents)
+        [[0 1]
+         [1 0]
+         [2 0]]
+        >>> print(poly([1, 2, 3], [1, 2, 3]))
+        [-1  0  3]
         >>> print(chaospy.Poly([x*y, x, y]))
         [q0q1, q0, q1]
     """
@@ -93,7 +99,7 @@ class Poly(object):
     def __div__(self, other):
         """Python2 division."""
         return chaospy.poly.collection.arithmetics.mul(
-            self, np.asfarray(other)**-1)
+            self, numpy.asfarray(other)**-1)
         return NotImplemented
 
     def __truediv__(self, other):
@@ -110,7 +116,7 @@ class Poly(object):
         if not isinstance(other, Poly):
             other = Poly(other)
         diff = abs(self - other)
-        out = np.zeros(diff.shape, dtype=bool)
+        out = numpy.zeros(diff.shape, dtype=bool)
         for key in diff.keys:
             out = out + (diff.A[key]!=0)
         return out
@@ -121,7 +127,7 @@ class Poly(object):
 
         Args:
             args (array_like, Poly) : Arguments to evaluate. Masked values and
-                    np.nan will not be evaluated. If instance is Poly,
+                    numpy.nan will not be evaluated. If instance is Poly,
                     substitution on the variable is performed.
             kws (array_like, Poly) : Same as args, but the keys referred to the
                     variables names. If the number of dimensions are <=3, 'x',
@@ -137,7 +143,7 @@ class Poly(object):
         if len(args)>self.dim:
             args = list(args[:self.dim])
         else:
-            args = list(args) + [np.nan]*(self.dim-len(args))
+            args = list(args) + [numpy.nan]*(self.dim-len(args))
 
         for key,val in kws.items():
 
@@ -151,7 +157,7 @@ class Poly(object):
                 raise TypeError(
                     "Unexpeted keyword argument '%s'" % key)
 
-            if args[index] not in (np.nan, np.ma.masked):
+            if args[index] not in (numpy.nan, numpy.ma.masked):
                 raise TypeError(
                     "Multiple values for keyword argument '%s'" % index)
 
@@ -183,7 +189,7 @@ class Poly(object):
     def __getitem__(self, I):
         shape = self.A[self.keys[0]][I].shape
 
-        if isinstance(I, np.ndarray):
+        if isinstance(I, numpy.ndarray):
             I = I.tolist()
 
         if isinstance(I, (slice, int)):
@@ -215,7 +221,7 @@ class Poly(object):
         A0 = {}
         for key in self.keys:
             tmp = self.A[key][subset]
-            if not np.all(tmp==0):
+            if not numpy.all(tmp==0):
                 A0[key] = tmp
 
         A1 = {}
@@ -237,7 +243,7 @@ class Poly(object):
             out = {}
             for key in self.keys:
 
-                if np.any(A[key][i]):
+                if numpy.any(A[key][i]):
                     out[key] = A[key][i]
 
             Pset.append(Poly(out, self.dim, self.shape[1:],self.dtype))
@@ -272,11 +278,11 @@ class Poly(object):
 
     def __pow__(self, n):
         """x.__pow__(y) <==> x**y"""
-        if isinstance(n, (int, float, np.generic)):
-            n = np.array(n)
-            assert isinstance(n, np.ndarray)
+        if isinstance(n, (int, float, numpy.generic)):
+            n = numpy.array(n)
+            assert isinstance(n, numpy.ndarray)
 
-        if isinstance(n, np.ndarray) and not n.shape:
+        if isinstance(n, numpy.ndarray) and not n.shape:
 
             if abs(n-int(n))>1e-5:
                 raise ValueError("Power of Poly must be interger")
@@ -284,7 +290,7 @@ class Poly(object):
 
             if n == 0:
                 return Poly(
-                    {(0,)*self.dim: np.ones(self.shape, dtype=int)},
+                    {(0,)*self.dim: numpy.ones(self.shape, dtype=int)},
                     self.dim, self.shape, None)
 
             self = self.copy()
@@ -293,7 +299,7 @@ class Poly(object):
                 out = out * self
             return out
 
-        elif isinstance(n, (np.ndarray, list, tuple)):
+        elif isinstance(n, (numpy.ndarray, list, tuple)):
 
             if not self.shape:
                 out = [self.__pow__(n[i]) for i in range(len(n))]
@@ -317,10 +323,10 @@ class Poly(object):
             if len(self.shape) > 1:
                 shape = self.shape
                 self = chaospy.poly.shaping.flatten(self)
-                P = np.reshape(np.array([str(p) for p in self],\
+                P = numpy.reshape(numpy.array([str(p) for p in self],\
                     dtype=object), shape)
             else:
-                P = np.array([str(p) for p in self], dtype=object)
+                P = numpy.array([str(p) for p in self], dtype=object)
             out = str(P.tolist())
             out = "".join(out.split("'"))
             return out
@@ -335,11 +341,11 @@ class Poly(object):
 
             o = ""
             coef = self.A[key]
-            if np.sign(coef) == 1:
+            if numpy.sign(coef) == 1:
                 o += "+"
             else:
                 o += "-"
-            if isinstance(coef, np.ndarray):
+            if isinstance(coef, numpy.ndarray):
                 o += str(abs(coef.item()))
             else:
                 o += str(abs(coef))
@@ -352,7 +358,7 @@ class Poly(object):
                     o +="%s%s%d" % (basename[j], POWER, key[j])
 
             if not o:
-                if self.dtype in (int, np.int16, np.int32, np.int64):
+                if self.dtype in (int, numpy.int16, numpy.int32, numpy.int64):
                     out = ["0"]
                 else:
                     out = ["0.0"]
@@ -372,7 +378,7 @@ class Poly(object):
             out.append(o)
 
         if not out:
-            if self.dtype in (int, np.int16, np.int32, np.int64):
+            if self.dtype in (int, numpy.int16, numpy.int32, numpy.int64):
                 out = ["0"]
             else:
                 out = ["0.0"]
@@ -388,18 +394,20 @@ class Poly(object):
         return Poly(self.A.copy(), self.dim, self.shape,
             self.dtype)
 
-    def coeffs(self):
-        out = np.array([self.A[key] for key in self.keys])
-        out = np.rollaxis(out, -1)
+    @property
+    def coefficients(self):
+        """Polynomial coefficients."""
+        out = numpy.array([self.A[key] for key in self.keys])
+        out = numpy.rollaxis(out, -1)
+        return out
+
+    @property
+    def exponents(self):
+        """Polynomial exponents."""
+        out = numpy.array(self.keys)
         return out
 
 
 def sort_key(val):
     """Sort key for sorting keys in grevlex order."""
-    return np.sum((max(val)+1)**np.arange(len(val)-1, -1, -1)*val)
-
-
-if __name__=='__main__':
-    import chaospy
-    import doctest
-    doctest.testmod()
+    return numpy.sum((max(val)+1)**numpy.arange(len(val)-1, -1, -1)*val)

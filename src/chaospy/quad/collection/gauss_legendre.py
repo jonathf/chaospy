@@ -1,5 +1,44 @@
 """
-Gauss-Legendre quadrature rule.
+The Gauss-Legendre quadrature rule is properly supported by in
+:ref:`gaussian_quadrature`. However, as Gauss-Legendre is a special case where
+the weight function is constant, it can in principle be used to integrate any
+weighting function. In other words, this is the same Gauss-Legendre integration
+rule, but only in the context of uniform distribution as weight function.
+Normalization of the weights will be used to achieve the general integration
+form.
+
+It is also worth noting that this specific implementation of Gauss-Legendre is
+faster to compute than the general version in :ref:`gaussian_quadrature`.
+
+Example usage
+-------------
+
+The first few orders::
+
+    >>> distribution = chaospy.Uniform(0, 1)
+    >>> for order in [0, 1, 2, 3]:
+    ...     abscissas, weights = chaospy.generate_quadrature(
+    ...         order, distribution, rule="E")
+    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    0 [[0.5]] [1.]
+    1 [[0.211 0.789]] [0.5 0.5]
+    2 [[0.113 0.5   0.887]] [0.278 0.444 0.278]
+    3 [[0.069 0.33  0.67  0.931]] [0.174 0.326 0.326 0.174]
+
+Using an alternative distribution::
+
+    >>> distribution = chaospy.Beta(2, 4)
+    >>> for order in [0, 1, 2, 3]:
+    ...     abscissas, weights = chaospy.generate_quadrature(
+    ...         order, distribution, rule="E")
+    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    0 [[0.5]] [1.]
+    1 [[0.211 0.789]] [0.933 0.067]
+    2 [[0.113 0.5   0.887]] [0.437 0.556 0.007]
+    3 [[0.069 0.33  0.67  0.931]] [0.195 0.647 0.157 0.001]
+
+The abscissas stays the same, but the weights are re-adjusted for the new
+weight function.
 """
 import numpy
 

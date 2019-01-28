@@ -1,6 +1,4 @@
-"""
-Collection of mathematical operators.
-"""
+"""Collection of mathematical operators."""
 from .addition import Add, add
 from .multiply import Mul, mul
 from .negative import Neg, neg

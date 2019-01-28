@@ -2,7 +2,6 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
 
 
 class OTDistribution(Dist):

@@ -1,6 +1,6 @@
 """Laplace Probability Distribution."""
 import numpy
-from scipy import misc
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -19,7 +19,7 @@ class laplace(Dist):
         return (1+numpy.sign(x)*(1-numpy.e**-abs(x)))/2
 
     def _mom(self, k):
-        return .5*misc.factorial(k)*(1+(-1)**k)
+        return .5*special.factorial(k)*(1+(-1)**k)
 
     def _ppf(self, x):
         return numpy.where(x>.5, -numpy.log(2*(1-x)), numpy.log(2*x))

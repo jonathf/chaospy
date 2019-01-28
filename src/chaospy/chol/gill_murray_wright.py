@@ -4,7 +4,6 @@ Implementation of the Gill-Murray-Wright modified Cholesky algorithm.
 Algorithm 6.5 from page 148 of 'Numerical Optimization' by Jorge Nocedal and
 Stephen J. Wright, 1999, 2nd ed.
 """
-
 import numpy
 
 
@@ -118,8 +117,3 @@ def swap_across(idx, idy, mat_a, mat_r, perm):
     mat_a = numpy.dot(perm_new, numpy.dot(mat_a, perm_new))
     mat_r = numpy.dot(mat_r, perm_new)
     return mat_a, mat_r, perm
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

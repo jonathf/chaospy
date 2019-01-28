@@ -1,11 +1,38 @@
-"""A distribution that is based on a kernel density estimator (KDE)."""
+"""
+In some cases a constructed distribution that are first and foremost data
+driven. In such scenarios it make sense to make use of
+`kernel density estimation`_ (KDE). In ``chaospy`` KDE can be accessed through
+the :func:`SampleDist` constructor.
+
+Basic usage of the constructor involves just passing the data::
+
+    >>> data = [3, 4, 5, 5]
+    >>> distribution = chaospy.SampleDist(data)
+
+This distribution can be used as any other distributions::
+
+    >>> print(numpy.around(distribution.cdf([3, 3.5, 4, 4.5, 5]), 4))
+    [0.     0.1932 0.4279 0.7043 1.    ]
+    >>> print(numpy.around(distribution.mom(1), 4))
+    4.0922
+
+It also supports lower and upper bounds defining where the range is expected to
+appear, which gives a slightly different distribution::
+
+    >>> distribution = chaospy.SampleDist(data, lo=2, up=6)
+    >>> print(numpy.around(distribution.cdf([3, 3.5, 4, 4.5, 5]), 4))
+    [0.1344 0.2543 0.4001 0.5716 0.7552]
+    >>> print(numpy.around(distribution.mom(1), 4))
+    4.2149
+
+.. kernel density estimation: https://en.wikipedia.org/wiki/Kernel_density_estimation
+"""
 import numpy
 from scipy.stats import gaussian_kde
 
 from ..baseclass import Dist
 from ..operators.addition import Add
 from .uniform import Uniform
-
 
 
 class sample_dist(Dist):

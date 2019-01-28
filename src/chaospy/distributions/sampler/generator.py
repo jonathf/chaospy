@@ -1,10 +1,9 @@
 """
-Front end for generating psuedo-random samples.
-
-Example usage
--------------
-
-Generating simple samples::
+Each sampling scheme can be accessed through the ``sample`` method on each
+distribution. But in addition, they can also be created on the unit hyper-cube
+using direct sampling functions. The frontend for all these functions is the
+:func:`~chaospy.distributions.sampler.generator.generator_samples` function. It
+can be used as follows::
 
     >>> print(numpy.around(generate_samples(order=4), 4))
     [[0.6536 0.115  0.9503 0.4822]]
@@ -41,6 +40,10 @@ Multivariate antithetic variates::
     >>> print(numpy.around(generate_samples(order=8, domain=2, rule="M", antithetic=True), 4))
     [[0.75  0.25  0.75  0.25  0.125 0.875 0.125 0.875]
      [0.25  0.25  0.75  0.75  0.5   0.5   0.5   0.5  ]]
+
+Here as with the ``sample`` method, the flag ``rule`` is used to determine
+sampling scheme. The default ``rule="R"`` uses classical psuedo-random samples
+created using ``numpy.random``.
 """
 import logging
 import numpy

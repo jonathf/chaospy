@@ -1,14 +1,23 @@
 r"""
-Clenshaw-Curtis quadrature method.
+Clenshaw-Curtis quadrature method is a good all-around quadrature method
+comparable to Gaussian quadrature, but typically limited to finite intervals
+without a specific weight function. In addition to be quite accurate, the
+weights and abscissas can be calculated quite fast.
+
+Another thing to note is that Clenshaw-Curtis, with an appropriate growth rule
+is fully nested. This means, if one applies a method that combines different
+order of quadrature rules, the number of evaluations can often be reduced as
+the abscissas can be used across levels.
 
 Example usage
 -------------
 
 The first few orders with linear growth rule::
 
+    >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
-    ...     abscissas, weights = quad_clenshaw_curtis(order)
-    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="C")
+    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
     0 [[0.5]] [1.]
     1 [[0. 1.]] [0.5 0.5]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -17,11 +26,24 @@ The first few orders with linear growth rule::
 The first few orders with exponential growth rule::
 
     >>> for order in [0, 1, 2]:
-    ...     abscissas, weights = quad_clenshaw_curtis(order, growth=True)
-    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="C", growth=True)
+    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
     0 [[0.5]] [1.]
     1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
     2 [[0.    0.146 0.5   0.854 1.   ]] [0.033 0.267 0.4   0.267 0.033]
+
+Applying the rule using Smolyak sparse grid::
+
+    >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
+    >>> X, W = chaospy.generate_quadrature(
+    ...     2, distribution, rule="C", growth=True, sparse=True)
+    >>> print(numpy.around(X, 2))
+    [[0.   0.5  1.   0.5  0.   0.15 0.5  0.85 1.   0.5  0.   0.5  1.  ]
+     [0.   0.   0.   0.15 0.5  0.5  0.5  0.5  0.5  0.85 1.   1.   1.  ]]
+    >>> print(numpy.around(W, 3))
+    [ 0.028 -0.022  0.028  0.267 -0.022  0.267 -0.089  0.267 -0.022  0.267
+      0.028 -0.022  0.028]
 """
 from __future__ import division
 

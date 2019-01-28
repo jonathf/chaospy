@@ -43,7 +43,7 @@ Using custom prime bases::
      [0.8889 0.037  0.3704]
      [0.1633 0.3061 0.449 ]]
 
-.. Halton sequence: https://en.wikipedia.org/wiki/Halton_sequence
+.. _Halton sequence: https://en.wikipedia.org/wiki/Halton_sequence
 """
 import numpy
 

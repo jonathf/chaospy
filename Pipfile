@@ -7,6 +7,7 @@ name = "pypi"
 networkx = ">=1.11"
 numpy = ">=1.11"
 scipy = "*"
+sphinx = "*"
 
 [dev-packages]
 pytest = "*"

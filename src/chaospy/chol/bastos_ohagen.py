@@ -4,7 +4,6 @@ Implementation of Bastos-O'Hagen algorithm for modified Cholesky decomposition.
 Algoritum 3 from ``Pivoting Cholesky Decomposition applied to Emulation and
 Validation of computer models'' by lowtri.S. Bastos and and mat. O'Hagan, 2007
 """
-
 import numpy
 
 
@@ -87,7 +86,3 @@ def bastos_ohagen(mat, eps=1e-16):
         perm[idx, piv[idx]] = 1
 
     return perm, hitri.T
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

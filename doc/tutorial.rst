@@ -45,10 +45,10 @@ distribution which we then use to evaluate the model::
 
 Our goal is therefore to describe the bahavior of ``foo`` with only having
 a blackbox evaluation function of ``foo`` available. For this tutorial, let us
-only focus on expected value :func:`~chaospy.descriptives.E` and standard
-deviation :func:`~chaospy.descriptives.Std`.  In ``chaospy`` there are three
-classes of methods available for performing this task: :ref:`montecarlo`,
-:ref:`regression` and :ref:`spectral`.
+only focus on expected value :func:`~chaospy.descriptives.expected.E` and
+standard deviation :func:`~chaospy.descriptives.standard_deviation.Std`.  In
+``chaospy`` there are three classes of methods available for performing this
+task: :ref:`montecarlo`, :ref:`regression` and :ref:`spectral`.
 
 .. seealso::
     :ref:`descriptives`,

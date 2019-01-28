@@ -1,6 +1,4 @@
-"""
-Implementation of Stieltjes' method.
-"""
+"""Implementation of Stieltjes' method."""
 import numpy
 
 import chaospy.poly.base

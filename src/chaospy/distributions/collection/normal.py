@@ -1,6 +1,6 @@
 """Normal (Gaussian) probability distribution."""
 import numpy
-from scipy import special, misc
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -22,7 +22,7 @@ class normal(Dist):
         return special.ndtri(x)
 
     def _mom(self, k):
-        return .5*misc.factorial2(k-1)*(1+(-1)**k)
+        return .5*special.factorial2(k-1)*(1+(-1)**k)
 
     def _ttr(self, n):
         return 0., 1.*n

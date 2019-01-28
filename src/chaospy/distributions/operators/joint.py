@@ -1,4 +1,31 @@
-"""Joint distribution constructor."""
+"""
+Constructing a multivariate probability distribution can be done using the
+:func:`~chaospy.distributions.operators.joint.J` constructor. E.g.::
+
+    >>> distribution = chaospy.J(
+    ...     chaospy.Normal(0, 1), chaospy.Uniform(0, 1))
+
+The created multivariate distribution behaves much like the univariate case::
+
+    >>> mesh = numpy.meshgrid(
+    ...     numpy.linspace(0.25, 0.75, 3),
+    ...     numpy.linspace(0.25, 0.75, 3),
+    ... )
+    >>> print(numpy.around(distribution.cdf(mesh), 4))
+    [[0.1497 0.1729 0.1933]
+     [0.2994 0.3457 0.3867]
+     [0.449  0.5186 0.58  ]]
+    >>> print(numpy.around(distribution.pdf(mesh), 4))
+    [[0.3867 0.3521 0.3011]
+     [0.3867 0.3521 0.3011]
+     [0.3867 0.3521 0.3011]]
+    >>> print(numpy.around(distribution.sample(
+    ...     size=6, rule="H", antithetic=True), 4))
+    [[-1.1503  1.1503 -1.1503  1.1503  0.3186 -0.3186]
+     [ 0.4444  0.4444  0.5556  0.5556  0.7778  0.7778]]
+    >>> print(distribution.mom([[2, 4, 6], [1, 2, 3]]))
+    [0.5  1.   3.75]
+"""
 import numpy
 
 from ..baseclass import Dist, StochasticallyDependentError
@@ -10,11 +37,8 @@ class J(Dist):
     Joint random variable generator.
 
     Args:
-        *args: Dist
-            Distribution to join together
-
-    Returns:
-        Multivariate distribution
+        args: Dist
+            Distribution to join together.
     """
 
     def __init__(self, *args):

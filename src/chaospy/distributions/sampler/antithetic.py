@@ -7,48 +7,58 @@ simulated signal (using Monte Carlo methods) has a square root convergence,
 a very large number of sample paths is required to obtain an accurate result.
 The antithetic variates method reduces the variance of the simulation results.
 
+Antithetic variate can be accessed as a flag ``antithetic`` in the method
+``Dist.sample`` It can either be set to ``True``, for activation, or as an
+array of boolean values, which implies it will be used as the flag ``axes`` in
+the examples below.
+
 Example usage
 -------------
 
-Univariate case::
+Creating antithetic variates can be done directly from each distribution by
+using the ``antithetic`` flag::
 
-    >>> print(create_antithetic_variates([0.1, 0.11, 0.88]))
-    [[0.1  0.9  0.11 0.89 0.88 0.12]]
+    >>> distribution = chaospy.Uniform(0, 1)
+    >>> samples = distribution.sample(6, antithetic=True)
 
-Bivariate case::
+Antithetic variates contains compliment values of itself::
 
-    >>> print(create_antithetic_variates([[0.11, 0.22], [0.55, 0.66]]))
-    [[0.11 0.89 0.11 0.89 0.22 0.78 0.22 0.78]
-     [0.55 0.55 0.45 0.45 0.66 0.66 0.34 0.34]]
+    >>> print(numpy.around(samples, 4))
+    [0.6536 0.3464 0.115  0.885  0.9503 0.0497]
+    >>> print(numpy.around(1-samples, 4))
+    [0.3464 0.6536 0.885  0.115  0.0497 0.9503]
 
-Freeze axes::
+Antithetic variates can also be used in multiple dimensions::
 
-    >>> print(create_antithetic_variates([[0.1, 0.11], [0.88, 0.99]], axes=[1, 0]))
-    [[0.1  0.9  0.11 0.89]
-     [0.88 0.88 0.99 0.99]]
-    >>> print(create_antithetic_variates([[0.1, 0.11], [0.88, 0.99]], axes=[0, 1]))
-    [[0.1  0.1  0.11 0.11]
-     [0.88 0.12 0.99 0.01]]
+    >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
+    >>> samples = distribution.sample(6, antithetic=True)
+    >>> print(numpy.around(samples, 4))
+    [[0.0407 0.9593 0.0407 0.9593 0.3972 0.6028]
+     [0.8417 0.8417 0.1583 0.1583 0.2071 0.2071]]
+    >>> print(numpy.around(1-samples, 4))
+    [[0.9593 0.0407 0.9593 0.0407 0.6028 0.3972]
+     [0.1583 0.1583 0.8417 0.8417 0.7929 0.7929]]
 
-Multivariate case::
+Lastly, it is also possible to select which axes should be included when
+applying the variate by passing a bool array. For axes that are "false", the
+value is frozen in place::
 
-    >>> print(create_antithetic_variates(
-    ...     [[0.1, 0.11], [0.2, 0.22], [0.3, 0.33]], axes=[1, 0, 0]))
-    [[0.1  0.9  0.11 0.89]
-     [0.2  0.2  0.22 0.22]
-     [0.3  0.3  0.33 0.33]]
-    >>> print(create_antithetic_variates(
-    ...     [[0.1, 0.11], [0.2, 0.22], [0.3, 0.33]], axes=[0, 1, 0]))
-    [[0.1  0.1  0.11 0.11]
-     [0.2  0.8  0.22 0.78]
-     [0.3  0.3  0.33 0.33]]
-    >>> print(create_antithetic_variates(
-    ...     [[0.1, 0.11], [0.2, 0.22], [0.3, 0.33]], axes=[0, 0, 1]))
-    [[0.1  0.1  0.11 0.11]
-     [0.2  0.2  0.22 0.22]
-     [0.3  0.7  0.33 0.67]]
+    >>> samples = distribution.sample(6, antithetic=[True, False])
+    >>> print(numpy.around(samples, 4))
+    [[0.3922 0.6078 0.1823 0.8177 0.7435 0.2565]
+     [0.0696 0.0696 0.8853 0.8853 0.9526 0.9526]]
+    >>> print(numpy.around(1-samples, 4))
+    [[0.6078 0.3922 0.8177 0.1823 0.2565 0.7435]
+     [0.9304 0.9304 0.1147 0.1147 0.0474 0.0474]]
+    >>> samples = distribution.sample(6, antithetic=[False, True])
+    >>> print(numpy.around(samples, 4))
+    [[0.9311 0.9311 0.4154 0.4154 0.029  0.029 ]
+     [0.982  0.018  0.3396 0.6604 0.7067 0.2933]]
+    >>> print(numpy.around(1-samples, 4))
+    [[0.0689 0.0689 0.5846 0.5846 0.971  0.971 ]
+     [0.018  0.982  0.6604 0.3396 0.2933 0.7067]]
 
-.. _antithetic variates: https://en.wikipedia.org/wiki/Antithetic_variates>
+.. _antithetic variates: https://en.wikipedia.org/wiki/Antithetic_variates
 """
 import numpy
 

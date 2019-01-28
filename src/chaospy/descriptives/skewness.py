@@ -5,7 +5,6 @@ from .. import distributions, poly as polynomials
 from .expected import E
 
 
-
 def Skew(poly, dist=None, **kws):
     """
     Skewness operator.

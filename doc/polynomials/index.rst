@@ -6,6 +6,6 @@ Polynomials
 .. toctree::
    :maxdepth: 2
 
-   poly
-   polylist
+   baseclass
    orthogonality
+   collection

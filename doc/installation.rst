@@ -17,6 +17,9 @@ Github as follows::
 
 The last command might need ``sudo`` prefix, depending on your python setup.
 
+However, if this is an issue, it is instead highly recommended to use a virtual
+environment to manage projects. For example see `<https://docs.pipenv.org>`_.
+
 Optional Packages
 -----------------
 

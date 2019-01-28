@@ -3,7 +3,7 @@ Polynomial transformation functions involving derivatives.
 """
 
 import numpy as np
-from scipy.misc import factorial as fac
+from scipy.special import factorial as fac
 
 import chaospy.poly.caller
 import chaospy.poly.collection

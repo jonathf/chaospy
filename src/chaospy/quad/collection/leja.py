@@ -1,7 +1,24 @@
 """
-Laja quadrature.
+Laja quadrature is a newer method for performing quadrature in stochastical
+problems. The method is described in a `journal paper`_ by Narayan and Jakeman.
 
-After paper by Narayan and Jakeman.
+.. _journal paper: https://arxiv.org/pdf/1404.5663.pdf
+
+Example usage
+-------------
+
+The first few orders::
+
+    >>> distribution = chaospy.Uniform(0, 1)
+    >>> for order in [0, 1, 2, 3, 4]:
+    ...     abscissas, weights = chaospy.generate_quadrature(
+    ...         order, distribution, rule="J")
+    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    0 [[0.5]] [1.]
+    1 [[0.5 1. ]] [1. 0.]
+    2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    3 [[0.    0.5   0.789 1.   ]] [0.167 0.667 0.    0.167]
+    4 [[0.    0.171 0.5   0.789 1.   ]] [0.043 0.289 0.316 0.28  0.072]
 """
 import numpy
 from scipy.optimize import fminbound

@@ -1,4 +1,13 @@
-"""Independent identical distributed constructor."""
+"""
+Constructing a multivariate probability distribution consisting of identical
+independent distributed marginals can be done using the
+:func:`~chaospy.distributions.operators.iid.Iid`. E.g.::
+
+    >>> X = chaospy.Normal()
+    >>> Y = chaospy.Iid(X, 4)
+    >>> print(Y.sample())
+    [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
+"""
 import numpy
 
 from ..baseclass import Dist
@@ -10,12 +19,10 @@ class Iid(Dist):
     Opaque method for creating independent identical distributed random
     variables from an univariate variable.
 
-    Examples:
-        >>> X = chaospy.Normal()
-        >>> Y = chaospy.Iid(X, 4)
-        >>> print(Y.sample())
-        [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
-        """
+    Args:
+        dist: (Dist)
+            Distribution to make into i.i.d. vector.
+    """
 
     def __init__(self, dist, length):
         assert len(dist) == 1 and length >= 1

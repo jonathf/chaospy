@@ -5,7 +5,6 @@ Wright
 This is based on the MATLAB code from Michael L. Overton <overton@cs.nyu.edu>:
 http://cs.nyu.edu/overton/g22_opt/codes/cholmod.m
 """
-
 import numpy
 import scipy.sparse
 
@@ -99,8 +98,3 @@ def _gill_king(mat, beta, delta):
         # lowtri = lowtri*diag(sqrt(d_vec)) bad in sparse case
 
     return lowtri
-
-
-    if __name__ == "__main__":
-        import doctest
-        doctest.testmod()

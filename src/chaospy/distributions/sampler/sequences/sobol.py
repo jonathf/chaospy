@@ -70,7 +70,7 @@ Papers::
     Preprint IPM Akad. Nauk SSSR,
     Number 40, Moscow 1976.
 
-.. Sobel sequence: https://en.wikipedia.org/wiki/Sobol_sequence
+.. _Sobel sequence: https://en.wikipedia.org/wiki/Sobol_sequence
 """
 import math
 

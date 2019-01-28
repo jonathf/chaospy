@@ -7,7 +7,6 @@ Cookbook Reciepies
    :maxdepth: 2
 
    tutorial
-   montecarlo
    regression
    spectral
    galerkin
