@@ -26,6 +26,12 @@ jobs:
                     . venv/bin/activate
                     pytest src/ tests/ doc/ --cov=src/
             - run:
+                name: "Run sphinx"
+                command: |
+                    . venv/bin/activate
+                    mkdir -p doc/.html
+                    sphinx-build -W --keep-going doc doc/.html
+            - run:
                 name: "Coverage report"
                 command: |
                     . venv/bin/activate

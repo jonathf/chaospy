@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-networkx = ">=1.11"
-numpy = ">=1.11"
+networkx = "*"
+numpy = "*"
 scipy = "*"
 sphinx = "*"
 
@@ -16,7 +16,6 @@ sphinx = "*"
 codecov = "*"
 pytest-cov = "*"
 coverage = "*"
-sphinxcontrib-bibtex = "*"
 seaborn = "*"
 scikit-learn = "*"
 
