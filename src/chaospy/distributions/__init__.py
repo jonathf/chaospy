@@ -50,6 +50,21 @@ the tools described in :ref:`descriptives`::
 
     >>> print(chaospy.Var(distribution))
     4.0
+
+Random Seed
+-----------
+
+To be able to reproduce results it is possible to fix the random seed in
+``chaospy``. For simplicity, The library respect ``numpy.random.seed``. E.g.::
+
+    >>> numpy.random.seed(1234)
+    >>> print(numpy.around(distribution.sample(5), 4))
+    [0.2554 2.622  1.6865 3.5808 3.5442]
+    >>> numpy.random.seed(1234)
+    >>> print(numpy.around(distribution.sample(5), 4))
+    [0.2554 2.622  1.6865 3.5808 3.5442]
+    >>> print(numpy.around(distribution.sample(5), 4))
+    [0.79   0.8132 3.6967 5.459  4.3098]
 """
 from . import baseclass
 from .baseclass import Dist
