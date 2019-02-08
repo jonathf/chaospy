@@ -16,7 +16,7 @@ def sparse_segment(cords):
 
     Parameters
     ----------
-    cords : array_like
+    cords : numpy.ndarray
         The segment to extract. `cord` must consist of non-negative intergers.
 
     Returns

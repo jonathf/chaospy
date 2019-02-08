@@ -13,12 +13,12 @@ def sum(vari, axis=None): # pylint: disable=redefined-builtin
     Sum the components of a shapeable quantity along a given axis.
 
     Args:
-        vari (Poly, array_like) : Input data.
+        vari (Poly, numpy.ndarray) : Input data.
         axis (int, optional) : Axis over which the sum is taken. By default
                 `axis` is None, and all elements are summed.
 
     Returns:
-        (Poly, array_like) : Polynomial array with same shape as `vari`,
+        (Poly, numpy.ndarray) : Polynomial array with same shape as `vari`,
                 with the specified axis removed. If `vari` is an 0-d array, or
                 `axis` is None, a (non-iterable) component is returned.
 
@@ -45,12 +45,12 @@ def cumsum(vari, axis=None):
     Cumulative sum the components of a shapeable quantity along a given axis.
 
     Args:
-        vari (Poly, array_like) : Input data.
+        vari (Poly, numpy.ndarray) : Input data.
         axis (int, optional) : Axis over which the sum is taken. By default
                 `axis` is None, and all elements are summed.
 
     Returns:
-        (Poly, array_like) : Polynomial array with same shape as `vari`.
+        (Poly, numpy.ndarray) : Polynomial array with same shape as `vari`.
 
     Examples:
         >>> poly = cp.prange(3)
@@ -73,12 +73,12 @@ def prod(vari, axis=None):
     Product of the components of a shapeable quantity along a given axis.
 
     Args:
-        vari (Poly, array_like) : Input data.
+        vari (Poly, numpy.ndarray) : Input data.
         axis (int, optional) : Axis over which the sum is taken. By default
                 `axis` is None, and all elements are summed.
 
     Returns:
-        (Poly, array_like) : Polynomial array with same shape as `vari`,
+        (Poly, numpy.ndarray) : Polynomial array with same shape as `vari`,
                 with the specified axis removed. If `vari` is an 0-d array, or
                 `axis` is None, a (non-iterable) component is returned.
 
@@ -108,7 +108,7 @@ def cumprod(vari, axis=None):
     Perform the cumulative product of a shapeable quantity over a given axis.
 
     Args:
-        vari (Poly, array_like) : Input data.
+        vari (Poly, numpy.ndarray) : Input data.
         axis (int, optional) : Axis over which the product is taken.  By
                 default, the product of all elements is calculated.
 

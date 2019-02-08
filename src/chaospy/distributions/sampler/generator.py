@@ -80,7 +80,7 @@ def generate_samples(order, domain=1, rule="R", antithetic=None):
     Args:
         order (int):
             Sample order. Determines the number of samples to create.
-        domain (Dist, int, array_like):
+        domain (Dist, int, numpy.ndarray):
             Defines the space where the samples are generated. If integer is
             provided, the space ``[0, 1]^domain`` will be used. If array-like
             object is provided, a hypercube it defines will be used. If
@@ -88,7 +88,7 @@ def generate_samples(order, domain=1, rule="R", antithetic=None):
         rule (str):
             rule for generating samples. The various rules are listed in
             :mod:`chaospy.distributions.sampler.generator`.
-        antithetic (array_like, optional):
+        antithetic (numpy.ndarray, optional):
             List of bool. Represents the axes to mirror using antithetic
             variable.
     """

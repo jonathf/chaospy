@@ -88,8 +88,8 @@ class Mul(Dist):
     def __init__(self, left, right):
         """
         Args:
-            left (Dist, array_like) : Left hand side.
-            right (Dist, array_like) : Right hand side.
+            left (Dist, numpy.ndarray) : Left hand side.
+            right (Dist, numpy.ndarray) : Right hand side.
         """
         self.matrix = False
         if (isinstance(left, Dist) and
@@ -498,8 +498,8 @@ def mul(left, right):
     Distribution multiplication.
 
     Args:
-        left (Dist, array_like) : left hand side.
-        right (Dist, array_like) : right hand side.
+        left (Dist, numpy.ndarray) : left hand side.
+        right (Dist, numpy.ndarray) : right hand side.
     """
     from .mv_mul import MvMul
     length = max(left, right)

@@ -17,11 +17,11 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     Create an N-dimensional unit polynomial basis.
 
     Args:
-        start (int, array_like):
+        start (int, numpy.ndarray):
             the minimum polynomial to include. If int is provided, set as
             lowest total order.  If array of int, set as lower order along each
             axis.
-        stop (int, array_like, optional):
+        stop (int, numpy.ndarray, optional):
             the maximum shape included. If omitted:
             ``stop <- start; start <- 0`` If int is provided, set as largest
             total order. If array of int, set as largest order along each axis.
@@ -387,13 +387,13 @@ def around(A, decimals=0):
     Evenly round to the given number of decimals.
 
     Args:
-        A (Poly, array_like) : Input data.
+        A (Poly, numpy.ndarray) : Input data.
         decimals (int, optional) : Number of decimal places to round to
                 (default: 0).  If decimals is negative, it specifies the number
                 of positions to the left of the decimal point.
 
     Returns:
-        (Poly, array_like) : Same type as A.
+        (Poly, numpy.ndarray) : Same type as A.
 
     Examples:
         >>> P = chaospy.prange(3)*2**-numpy.arange(0, 6, 2, float)

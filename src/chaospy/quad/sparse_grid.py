@@ -57,8 +57,8 @@ def sparse_grid(func, order, dim=None, skew=None):
         func (callable):
             Function that takes a single argument `order` of type `numpy` and
             with `order.shape = (dim,)`
-        order (int, array_like):
-            The order of the grid. If `array_like`, it overrides both `dim` and
+        order (int, numpy.ndarray):
+            The order of the grid. If `numpy.ndarray`, it overrides both `dim` and
             `skew`.
         dim (int):
             Number of dimension.

@@ -110,9 +110,9 @@ def fit_regression(
         polynomials (Poly):
             Polynomial expansion with `polynomials.shape=(M,)` and
             `polynomials.dim=D`.
-        abscissas (array_like):
+        abscissas (numpy.ndarray):
             Collocation nodes with `abscissas.shape=(D,K)`.
-        evals (array_like):
+        evals (numpy.ndarray):
             Model evaluations with `len(evals)=K`.
         retall (bool):
             If True return Fourier coefficients in addition to R.
@@ -181,14 +181,14 @@ def rlstsq(coef_mat, ordinate, order=1, alpha=None, cross=False):
     Includes method for robust generalized cross-validation.
 
     Args:
-        coef_mat (array_like):
+        coef_mat (numpy.ndarray):
             Coefficient matrix with shape (M,N).
-        ordinate (array_like, shape (M,) or (M, K)):
+        ordinate (numpy.ndarray, shape (M,) or (M, K)):
             Ordinate or "dependent variable" values with shape (M,) or (M, K).
             If `ordinate` is two-dimensional, the least-squares solution is
             calculated for each of the `K` columns of `ordinate`.
-        order (int, array_like):
-            If int, it is the order of Tikhonov regularization.  If array_like,
+        order (int, numpy.ndarray):
+            If int, it is the order of Tikhonov regularization.  If numpy.ndarray,
             it will be used as regularization matrix.
         alpha (float, optional):
             Lower threshold for the dampening parameter. The real value is

@@ -185,7 +185,7 @@ def single_index(idxm):
 
     Parameters
     ----------
-    idxm : array_like
+    idxm : numpy.ndarray
         Index in multi-index notation
 
     Returns

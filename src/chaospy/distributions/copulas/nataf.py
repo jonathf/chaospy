@@ -74,7 +74,7 @@ class Nataf(Copula):
         """
         Args:
             dist (Dist) : The Distribution to wrap.
-            R (array_like) : Covariance matrix.
+            R (numpy.ndarray) : Covariance matrix.
         """
         self._repr = {"R": R}
         assert len(dist) == len(R)

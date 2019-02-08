@@ -48,7 +48,7 @@ def outer(*args):
 
     Args:
         P1 (Poly, ndarray, int, float) : First term in outer product
-        P2 (Poly, array_like) : Second term in outer product
+        P2 (Poly, numpy.ndarray) : Second term in outer product
 
     Returns:
         (Poly) : Poly set with same dimensions as itter.

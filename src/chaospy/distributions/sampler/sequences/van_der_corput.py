@@ -33,7 +33,7 @@ def create_van_der_corput_samples(idx, number_base=2):
     Van der Corput samples.
 
     Args:
-        idx (int, array_like):
+        idx (int, numpy.ndarray):
             The index of the sequence. If array is provided, all values in
             array is returned.
         number_base (int):

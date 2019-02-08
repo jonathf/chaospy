@@ -267,7 +267,7 @@ def approximate_moment(
             "R"     (Pseudo-)Random sampling
             "S"     Sobol sequence
 
-        composit : int, array_like optional
+        composit : int, numpy.ndarray optional
             If provided, composit quadrature will be used.
             Ignored in the case if gaussian=True.
 
@@ -276,7 +276,7 @@ def approximate_moment(
                 each axis
             If array of arrays/floats, determines location of splits
 
-        antithetic : array_like, optional
+        antithetic : numpy.ndarray, optional
             List of bool. Represents the axes to mirror using antithetic
             variable during MCI.
     """

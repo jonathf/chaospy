@@ -70,7 +70,7 @@ class TCopula(Copula):
         Args:
             dist (Dist):
                 The Distribution to wrap in a copula.
-            R (array_like):
+            R (numpy.ndarray):
                 Covariance matrix defining dependencies..
             df (float):
                 The degree of freedom in the underlying student-t distribution.

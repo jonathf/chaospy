@@ -12,7 +12,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
 
     Args:
         poly (Poly) : Polynomial of interest.
-        q (array_like) : positions where percentiles are taken. Must be
+        q (numpy.ndarray) : positions where percentiles are taken. Must be
                 a number or an array, where all values are on the interval
                 `[0, 100]`.
         dist (Dist) : Defines the space where percentile is taken.

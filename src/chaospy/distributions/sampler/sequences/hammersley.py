@@ -40,7 +40,7 @@ def create_hammersley_samples(order, dim=1, burnin=None, primes=None):
         burnin (int, optional):
             Skip the first ``burnin`` samples. If omitted, the maximum of
             ``primes`` is used.
-        primes (array_like, optional):
+        primes (numpy.ndarray, optional):
             The (non-)prime base to calculate values along each axis. If
             omitted, growing prime values starting from 2 will be used.
 

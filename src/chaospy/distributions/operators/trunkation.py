@@ -39,8 +39,8 @@ class Trunc(Dist):
         Constructor.
 
         Args:
-            left (Dist, array_like) : Left hand side.
-            right (Dist, array_like) : Right hand side.
+            left (Dist, numpy.ndarray) : Left hand side.
+            right (Dist, numpy.ndarray) : Right hand side.
         """
         if isinstance(left, Dist) and len(left) > 1:
             if (not isinstance(left, J) or

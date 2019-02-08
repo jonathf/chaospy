@@ -13,8 +13,8 @@ class MvStudentT(Dist):
 
     Args:
         df (float, Dist) : Degree of freedom
-        loc (array_like, Dist) : Location parameter
-        scale (array_like) : Covariance matrix
+        loc (numpy.ndarray, Dist) : Location parameter
+        scale (numpy.ndarray) : Covariance matrix
 
     Examples:
         >>> distribution = chaospy.MvStudentT(40, [1, 2], [[1, 0.6], [0.6, 1]])

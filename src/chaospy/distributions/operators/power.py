@@ -13,8 +13,8 @@ class Pow(Dist):
         Constructor.
 
         Args:
-            left (Dist, array_like) : Left hand side.
-            right (Dist, array_like) : Right hand side.
+            left (Dist, numpy.ndarray) : Left hand side.
+            right (Dist, numpy.ndarray) : Right hand side.
         """
         Dist.__init__(self, left=left, right=right)
 

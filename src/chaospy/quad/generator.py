@@ -71,7 +71,7 @@ def create_mv_rule(tensorprod_rule, dim):
         Multidimensional integration rule.
 
         Args:
-            order (int, array_like) : order of integration rule. If array_like,
+            order (int, numpy.ndarray) : order of integration rule. If numpy.ndarray,
                 order along each axis.
             sparse (bool) : use Smolyak sparse grid.
 

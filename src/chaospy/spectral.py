@@ -88,20 +88,20 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
         orth (Poly):
             Orthogonal polynomial expansion. Must be orthogonal for the
             approximation to be accurate.
-        nodes (array_like):
+        nodes (numpy.ndarray):
             Where to evaluate the polynomial expansion and model to
             approximate.
             nodes.shape==(D,K) where D is the number of dimensions and K is
             the number of nodes.
-        weights (array_like):
+        weights (numpy.ndarray):
             Weights when doing numerical integration.
             weights.shape==(K,)
-        solves (array_like, callable):
+        solves (numpy.ndarray, callable):
             The model to approximate.
-            If array_like is provided, it must have len(solves)==K.
+            If numpy.ndarray is provided, it must have len(solves)==K.
             If callable, it must take a single argument X with len(X)==D,
             and return a consistent numpy compatible shape.
-        norms (array_like):
+        norms (numpy.ndarray):
             In the of TTR using coefficients to estimate the polynomial
             norm is more stable than manual calculation.
             Calculated using quadrature if no provided.

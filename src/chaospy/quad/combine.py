@@ -10,7 +10,7 @@ def combine(args, part=None):
     All linear combination of a list of list.
 
     Args:
-        args (array_like) : List of input arrays.  Components to take linear
+        args (numpy.ndarray) : List of input arrays.  Components to take linear
             combination of with `args[i].shape=(N[i], M[i])` where N is to be
             taken linear combination of and M is static.  M[i] is set to 1 if
             missing.

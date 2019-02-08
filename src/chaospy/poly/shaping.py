@@ -11,10 +11,10 @@ def flatten(vari):
     Flatten a shapeable quantity.
 
     Args:
-        vari (Poly, array_like) : Shapeable input quantity.
+        vari (Poly, numpy.ndarray) : Shapeable input quantity.
 
     Returns:
-        (Poly, array_like) : Same type as `vari` with `len(Q.shape)==1`.
+        (Poly, numpy.ndarray) : Same type as `vari` with `len(Q.shape)==1`.
 
     Examples:
         >>> P = cp.reshape(cp.prange(4), (2,2))
@@ -35,12 +35,12 @@ def reshape(vari, shape):
     Reshape the shape of a shapeable quantity.
 
     Args:
-        vari (Poly, array_like) : Shapeable input quantity
+        vari (Poly, numpy.ndarray) : Shapeable input quantity
         shape (tuple) : The polynomials new shape. Must be compatible with the
                 number of elements in `vari`.
 
     Returns:
-        (Poly, array_like) : Same type as `vari`.
+        (Poly, numpy.ndarray) : Same type as `vari`.
 
     Examples:
         >>> poly = cp.prange(6)
@@ -65,7 +65,7 @@ def rollaxis(vari, axis, start=0):
     Roll the specified axis backwards, until it lies in a given position.
 
     Args:
-        vari (Poly, array_like) : Input array or polynomial.
+        vari (Poly, numpy.ndarray) : Input array or polynomial.
         axis (int) : The axis to roll backwards. The positions of the
             other axes do not change realtie to one another.
         start (int, optional) : The axis is rolled until it lies before
@@ -109,10 +109,10 @@ def transpose(vari):
     Transpose a shapeable quantety.
 
     Args:
-        vari (Poly, array_like) : Quantety of interest.
+        vari (Poly, numpy.ndarray) : Quantety of interest.
 
     Returns:
-        Q (Poly, array_like) : Same type as `vari`.
+        Q (Poly, numpy.ndarray) : Same type as `vari`.
 
     Examples:
         >>> P = cp.reshape(cp.prange(4), (2,2))

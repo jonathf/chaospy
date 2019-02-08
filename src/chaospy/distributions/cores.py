@@ -610,7 +610,7 @@ class mvstudentt(Dist):
 #
 #  Parameters
 #  ----------
-#  alpha : array_like
+#  alpha : numpy.ndarray
 #      Shape parameters.
 #      len(alpha)>1
 #      np.all(alpha>0)

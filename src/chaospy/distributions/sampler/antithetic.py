@@ -68,10 +68,10 @@ def create_antithetic_variates(samples, axes=None):
     Generate antithetic variables.
 
     Args:
-        samples (array_like):
+        samples (numpy.ndarray):
             The samples, assumed to be on the [0, 1]^D hyper-cube, to be
             reflected.
-        axes (array_like, optional):
+        axes (numpy.ndarray, optional):
             Boolean array of which axes to reflect. If This to limit the number
             of points created in higher dimensions by reflecting all axes at
             once.

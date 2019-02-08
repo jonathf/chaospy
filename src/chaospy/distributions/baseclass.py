@@ -55,7 +55,7 @@ class Dist(object):
     def __init__(self, **prm):
         """
         Args:
-            prm (array_like):
+            prm (numpy.ndarray):
                 Other optional parameters. Will be assumed when calling any
                 sub-functions.
         """
@@ -67,7 +67,7 @@ class Dist(object):
         Generate the upper and lower bounds of a distribution.
 
         Args:
-            x_data (array_like, optional) :
+            x_data (numpy.ndarray, optional) :
                 The bounds might vary over the sample space. By providing
                 x_data you can specify where in the space the bound should be
                 taken.  If omited, a (pseudo-)random sample is used.
@@ -264,7 +264,7 @@ class Dist(object):
                 The size of the samples to generate.
             rule (str):
                 Indicator defining the sampling scheme.
-            antithetic (bool, array_like):
+            antithetic (bool, numpy.ndarray):
                 If provided, will be used to setup antithetic variables. If
                 array, defines the axes to mirror.
 
@@ -304,19 +304,19 @@ class Dist(object):
         will be used.
 
         Args:
-            K (array_like):
+            K (numpy.ndarray):
                 Index of the raw moments. k.shape must be compatible with
                 distribution shape.  Sampling scheme when performing Monte
                 Carlo
             rule (str):
                 rule for estimating the moment if the analytical method fails.
-            composit (int, array_like optional):
+            composit (int, numpy.ndarray optional):
                 If provided, composit quadrature will be used.  Ignored in the
                 case if gaussian=True.  If int provided, determines number of
                 even domain splits. If array of ints, determines number of even
                 domain splits along each axis. If array of arrays/floats,
                 determines location of splits.
-            antithetic (array_like, optional):
+            antithetic (numpy.ndarray, optional):
                 List of bool. Represents the axes to mirror using antithetic
                 variable during MCI.
 
@@ -349,7 +349,7 @@ class Dist(object):
         Three terms relation's coefficient generator
 
         Args:
-            k (array_like, int):
+            k (numpy.ndarray, int):
                 The order of the coefficients.
             acc (int):
                 Accuracy of discretized Stieltjes if analytical methods are

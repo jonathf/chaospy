@@ -38,7 +38,7 @@ def get_function(rule, domain, **parameters):
 
     Args:
         rule (str) : Name of quadrature rule defined in `QUAD_FUNCTIONS`.
-        domain (Dist, array_like) : Defines `lower` and `upper` that is passed
+        domain (Dist, numpy.ndarray) : Defines `lower` and `upper` that is passed
             quadrature rule. If `Dist`, `domain` is renamed to `dist` and also
             passed.
         **parameters (optional) : Redefining of the parameter defaults. Only

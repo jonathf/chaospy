@@ -15,7 +15,7 @@ def E_cond(poly, freeze, dist, **kws):
     Args:
         poly (Poly) :
             Polynomial to find conditional expected value on.
-        freeze (array_like) :
+        freeze (numpy.ndarray) :
             Boolean values defining the conditional variables. True values
             implies that the value is conditioned on, e.g. frozen during the
             expected value calculation.

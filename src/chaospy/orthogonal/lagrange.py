@@ -15,7 +15,7 @@ def lagrange_polynomial(abscissas, sort="GR"):
     Create Lagrange polynomials.
 
     Args:
-        abscissas (array_like):
+        abscissas (numpy.ndarray):
             Sample points where the Lagrange polynomials shall be defined.
 
     Example:

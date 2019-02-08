@@ -16,9 +16,9 @@ def Sens_m_nataf(order, dist, samples, vals, **kws):
     Args:
         order (int): polynomial order used `orth_ttr`.
         dist (Copula): Assumed to be Nataf with independent components
-        samples (array_like): Samples used for evaluation (typically generated
+        samples (numpy.ndarray): Samples used for evaluation (typically generated
                 from `dist`.)
-        vals (array_like): Evaluations of the model for given samples.
+        vals (numpy.ndarray): Evaluations of the model for given samples.
 
     Returns:
         (ndarray) :
@@ -78,9 +78,9 @@ def Sens_t_nataf(order, dist, samples, vals, **kws):
     Args:
         order (int): polynomial order used `orth_ttr`.
         dist (Copula): Assumed to be Nataf with independent components
-        samples (array_like): Samples used for evaluation (typically generated
+        samples (numpy.ndarray): Samples used for evaluation (typically generated
                 from `dist`.)
-        vals (array_like): Evaluations of the model for given samples.
+        vals (numpy.ndarray): Evaluations of the model for given samples.
 
     Returns:
         (ndarray) :
@@ -139,9 +139,9 @@ def Sens_nataf(order, dist, samples, vals, **kws):
     Args:
         order (int): polynomial order used `orth_ttr`.
         dist (Copula): Assumed to be Nataf with independent components
-        samples (array_like): Samples used for evaluation (typically generated
+        samples (numpy.ndarray): Samples used for evaluation (typically generated
                 from `dist`.)
-        vals (array_like): Evaluations of the model for given samples.
+        vals (numpy.ndarray): Evaluations of the model for given samples.
 
     Returns:
         (ndarray) :

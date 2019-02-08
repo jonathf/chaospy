@@ -49,7 +49,7 @@ class Poly(object):
         Constructor for the Poly class.
 
         Args:
-            A (array_like, dict, Poly) : The polynomial coefficient Tensor.
+            A (numpy.ndarray, dict, Poly) : The polynomial coefficient Tensor.
                     Where A[(i,j,k)] corresponds to a_{ijk} x^i y^j z^k
                     (A[i][j][k] for list and tuple)
             dim (int) : the dimensionality of the polynomial.  Automatically
@@ -126,10 +126,10 @@ class Poly(object):
         Evaluate a polynomial.
 
         Args:
-            args (array_like, Poly) : Arguments to evaluate. Masked values and
+            args (numpy.ndarray, Poly) : Arguments to evaluate. Masked values and
                     numpy.nan will not be evaluated. If instance is Poly,
                     substitution on the variable is performed.
-            kws (array_like, Poly) : Same as args, but the keys referred to the
+            kws (numpy.ndarray, Poly) : Same as args, but the keys referred to the
                     variables names. If the number of dimensions are <=3, 'x',
                     'y' and 'z' respectably refer to the axes. Otherwise, the
                     keys are on the form 'x%d' where %d is an interger

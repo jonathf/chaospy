@@ -12,7 +12,7 @@ def bastos_ohagen(mat, eps=1e-16):
     Bastos-O'Hagen algorithm for modified Cholesky decomposition.
 
     Args:
-        mat (array_like) : Input matrix.
+        mat (numpy.ndarray) : Input matrix.
         eps (float) : Tollerence value for the eigen values. Values smaller
             than `tol*numpy.diag(mat).max()` are considered to be zero.
 

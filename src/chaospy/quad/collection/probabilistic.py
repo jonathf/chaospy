@@ -13,7 +13,7 @@ def probabilistic_collocation(order, dist, subset=.1):
     Probabilistic collocation method.
 
     Args:
-        order (int, array_like) : Quadrature order along each axis.
+        order (int, numpy.ndarray) : Quadrature order along each axis.
         dist (Dist) : Distribution to generate samples from.
         subset (float) : Rate of which to removed samples.
     """

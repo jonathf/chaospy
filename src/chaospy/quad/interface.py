@@ -15,7 +15,7 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
     Args:
         order (int):
             The order of the quadrature.
-        domain (array_like, Dist):
+        domain (numpy.ndarray, Dist):
             If array is provided domain is the lower and upper bounds (lo,up).
             Invalid if gaussian is set.  If Dist is provided, bounds and nodes
             are adapted to the distribution. This includes weighting the nodes

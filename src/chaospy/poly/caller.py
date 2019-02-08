@@ -11,7 +11,7 @@ def call(poly, args):
     Args:
         poly (Poly):
             Input polynomial.
-        args (array_like, masked):
+        args (numpy.ndarray, masked):
             Argument to be evaluated. Masked values keeps the variable intact.
 
     Returns:
