@@ -25,7 +25,7 @@ appear, which gives a slightly different distribution::
     >>> print(numpy.around(distribution.mom(1), 4))
     4.2149
 
-.. kernel density estimation: https://en.wikipedia.org/wiki/Kernel_density_estimation
+.. _kernel density estimation: https://en.wikipedia.org/wiki/Kernel_density_estimation
 """
 import numpy
 from scipy.stats import gaussian_kde

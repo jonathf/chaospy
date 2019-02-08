@@ -9,3 +9,4 @@ Polynomials
    baseclass
    orthogonality
    collection
+   truncation

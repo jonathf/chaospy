@@ -1,12 +1,11 @@
 .. _cookbook:
 
-Cookbook Reciepies
-==================
+Cookbook Recipes
+================
 
 .. toctree::
    :maxdepth: 2
 
-   tutorial
    regression
    spectral
    galerkin

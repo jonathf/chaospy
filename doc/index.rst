@@ -22,6 +22,7 @@ Table of contents
     tutorial
     distributions/index.rst
     polynomials/index.rst
-    quadrature
+    sampling/index.rst
+    quadrature/index.rst
     descriptives
-    cookbook
+    recipes/index.rst

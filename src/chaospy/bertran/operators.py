@@ -132,35 +132,21 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     """
     if stop is None:
         start, stop = 0, start
+    start = numpy.array(start, dtype=int).flatten()
+    stop = numpy.array(stop, dtype=int).flatten()
     sort = sort.upper()
 
-    local, total = [], []
-    for idx in range(
-            single_index([start] + [0]*(dim-1)),
-            single_index([0]*(dim-1) + [start])+1):
-        idxm = multi_index(idx, dim)
-        local.append(list(idxm))
-        total.append(idxm)
+    total = numpy.mgrid[(slice(numpy.max(stop), numpy.min(start)-1, -1),)*dim]
+    total = numpy.array(total).reshape(dim, -1)
 
-    for _ in range(start, numpy.max(stop)):
+    if start.size > 1:
+        for idx, start_ in enumerate(start):
+            total = total[:, total[idx] > start_]
+    if stop.size > 1:
+        for idx, stop_ in enumerate(stop):
+            total = total[:, total[idx] <= stop_]
 
-        local_, local = local, []
-        for idxm in local_:
-
-            idxi = 0
-            for idxi in range(len(idxm)):
-                if sum(idxm[idxi+1:]) == 0:
-                    break
-
-            for idxj in range(idxi, len(idxm)):
-                idxm[idxj] += 1
-                local.append(idxm[:])
-                total.append(tuple(idxm))
-                idxm[idxj] -= 1
-
-    if not isinstance(stop, int):
-        stop = numpy.array(stop)
-        total = [idx for idx in total if numpy.all(stop >= idx)]
+    total = total.T.tolist()
 
     if "G" in sort:
         total = sorted(total, key=sum)
@@ -184,7 +170,7 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
 
     for pos, idx in reversed(list(enumerate(total))):
         idx = numpy.array(idx)
-        with suppress(OverflowError):
+        with suppress(OverflowError, ZeroDivisionError):
             if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
                 del total[pos]
 

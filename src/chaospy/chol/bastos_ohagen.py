@@ -1,8 +1,8 @@
 """
 Implementation of Bastos-O'Hagen algorithm for modified Cholesky decomposition.
 
-Algoritum 3 from ``Pivoting Cholesky Decomposition applied to Emulation and
-Validation of computer models'' by lowtri.S. Bastos and and mat. O'Hagan, 2007
+Algoritum 3 from "Pivoting Cholesky Decomposition applied to Emulation and
+Validation of computer models" by lowtri.S. Bastos and and mat. O'Hagan, 2007
 """
 import numpy
 

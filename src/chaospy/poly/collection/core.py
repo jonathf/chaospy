@@ -289,6 +289,7 @@ def swapdim(P, dim1=1, dim2=0):
     m = max(dim1, dim2)
     if P.dim <= m:
         P = chaospy.poly.dimension.setdim(P, m+1)
+        dim = m+1
 
     A = {}
 

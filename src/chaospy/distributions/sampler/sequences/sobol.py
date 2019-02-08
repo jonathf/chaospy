@@ -13,24 +13,15 @@ Example usage
 
 Standard usage::
 
-    >>> set_state(1000)
-    >>> print(numpy.around(create_sobol_samples(order=3, dim=2), 4))
-    [[0.2197 0.7197 0.9697]
-     [0.0967 0.5967 0.3467]]
-    >>> print(numpy.around(create_sobol_samples(order=3, dim=2), 4))
-    [[0.4697 0.3447 0.8447]
-     [0.8467 0.4717 0.9717]]
-    >>> print(numpy.around(create_sobol_samples(order=3, dim=3), 4))
-    [[0.5947 0.0947 0.0635]
-     [0.2217 0.7217 0.1904]
-     [0.9229 0.4229 0.0166]]
-    >>> print(numpy.around(create_sobol_samples(order=3, dim=6), 4))
-    [[0.5635 0.8135 0.3135]
-     [0.6904 0.4404 0.9404]
-     [0.5166 0.7666 0.2666]
-     [0.1768 0.9268 0.4268]
-     [0.0537 0.3037 0.8037]
-     [0.2529 0.5029 0.0029]]
+    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
+    >>> samples = distribution.sample(3, rule="S")
+    >>> print(numpy.around(samples, 4))
+    [[0.5  0.75 0.25]
+     [0.5  0.25 0.75]]
+    >>> samples = distribution.sample(4, rule="S")
+    >>> print(numpy.around(samples, 4))
+    [[0.5   0.75  0.25  0.375]
+     [0.5   0.25  0.75  0.375]]
 
 Licence
 -------
@@ -124,7 +115,7 @@ def set_state(seed_value=None, step=None):
         RANDOM_SEED += step
 
 
-def create_sobol_samples(order, dim, seed=None):
+def create_sobol_samples(order, dim, seed=1):
     """
     Args:
         order (int):

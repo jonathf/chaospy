@@ -13,7 +13,7 @@ Joint operator ``J``
 ~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: chaospy.distributions.operators.joint
-.. autoclass:: :: chaospy.distributions.operators.joint.J
+.. autoclass:: chaospy.distributions.operators.joint.J
 
 Independent Identical Distributed ``Iid``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -24,9 +24,9 @@ For example for the tailored quadrature rules defined above:
 
 * Gauss-Legendre quadrature is tailored to the Uniform distributions::
 
-    >>> X, W = chaospy.generate_quadrature(4, chaospy.Uniform(-1, 1), rule="G")
+    >>> X, W = chaospy.generate_quadrature(4, chaospy.Uniform(0, 1), rule="G")
     >>> print(numpy.around(X, 3), numpy.around(W, 3))
-    [[-0.906 -0.538  0.     0.538  0.906]] [0.118 0.239 0.284 0.239 0.118]
+    [[0.047 0.231 0.5   0.769 0.953]] [0.118 0.239 0.284 0.239 0.118]
 
 * Gauss-Jacobi quadrature is tailored to the Beta distribution::
 
@@ -36,9 +36,9 @@ For example for the tailored quadrature rules defined above:
 
 * Gauss-Laguerre quadrature is tailored to the Exponential distribution::
 
-    >>> X, W = chaospy.generate_quadrature(4, chaospy.Exponential(2), rule="G")
+    >>> X, W = chaospy.generate_quadrature(4, chaospy.Exponential(), rule="G")
     >>> print(numpy.around(X, 3), numpy.around(W, 3))
-    [[ 0.527  2.827  7.193 14.172 25.282]] [0.522 0.399 0.076 0.004 0.   ]
+    [[ 0.264  1.413  3.596  7.086 12.641]] [0.522 0.399 0.076 0.004 0.   ]
 
 * Generalized Gauss-Laguerre quadrature is tailored to the Gamma distribution::
 

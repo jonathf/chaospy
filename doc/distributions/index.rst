@@ -3,15 +3,17 @@
 Distributions
 =============
 
+.. automodule:: chaospy.distributions
+
+Below you will find the various topics related to distribution construction:
+
 .. toctree::
     :maxdepth: 2
 
-    introduction
     multivariate
     dependent
-    sampling
-    antithetic
     kde
     copulas
     custom
+    baseclass
     collection

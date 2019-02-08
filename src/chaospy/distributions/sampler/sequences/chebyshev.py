@@ -6,28 +6,37 @@ Example usage
 
 Basic usage::
 
-    >>> print(create_chebyshev_samples(order=2))
-    [[0.25 0.75]]
-    >>> print(numpy.around(create_chebyshev_samples(order=5), 4))
-    [[0.067 0.25  0.5   0.75  0.933]]
+    >>> distribution = chaospy.Uniform(0, 1)
+    >>> samples = distribution.sample(2, rule="C")
+    >>> print(numpy.around(samples, 4))
+    [0.25 0.75]
+    >>> samples = distribution.sample(5, rule="C")
+    >>> print(numpy.around(samples, 4))
+    [0.067 0.25  0.5   0.75  0.933]
 
 Certain orders are nested::
 
-    >>> print(numpy.around(create_chebyshev_samples(order=3), 4))
-    [[0.1464 0.5    0.8536]]
-    >>> print(numpy.around(create_chebyshev_samples(order=7), 4))
-    [[0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]]
+    >>> samples = distribution.sample(3, rule="C")
+    >>> print(numpy.around(samples, 4))
+    [0.1464 0.5    0.8536]
+    >>> samples = distribution.sample(7, rule="C")
+    >>> print(numpy.around(samples, 4))
+    [0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]
 
 Create nested samples directly with the dedicated function::
 
-    >>> print(numpy.around(create_nested_chebyshev_samples(order=2), 4))
-    [[0.1464 0.5    0.8536]]
-    >>> print(numpy.around(create_nested_chebyshev_samples(order=3), 4))
-    [[0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]]
+    >>> samples = distribution.sample(2, rule="NC")
+    >>> print(numpy.around(samples, 4))
+    [0.1464 0.5    0.8536]
+    >>> samples = distribution.sample(3, rule="NC")
+    >>> print(numpy.around(samples, 4))
+    [0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]
 
 Multivariate usage::
 
-    >>> print(numpy.around(create_chebyshev_samples(order=2, dim=2), 4))
+    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
+    >>> samples = distribution.sample(2, rule="C")
+    >>> print(numpy.around(samples, 4))
     [[0.25 0.25 0.75 0.75]
      [0.25 0.75 0.25 0.75]]
 """

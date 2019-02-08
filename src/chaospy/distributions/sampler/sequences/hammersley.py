@@ -9,38 +9,15 @@ Example usage
 
 Standard usage::
 
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=2), 4))
+    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
+    >>> samples = distribution.sample(3, rule="M")
+    >>> print(numpy.around(samples, 4))
     [[0.75  0.125 0.625]
      [0.25  0.5   0.75 ]]
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=3), 4))
-    [[0.125  0.625  0.375 ]
-     [0.4444 0.7778 0.2222]
-     [0.25   0.5    0.75  ]]
-
-Custom burn-ins::
-
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=3, burnin=0), 4))
-    [[0.5    0.25   0.75  ]
-     [0.3333 0.6667 0.1111]
-     [0.25   0.5    0.75  ]]
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=3, burnin=1), 4))
-    [[0.25   0.75   0.125 ]
-     [0.6667 0.1111 0.4444]
-     [0.25   0.5    0.75  ]]
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=3, burnin=2), 4))
-    [[0.75   0.125  0.625 ]
-     [0.1111 0.4444 0.7778]
-     [0.25   0.5    0.75  ]]
-
-Using custom prime bases::
-
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=2, primes=[7]), 4))
-    [[0.1633 0.3061 0.449 ]
-     [0.25   0.5    0.75  ]]
-    >>> print(numpy.around(create_hammersley_samples(order=3, dim=3, primes=[7, 5]), 4))
-    [[0.1633 0.3061 0.449 ]
-     [0.64   0.84   0.08  ]
-     [0.25   0.5    0.75  ]]
+    >>> samples = distribution.sample(4, rule="M")
+    >>> print(numpy.around(samples, 4))
+    [[0.75  0.125 0.625 0.375]
+     [0.2   0.4   0.6   0.8  ]]
 
 .. _Hammersley set: https://en.wikipedia.org/wiki/Low-discrepancy_sequence#Hammersley_set
 """

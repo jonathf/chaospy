@@ -6,28 +6,37 @@ Example usage
 
 Basic usage::
 
-    >>> print(numpy.around(create_grid_samples(order=2), 4))
-    [[0.3333 0.6667]]
-    >>> print(numpy.around(create_grid_samples(order=5), 4))
-    [[0.1667 0.3333 0.5    0.6667 0.8333]]
+    >>> distribution = chaospy.Uniform(0, 1)
+    >>> samples = distribution.sample(2, rule="G")
+    >>> print(numpy.around(samples, 4))
+    [0.3333 0.6667]
+    >>> samples = distribution.sample(5, rule="G")
+    >>> print(numpy.around(samples, 4))
+    [0.1667 0.3333 0.5    0.6667 0.8333]
 
 Certain orders are nested::
 
-    >>> print(numpy.around(create_grid_samples(order=3), 4))
-    [[0.25 0.5  0.75]]
-    >>> print(numpy.around(create_grid_samples(order=7), 4))
-    [[0.125 0.25  0.375 0.5   0.625 0.75  0.875]]
+    >>> samples = distribution.sample(3, rule="G")
+    >>> print(numpy.around(samples, 4))
+    [0.25 0.5  0.75]
+    >>> samples = distribution.sample(7, rule="G")
+    >>> print(numpy.around(samples, 4))
+    [0.125 0.25  0.375 0.5   0.625 0.75  0.875]
 
 Create nested samples directly with the dedicated function::
 
-    >>> print(numpy.around(create_nested_grid_samples(order=2), 4))
-    [[0.25 0.5  0.75]]
-    >>> print(numpy.around(create_nested_grid_samples(order=3), 4))
-    [[0.125 0.25  0.375 0.5   0.625 0.75  0.875]]
+    >>> samples = distribution.sample(2, rule="NG")
+    >>> print(numpy.around(samples, 4))
+    [0.25 0.5  0.75]
+    >>> samples = distribution.sample(3, rule="NG")
+    >>> print(numpy.around(samples, 4))
+    [0.125 0.25  0.375 0.5   0.625 0.75  0.875]
 
 Multivariate usage::
 
-    >>> print(numpy.around(create_grid_samples(order=2, dim=2), 4))
+    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
+    >>> samples = distribution.sample(2, rule="G")
+    >>> print(numpy.around(samples, 4))
     [[0.3333 0.3333 0.6667 0.6667]
      [0.3333 0.6667 0.3333 0.6667]]
 """

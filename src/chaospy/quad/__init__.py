@@ -1,8 +1,8 @@
 """
 Quadrature methods, or numerical integration, is broad class of algorithm for
-performing integration of any function ``g`` that are defined without requiring
-an analytical definition. In the scope of ``chaospy`` we limit this scope to
-focus on methods that can be reduced to the following approximation:
+performing integration of any function :math:`g` that are defined without
+requiring an analytical definition. In the scope of ``chaospy`` we limit this
+scope to focus on methods that can be reduced to the following approximation:
 
 .. math::
     \int g(x) p(x) dx = \sum_{n=1}^N W_n g(X_n)

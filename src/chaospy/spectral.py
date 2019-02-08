@@ -70,10 +70,10 @@ can be added::
 Note that at low polynomial order, the error is very small. For example the
 largest coefficient between the two approximation::
 
-    >>> print(numpy.max(abs(approx-approx2).coeffs(), -1) < 1e-12)
+    >>> print(numpy.max(abs(approx-approx2).coefficients, -1) < 1e-12)
     [ True  True]
 
-The ``coeffs`` function returns all the polynomial coefficients.
+The ``coefficients`` function returns all the polynomial coefficients.
 """
 import numpy
 import chaospy

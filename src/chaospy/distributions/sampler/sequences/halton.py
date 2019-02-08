@@ -13,35 +13,15 @@ Example usage
 
 Standard usage::
 
-    >>> print(numpy.around(create_halton_samples(order=3, dim=2), 4))
+    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
+    >>> samples = distribution.sample(3, rule="H")
+    >>> print(numpy.around(samples, 4))
     [[0.125  0.625  0.375 ]
      [0.4444 0.7778 0.2222]]
-    >>> print(numpy.around(create_halton_samples(order=3, dim=3), 4))
-    [[0.375  0.875  0.0625]
-     [0.2222 0.5556 0.8889]
-     [0.24   0.44   0.64  ]]
-
-Custom burn-ins::
-
-    >>> print(numpy.around(create_halton_samples(order=3, dim=2, burnin=0), 4))
-    [[0.5    0.25   0.75  ]
-     [0.3333 0.6667 0.1111]]
-    >>> print(numpy.around(create_halton_samples(order=3, dim=2, burnin=1), 4))
-    [[0.25   0.75   0.125 ]
-     [0.6667 0.1111 0.4444]]
-    >>> print(numpy.around(create_halton_samples(order=3, dim=2, burnin=2), 4))
-    [[0.75   0.125  0.625 ]
-     [0.1111 0.4444 0.7778]]
-
-Using custom prime bases::
-
-    >>> print(numpy.around(create_halton_samples(order=3, dim=2, primes=[7, 5]), 4))
-    [[0.1633 0.3061 0.449 ]
-     [0.64   0.84   0.08  ]]
-    >>> print(numpy.around(create_halton_samples(order=3, dim=3, primes=[5, 3, 7]), 4))
-    [[0.64   0.84   0.08  ]
-     [0.8889 0.037  0.3704]
-     [0.1633 0.3061 0.449 ]]
+    >>> samples = distribution.sample(4, rule="H")
+    >>> print(numpy.around(samples, 4))
+    [[0.125  0.625  0.375  0.875 ]
+     [0.4444 0.7778 0.2222 0.5556]]
 
 .. _Halton sequence: https://en.wikipedia.org/wiki/Halton_sequence
 """
