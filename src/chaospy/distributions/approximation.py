@@ -242,7 +242,7 @@ def approximate_moment(
         control_var : Dist
             If provided will be used as a control variable to try to reduce
             the error.
-        acc : int, optional
+        acc (:py:data:typing.Optional[int]):
             The order of quadrature/MCI
         sparse : bool
             If True used Smolyak's sparse grid instead of normal tensor
@@ -267,8 +267,8 @@ def approximate_moment(
             "R"     (Pseudo-)Random sampling
             "S"     Sobol sequence
 
-        composit : int, numpy.ndarray optional
-            If provided, composit quadrature will be used.
+        composite (:py:data:typing.Optional[int, numpy.ndarray]):
+            If provided, composite quadrature will be used.
             Ignored in the case if gaussian=True.
 
             If int provided, determines number of even domain splits
@@ -276,7 +276,7 @@ def approximate_moment(
                 each axis
             If array of arrays/floats, determines location of splits
 
-        antithetic : numpy.ndarray, optional
+        antithetic (:py:data:typing.Optional[numpy.ndarray]):
             List of bool. Represents the axes to mirror using antithetic
             variable during MCI.
     """

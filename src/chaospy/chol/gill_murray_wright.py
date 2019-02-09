@@ -11,16 +11,18 @@ def gill_murray_wright(mat, eps=1e-16):
     """
     Gill-Murray-Wright algorithm for pivoting modified Cholesky decomposition.
 
-    Return `(perm, lowtri, error)` such that
+    Return ``(perm, lowtri, error)`` such that
     `perm.T*mat*perm = lowtri*lowtri.T` is approximately correct.
 
     Args:
-        mat (array) : Must be a non-singular and symmetric matrix
-        eps (float) : Error tolerance used in algorithm.
+        mat (numpy.ndarray):
+            Must be a non-singular and symmetric matrix
+        eps (float):
+            Error tolerance used in algorithm.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray) : Permutation matrix used for pivoting
-            and lower triangular factor.
+        (:py:data:typing.Tuple[numpy.ndarray, numpy.ndarray]):
+            Permutation matrix used for pivoting and lower triangular factor.
 
     Examples:
         >>> mat = numpy.matrix([[4, 2, 1], [2, 6, 3], [1, 3, -.004]])

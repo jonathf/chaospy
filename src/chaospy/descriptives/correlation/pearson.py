@@ -11,15 +11,16 @@ def Corr(poly, dist=None, **kws):
     Correlation matrix of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist) : Input to take correlation on. Must have
-                `len(poly)>=2`.
-        dist (Dist) : Defines the space the correlation is taken on.  It is
-                ignored if `poly` is a distribution.
-        **kws (optional) : Extra keywords passed to dist.mom.
+        poly (Poly, Dist):
+            Input to take correlation on. Must have ``len(poly)>=2``.
+        dist (Dist):
+            Defines the space the correlation is taken on.  It is ignored if
+            ``poly`` is a distribution.
 
     Returns:
-        (ndarray) : Correlation matrix with
-                `correlation.shape==poly.shape+poly.shape`.
+        (numpy.ndarray):
+            Correlation matrix with
+            ``correlation.shape == poly.shape+poly.shape``.
 
     Examples:
         >>> Z = chaospy.MvNormal([3, 4], [[2, .5], [.5, 1]])

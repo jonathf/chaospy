@@ -42,6 +42,8 @@ manual truncation::
     >>> print(chaospy.orth_ttr(2, distribution)[:4])
     [1.0, q1, q0, q1^2-1.0]
 
+.. _full_tensor_product:
+
 Full Tensor-Product Expansions
 ------------------------------
 
@@ -91,14 +93,9 @@ Lastly, we flatten the expansion and put each term in the right order::
     [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0,
      q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
 
-Cross Truncation Schemes
-------------------------
+.. _anisotropic_polynomial_expansion:
 
-By default, the truncation scheme is both isotropic (all dimension are treated
-the same) and pure graded (only polynomial order decides truncation index).
-However, it is possible to adjust both
-
-Anisomorfic Polynomial Expansion
+Anisotropic Polynomial Expansion
 --------------------------------
 
 So far all polynomials here have been considered equally. However, in many
@@ -121,3 +118,32 @@ for each dimension. For example::
     [1.0, q1, q0, q0q1, q0^2-1.0]
     >>> print(chaospy.orth_ttr([2, 2], distribution))
     [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+
+Cross Truncation Schemes
+------------------------
+
+By default, the truncation scheme is pure graded: only polynomial order decides
+truncation index. In `full_tensor_product` showed how a full tensor-product
+grid could be created by setting the flag ``cross_truncation=0``. However, the
+flag can be set to other values as well. The flag value applies the limit:
+
+.. math::
+
+    \left(\sum_{d=1}^D \alpha_d^{1/C}\right)^C <= O
+
+here :math:`D` is the number of dimensions, `C` is the ``cross_truncation``
+value and :math:`O` is the polynomial order. If you fill in the value 0 and
+1 respectivly for :math:`C`, the two expansions listed so far can be created::
+
+    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=0))  # doctest: +NORMALIZE_WHITESPACE
+    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0,
+     q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
+    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=1))
+    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+
+Following the formula other truncation schemes can be chosen::
+
+    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=0.01))
+    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0, q0q1^2-q0, q0^2q1-q1]
+    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=2))
+    [1.0, q1, q0, q1^2-1.0, q0^2-1.0]

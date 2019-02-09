@@ -39,10 +39,10 @@ def evaluate_bound(
             Locations for where evaluate bounds at. Relevant in the case of
             multivariate distributions where the bounds are affected by the
             output of other distributions.
-        parameters (optional, Dict[str, numpy.ndarray]):
+        parameters (:py:data:typing.Any):
             Collection of parameters to override the default ones in the
             distribution.
-        cache (optional, Dict[Dist, numpy.ndarray]):
+        cache (:py:data:typing.Any):
             A collection of previous calculations in case the same distribution
             turns up on more than one occasion.
 

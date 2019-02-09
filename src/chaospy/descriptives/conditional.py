@@ -13,20 +13,17 @@ def E_cond(poly, freeze, dist, **kws):
     conditioned on some of the variables.
 
     Args:
-        poly (Poly) :
+        poly (Poly):
             Polynomial to find conditional expected value on.
-        freeze (numpy.ndarray) :
+        freeze (numpy.ndarray):
             Boolean values defining the conditional variables. True values
             implies that the value is conditioned on, e.g. frozen during the
             expected value calculation.
         dist (Dist) :
             The distributions of the input used in ``poly``.
-        kws (optional) :
-            Additional keyword argument passed to ``dist.mom`` in cases where
-            approximation methods are used.
 
     Returns:
-        (Poly) :
+        (chaospy.poly.base.Poly) :
             Same as ``poly``, but with the variables not tagged in ``frozen``
             integrated away.
 

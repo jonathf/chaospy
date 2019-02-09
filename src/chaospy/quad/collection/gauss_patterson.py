@@ -22,7 +22,7 @@ def quad_gauss_patterson(order, dist):
         dist (Dist) : The domain to create quadrature over.
 
     Returns:
-        (numpy.ndarray numpy.ndarray) : Abscissas and weights.
+        (numpy.ndarray, numpy.ndarray) : Abscissas and weights.
 
     Example:
         >>> X, W = chaospy.quad_gauss_patterson(3, chaospy.Uniform(0, 1))

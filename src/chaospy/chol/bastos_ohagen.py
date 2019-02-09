@@ -1,7 +1,7 @@
 """
 Implementation of Bastos-O'Hagen algorithm for modified Cholesky decomposition.
 
-Algoritum 3 from "Pivoting Cholesky Decomposition applied to Emulation and
+Algorithm 3 from "Pivoting Cholesky Decomposition applied to Emulation and
 Validation of computer models" by lowtri.S. Bastos and and mat. O'Hagan, 2007
 """
 import numpy
@@ -12,35 +12,37 @@ def bastos_ohagen(mat, eps=1e-16):
     Bastos-O'Hagen algorithm for modified Cholesky decomposition.
 
     Args:
-        mat (numpy.ndarray) : Input matrix.
-        eps (float) : Tollerence value for the eigen values. Values smaller
+        mat (numpy.ndarray):
+            Input matrix to decompose. Assumed to close to positive definite.
+        eps (float):
+            Tolerance value for the eigenvalues. Values smaller
             than `tol*numpy.diag(mat).max()` are considered to be zero.
 
     Returns:
-        perm : numpy.ndarray
-            Permutation matrix
-        lowtri : numpy.ndarray
-            Upper triangular decompostion
-        E : numpy.ndarray
-            Error matrix
+        (:py:data:typing.Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]):
+            perm:
+                Permutation matrix
+            lowtri:
+                Upper triangular decomposition
+            errors:
+                Error matrix
 
-    Examples
-    --------
-    >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-    >>> perm, lowtri = bastos_ohagen(mat)
-    >>> print(perm)
-    [[0 1 0]
-     [1 0 0]
-     [0 0 1]]
-    >>> print(numpy.around(lowtri, 4))
-    [[ 2.4495  0.      0.    ]
-     [ 0.8165  1.8257  0.    ]
-     [ 1.2247 -0.      0.9129]]
-    >>> comp = numpy.dot(perm, lowtri)
-    >>> print(numpy.around(numpy.dot(comp, comp.T), 4))
-    [[4.     2.     1.    ]
-     [2.     6.     3.    ]
-     [1.     3.     2.3333]]
+    Examples:
+        >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+        >>> perm, lowtri = bastos_ohagen(mat)
+        >>> print(perm)
+        [[0 1 0]
+         [1 0 0]
+         [0 0 1]]
+        >>> print(numpy.around(lowtri, 4))
+        [[ 2.4495  0.      0.    ]
+         [ 0.8165  1.8257  0.    ]
+         [ 1.2247 -0.      0.9129]]
+        >>> comp = numpy.dot(perm, lowtri)
+        >>> print(numpy.around(numpy.dot(comp, comp.T), 4))
+        [[4.     2.     1.    ]
+         [2.     6.     3.    ]
+         [1.     3.     2.3333]]
     """
     mat_ref = numpy.asfarray(mat)
     mat = mat_ref.copy()

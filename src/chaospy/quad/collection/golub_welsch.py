@@ -109,7 +109,7 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
             be increased by one for each iteration.
 
     Returns:
-        (numpy.array, numpy.array):
+        (numpy.ndarray, numpy.ndarray):
             Optimal collocation nodes with `x.shape=(dim, order+1)` and weights
             with `w.shape=(order+1,)`.
 

@@ -1,5 +1,5 @@
 r"""
-In practice the following four components are needed to perform psuedo-spectral
+In practice the following four components are needed to perform pseudo-spectral
 projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
 -  A distribution for the unknown function parameters (as described in
@@ -7,7 +7,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
       >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 2)
 
--  Create integration absissas and weights (as described in :ref:`quadrature`)::
+-  Create integration abscissas and weights (as described in :ref:`quadrature`)::
 
     >>> absissas, weights = chaospy.generate_quadrature(
     ...     2, distribution, rule="G")
@@ -37,7 +37,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
      [-3.          0.69356348]
      [-0.          1.        ]]
 
-- To bring it together, expansion, absissas, weights and solves are used as
+- To bring it together, expansion, abscissas, weights and solves are used as
   arguments to create approximation::
 
     >>> approx = chaospy.fit_quadrature(
@@ -55,8 +55,8 @@ denominator :math:`\mathbb E{\Phi_n^2}`. So when using three terms
 recursion, it is common to use the recurrence coefficients to estimated
 the denominator.
 
-One cavat with using psuedo-spectral projection is that the calculations of the
-norms of the polynomials becomes unstable. To mittigate, recurrence
+One caveat with using pseudo-spectral projection is that the calculations of
+the norms of the polynomials becomes unstable. To mitigate, recurrence
 coefficients can be used to calculate them instead with more stability.
 To include these stable norms in the calculations, the following change in code
 can be added::
@@ -85,30 +85,29 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
     distribution space.
 
     Args:
-        orth (Poly):
+        orth (chaospy.poly.base.Poly):
             Orthogonal polynomial expansion. Must be orthogonal for the
             approximation to be accurate.
         nodes (numpy.ndarray):
             Where to evaluate the polynomial expansion and model to
-            approximate.
-            nodes.shape==(D,K) where D is the number of dimensions and K is
-            the number of nodes.
+            approximate. ``nodes.shape==(D,K)`` where ``D`` is the number of
+            dimensions and ``K`` is the number of nodes.
         weights (numpy.ndarray):
-            Weights when doing numerical integration.
-            weights.shape==(K,)
-        solves (numpy.ndarray, callable):
-            The model to approximate.
-            If numpy.ndarray is provided, it must have len(solves)==K.
-            If callable, it must take a single argument X with len(X)==D,
-            and return a consistent numpy compatible shape.
+            Weights when doing numerical integration. ``weights.shape == (K,)``
+            must hold.
+        solves (numpy.ndarray):
+            The model evaluation to approximate. If `numpy.ndarray` is
+            provided, it must have ``len(solves) == K``. If callable, it must
+            take a single argument X with ``len(X) == D``, and return
+            a consistent numpy compatible shape.
         norms (numpy.ndarray):
-            In the of TTR using coefficients to estimate the polynomial
-            norm is more stable than manual calculation.
-            Calculated using quadrature if no provided.
-            norms.shape==(len(orth),).
+            In the of TTR using coefficients to estimate the polynomial norm is
+            more stable than manual calculation. Calculated using quadrature if
+            no provided. ``norms.shape == (len(orth),)`` must hold.
 
     Returns:
-        (chaospy.poly.Poly): fitted model approximation.
+        (chaospy.poly.base.Poly):
+            Fitted model approximation in the form of an polynomial.
     """
     orth = chaospy.poly.Poly(orth)
     nodes = numpy.asfarray(nodes)

@@ -3,8 +3,8 @@ Descriptives are a collection of statistical analysis tools that can be used to
 analyse :ref:`distributions` and :ref:`polynomials`, both as an expansion (see
 :ref:`orthogonality`) and as results (see :ref:`regression` and
 :ref:`spectral`).  For example, the expected value operator
-:func:`~chaospy.descriptives.E` can be applied on distributions directly as
-follows::
+:func:`~chaospy.descriptives.expected.E` can be applied on distributions
+directly as follows::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> expected = chaospy.E(distribution)

@@ -12,14 +12,16 @@ def Skew(poly, dist=None, **kws):
     Element by element 3rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist) : Input to take skewness on.
-        dist (Dist) : Defines the space the skewness is taken on.
-                It is ignored if `poly` is a distribution.
-        **kws (optional) : Extra keywords passed to dist.mom.
+        poly (Poly, Dist):
+            Input to take skewness on.
+        dist (Dist):
+            Defines the space the skewness is taken on. It is ignored if
+            ``poly`` is a distribution.
 
     Returns:
-        (ndarray) : Element for element variance along `poly`, where
-                `skewness.shape==poly.shape`.
+        (numpy.ndarray):
+            Element for element variance along ``poly``, where
+            ``skewness.shape == poly.shape``.
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))

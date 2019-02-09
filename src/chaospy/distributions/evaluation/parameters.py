@@ -65,15 +65,15 @@ def load_parameters(
         method_name (str):
             Name of the method for where the parameters should be used.
             Typically ``"_pdf"``, ``_cdf`` or the like.
-        parameters (optional, Dict[str, Any]):
+        parameters (:py:data:typing.Any):
             Default parameters to use if there are no cache to retrieve. Use
             the distributions internal parameters, if not provided.
-        cache (optional, Dict[Dist, numpy.ndarray]):
+        cache (:py:data:typing.Any):
             A dictionary containing previous evaluations from the stack. If
             a parameters contains a distribution that contains in the cache, it
             will be replaced with the cache value. If omitted, a new one will
             be created.
-        cache_key (optional, Callable[Dist, Any])
+        cache_key (:py:data:typing.Any)
             Redefine the keys of the cache to suite other purposes.
 
     Returns:

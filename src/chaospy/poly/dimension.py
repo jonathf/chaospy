@@ -1,4 +1,4 @@
-import numpy as np
+import numpy
 
 import chaospy
 from chaospy.poly.base import Poly, sort_key
@@ -54,10 +54,10 @@ def dimsplit(P):
     for i in range(dim):
 
         A.append({})
-        ones[i] = np.nan
+        ones[i] = numpy.nan
         Q = P(*ones)
         ones[i] = 1
-        if isinstance(Q, np.ndarray):
+        if isinstance(Q, numpy.ndarray):
             continue
         Q = Q.A
 
@@ -107,14 +107,14 @@ def setdim(P, dim=None):
     P.dim = dim
     if dim>ldim:
 
-        key = np.zeros(dim, dtype=int)
+        key = numpy.zeros(dim, dtype=int)
         for lkey in P.keys:
             key[:ldim] = lkey
             P.A[tuple(key)] = P.A.pop(lkey)
 
     else:
 
-        key = np.zeros(dim, dtype=int)
+        key = numpy.zeros(dim, dtype=int)
         for lkey in P.keys:
             if not sum(lkey[ldim-1:]) or not sum(lkey):
                 P.A[lkey[:dim]] = P.A.pop(lkey)

@@ -11,11 +11,11 @@ def call(poly, args):
     Args:
         poly (Poly):
             Input polynomial.
-        args (numpy.ndarray, masked):
+        args (numpy.ndarray):
             Argument to be evaluated. Masked values keeps the variable intact.
 
     Returns:
-        (Poly, np.array):
+        (Poly, numpy.ndarray):
             If masked values are used the Poly is returned. Else an numpy array
             matching the polynomial's shape is returned.
     """

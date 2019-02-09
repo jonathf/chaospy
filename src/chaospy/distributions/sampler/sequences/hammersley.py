@@ -26,7 +26,7 @@ import numpy
 from .halton import create_halton_samples
 
 
-def create_hammersley_samples(order, dim=1, burnin=None, primes=None):
+def create_hammersley_samples(order, dim=1, burnin=-1, primes=()):
     """
     Create samples from the Hammersley set.
 
@@ -37,15 +37,16 @@ def create_hammersley_samples(order, dim=1, burnin=None, primes=None):
             The order of the Hammersley sequence. Defines the number of samples.
         dim (int):
             The number of dimensions in the Hammersley sequence.
-        burnin (int, optional):
-            Skip the first ``burnin`` samples. If omitted, the maximum of
+        burnin (int):
+            Skip the first ``burnin`` samples. If negative, the maximum of
             ``primes`` is used.
-        primes (numpy.ndarray, optional):
+        primes (tuple):
             The (non-)prime base to calculate values along each axis. If
-            omitted, growing prime values starting from 2 will be used.
+            empty, growing prime values starting from 2 will be used.
 
-    Returns (numpy.ndarray):
-        Hammersley set with ``shape == (dim, order)``.
+    Returns:
+        (numpy.ndarray):
+            Hammersley set with ``shape == (dim, order)``.
     """
     if dim == 1:
         return create_halton_samples(

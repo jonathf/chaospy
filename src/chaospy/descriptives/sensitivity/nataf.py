@@ -9,19 +9,21 @@ from ..variance import Var
 
 def Sens_m_nataf(order, dist, samples, vals, **kws):
     """
-    Variance-based decomposition thorugh the Nataf distribution.
+    Variance-based decomposition through the Nataf distribution.
 
     Generates first order sensitivity indices
 
     Args:
-        order (int): polynomial order used `orth_ttr`.
-        dist (Copula): Assumed to be Nataf with independent components
-        samples (numpy.ndarray): Samples used for evaluation (typically generated
-                from `dist`.)
+        order (int):
+            Polynomial order used ``orth_ttr``.
+        dist (Copula):
+            Assumed to be Nataf with independent components
+        samples (numpy.ndarray):
+            Samples used for evaluation (typically generated from ``dist``.)
         vals (numpy.ndarray): Evaluations of the model for given samples.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray):
             Sensitivity indices with shape ``(len(dist),) + vals.shape[1:]``.
     """
     assert dist.__class__.__name__ == "Copula"
@@ -76,14 +78,17 @@ def Sens_t_nataf(order, dist, samples, vals, **kws):
     Total order sensitivity indices
 
     Args:
-        order (int): polynomial order used `orth_ttr`.
-        dist (Copula): Assumed to be Nataf with independent components
-        samples (numpy.ndarray): Samples used for evaluation (typically generated
-                from `dist`.)
-        vals (numpy.ndarray): Evaluations of the model for given samples.
+        order (int):
+            Polynomial order used ``orth_ttr``.
+        dist (Copula):
+            Assumed to be Nataf with independent components
+        samples (numpy.ndarray):
+            Samples used for evaluation (typically generated from ``dist``.)
+        vals (numpy.ndarray):
+            Evaluations of the model for given samples.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray) :
             Sensitivity indices with shape ``(len(dist),)+vals.shape[1:]``.
     """
     assert dist.__class__.__name__ == "Copula"
@@ -137,17 +142,20 @@ def Sens_nataf(order, dist, samples, vals, **kws):
     Main and total order sensitivity indices
 
     Args:
-        order (int): polynomial order used `orth_ttr`.
-        dist (Copula): Assumed to be Nataf with independent components
-        samples (numpy.ndarray): Samples used for evaluation (typically generated
-                from `dist`.)
-        vals (numpy.ndarray): Evaluations of the model for given samples.
+        order (int):
+            polynomial order used ``orth_ttr``.
+        dist (Copula):
+            Assumed to be Nataf with independent components
+        samples (numpy.ndarray):
+            Samples used for evaluation (typically generated from ``dist``.)
+        vals (numpy.ndarray):
+            Evaluations of the model for given samples.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray):
             Sensitivity indices with shape
-                `kjl`(2, len(dist),)+vals.shape[1:]`. First component is
-                main and second is total.
+            ``kjl``(2, len(dist),)+vals.shape[1:]``. First component is main
+            and second is total.
     """
     assert dist.__class__.__name__ == "Copula"
     trans = dist.prm["trans"]

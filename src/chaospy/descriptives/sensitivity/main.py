@@ -12,16 +12,13 @@ def Sens_m(poly, dist, **kws):
     First order sensitivity indices.
 
     Args:
-        poly (Poly) :
+        poly (Poly):
             Polynomial to find first order Sobol indices on.
-        dist (Dist) :
+        dist (Dist):
             The distributions of the input used in ``poly``.
-        kws (optional) :
-            Additional keyword argument passed to ``dist.mom`` in cases where
-            approximation methods are used.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray):
             First order sensitivity indices for each parameters in ``poly``,
             with shape ``(len(dist),) + poly.shape``.
 

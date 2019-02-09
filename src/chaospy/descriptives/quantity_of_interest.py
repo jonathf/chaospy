@@ -14,16 +14,18 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     with that newly generated Dists.
 
     Args:
-        poly (Poly) : Polynomial of interest.
-        dist (Dist) : Defines the space where the samples for the KDE is taken
-                from the poly.
-        sample (int) : Number of samples used in estimation to construct the
-                KDE.
-        **kws (optional) : Extra keywords passed to dist.sample.
+        poly (Poly):
+            Polynomial of interest.
+        dist (Dist):
+            Defines the space where the samples for the KDE is taken from the
+            poly.
+        sample (int):
+            Number of samples used in estimation to construct the KDE.
 
     Returns:
-        (ndarray) : The constructed quantity of interest (QoI) distributions,
-                where `qoi_dists.shape==poly.shape`.
+        (numpy.ndarray):
+            The constructed quantity of interest (QoI) distributions, where
+            ``qoi_dists.shape==poly.shape``.
 
     Examples:
         >>> dist = chaospy.Normal(0, 1)

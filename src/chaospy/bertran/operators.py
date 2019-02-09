@@ -103,32 +103,28 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     """
     Generator for creating multi-indices.
 
-    Parameters
-    ----------
-    start : int
-        The lower order of the indices
-    stop : int, optional
-        the maximum shape included. If omitted:
-        stop <- start; start <- 0
-        If int is provided, set as largest total order.
-        If array of int, set as largest order along each axis.
-    dim : int
-        The number of dimensions in the expansion
-    cross_truncation : float
-        Use hyperbolic cross truncation scheme to reduce the number of
-        terms in expansion.
+    Args:
+        start (int):
+            The lower order of the indices
+        stop (:py:data:typing.Optional[int]):
+            the maximum shape included. If omitted: stop <- start; start <- 0
+            If int is provided, set as largest total order. If array of int,
+            set as largest order along each axis.
+        dim (int):
+            The number of dimensions in the expansion
+        cross_truncation (float):
+            Use hyperbolic cross truncation scheme to reduce the number of
+            terms in expansion.
 
-    Returns
-    -------
-    indices : list
-        Grevlex order list of indices.
+    Returns:
+        list:
+            Order list of indices.
 
-    Examples
-    --------
-    >>> print(chaospy.bertran.bindex(0, 1, 3))
-    [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)]
-    >>> print(chaospy.bertran.bindex(2, 3, 2))
-    [(2, 0), (1, 1), (0, 2), (3, 0), (2, 1), (1, 2), (0, 3)]
+    Examples:
+        >>> print(chaospy.bertran.bindex(2, 3, 2))
+        [[2, 0], [1, 1], [0, 2], [3, 0], [2, 1], [1, 2], [0, 3]]
+        >>> print(chaospy.bertran.bindex(0, 1, 3))
+        [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
     """
     if stop is None:
         start, stop = 0, start
@@ -136,12 +132,14 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     stop = numpy.array(stop, dtype=int).flatten()
     sort = sort.upper()
 
-    total = numpy.mgrid[(slice(numpy.max(stop), numpy.min(start)-1, -1),)*dim]
+    total = numpy.mgrid[(slice(numpy.max(stop), -1, -1),)*dim]
     total = numpy.array(total).reshape(dim, -1)
 
     if start.size > 1:
         for idx, start_ in enumerate(start):
-            total = total[:, total[idx] > start_]
+            total = total[:, total[idx] >= start_]
+    else:
+        total = total[:, total.sum(0) >= start]
     if stop.size > 1:
         for idx, stop_ in enumerate(stop):
             total = total[:, total[idx] <= stop_]
@@ -170,6 +168,7 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
 
     for pos, idx in reversed(list(enumerate(total))):
         idx = numpy.array(idx)
+        cross_truncation = numpy.asfarray(cross_truncation)
         with suppress(OverflowError, ZeroDivisionError):
             if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
                 del total[pos]

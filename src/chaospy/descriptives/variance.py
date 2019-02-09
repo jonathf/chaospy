@@ -9,14 +9,16 @@ def Var(poly, dist=None, **kws):
     Element by element 2nd order statistics.
 
     Args:
-        poly (Poly, Dist) : Input to take variance on.
-        dist (Dist) : Defines the space the variance is taken on. It is ignored
-                if `poly` is a distribution.
-        **kws (optional) : Extra keywords passed to dist.mom.
+        poly (Poly, Dist):
+            Input to take variance on.
+        dist (Dist):
+            Defines the space the variance is taken on. It is ignored if
+            ``poly`` is a distribution.
 
     Returns:
-        (ndarray) : Element for element variance along `poly`, where
-                `variation.shape==poly.shape`.
+        (numpy.ndarray):
+            Element for element variance along ``poly``, where
+            ``variation.shape == poly.shape``.
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))

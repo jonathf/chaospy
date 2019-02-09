@@ -8,5 +8,5 @@ Polynomials
 
    baseclass
    orthogonality
-   collection
    truncation
+   collection

@@ -1,6 +1,6 @@
 .. _sparsegrid:
 
-Smolyak Sparse-grid Quadrature
-------------------------------
+Smolyak Sparse-Grid
+-------------------
 
 .. automodule:: chaospy.quad.sparse_grid

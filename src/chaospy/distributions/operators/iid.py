@@ -20,7 +20,7 @@ class Iid(Dist):
     variables from an univariate variable.
 
     Args:
-        dist: (Dist)
+        dist (Dist):
             Distribution to make into i.i.d. vector.
     """
 

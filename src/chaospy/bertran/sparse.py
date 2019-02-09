@@ -1,6 +1,4 @@
-"""
-Use of Bertran to calculate sparse segments.
-"""
+"""Use of Bertran to calculate sparse segments."""
 import numpy as np
 import chaospy as cp
 
@@ -9,37 +7,39 @@ def sparse_segment(cords):
     r"""
     Create a segment of a sparse grid.
 
-    More specifically, a segment of
-    `\cup_{cords \in C} sparse_segment(cords) == sparse_grid(M)`
-    where
-    `C = {cords: M=sum(cords)}`
+    Convert a ol-index to sparse grid coordinates on ``[0, 1]^N`` hyper-cube.
+    A sparse grid of order ``D`` coencide with the set of sparse_segments where
+    ``||cords||_1 <= D``.
 
-    Parameters
-    ----------
-    cords : numpy.ndarray
-        The segment to extract. `cord` must consist of non-negative intergers.
+    More specifically, a segment of:
 
-    Returns
-    -------
-    Q : ndarray
-        Sparse segment where `Q.shape==(K, sum(M))` and `K` is segment
-        specific.
+    .. math::
+        \cup_{cords \in C} sparse_segment(cords) == sparse_grid(M)
 
-    Convert a ol-index to sparse grid coordinates on [0, 1]^N hyper
-    cube. A sparse grid of order `D` coencide with the set of
-    sparse_segments where `||cords||_1 <= D`.
+    where:
 
-    Examples
-    --------
-    >>> print(cp.bertran.sparse_segment([0, 2]))
-    [[0.5   0.125]
-     [0.5   0.375]
-     [0.5   0.625]
-     [0.5   0.875]]
+    .. math::
+        C = {cords: M=sum(cords)}
 
-    >>> print(cp.bertran.sparse_segment([0, 1, 0, 0]))
-    [[0.5  0.25 0.5  0.5 ]
-     [0.5  0.75 0.5  0.5 ]]
+    Args:
+        cords (numpy.ndarray):
+            The segment to extract. ``cord`` must consist of non-negative
+            integers.
+
+    Returns:
+        Q (numpy.ndarray):
+            Sparse segment where ``Q.shape==(K, sum(M))`` and ``K`` is segment
+            specific.
+
+    Examples:
+        >>> print(cp.bertran.sparse_segment([0, 2]))
+        [[0.5   0.125]
+         [0.5   0.375]
+         [0.5   0.625]
+         [0.5   0.875]]
+        >>> print(cp.bertran.sparse_segment([0, 1, 0, 0]))
+        [[0.5  0.25 0.5  0.5 ]
+         [0.5  0.75 0.5  0.5 ]]
     """
     cords = np.array(cords)+1
     slices = []

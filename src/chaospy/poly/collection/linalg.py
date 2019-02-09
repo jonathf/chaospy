@@ -2,7 +2,7 @@
 Functions mimicing linear algebra operations.
 """
 
-import numpy as np
+import numpy
 import chaospy as cp
 
 import chaospy.poly
@@ -14,10 +14,12 @@ def inner(*args):
     Inner product of a polynomial set.
 
     Args:
-        arg0, arg1, [...] (Poly) : The polynomials to perform inner product on.
+        args (chaospy.poly.base.Poly):
+            The polynomials to perform inner product on.
 
     Returns:
-        (Poly) : Resulting polynomial.
+        (chaospy.poly.base.Poly):
+            Resulting polynomial.
 
     Examples:
         >>> x,y = cp.variable(2)
@@ -25,7 +27,7 @@ def inner(*args):
         >>> Q = cp.Poly([x+1, x*y])
         >>> print(cp.inner(P, Q))
         q0^2+q0q1^2-1
-        >>> x = np.arange(4)
+        >>> x = numpy.arange(4)
         >>> print(cp.inner(x, x))
         14
     """
@@ -33,7 +35,7 @@ def inner(*args):
 
     # Numpy
     if not haspoly:
-        return np.sum(np.prod(args, 0), 0)
+        return numpy.sum(numpy.prod(args, 0), 0)
 
     # Poly
     out = args[0]
@@ -47,11 +49,14 @@ def outer(*args):
     Polynomial outer product.
 
     Args:
-        P1 (Poly, ndarray, int, float) : First term in outer product
-        P2 (Poly, numpy.ndarray) : Second term in outer product
+        P1 (chaospy.poly.base.Poly, numpy.ndarray):
+            First term in outer product
+        P2 (chaospy.poly.base.Poly, numpy.ndarray):
+            Second term in outer product
 
     Returns:
-        (Poly) : Poly set with same dimensions as itter.
+        (chaospy.poly.base.Poly):
+            Poly set with same dimensions as itter.
 
     Examples:
         >>> x = cp.variable()
@@ -75,12 +80,12 @@ def outer(*args):
 
     dtype = chaospy.poly.typing.dtyping(part1, part2)
 
-    if dtype in (list, tuple, np.ndarray):
+    if dtype in (list, tuple, numpy.ndarray):
 
-        part1 = np.array(part1)
-        part2 = np.array(part2)
+        part1 = numpy.array(part1)
+        part2 = numpy.array(part2)
         shape = part1.shape +  part2.shape
-        return np.outer(
+        return numpy.outer(
             chaospy.poly.shaping.flatten(part1),
             chaospy.poly.shaping.flatten(part2),
         )
@@ -101,10 +106,10 @@ def outer(*args):
             return chaospy.poly.shaping.reshape(Poly(out), shape)
 
         if isinstance(part1, (int, float, list, tuple)):
-            part2, part1 = np.array(part1), part2
+            part2, part1 = numpy.array(part1), part2
 
         else:
-            part2 = np.array(part2)
+            part2 = numpy.array(part2)
 
         core_old = part1.A
         core_new = {}
@@ -132,19 +137,19 @@ def dot(poly1, poly2):
         >>> poly = cp.prange(3, 1)
         >>> print(poly)
         [1, q0, q0^2]
-        >>> print(cp.dot(poly, np.arange(3)))
+        >>> print(cp.dot(poly, numpy.arange(3)))
         2q0^2+q0
         >>> print(cp.dot(poly, poly))
         q0^4+q0^2+1
     """
     if not isinstance(poly1, Poly) and not isinstance(poly2, Poly):
-        return np.dot(poly1, poly2)
+        return numpy.dot(poly1, poly2)
 
     poly1 = Poly(poly1)
     poly2 = Poly(poly2)
 
     poly = poly1*poly2
-    if np.prod(poly1.shape) <= 1 or np.prod(poly2.shape) <= 1:
+    if numpy.prod(poly1.shape) <= 1 or numpy.prod(poly2.shape) <= 1:
         return poly
     return chaospy.poly.sum(poly, 0)
 

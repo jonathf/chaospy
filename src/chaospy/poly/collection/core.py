@@ -21,7 +21,7 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
             the minimum polynomial to include. If int is provided, set as
             lowest total order.  If array of int, set as lower order along each
             axis.
-        stop (int, numpy.ndarray, optional):
+        stop (int, numpy.ndarray):
             the maximum shape included. If omitted:
             ``stop <- start; start <- 0`` If int is provided, set as largest
             total order. If array of int, set as largest order along each axis.
@@ -32,16 +32,15 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
             The polynomial ordering where the letters ``G``, ``I`` and ``R``
             can be used to set grade, inverse and reverse to the ordering.  For
             ``basis(start=0, stop=2, dim=2, order=order)`` we get:
-
-            ------  ------------------
+            ======  ==================
             order   output
-            ------  ------------------
+            ======  ==================
             ""      [1 y y^2 x xy x^2]
             "G"     [1 y x y^2 xy x^2]
             "I"     [x^2 xy x y^2 y 1]
             "R"     [1 x x^2 y xy y^2]
             "GIR"   [y^2 xy x^2 y x 1]
-            ------  ------------------
+            ======  ==================
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
             terms in expansion.
@@ -118,7 +117,7 @@ def cutoff(poly, *args):
     Args:
         poly (Poly):
             Input data.
-        low (int, optional):
+        low (int):
             The lowest order that is allowed to be included. Defaults to 0.
         high (int):
             The upper threshold for the cutoff range.
@@ -164,9 +163,11 @@ def differential(P, Q):
     Polynomial differential operator.
 
     Args:
-        P (Poly) : Polynomial to be differentiated.
-        Q (Poly) : Polynomial to differentiate by. Must be decomposed. If
-                polynomial array, the output is the Jacobian matrix.
+        P (Poly):
+            Polynomial to be differentiated.
+        Q (Poly):
+            Polynomial to differentiate by. Must be decomposed. If polynomial
+            array, the output is the Jacobian matrix.
     """
     P, Q = Poly(P), Poly(Q)
 
@@ -216,7 +217,6 @@ def prange(N=1, dim=1):
     Examples:
         >>> print(prange(4))
         [1, q0, q0^2, q0^3]
-
         >>> print(prange(4, dim=3))
         [1, q2, q2^2, q2^3]
     """
@@ -261,12 +261,16 @@ def swapdim(P, dim1=1, dim2=0):
     Swap the dim between two variables.
 
     Args:
-        P (Poly) : Input polynomial.
-        dim1 (int) : First dim
-        dim2 (int) : Second dim.
+        P (Poly):
+            Input polynomial.
+        dim1 (int):
+            First dim
+        dim2 (int):
+            Second dim.
 
     Returns:
-        (Poly) : Polynomial with swapped dimensions.
+        (Poly):
+            Polynomial with swapped dimensions.
 
     Examples:
         >>> x,y = variable(2)
@@ -332,10 +336,12 @@ def variable(dims=1):
     Simple constructor to create single variables to create polynomials.
 
     Args:
-        dims (int) : Number of dimensions in the array.
+        dims (int):
+            Number of dimensions in the array.
 
     Returns:
-        (Poly) : Polynomial array with unit components in each dimension.
+        (Poly):
+            Polynomial array with unit components in each dimension.
 
     Examples:
         >>> print(variable())
@@ -359,7 +365,7 @@ def order(P):
 
 
 def all(A, ax=None):
-    """ Test if all values in A evaluate to True """
+    """Test if all values in A evaluate to True """
     if isinstance(A, Poly):
         out = numpy.zeros(A.shape, dtype=bool)
         B = A.A
@@ -371,7 +377,7 @@ def all(A, ax=None):
 
 
 def any(A, ax=None):
-    """ Test if any values in A evaluate to True """
+    """Test if any values in A evaluate to True """
     if isinstance(A, Poly):
         out = numpy.zeros(A.shape, dtype=bool)
         B = A.A
@@ -387,13 +393,16 @@ def around(A, decimals=0):
     Evenly round to the given number of decimals.
 
     Args:
-        A (Poly, numpy.ndarray) : Input data.
-        decimals (int, optional) : Number of decimal places to round to
-                (default: 0).  If decimals is negative, it specifies the number
-                of positions to the left of the decimal point.
+        A (Poly, numpy.ndarray):
+            Input data.
+        decimals (int):
+            Number of decimal places to round to (default: 0).  If decimals is
+            negative, it specifies the number of positions to the left of the
+            decimal point.
 
     Returns:
-        (Poly, numpy.ndarray) : Same type as A.
+        (Poly, numpy.ndarray):
+            Same type as A.
 
     Examples:
         >>> P = chaospy.prange(3)*2**-numpy.arange(0, 6, 2, float)
@@ -414,7 +423,7 @@ def around(A, decimals=0):
 
 
 def diag(A, k=0):
-    """ Extract or construct a diagonal polynomial array.  """
+    """Extract or construct a diagonal polynomial array."""
     if isinstance(A, Poly):
         core, core_new = A.A, {}
         for key in A.keys:
@@ -450,11 +459,14 @@ def prune(A, threshold):
     Remove coefficients that is not larger than a given threshold.
 
     Args:
-        A (Poly): Input data.
-        threshold (float): Threshold for which values to cut.
+        A (Poly):
+            Input data.
+        threshold (float):
+            Threshold for which values to cut.
 
     Returns:
-        (Poly) : Same type as A.
+        (Poly):
+            Same type as A.
 
     Examples:
         >>> P = chaospy.sum(chaospy.prange(3)*2**-numpy.arange(0, 6, 2, float))

@@ -12,16 +12,13 @@ def Sens_m2(poly, dist, **kws):
     Second order sensitivity indices.
 
     Args:
-        poly (Poly) :
+        poly (Poly):
             Polynomial to find second order Sobol indices on.
-        dist (Dist) :
+        dist (Dist):
             The distributions of the input used in ``poly``.
-        kws (optional) :
-            Additional keyword argument passed to ``dist.mom`` in cases where
-            approximation methods are used.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray):
             First order sensitivity indices for each parameters in ``poly``,
             with shape ``(len(dist), len(dist)) + poly.shape``.
 

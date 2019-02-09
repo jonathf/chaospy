@@ -37,14 +37,18 @@ def get_function(rule, domain, **parameters):
     Create a quadrature function and set default parameter values.
 
     Args:
-        rule (str) : Name of quadrature rule defined in `QUAD_FUNCTIONS`.
-        domain (Dist, numpy.ndarray) : Defines `lower` and `upper` that is passed
-            quadrature rule. If `Dist`, `domain` is renamed to `dist` and also
+        rule (str):
+            Name of quadrature rule defined in ``QUAD_FUNCTIONS``.
+        domain (Dist, numpy.ndarray):
+            Defines ``lower`` and ``upper`` that is passed quadrature rule. If
+            ``Dist``, ``domain`` is renamed to ``dist`` and also
             passed.
-        **parameters (optional) : Redefining of the parameter defaults. Only
-            add parameters that the quadrature rule expect.
+        parameters (:py:data:typing.Any):
+            Redefining of the parameter defaults. Only add parameters that the
+            quadrature rule expect.
     Returns:
-        (callable) : Function that can be called only using argument `order`.
+        (:py:data:typing.Callable):
+            Function that can be called only using argument ``order``.
     """
     from ...distributions.baseclass import Dist
     if isinstance(domain, Dist):

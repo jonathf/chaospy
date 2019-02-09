@@ -37,9 +37,12 @@ class Gamma(Add):
     Also an Erlang distribution when shape=k and scale=1./lamb.
 
     Args:
-        shape (float, Dist) : Shape parameter. a>0
-        scale () : Scale parameter. scale!=0
-        shift (float, Dist) : Location of the lower bound.
+        shape (float, Dist):
+            Shape parameter. a>0.
+        scale (float, Dist):
+            Scale parameter. scale!=0
+        shift (float, Dist):
+            Location of the lower bound.
 
     Examples:
         >>> distribution = chaospy.Gamma(1, 1, 1)

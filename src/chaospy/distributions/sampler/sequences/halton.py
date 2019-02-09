@@ -31,7 +31,7 @@ from .van_der_corput import create_van_der_corput_samples
 from .primes import create_primes
 
 
-def create_halton_samples(order, dim=1, burnin=None, primes=None):
+def create_halton_samples(order, dim=1, burnin=-1, primes=()):
     """
     Create Halton sequence.
 
@@ -42,18 +42,18 @@ def create_halton_samples(order, dim=1, burnin=None, primes=None):
             The order of the Halton sequence. Defines the number of samples.
         dim (int):
             The number of dimensions in the Halton sequence.
-        burnin (int, optional):
-            Skip the first ``burnin`` samples. If omitted, the maximum of
+        burnin (int):
+            Skip the first ``burnin`` samples. If negative, the maximum of
             ``primes`` is used.
-        primes (numpy.ndarray, optional):
+        primes (tuple):
             The (non-)prime base to calculate values along each axis. If
-            omitted, growing prime values starting from 2 will be used.
+            empty, growing prime values starting from 2 will be used.
 
     Returns (numpy.ndarray):
         Halton sequence with ``shape == (dim, order)``.
     """
-    if primes is None:
-        primes = []
+    primes = list(primes)
+    if not primes:
         prime_order = 10*dim
         while len(primes) < dim:
             primes = create_primes(prime_order)
@@ -61,7 +61,7 @@ def create_halton_samples(order, dim=1, burnin=None, primes=None):
     primes = primes[:dim]
     assert len(primes) == dim, "not enough primes"
 
-    if burnin is None:
+    if burnin < 0:
         burnin = max(primes)
 
     out = numpy.empty((dim, order))

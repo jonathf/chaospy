@@ -54,12 +54,12 @@ def sparse_grid(func, order, dim=None, skew=None):
     Smolyak sparse grid constructor.
 
     Args:
-        func (callable):
-            Function that takes a single argument `order` of type `numpy` and
-            with `order.shape = (dim,)`
+        func (:py:data:typing.Callable):
+            Function that takes a single argument ``order`` of type
+            ``numpy.ndarray`` and with ``order.shape = (dim,)``
         order (int, numpy.ndarray):
-            The order of the grid. If `numpy.ndarray`, it overrides both `dim` and
-            `skew`.
+            The order of the grid. If ``numpy.ndarray``, it overrides both
+            ``dim`` and ``skew``.
         dim (int):
             Number of dimension.
         skew (list):

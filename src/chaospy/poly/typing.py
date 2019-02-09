@@ -117,10 +117,12 @@ def toarray(vari):
     Convert polynomial array into a numpy.asarray of polynomials.
 
     Args:
-        vari (Poly, numpy.ndarray) : Input data.
+        vari (Poly, numpy.ndarray):
+            Input data.
 
     Returns:
-        Q (numpy.ndarray) : A numpy array with `Q.shape==A.shape`.
+        (numpy.ndarray):
+            A numpy array with ``Q.shape==A.shape``.
 
     Examples:
         >>> poly = cp.prange(3)

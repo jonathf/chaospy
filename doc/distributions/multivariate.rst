@@ -5,9 +5,10 @@ Joint Distributions
 
 There are three ways to create a multivariate probability distribution in
 ``chaospy``: Using the joint constructor
-:func:`~chaospy.distributions.operators.joint.J`, the identical independent distribution
-constructor: :func:`~chaospy.distribution.operators.iid.Iid`, and to one of the
-pre-constructed multivariate distribution defined in :ref:`listdistributions`.
+:class:`~chaospy.distributions.operators.joint.J`, the identical independent
+distribution constructor: :class:`~chaospy.distributions.operators.iid.Iid`,
+and to one of the pre-constructed multivariate distribution defined in
+:ref:`listdistributions`.
 
 Joint operator ``J``
 ~~~~~~~~~~~~~~~~~~~~

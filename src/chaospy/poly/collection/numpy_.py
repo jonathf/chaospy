@@ -13,14 +13,17 @@ def sum(vari, axis=None): # pylint: disable=redefined-builtin
     Sum the components of a shapeable quantity along a given axis.
 
     Args:
-        vari (Poly, numpy.ndarray) : Input data.
-        axis (int, optional) : Axis over which the sum is taken. By default
-                `axis` is None, and all elements are summed.
+        vari (chaospy.poly.base.Poly, numpy.ndarray):
+            Input data.
+        axis (int):
+            Axis over which the sum is taken. By default ``axis`` is None, and
+            all elements are summed.
 
     Returns:
-        (Poly, numpy.ndarray) : Polynomial array with same shape as `vari`,
-                with the specified axis removed. If `vari` is an 0-d array, or
-                `axis` is None, a (non-iterable) component is returned.
+        (chaospy.poly.base.Poly, numpy.ndarray):
+            Polynomial array with same shape as ``vari``, with the specified
+            axis removed. If ``vari`` is an 0-d array, or ``axis`` is None,
+            a (non-iterable) component is returned.
 
     Examples:
         >>> vari = cp.prange(3)
@@ -45,12 +48,15 @@ def cumsum(vari, axis=None):
     Cumulative sum the components of a shapeable quantity along a given axis.
 
     Args:
-        vari (Poly, numpy.ndarray) : Input data.
-        axis (int, optional) : Axis over which the sum is taken. By default
-                `axis` is None, and all elements are summed.
+        vari (chaospy.poly.base.Poly, numpy.ndarray):
+            Input data.
+        axis (int):
+            Axis over which the sum is taken. By default ``axis`` is None, and
+            all elements are summed.
 
     Returns:
-        (Poly, numpy.ndarray) : Polynomial array with same shape as `vari`.
+        (chaospy.poly.base.Poly, numpy.ndarray):
+            Polynomial array with same shape as ``vari``.
 
     Examples:
         >>> poly = cp.prange(3)
@@ -73,14 +79,17 @@ def prod(vari, axis=None):
     Product of the components of a shapeable quantity along a given axis.
 
     Args:
-        vari (Poly, numpy.ndarray) : Input data.
-        axis (int, optional) : Axis over which the sum is taken. By default
-                `axis` is None, and all elements are summed.
+        vari (chaospy.poly.base.Poly, numpy.ndarray):
+            Input data.
+        axis (int):
+            Axis over which the sum is taken. By default ``axis`` is None, and
+            all elements are summed.
 
     Returns:
-        (Poly, numpy.ndarray) : Polynomial array with same shape as `vari`,
-                with the specified axis removed. If `vari` is an 0-d array, or
-                `axis` is None, a (non-iterable) component is returned.
+        (chaospy.poly.base.Poly, numpy.ndarray):
+            Polynomial array with same shape as ``vari``, with the specified
+            axis removed. If ``vari`` is an 0-d array, or ``axis`` is None,
+            a (non-iterable) component is returned.
 
     Examples:
         >>> vari = cp.prange(3)
@@ -108,12 +117,15 @@ def cumprod(vari, axis=None):
     Perform the cumulative product of a shapeable quantity over a given axis.
 
     Args:
-        vari (Poly, numpy.ndarray) : Input data.
-        axis (int, optional) : Axis over which the product is taken.  By
-                default, the product of all elements is calculated.
+        vari (chaospy.poly.base.Poly, numpy.ndarray):
+            Input data.
+        axis (int):
+            Axis over which the sum is taken. By default ``axis`` is None, and
+            all elements are summed.
 
     Returns:
-        (Poly) : An array shaped as `vari` but with the specified axis removed.
+        (chaospy.poly.base.Poly):
+            An array shaped as ``vari`` but with the specified axis removed.
 
     Examples:
         >>> vari = cp.prange(4)
@@ -137,8 +149,3 @@ def cumprod(vari, axis=None):
         return Poly(out, vari.dim, vari.shape, vari.dtype)
 
     return np.cumprod(vari, axis)
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()

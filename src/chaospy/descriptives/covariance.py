@@ -14,11 +14,9 @@ def Cov(poly, dist=None, **kws):
         dist (Dist) :
             Defines the space the covariance is taken on.  It is ignored if
             `poly` is a distribution.
-        **kws (optional) :
-            Extra keywords passed to dist.mom.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray):
             Covariance matrix with shape ``poly.shape+poly.shape``.
 
     Examples:

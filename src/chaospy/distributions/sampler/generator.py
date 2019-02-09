@@ -2,7 +2,7 @@
 Each sampling scheme can be accessed through the ``sample`` method on each
 distribution. But in addition, they can also be created on the unit hyper-cube
 using direct sampling functions. The frontend for all these functions is the
-:func:`~chaospy.distributions.sampler.generator.generator_samples` function. It
+:func:`~chaospy.distributions.sampler.generator.generate_samples` function. It
 allows for the same functionality as the ``sample`` method, but also support
 some extra functionality by not being associated with a specific distribution.
 For example::
@@ -88,9 +88,9 @@ def generate_samples(order, domain=1, rule="R", antithetic=None):
         rule (str):
             rule for generating samples. The various rules are listed in
             :mod:`chaospy.distributions.sampler.generator`.
-        antithetic (numpy.ndarray, optional):
-            List of bool. Represents the axes to mirror using antithetic
-            variable.
+        antithetic (tuple):
+            Sequence of boolean values. Represents the axes to mirror using
+            antithetic variable.
     """
     logger = logging.getLogger(__name__)
     logger.debug("generating random samples using rule %s", rule)

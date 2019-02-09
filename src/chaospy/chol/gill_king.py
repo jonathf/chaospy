@@ -14,13 +14,16 @@ def gill_king(mat, eps=1e-16):
     Gill-King algorithm for modified cholesky decomposition.
 
     Args:
-        mat (numpy.ndarray) : Must be a non-singular and symmetric matrix.  If
-            sparse, the result will also be sparse.
-        eps (float) : Error tolerance used in algorithm.
+        mat (numpy.ndarray):
+            Must be a non-singular and symmetric matrix.  If sparse, the result
+            will also be sparse.
+        eps (float):
+            Error tolerance used in algorithm.
 
 
     Returns:
-        lowtri (numpy.ndarray) : Lower triangular Cholesky factor.
+        (numpy.ndarray):
+            Lower triangular Cholesky factor.
 
     Examples:
         >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]

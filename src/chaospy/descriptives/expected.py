@@ -12,15 +12,14 @@ def E(poly, dist=None, **kws):
     probability space.
 
     Args:
-        poly (Poly, Dist) :
+        poly (Poly, Dist):
             Input to take expected value on.
-        dist (optional, Dist) :
+        dist (Dist):
             Defines the space the expected value is taken on. It is ignored if
-            `poly` is a distribution.
-        kws (optional) : Extra keywords passed to ``dist.mom``.
+            ``poly`` is a distribution.
 
     Returns:
-        (ndarray) :
+        (numpy.ndarray):
             The expected value of the polynomial or distribution, where
             ``expected.shape == poly.shape``.
 

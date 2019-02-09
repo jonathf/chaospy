@@ -9,12 +9,14 @@ def quad_genz_keister_18(order):
     Hermite Genz-Keister 18 rule.
 
     Args:
-        order (int) : The quadrature order. Must be in the interval (0, 4).
+        order (int):
+            The quadrature order. Must be in the interval (0, 8).
 
     Returns:
-        (np.ndarray, np.ndarray) : abscissas and weights
+        (:py:data:typing.Tuple[numpy.ndarray, numpy.ndarray]):
+            Abscissas and weights
 
-    Example:
+    Examples:
         >>> abscissas, weights = quad_genz_keister_18(1)
         >>> print(numpy.around(abscissas, 4))
         [-1.7321  0.      1.7321]

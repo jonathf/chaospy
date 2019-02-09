@@ -27,12 +27,10 @@ def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
             terms in expansion.
-        kws (optional):
-            Keyword argument passed to dist.mom if the moments need to be
-            estimated.
 
     Returns:
-        (Poly) : The orthogonal polynomial expansion.
+        (Poly):
+            The orthogonal polynomial expansion.
 
     Examples:
         >>> Z = chaospy.J(chaospy.Normal(), chaospy.Normal())

@@ -9,20 +9,18 @@ def Acf(poly, dist, N=None, **kws):
     Auto-correlation function.
 
     Args:
-        poly (Poly) :
+        poly (Poly):
             Polynomial of interest. Must have ``len(poly) > N``.
-        dist (Dist) :
+        dist (Dist):
             Defines the space the correlation is taken on.
-        N (int, optional) :
+        N (int):
             The number of time steps appart included. If omited set to
             ``len(poly)/2+1``.
-        kws (optional) :
-            Extra keywords passed to dist.mom.
 
     Returns:
-        (ndarray) :
-            Auto-correlation of ``poly`` with shape ``(N,)``.
-            Note that by definition ``Q[0]=1``.
+        (numpy.ndarray) :
+            Auto-correlation of ``poly`` with shape ``(N,)``. Note that by
+            definition ``Q[0]=1``.
 
     Examples:
         >>> poly = chaospy.prange(10)[1:]

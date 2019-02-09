@@ -67,10 +67,10 @@ class Dist(object):
         Generate the upper and lower bounds of a distribution.
 
         Args:
-            x_data (numpy.ndarray, optional) :
+            x_data (numpy.ndarray) :
                 The bounds might vary over the sample space. By providing
                 x_data you can specify where in the space the bound should be
-                taken.  If omited, a (pseudo-)random sample is used.
+                taken.  If omitted, a (pseudo-)random sample is used.
 
         Returns:
             (numpy.ndarray):
@@ -98,12 +98,14 @@ class Dist(object):
         Forward Rosenblatt transformation.
 
         Args:
-            x_data (numpy.ndarray): Location for the distribution function.
-                ``x_data.shape`` must be compatible with distribution shape.
+            x_data (numpy.ndarray):
+                Location for the distribution function. ``x_data.shape`` must
+                be compatible with distribution shape.
 
         Returns:
-            numpy.ndarray: Evaluated distribution function values, where
-            ``out.shape==x_data.shape``.
+            (numpy.ndarray):
+                Evaluated distribution function values, where
+                ``out.shape==x_data.shape``.
         """
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
@@ -134,13 +136,10 @@ class Dist(object):
                 ``len(x_data) == len(distribution)``.
 
         Returns:
-            numpy.ndarray:
+            (numpy.ndarray):
                 Evaluated distribution function values, where output has shape
                 ``x_data.shape`` in one dimension and ``x_data.shape[1:]`` in
                 higher dimensions.
-
-        Except:
-            StochasticallyDependentError: Distribution has with dependent components.
         """
         if len(self) > 1 and evaluation.get_dependencies(*self):
             raise StochasticallyDependentError(
@@ -171,8 +170,9 @@ class Dist(object):
                 required to define a sample as converged.
 
         Returns:
-            numpy.ndarray: Inverted probability values where
-            ``out.shape == q_data.shape``.
+            (numpy.ndarray):
+                Inverted probability values where
+                ``out.shape == q_data.shape``.
         """
         q_data = numpy.asfarray(q_data)
         assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
@@ -204,9 +204,9 @@ class Dist(object):
                 are used along each axis.
 
         Returns:
-            numpy.ndarray: Evaluated density function values. Shapes are
-            related through the identity
-            ``x_data.shape == dist.shape+out.shape``.
+            (numpy.ndarray):
+                Evaluated density function values. Shapes are related through
+                the identity ``x_data.shape == dist.shape+out.shape``.
         """
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
@@ -260,7 +260,7 @@ class Dist(object):
         transformation.
 
         Args:
-            size (int, Tuple[int]):
+            size (numpy.ndarray):
                 The size of the samples to generate.
             rule (str):
                 Indicator defining the sampling scheme.
@@ -269,7 +269,7 @@ class Dist(object):
                 array, defines the axes to mirror.
 
         Returns:
-            numpy.ndarray:
+            (numpy.ndarray):
                 Random samples with shape ``(len(self),)+self.shape``.
         """
         size_ = numpy.prod(size, dtype=int)
@@ -310,20 +310,20 @@ class Dist(object):
                 Carlo
             rule (str):
                 rule for estimating the moment if the analytical method fails.
-            composit (int, numpy.ndarray optional):
+            composite (numpy.ndarray):
                 If provided, composit quadrature will be used.  Ignored in the
                 case if gaussian=True.  If int provided, determines number of
                 even domain splits. If array of ints, determines number of even
                 domain splits along each axis. If array of arrays/floats,
                 determines location of splits.
-            antithetic (numpy.ndarray, optional):
+            antithetic (numpy.ndarray):
                 List of bool. Represents the axes to mirror using antithetic
                 variable during MCI.
 
         Returns:
-            (ndarray):
+            (numpy.ndarray):
                 Shapes are related through the identity
-                `k.shape==dist.shape+k.shape`.
+                ``k.shape == dist.shape+k.shape``.
         """
         K = numpy.asarray(K, dtype=int)
         shape = K.shape
@@ -358,7 +358,7 @@ class Dist(object):
         Returns:
             (Recurrence coefficients):
                 Where out[0] is the first (A) and out[1] is the second
-                coefficient With `out.shape==(2,)+k.shape`.
+                coefficient With ``out.shape==(2,)+k.shape``.
         """
         kloc = numpy.asarray(kloc, dtype=int)
         shape = kloc.shape

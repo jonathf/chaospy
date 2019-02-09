@@ -33,30 +33,33 @@ def construct(parent=None, defaults=None, **kwargs):
     Random variable constructor.
 
     Args:
-        cdf (callable):
+        cdf:
             Cumulative distribution function. Optional if ``parent`` is used.
-        bnd (callable):
+        bnd:
             Boundary interval. Optional if ``parent`` is used.
         parent (Dist):
             Distribution used as basis for new distribution. Any other argument
             that is omitted will instead take is function from ``parent``.
-        doc (str, optional):
+        doc (str]):
             Documentation for the distribution.
-        str (str, callable, optional):
+        str (str, :py:data:typing.Callable):
             Pretty print of the variable.
-        pdf (callable, optional):
+        pdf:
             Probability density function.
-        ppf (callable, optional):
+        ppf:
             Point percentile function.
-        mom (callable, optional):
+        mom:
             Raw moment generator.
-        ttr (callable, optional):
-            Three terms recursion coefficient generator
-        init (callable, optional):
-            Custom constructor method.
+        ttr:
+            Three terms recursion coefficient generator.
+        init:
+            Custom initialiser method.
+        defaults (dict):
+            Default values to provide to initialiser.
 
     Returns:
-        dist (Dist) : New custom distribution.
+        (Dist):
+            New custom distribution.
     """
     for key in kwargs:
         assert key in LEGAL_ATTRS, "{} is not legal input".format(key)

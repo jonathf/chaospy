@@ -32,15 +32,18 @@ def orth_chol(order, dist, normed=True, sort="GR", cross_truncation=1., **kws):
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
     Args:
-        order (int) : Order of polynomial expansion
-        dist (Dist) : Distribution space where polynomials are orthogonal
-        normed (bool) : If True orthonormal polynomials will be used instead
-                of monic.
-        sort (str) : Ordering argument passed to poly.basis.  If custom basis
-                is used, argument is ignored.
-        cross_truncation (float) : Use hyperbolic cross truncation scheme to
-                reduce the number of terms in expansion.
-        kws (optional) : Keyword argument passed to dist.mom.
+        order (int):
+            Order of polynomial expansion
+        dist (Dist):
+            Distribution space where polynomials are orthogonal
+        normed (bool):
+            If True orthonormal polynomials will be used instead of monic.
+        sort (str):
+            Ordering argument passed to poly.basis.  If custom basis is used,
+            argument is ignored.
+        cross_truncation (float):
+            Use hyperbolic cross truncation scheme to reduce the number of
+            terms in expansion.
 
     Examples:
         >>> Z = chaospy.Normal()

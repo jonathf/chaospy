@@ -11,15 +11,17 @@ def rule_generator(*funcs):
     Constructor for creating multivariate quadrature generator.
 
     Args:
-        *funcs (callable) : One dimensional integration rule where each rule
-            returns `abscissas` and `weights` as one dimensional arrays. They
-            must take one positional argument `order`.
+        funcs (:py:data:typing.Callable):
+            One dimensional integration rule where each rule returns
+            ``abscissas`` and ``weights`` as one dimensional arrays. They must
+            take one positional argument ``order``.
 
     Returns:
-        (callable) : Multidimensional integration quadrature function that
-            takes the arguments `order` and `sparse`, and a optional `part`.
-            The argument `sparse` is used to select for if Smolyak sparse grid
-            is used, and `part` defines if subset of rule should be generated
+        (:py:data:typing.Callable):
+            Multidimensional integration quadrature function that takes the
+            arguments ``order`` and ``sparse``, and a optional ``part``. The
+            argument ``sparse`` is used to select for if Smolyak sparse grid is
+            used, and ``part`` defines if subset of rule should be generated
             (for parallelization).
 
     Example:

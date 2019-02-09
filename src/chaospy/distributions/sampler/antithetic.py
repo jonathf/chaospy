@@ -63,7 +63,7 @@ value is frozen in place::
 import numpy
 
 
-def create_antithetic_variates(samples, axes=None):
+def create_antithetic_variates(samples, axes=()):
     """
     Generate antithetic variables.
 
@@ -71,7 +71,7 @@ def create_antithetic_variates(samples, axes=None):
         samples (numpy.ndarray):
             The samples, assumed to be on the [0, 1]^D hyper-cube, to be
             reflected.
-        axes (numpy.ndarray, optional):
+        axes (tuple):
             Boolean array of which axes to reflect. If This to limit the number
             of points created in higher dimensions by reflecting all axes at
             once.
@@ -88,9 +88,9 @@ def create_antithetic_variates(samples, axes=None):
     inverse_samples = 1-samples
     dims = len(samples)
 
-    if axes is None:
-        axes = True
-    axes = numpy.array(axes, dtype=bool).flatten()
+    if not len(axes):
+        axes = (True,)
+    axes = numpy.asarray(axes, dtype=bool).flatten()
 
     indices = {tuple(axes*idx) for idx in numpy.ndindex((2,)*dims)}
     indices = sorted(indices, reverse=True)

@@ -12,16 +12,19 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     Element by element 4rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist) : Input to take kurtosis on.
-        dist (Dist) : Defines the space the skewness is taken on.
-                It is ignored if `poly` is a distribution.
-        fisher (bool) : If True, Fisher's definition is used (Normal -> 0.0).
-                If False, Pearson's definition is used (normal -> 3.0)
-        **kws (optional) : Extra keywords passed to dist.mom.
+        poly (Poly, Dist):
+            Input to take kurtosis on.
+        dist (Dist):
+            Defines the space the skewness is taken on. It is ignored if
+            ``poly`` is a distribution.
+        fisher (bool):
+            If True, Fisher's definition is used (Normal -> 0.0). If False,
+            Pearson's definition is used (normal -> 3.0)
 
     Returns:
-        (ndarray) : Element for element variance along `poly`, where
-                `skewness.shape==poly.shape`.
+        (numpy.ndarray):
+            Element for element variance along ``poly``, where
+            ``skewness.shape==poly.shape``.
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))

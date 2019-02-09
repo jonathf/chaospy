@@ -54,10 +54,10 @@ def evaluate_density(
             Distribution to evaluate.
         x_data (numpy.ndarray):
             Locations for where evaluate density at.
-        parameters (optional, Dict[str, numpy.ndarray]):
+        parameters (:py:data:typing.Any):
             Collection of parameters to override the default ones in the
             distribution.
-        cache (optional, Dict[Dist, numpy.ndarray]):
+        cache (:py:data:typing.Any):
             A collection of previous calculations in case the same distribution
             turns up on more than one occasion.
 

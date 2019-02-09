@@ -119,15 +119,15 @@ def create_sobol_samples(order, dim, seed=1):
     """
     Args:
         order (int):
-            Number of unique samples to generate
+            Number of unique samples to generate.
         dim (int):
             Number of spacial dimensions. Must satisfy ``0 < dim < 41``.
-        seed (int, optional):
+        seed (int):
             Starting seed. Non-positive values are treated as 1. If omitted,
-            consequtive samples are used.
+            consecutive samples are used.
 
     Returns:
-        quasi (numpy.ndarray):
+        (numpy.ndarray):
             Quasi-random vector with ``shape == (dim, order)``.
     """
     assert 0 < dim < DIM_MAX, "dim in [1, 40]"
