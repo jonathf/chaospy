@@ -41,13 +41,12 @@ samples and evaluations. The experiment can be done as follows:
     [q0q1, 0.0478q0^2-1.4354q0q1+0.1108q1^2+1.22377q0-0.0907q1+0.93973]
 
 In this example, the number of collocation points is selected to be twice the
-number of unknown coefficients :math:`N+1`. This
-follows the default outlined in :cite:`hosder_efficient_2007`. Changing this is
-obviously possible. When the number of parameter is equal the number of
-unknown, the, the polynomial approximation becomes an interpolation method and
-overlap with Lagrange polynomials. If the number of samples are fewer than the
-number of unknown, classical least squares can not be used.  Instead it
-possible to use methods for doing estimation with too few samples.
+number of unknown coefficients :math:`N+1`. Changing this is obviously
+possible. When the number of parameter is equal the number of unknown, the, the
+polynomial approximation becomes an interpolation method and overlap with
+Lagrange polynomials. If the number of samples are fewer than the number of
+unknown, classical least squares can not be used. Instead it possible to use
+methods for doing estimation with too few samples.
 
 The function :func:`~chaospy.regression.fit_regression` also takes an optional
 ``rule`` keyword argument. It allows for the selection of regression method
@@ -68,13 +67,11 @@ used when fitting the samples to the polynomials:
 | alpha      | Dampning parameter (else estimated from gcv) |
 +------------+----------------------------------------------+
 
-In addition, the rule can be any initialized regression model from sklearn.
-For example, if one wants to implement orthogonal matching pursuit
-:cite:`mallat_matching_1993`, it can for example be implemented as follows::
-. It forces the
-result to have at most one non-zero coefficient. To implement it use the
-keyword ``rule="OMP"``, and to force the number of coefficients to be
-for example 1: ``n_nonzero_coefs=1``. In practice::
+In addition, the rule can be any initialized regression model from
+``scipit-learn``. For example, if one wants to implement orthogonal matching
+pursuit : It forces the result to have at most one non-zero coefficient. To
+implement it use the keyword ``rule="OMP"``, and to force the number of
+coefficients to be for example 1: ``n_nonzero_coefs=1``. In practice::
 
     >>> from sklearn.linear_model import OrthogonalMatchingPursuit  # doctest: +SKIP
     >>> omp = OrthogonalMatchingPursuit(fit_intercept=False, n_nonzero_coefs=1)  # doctest: +SKIP
@@ -83,8 +80,8 @@ for example 1: ``n_nonzero_coefs=1``. In practice::
     >>> print(chaospy.around(approx_model, 8))  # doctest: +SKIP
     [3.46375077q0q1, 11.63750715]
 
-Note that the option `fit_intercept=False`. This is a prerequisite for
-``sklearn`` to be compatible with ``chaospy``.
+Note that the option ``fit_intercept=False``. This is a prerequisite for
+``scikit-learn`` to be compatible with ``chaospy``.
 """
 import numpy
 from scipy import linalg

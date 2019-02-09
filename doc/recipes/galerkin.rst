@@ -39,7 +39,7 @@ can be expressed as the sum:
    u(t) = \sum_{n=0}^N c_n(t)\ \Phi_n(a, I)
 
 Here :math:`P_n` are orthogonal polynomials and :math:`c_n` Fourier
-coefficients.[#f1]_
+coefficients.
 
 Using this, we can substitute :eq:`expansion` in :eq:`governing`:
 
@@ -189,5 +189,3 @@ Lastly, this can be used to calculate statistical properties::
 
 Alternatively, these values can also be calculated on directly from the
 Fourier coefficients.
-
-.. [#f1] Here we could put in the formal definition of orthogonality with weighted function space, but that it outside the scope of this tutorial.
