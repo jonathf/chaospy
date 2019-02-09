@@ -86,15 +86,3 @@ def get_inverse_cache(
     if hasattr(distribution, "_inv_cache"):
         return distribution._inv_cache(cache)
     return distribution
-
-
-
-
-
-
-
-
-
-
-
-

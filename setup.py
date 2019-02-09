@@ -9,7 +9,7 @@ ORIGINAL_PATH = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
 os.chdir(ORIGINAL_PATH)
 
-with open(os.path.join("src", "chaospy", "version.py")) as src:
+with open(os.path.join("chaospy", "version.py")) as src:
     regex = r"^__version__\s*=\s*['\"]([^'\"]+)['\"]"
     VERSION = re.search(regex, src.read(), flags=re.M).group(1)
 
@@ -21,11 +21,8 @@ setup(
     author_email="jonathf@gmail.com",
     license='MIT',
     platforms='any',
-    packages=find_packages("src"),
-    package_dir={"": "src"},
-    install_requires=[
-        "numpy", "scipy", "networkx"
-    ],
+    packages=find_packages(),
+    install_requires=["numpy", "scipy", "networkx"],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
