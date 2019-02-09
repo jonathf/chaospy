@@ -65,10 +65,10 @@ point collocation method will look as follows::
     >>> deviation = cp.Std(foo_approx, distribution)
 
 For a more extensive description of what going on, see the `tutorial
-<http://chaospy.readthedocs.io/en/master/tutorial.html>`_.
+<https://chaospy.readthedocs.io/en/master/tutorial.html>`_.
 
 For a collection of recipes, see the `cookbook
-<http://chaospy.readthedocs.io/en/master/cookbook.html>`_.
+<https://chaospy.readthedocs.io/en/master/cookbook.html>`_.
 
 Questions & Troubleshooting
 ---------------------------
