@@ -26,12 +26,6 @@ jobs:
                     . venv/bin/activate
                     pytest --cov=chaospy
             - run:
-                name: "Run sphinx"
-                command: |
-                    . venv/bin/activate
-                    mkdir -p doc/.static
-                    sphinx-build --keep-going -n -W -v --color doc doc/.html
-            - run:
                 name: "Coverage report"
                 command: |
                     . venv/bin/activate
