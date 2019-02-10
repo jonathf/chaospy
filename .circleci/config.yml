@@ -30,7 +30,7 @@ jobs:
                 command: |
                     . venv/bin/activate
                     mkdir -p doc/.html
-                    sphinx-build --keep-going -n -W -a -E -vv --color -j auto doc/.html
+                    sphinx-build --keep-going -n -W -a -E -vv --color -j auto doc/.html doc/
             - run:
                 name: "Coverage report"
                 command: |
