@@ -29,8 +29,8 @@ jobs:
                 name: "Run sphinx"
                 command: |
                     . venv/bin/activate
-                    mkdir -p doc/.html doc/.static
-                    sphinx-build --keep-going -n -W -a -E -vv --color -j auto doc doc/.html
+                    mkdir -p doc/.static
+                    sphinx-build --keep-going -n -W -v --color doc doc/.html
             - run:
                 name: "Coverage report"
                 command: |
