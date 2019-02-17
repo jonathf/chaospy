@@ -491,8 +491,8 @@ class Mul(Dist):
         return self
 
     def _inv_cache(self, cache):
-        left = evaluation.get_forward_cache(self.prm["left"], cache)
-        right = evaluation.get_forward_cache(self.prm["right"], cache)
+        left = evaluation.get_inverse_cache(self.prm["left"], cache)
+        right = evaluation.get_inverse_cache(self.prm["right"], cache)
         if not isinstance(left, Dist) and not isinstance(right, Dist):
             return left*right
         return self
