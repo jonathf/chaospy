@@ -231,7 +231,7 @@ def rlstsq(coef_mat, ordinate, order=1, alpha=-1, cross=False):
         tikhmat = numpy.array(order)
         assert tikhmat.shape[-1] == dim2 or tikhmat.shape in ((), (1,))
 
-    if alpha < -1 and order is not None:
+    if alpha < 0 and order is not None:
 
         gamma = 0.1
 
