@@ -169,9 +169,11 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     for pos, idx in reversed(list(enumerate(total))):
         idx = numpy.array(idx)
         cross_truncation = numpy.asfarray(cross_truncation)
-        with suppress(OverflowError, ZeroDivisionError):
+        try:
             if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
                 del total[pos]
+        except (OverflowError, ZeroDivisionError):
+            pass
 
     return total
 
