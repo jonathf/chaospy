@@ -9,7 +9,7 @@ from . import collection, sparse_grid
 
 def generate_quadrature(
         order, domain, accuracy=100, sparse=False, rule="C",
-        composite=1, growth=None, part=None, normalize=False, **kws,
+        composite=1, growth=None, part=None, normalize=False, **kws
 ):
     """
     Numerical quadrature node and weight generator.

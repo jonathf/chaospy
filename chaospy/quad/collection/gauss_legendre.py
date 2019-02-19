@@ -18,7 +18,7 @@ The first few orders::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="E")
+    ...         order, distribution, rule="E", normalize=True)
     ...     print("{} {} {}".format(order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.5 0.5]
@@ -30,7 +30,7 @@ Using an alternative distribution::
     >>> distribution = chaospy.Beta(2, 4)
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="E")
+    ...         order, distribution, rule="E", normalize=True)
     ...     print("{} {} {}".format(order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.933 0.067]

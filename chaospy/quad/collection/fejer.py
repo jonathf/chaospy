@@ -12,7 +12,8 @@ The first few orders with linear growth rule::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
-    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="F")
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, normalize=True, rule="F")
     ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0.25 0.75]] [0.5 0.5]
@@ -23,7 +24,7 @@ The first few orders with exponential growth rule::
 
     >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="F", growth=True)
+    ...         order, distribution, normalize=True, rule="F", growth=True)
     ...     print("{} {} {}".format(order, numpy.around(X, 2), numpy.around(W, 2)))
     0 [[0.5]] [1.]
     1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]

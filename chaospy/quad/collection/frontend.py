@@ -89,14 +89,12 @@ def get_function(rule, domain, normalize, **parameters):
         abscissas, weights = quad_function(order, *args, **params)
 
         # normalize if prudent:
-        if (
-                rule in UNORMALIZED_QUADRATURE_RULES and
-                normalize and isinstance(domain, Dist)
-        ):
-            if len(domain) == 1:
-                weights *= domain.pdf(abscissas).flatten()
-            else:
-                weights *= domain.pdf(abscissas)
+        if rule in UNORMALIZED_QUADRATURE_RULES and normalize:
+            if isinstance(domain, Dist):
+                if len(domain) == 1:
+                    weights *= domain.pdf(abscissas).flatten()
+                else:
+                    weights *= domain.pdf(abscissas)
             weights /= numpy.sum(weights)
 
         return abscissas, weights
