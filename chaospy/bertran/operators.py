@@ -2,7 +2,6 @@
 Basic tools for Bertran index manipulation.
 """
 import functools
-from contextlib import suppress
 
 import numpy
 import scipy.special
