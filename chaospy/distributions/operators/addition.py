@@ -329,6 +329,13 @@ class Add(Dist):
             return left+right
         return self
 
+    def _inv_cache(self, cache):
+        left = evaluation.get_forward_cache(self.prm["left"], cache)
+        right = evaluation.get_forward_cache(self.prm["right"], cache)
+        if not isinstance(left, Dist) and not isinstance(right, Dist):
+            return left+right
+        return self
+
 
 def add(left, right):
     return Add(left, right)

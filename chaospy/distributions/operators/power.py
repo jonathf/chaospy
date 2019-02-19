@@ -42,10 +42,8 @@ class Pow(Dist):
             [[8. 8. 8. 8.]
              [8. 8. 8. 8.]]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -117,10 +115,8 @@ class Pow(Dist):
             >>> print(chaospy.Pow(2, 3).fwd([7, 8, 9]))
             [0. 1. 1.]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -168,10 +164,8 @@ class Pow(Dist):
             >>> print(chaospy.Pow(2, 3).inv([0.1, 0.2, 0.9]))
             [8. 8. 8.]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_inverse_cache(left, cache)
+        right = evaluation.get_inverse_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -210,10 +204,8 @@ class Pow(Dist):
             >>> print(chaospy.Pow(2, 3).pdf([7, 8, 9]))
             [ 0. inf  0.]
         """
-        if isinstance(left, Dist) and left in cache:
-            left = cache[left]
-        if isinstance(right, Dist) and right in cache:
-            right = cache[right]
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
 
         if isinstance(left, Dist):
             if isinstance(right, Dist):
@@ -290,6 +282,13 @@ class Pow(Dist):
     def _fwd_cache(self, cache):
         left = evaluation.get_forward_cache(self.prm["left"], cache)
         right = evaluation.get_forward_cache(self.prm["right"], cache)
+        if not isinstance(left, Dist) and not isinstance(right, Dist):
+            return left**right
+        return self
+
+    def _inv_cache(self, cache):
+        left = evaluation.get_inverse_cache(self.prm["left"], cache)
+        right = evaluation.get_inverse_cache(self.prm["right"], cache)
         if not isinstance(left, Dist) and not isinstance(right, Dist):
             return left**right
         return self
