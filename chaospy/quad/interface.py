@@ -67,13 +67,4 @@ def generate_quadrature(order, domain, accuracy=100, sparse=False, rule="C",
     assert len(weights) == abscissas.shape[1]
     assert len(abscissas.shape) == 2
 
-    if isdist:
-        if rule != "golub_welsch":
-            if dim == 1:
-                weights *= domain.pdf(abscissas).flatten()
-            else:
-                weights *= domain.pdf(abscissas)
-        if not sparse:
-            weights /= np.sum(weights)
-
     return abscissas, weights
