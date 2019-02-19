@@ -1,5 +1,5 @@
 # pylint: disable=wildcard-import
-"""
+r"""
 To create quadrature abscissas and weights, use the
 :func:`~chaospy.quad.generate_quadrature` function. Which type of quadrature to
 use is defined by the flag ``rule``. This argument can either be the full name,
@@ -20,6 +20,6 @@ or a single letter representing the rule. These are as follows.
 ``Patterson``, ``P``
     Gauss-Patterson quadrature rule. Nested. Valid to order 8.
 ``Fejer``, ``F``
-    Fejér quadrature. Same as Clenshaw-Curtis, but without the endpoints.
+    Fejer quadrature. Same as Clenshaw-Curtis, but without the endpoints.
 """
 from .frontend import *

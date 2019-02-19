@@ -1,5 +1,5 @@
 """
-Fejér quadrature method.
+Fejer quadrature method.
 
 The same method as :ref:`clenshaw_curtis`, but without the end-points. This
 makes this a better method for performing quadrature on infinite intervals, as
@@ -51,7 +51,7 @@ import chaospy.quad
 
 def quad_fejer(order, lower=0, upper=1, growth=False, part=None):
     """
-    Generate the quadrature abscisas and weights in Fejér quadrature.
+    Generate the quadrature abscissas and weights in Fejer quadrature.
 
     Example:
         >>> abscissas, weights = quad_fejer(3, 0, 1)

@@ -87,7 +87,9 @@ def load_parameters(
         cache = {}
     if parameters is None:
         parameters = {}
-    parameters = {**distribution.prm, **parameters}
+    parameters_ = distribution.prm.copy()
+    parameters_.update(**parameters)
+    parameters = parameters_
 
     # self aware and should handle things itself:
     if contains_call_signature(getattr(distribution, method_name), "cache"):
