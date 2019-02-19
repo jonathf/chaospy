@@ -11,7 +11,7 @@ To use Smolyak sparse-grid in ``chaospy``, just pass the flag ``sparse=True``
 to the ``generate_quadrature`` function. For example::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
-    >>> X, W = chaospy.generate_quadrature(3, distribution, sparse=True)
+    >>> X, W = chaospy.generate_quadrature(3, distribution, normalize=True, sparse=True)
     >>> print(numpy.around(X, 4))
     [[0. 2. 4. 2. 0. 1. 2. 3. 4. 2. 0. 2. 4.]
      [0. 0. 0. 1. 2. 2. 2. 2. 2. 3. 4. 4. 4.]]
@@ -21,7 +21,7 @@ to the ``generate_quadrature`` function. For example::
 
 This compared to the full tensor-product grid::
 
-    >>> X, W = chaospy.generate_quadrature(3, distribution)
+    >>> X, W = chaospy.generate_quadrature(3, distribution, normalize=True)
     >>> print(numpy.around(X, 4))
     [[0. 0. 0. 0. 1. 1. 1. 1. 3. 3. 3. 3. 4. 4. 4. 4.]
      [0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4.]]
