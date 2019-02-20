@@ -1,7 +1,6 @@
 """Testing basic distributions and their operations
 """
 import math
-from contextlib import suppress
 from inspect import isclass
 
 import numpy as np
@@ -16,9 +15,11 @@ DISTRIBUTIONS = ()
 for name in dir(collection):
     attr = getattr(collection, name)
     if isclass(attr) and issubclass(attr, cp.Dist):
-        with suppress(TypeError):
+        try:
             if len(attr()) == 1:
                 DISTRIBUTIONS = DISTRIBUTIONS + (attr,)
+        except TypeError:
+            pass
 
 @pytest.fixture(params=DISTRIBUTIONS)
 def distribution(request):

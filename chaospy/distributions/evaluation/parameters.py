@@ -24,7 +24,7 @@ Define distribution dependencies::
 
 Unresolved usage::
 
-    >>> load_parameters(dist, "_pdf")
+    >>> load_parameters(dist, "_pdf") # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     chaospy.distributions.baseclass.StochasticallyDependentError: \
@@ -41,8 +41,13 @@ cache as the value::
     >>> class MyAdvancedDist(chaospy.Dist):
     ...     def _pdf(self, x_data, param1, cache): pass
     >>> dist = MyAdvancedDist(param1=sub_dist)
-    >>> print(load_parameters(dist, "_pdf", cache={sub_dist: 15}))
-    {'param1': Uniform(lower=0, upper=1), 'cache': {Uniform(lower=0, upper=1): 15}}
+    >>> params = load_parameters(dist, "_pdf", cache={sub_dist: 15})
+    >>> print(sorted(params))
+    ['cache', 'param1']
+    >>> print(params["param1"])
+    Uniform(lower=0, upper=1)
+    >>> print(params["cache"])
+    {Uniform(lower=0, upper=1): 15}
 """
 import inspect
 
@@ -87,7 +92,9 @@ def load_parameters(
         cache = {}
     if parameters is None:
         parameters = {}
-    parameters = {**distribution.prm, **parameters}
+    parameters_ = distribution.prm.copy()
+    parameters_.update(**parameters)
+    parameters = parameters_
 
     # self aware and should handle things itself:
     if contains_call_signature(getattr(distribution, method_name), "cache"):

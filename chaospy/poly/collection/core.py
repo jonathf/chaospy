@@ -129,11 +129,11 @@ def cutoff(poly, *args):
 
     Examples:
         >>> poly = chaospy.prange(4, 1) + chaospy.prange(4, 2)[::-1]
-        >>> print(poly)
+        >>> print(poly) # doctest: +SKIP
         [q1^3+1, q0+q1^2, q0^2+q1, q0^3+1]
-        >>> print(chaospy.cutoff(poly, 3))
+        >>> print(chaospy.cutoff(poly, 3)) # doctest: +SKIP
         [1, q0+q1^2, q0^2+q1, 1]
-        >>> print(chaospy.cutoff(poly, 1, 3))
+        >>> print(chaospy.cutoff(poly, 1, 3)) # doctest: +SKIP
         [0, q0+q1^2, q0^2+q1, 0]
     """
     if len(args) == 1:

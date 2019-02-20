@@ -19,31 +19,31 @@ For example for the tailored quadrature rules defined above:
 * Gauss-Hermit quadrature is tailored to the normal (Gaussian) distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Normal(0, 1), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[-2.857 -1.356 -0.     1.356  2.857]] [0.011 0.222 0.533 0.222 0.011]
 
 * Gauss-Legendre quadrature is tailored to the Uniform distributions::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Uniform(0, 1), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[0.047 0.231 0.5   0.769 0.953]] [0.118 0.239 0.284 0.239 0.118]
 
 * Gauss-Jacobi quadrature is tailored to the Beta distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Beta(2, 4), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[0.067 0.212 0.41  0.627 0.827]] [0.118 0.367 0.36  0.139 0.015]
 
 * Gauss-Laguerre quadrature is tailored to the Exponential distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Exponential(), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[ 0.264  1.413  3.596  7.086 12.641]] [0.522 0.399 0.076 0.004 0.   ]
 
 * Generalized Gauss-Laguerre quadrature is tailored to the Gamma distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Gamma(2, 4), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[ 2.468  8.452 18.443 33.596 57.04 ]] [0.348 0.502 0.141 0.009 0.   ]
 
 For uncommon distributions an analytical Stieltjes method can not be performed
@@ -54,25 +54,25 @@ For example, to mention a few:
 * The triangle distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Triangle(), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[-0.821 -0.45  -0.     0.45   0.821]] [0.052 0.239 0.418 0.239 0.052]
 
 * The Laplace distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Laplace(), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[-8.091 -2.855 -0.     2.855  8.091]] [0.001 0.114 0.771 0.114 0.001]
 
 * The Weibull distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Weibull(), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[ 0.264  1.413  3.596  7.086 12.64 ]] [0.522 0.399 0.076 0.004 0.   ]
 
 * The Rayleigh distribution::
 
     >>> X, W = chaospy.generate_quadrature(4, chaospy.Rayleigh(), rule="G")
-    >>> print(numpy.around(X, 3), numpy.around(W, 3))
+    >>> print("{} {}".format(numpy.around(X, 3), numpy.around(W, 3)))
     [[0.308 0.938 1.779 2.79  4.032]] [0.144 0.453 0.339 0.063 0.002]
 
 As a small side note, it is worth noting that since the weight function is

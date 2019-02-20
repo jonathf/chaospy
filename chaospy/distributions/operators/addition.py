@@ -293,7 +293,7 @@ class Add(Dist):
             >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
             [[ 2.5     2.5     2.5     2.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(1, 1).ttr([0, 1, 2, 3]), 4))
+            >>> print(numpy.around(chaospy.Add(1, 1).ttr([0, 1, 2, 3]), 4)) # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                 ...
             chaospy.distributions.baseclass.StochasticallyDependentError: recurrence ...
@@ -320,7 +320,7 @@ class Add(Dist):
         if self._repr is None:
             return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
                     ", " + str(self.prm["right"]) + ")")
-        return super().__str__()
+        return super(Add, self).__str__()
 
     def _fwd_cache(self, cache):
         left = evaluation.get_forward_cache(self.prm["left"], cache)

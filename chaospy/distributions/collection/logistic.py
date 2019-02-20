@@ -18,7 +18,7 @@ class logistic(Dist):
         return (1+numpy.e**-x)**-c
 
     def _ppf(self, q, c):
-        return -numpy.log(q**(-1/c)-1)
+        return -numpy.log(q**(-1./c)-1)
 
     def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)

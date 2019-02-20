@@ -49,8 +49,12 @@ def find_interior_point(
         >>> distribution = chaospy.Uniform(1000, 1010)
         >>> midpoint, lower, upper = find_interior_point(
         ...     distribution, retall=True, seed=1234)
-        >>> print(lower, numpy.around(midpoint, 4), upper)
-        [[-1.]] [[1009.8873]] [[1024.]]
+        >>> print(numpy.around(lower, 4))
+        [[-1.]]
+        >>> print(numpy.around(midpoint, 4))
+        [[1009.8873]]
+        >>> print(numpy.around(upper, 4))
+        [[1024.]]
     """
     random_state = numpy.random.get_state()
     numpy.random.seed(seed)

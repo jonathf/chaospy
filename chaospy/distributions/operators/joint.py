@@ -183,7 +183,7 @@ class J(Dist):
               [1.     4.     9.    ]]]
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(numpy.around(dist.ttr([1, 1]), 4))
+            >>> print(numpy.around(dist.ttr([1, 1]), 4)) # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                 ...
             chaospy.distributions.baseclass.StochasticallyDependentError: Joint ...
