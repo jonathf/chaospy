@@ -30,9 +30,17 @@ QUAD_SHORT_NAMES = {
     "f": "fejer",
 }
 
+UNORMALIZED_QUADRATURE_RULES = (
+    "clenshaw_curtis",
+    "gauss_legendre",
+    "gauss_patterson",
+    "genz_keister",
+    "fejer",
+)
 
 
-def get_function(rule, domain, **parameters):
+
+def get_function(rule, domain, normalize, **parameters):
     """
     Create a quadrature function and set default parameter values.
 
@@ -43,6 +51,12 @@ def get_function(rule, domain, **parameters):
             Defines ``lower`` and ``upper`` that is passed quadrature rule. If
             ``Dist``, ``domain`` is renamed to ``dist`` and also
             passed.
+        normalize (bool):
+            In the case of distributions, the abscissas and weights are not
+            tailored to a distribution beyond matching the bounds. If True, the
+            samples are normalized multiplying the weights with the density of
+            the distribution evaluated at the abscissas and normalized
+            afterwards to sum to one.
         parameters (:py:data:typing.Any):
             Redefining of the parameter defaults. Only add parameters that the
             quadrature rule expect.
@@ -72,6 +86,17 @@ def get_function(rule, domain, **parameters):
         """Implementation of quadrature function."""
         params = parameters_spec.copy()
         params.update(kws)
-        return quad_function(order, *args, **params)
+        abscissas, weights = quad_function(order, *args, **params)
+
+        # normalize if prudent:
+        if rule in UNORMALIZED_QUADRATURE_RULES and normalize:
+            if isinstance(domain, Dist):
+                if len(domain) == 1:
+                    weights *= domain.pdf(abscissas).flatten()
+                else:
+                    weights *= domain.pdf(abscissas)
+            weights /= numpy.sum(weights)
+
+        return abscissas, weights
 
     return _quad_function
