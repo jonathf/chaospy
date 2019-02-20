@@ -22,7 +22,7 @@ setup(
     license='MIT',
     platforms='any',
     packages=find_packages(),
-    install_requires=["numpy", "scipy", "networkx"],
+    install_requires=["numpy", "scipy"],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',

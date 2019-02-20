@@ -4,10 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-networkx = "*"
 numpy = "*"
 scipy = "*"
-sphinx = "*"
 
 [dev-packages]
 pytest = "*"
