@@ -13,7 +13,7 @@ The first few orders with linear growth rule::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(order, distribution, rule="F")
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0.25 0.75]] [0.5 0.5]
     2 [[0.146 0.5   0.854]] [0.286 0.429 0.286]
@@ -24,7 +24,7 @@ The first few orders with exponential growth rule::
     >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="F", growth=True)
-    ...     print(order, numpy.around(X, 2), numpy.around(W, 2))
+    ...     print("{} {} {}".format(order, numpy.around(X, 2), numpy.around(W, 2)))
     0 [[0.5]] [1.]
     1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]
     2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]] [0.07 0.14 0.18 0.2  0.18 0.14 0.07]
@@ -102,20 +102,35 @@ def _fejer(order, composite=None):
     Backend method.
 
     Examples:
-        >>> print(*_fejer(0))
-        [0.5] [1.]
-        >>> print(*_fejer(1))
-        [0.25 0.75] [0.44444444 0.44444444]
-        >>> print(*_fejer(2))
-        [0.14644661 0.5        0.85355339] [0.26666667 0.4        0.26666667]
-        >>> print(*_fejer(3), sep="\n")
+        >>> abscissas, weights = _fejer(0)
+        >>> print(abscissas)
+        [0.5]
+        >>> print(weights)
+        [1.]
+        >>> abscissas, weights = _fejer(1)
+        >>> print(abscissas)
+        [0.25 0.75]
+        >>> print(weights)
+        [0.44444444 0.44444444]
+        >>> abscissas, weights = _fejer(2)
+        >>> print(abscissas)
+        [0.14644661 0.5        0.85355339]
+        >>> print(weights)
+        [0.26666667 0.4        0.26666667]
+        >>> abscissas, weights = _fejer(3)
+        >>> print(abscissas)
         [0.0954915 0.3454915 0.6545085 0.9045085]
+        >>> print(weights)
         [0.18037152 0.29962848 0.29962848 0.18037152]
-        >>> print(*_fejer(4), sep="\n")
+        >>> abscissas, weights = _fejer(4)
+        >>> print(abscissas)
         [0.0669873 0.25      0.5       0.75      0.9330127]
+        >>> print(weights)
         [0.12698413 0.22857143 0.26031746 0.22857143 0.12698413]
-        >>> print(*_fejer(5), sep="\n")
+        >>> abscissas, weights = _fejer(5)
+        >>> print(abscissas)
         [0.04951557 0.1882551  0.38873953 0.61126047 0.8117449  0.95048443]
+        >>> print(weights)
         [0.0950705  0.17612121 0.2186042  0.2186042  0.17612121 0.0950705 ]
     """
     order = int(order)

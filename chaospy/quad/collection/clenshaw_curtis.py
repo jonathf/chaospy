@@ -17,7 +17,7 @@ The first few orders with linear growth rule::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(order, distribution, rule="C")
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0. 1.]] [0.5 0.5]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -28,7 +28,7 @@ The first few orders with exponential growth rule::
     >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="C", growth=True)
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
     2 [[0.    0.146 0.5   0.854 1.   ]] [0.033 0.267 0.4   0.267 0.033]
@@ -104,19 +104,35 @@ def _clenshaw_curtis(order, composite=None):
     Backend method.
 
     Examples:
-        >>> print(*_clenshaw_curtis(0))
-        [0.5] [1.]
-        >>> print(*_clenshaw_curtis(1))
-        [0. 1.] [0.5 0.5]
-        >>> print(*_clenshaw_curtis(2))
-        [0.  0.5 1. ] [0.16666667 0.66666667 0.16666667]
-        >>> print(*_clenshaw_curtis(3))
-        [0.   0.25 0.75 1.  ] [0.05555556 0.44444444 0.44444444 0.05555556]
-        >>> print(*_clenshaw_curtis(4), sep="\n")
+        >>> abscissas, weights = _clenshaw_curtis(0)
+        >>> print(abscissas)
+        [0.5]
+        >>> print(weights)
+        [1.]
+        >>> abscissas, weights = _clenshaw_curtis(1)
+        >>> print(abscissas)
+        [0. 1.]
+        >>> print(weights)
+        [0.5 0.5]
+        >>> abscissas, weights = _clenshaw_curtis(2)
+        >>> print(abscissas)
+        [0.  0.5 1. ]
+        >>> print(weights)
+        [0.16666667 0.66666667 0.16666667]
+        >>> abscissas, weights = _clenshaw_curtis(3)
+        >>> print(abscissas)
+        [0.   0.25 0.75 1.  ]
+        >>> print(weights)
+        [0.05555556 0.44444444 0.44444444 0.05555556]
+        >>> abscissas, weights = _clenshaw_curtis(4)
+        >>> print(abscissas)
         [0.         0.14644661 0.5        0.85355339 1.        ]
+        >>> print(weights)
         [0.03333333 0.26666667 0.4        0.26666667 0.03333333]
-        >>> print(*_clenshaw_curtis(5), sep="\n")
+        >>> abscissas, weights = _clenshaw_curtis(5)
+        >>> print(abscissas)
         [0.        0.0954915 0.3454915 0.6545085 0.9045085 1.       ]
+        >>> print(weights)
         [0.02       0.18037152 0.29962848 0.29962848 0.18037152 0.02      ]
     """
     if order == 0:

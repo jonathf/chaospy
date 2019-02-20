@@ -19,7 +19,7 @@ Illegal dependencies:
     >>> dist1 = chaospy.Uniform()
     >>> dist2 = chaospy.Trunc(dist1, 0.5)
     >>> dist = chaospy.J(dist1, dist2)
-    >>> dist.sample()
+    >>> dist.sample() # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     chaospy.distributions.baseclass.StochasticallyDependentError: truncated variable ...

@@ -58,7 +58,7 @@ class TruncExponential(Add):
     def __init__(self, upper=1, scale=1, shift=0):
         self._repr = {"upper": upper, "scale": scale, "shift": shift}
         Add.__init__(
-            self, left=truncexpon((upper-shift)/scale)*scale, right=shift)
+            self, left=truncexpon((upper-shift)*1./scale)*scale, right=shift)
 
 
 Truncexpon = deprecation_warning(TruncExponential, "Truncexpon")

@@ -13,7 +13,7 @@ The first few orders::
     >>> for order in [0, 1, 2, 3, 4]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="J")
-    ...     print(order, numpy.around(abscissas, 3), numpy.around(weights, 3))
+    ...     print("{} {} {}".format(order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
     1 [[0.5 1. ]] [1. 0.]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]

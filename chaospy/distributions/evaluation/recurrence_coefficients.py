@@ -13,15 +13,15 @@ Define a simple distribution and data::
 
 Normal usage::
 
-    >>> print(*evaluate_recurrence_coefficients(dist, k_data))
-    2.5 1.0
-    >>> print(*evaluate_recurrence_coefficients(dist, k_data, parameters={"alpha": 1.}))
-    5.0 4.0
+    >>> print(evaluate_recurrence_coefficients(dist, k_data))
+    [2.5 1. ]
+    >>> print(evaluate_recurrence_coefficients(dist, k_data, parameters={"alpha": 1.}))
+    [5. 4.]
 
 The use of cache::
 
-    >>> print(*evaluate_recurrence_coefficients(dist, k_data, cache={((2,), dist): (3., 4.)}))
-    3.0 4.0
+    >>> print(evaluate_recurrence_coefficients(dist, k_data, cache={((2,), dist): (3., 4.)}))
+    (3.0, 4.0)
 
 Approximate with the use of density, forward, inverse and bound function if recurrence function is missing::
 
