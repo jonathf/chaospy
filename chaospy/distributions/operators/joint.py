@@ -73,6 +73,27 @@ class J(Dist):
         assert uloc.shape == xloc.shape
         return uloc
 
+    def _range(self, xloc, cache):
+        """
+        Special handle for finding bounds on constrained dists.
+
+        Example:
+            >>> d0 = chaospy.Uniform()
+            >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
+            >>> print(dist.range())
+            [[0. 0.]
+             [1. 2.]]
+        """
+        uloc = numpy.zeros((2, len(self)))
+        for dist in evaluation.sorted_dependencies(self, reverse=True):
+            if dist not in self.inverse_map:
+                continue
+            idx = self.inverse_map[dist]
+            xloc_ = xloc[idx].reshape(1, -1)
+            uloc[:, idx] = evaluation.evaluate_bound(
+                dist, xloc_, cache=cache).flatten()
+        return uloc
+
     def _bnd(self, xloc, cache, **kwargs):
         """
         Example:
@@ -86,11 +107,11 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(dist.range([[-0.5, 0.5, 1.5], [0, 1, 2]]))
-            [[[0. 0. 0.]
-              [0. 0. 0.]]
+            [[[ 0.   0.   0. ]
+              [-0.5  0.5  1.5]]
             <BLANKLINE>
-             [[1. 1. 1.]
-              [2. 2. 2.]]]
+             [[ 1.   1.   1. ]
+              [ 0.5  1.5  2.5]]]
         """
         uloc = numpy.zeros((2,)+xloc.shape)
         for dist in evaluation.sorted_dependencies(self, reverse=True):
@@ -100,6 +121,7 @@ class J(Dist):
             xloc_ = xloc[idx].reshape(1, -1)
             uloc[:, idx] = evaluation.evaluate_bound(
                 dist, xloc_, cache=cache)[:, 0]
+            cache[dist] = xloc_
         return uloc
 
     def _pdf(self, xloc, cache, **kwargs):
@@ -155,7 +177,7 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(numpy.around(dist.mom([1, 1]), 4))
-            0.5
+            0.5833
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
             raise StochasticallyDependentError(

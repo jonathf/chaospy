@@ -42,27 +42,31 @@ Example Usage
 -------------
 
 ``chaospy`` is created to be simple and modular. A simple script to implement
-point collocation method will look as follows::
+point collocation method will look as follows:
 
-    >>> import chaospy as cp
-    >>> import numpy as np
+.. code-block:: python
 
-    >>> def foo(coord, prm): # your code wrapper goes here
-    ...     """Function to do uncertainty quantification on."""
-    ...     return prm[0] * np.e ** (-prm[1] * np.linspace(0, 10, 100))
+    import chaospy
+    import numpy
 
-    >>> distribution = cp.J(
-    ...     cp.Uniform(1, 2),
-    ...     cp.Uniform(0.1, 0.2)
-    ... )
+    # your code wrapper goes here
+    def foo(coord, prm):
+        """Function to do uncertainty quantification on."""
+        return prm[0] * numpy.e ** (-prm[1] * numpy.linspace(0, 10, 100))
 
-    >>> polynomial_expansion = cp.orth_ttr(8, distribution)
+    # bi-variate probability distribution
+    distribution = choaspy.J(cp.Uniform(1, 2), chaospy.Uniform(0.1, 0.2))
 
-    >>> foo_approx = cp.fit_regression(
-    ...     polynomial_expansion, samples, evals)
+    # polynomial chaos expansion
+    polynomial_expansion = chaospy.orth_ttr(8, distribution)
 
-    >>> expected = cp.E(foo_approx, distribution)
-    >>> deviation = cp.Std(foo_approx, distribution)
+    # polynomial approximation
+    foo_approx = chaospy.fit_regression(
+        polynomial_expansion, samples, evals)
+
+    # statistical metrics
+    expected = chaospy.E(foo_approx, distribution)
+    deviation = chaospy.Std(foo_approx, distribution)
 
 For a more extensive description of what going on, see the `tutorial
 <https://chaospy.readthedocs.io/en/master/tutorial.html>`_.

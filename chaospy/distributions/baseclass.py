@@ -84,6 +84,8 @@ class Dist(object):
             except StochasticallyDependentError:
                 x_data = approximation.find_interior_point(self)
             shape = (len(self),)
+            if hasattr(self, "_range"):
+                return self._range(x_data, {})
         else:
             x_data = numpy.asfarray(x_data)
             shape = x_data.shape

@@ -5,13 +5,14 @@ import re
 from setuptools import setup, find_packages
 
 # move to current directory:
-ORIGINAL_PATH = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe())))
-os.chdir(ORIGINAL_PATH)
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 with open(os.path.join("chaospy", "version.py")) as src:
     regex = r"^__version__\s*=\s*['\"]([^'\"]+)['\"]"
     VERSION = re.search(regex, src.read(), flags=re.M).group(1)
+
+with open("README.rst") as src:
+    LONG_DESCRIPTION = src.read()
 
 setup(
     name='chaospy',
@@ -30,4 +31,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
     ],
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/x-rst",
 )
