@@ -60,6 +60,12 @@ point collocation method will look as follows:
     # polynomial chaos expansion
     polynomial_expansion = chaospy.orth_ttr(8, distribution)
 
+    # samples:
+    samples = distribution.sample(1000)
+
+    # evaluations:
+    evals = [foo(sample) for sample in samples.T]
+
     # polynomial approximation
     foo_approx = chaospy.fit_regression(
         polynomial_expansion, samples, evals)
