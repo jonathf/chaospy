@@ -13,7 +13,7 @@ or a single letter representing the rule. These are as follows.
 ``Clenshaw``, ``C``
     Clenshaw-Curtis quadrature. Exponential growth rule is used when sparse is
     True to make the rule nested.
-``Leja``, J``
+``Leja``, ``J``
     Leja quadrature. Linear growth rule is nested.
 ``Genz``, ``Z``
     Hermite Genz-Keizter 16 rule. Nested. Valid to order 8.
