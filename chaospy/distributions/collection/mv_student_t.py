@@ -1,6 +1,6 @@
 """Multivariate Student-T Distribution."""
 import numpy
-from scipy import special, misc
+from scipy import special
 
 from ..baseclass import Dist
 from .student_t import student_t
@@ -125,7 +125,7 @@ class MvStudentT(Dist):
 
     #     out = numpy.zeros(k.shape[1])
     #     for i in range(len(M)):
-    #         coef = numpy.prod(misc.comb(k.T, K[:,i]).T, 0)
+    #         coef = numpy.prod(special.comb(k.T, K[:,i]).T, 0)
     #         diff = k.T - K[:,i]
     #         pos = diff>=0
     #         diff = diff*pos

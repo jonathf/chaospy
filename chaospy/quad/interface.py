@@ -2,7 +2,7 @@
 import inspect
 
 import numpy as np
-from scipy.misc import comb
+from scipy.special import comb
 
 from . import collection, sparse_grid
 

@@ -1,6 +1,6 @@
 """Multivariate Normal Distribution."""
 import numpy
-from scipy import special, misc
+from scipy import special
 
 from .normal import normal
 
@@ -113,7 +113,7 @@ class MvNormal(Dist):
         out = 0.
 
         for i in range(len(M)):
-            coef = numpy.prod(misc.comb(k.T, K[:,i]).T, 0)
+            coef = numpy.prod(special.comb(k.T, K[:,i]).T, 0)
             diff = k.T - K[:,i]
             pos = diff >= 0
             diff = diff*pos
