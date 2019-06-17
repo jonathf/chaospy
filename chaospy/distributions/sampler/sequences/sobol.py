@@ -67,8 +67,6 @@ import math
 
 import numpy
 
-
-RANDOM_SEED = 1
 DIM_MAX = 40
 LOG_MAX = 30
 
@@ -106,15 +104,6 @@ POLY = (
 )
 
 
-def set_state(seed_value=None, step=None):
-    """Set random seed."""
-    global RANDOM_SEED  # pylint: disable=global-statement
-    if seed_value is not None:
-        RANDOM_SEED = seed_value
-    if step is not None:
-        RANDOM_SEED += step
-
-
 def create_sobol_samples(order, dim, seed=1):
     """
     Args:
@@ -131,14 +120,6 @@ def create_sobol_samples(order, dim, seed=1):
             Quasi-random vector with ``shape == (dim, order)``.
     """
     assert 0 < dim < DIM_MAX, "dim in [1, 40]"
-
-    # global RANDOM_SEED  # pylint: disable=global-statement
-    # if seed is None:
-    #     seed = RANDOM_SEED
-    # RANDOM_SEED += order
-    set_state(seed_value=seed)
-    seed = RANDOM_SEED
-    set_state(step=order)
 
     # Initialize row 1 of V.
     samples = SOURCE_SAMPLES.copy()
