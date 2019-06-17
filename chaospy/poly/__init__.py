@@ -29,17 +29,17 @@ It can be expanded to include number of dimensions and a lower bound for the
 polynomial order::
 
       >>> print(cp.basis(start=1, stop=2, dim=2))
-      [q0, q1, q0^2, q0q1, q1^2]
+      [q1, q0, q1^2, q0q1, q0^2]
 
 There is also the possibility to create anisotropic expansions::
 
       >>> print(cp.basis(start=1, stop=[1, 2]))
-      [q0, q1, q0q1, q1^2, q0q1^2]
+      [q1, q0, q1^2, q0q1, q0q1^2]
 
 and the possibility to fine tune the sorting of the polynomials::
 
       >>> print(cp.basis(start=1, stop=2, dim=2, sort="GRI"))
-      [q0^2, q0q1, q1^2, q0, q1]
+      [q1^2, q0q1, q0^2, q1, q0]
 
 To manipulate a polynomial there is a collection of tools available. In
 table [tab\_poly] they are listed with description. Much of the behavior

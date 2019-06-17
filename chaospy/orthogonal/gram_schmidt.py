@@ -9,7 +9,7 @@ import numpy
 import chaospy
 
 
-def orth_gs(order, dist, normed=False, sort="GR", cross_truncation=1., **kws):
+def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
 

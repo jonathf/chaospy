@@ -1,28 +1,46 @@
 """
 Basic tools for Bertran index manipulation.
 """
+import math
 import functools
+import itertools
 
 import numpy
 import scipy.special
 
 import chaospy.bertran
 
+_ADD_CACHE = {}
+_MULTI_INDEX_CACHE = {}
+
 
 def add(idxi, idxj, dim):
     """
     Bertran addition.
 
-    Example
-    -------
-    >>> print(chaospy.bertran.add(3, 3, 1))
-    6
-    >>> print(chaospy.bertran.add(3, 3, 2))
-    10
+    Args:
+        idxi (Tuple):
+            Index in integer notation
+        idxj (Tuple):
+            Index in integer notation
+        dim (int):
+            The number of dimensions of the expansion.
+
+    Examples:
+        >>> print(chaospy.bertran.add(3, 3, 1))
+        6
+        >>> print(chaospy.bertran.add(3, 3, 2))
+        10
     """
-    idxm = numpy.array(multi_index(idxi, dim))
-    idxn = numpy.array(multi_index(idxj, dim))
-    out = single_index(idxm + idxn)
+    key = idxi, idxj, dim
+    if key in _ADD_CACHE:
+        return _ADD_CACHE[key]
+
+    idxi = multi_index(idxi, dim)
+    idxj = multi_index(idxj, dim)
+    out = single_index(tuple(i+j for i,j in zip(idxi, idxj)))
+
+    _ADD_CACHE[key] = out
     return out
 
 
@@ -30,72 +48,91 @@ def terms(order, dim):
     """
     Count the number of polynomials in an expansion.
 
-    Parameters
-    ----------
-    order : int
-        The upper order for the expansion.
-    dim : int
-        The number of dimensions of the expansion.
+    Args:
+        order (int):
+            The upper order for the expansion.
+        dim (int):
+            The number of dimensions of the expansion.
 
-    Returns
-    -------
-    N : int
-        The number of terms in an expansion of upper order `M` and
-        number of dimensions `dim`.
+    Returns:
+        The number of terms in an expansion of upper order ``order`` and number
+        of dimensions ``dim``.
     """
-    return int(scipy.special.comb(order+dim, dim, 1))
+    return int(math.factorial(order+dim)/
+               (math.factorial(order)*math.factorial(dim)))
 
 
 def multi_index(idx, dim):
     """
     Single to multi-index using graded reverse lexicographical notation.
 
-    Parameters
-    ----------
-    idx : int
-        Index in interger notation
-    dim : int
-        The number of dimensions in the multi-index notation
+    Args:
+        idx (int):
+            Index in integer notation
+        dim (int):
+            The number of dimensions in the multi-index notation
 
-    Returns
-    -------
-    out : tuple
-        Multi-index of `idx` with `len(out)=dim`
+    Returns (Tuple):
+        Multi-index of ``idx`` with ``len(out) == dim``.
 
-    Examples
-    --------
-    >>> for idx in range(5):
-    ...     print(chaospy.bertran.multi_index(idx, 3))
-    (0, 0, 0)
-    (1, 0, 0)
-    (0, 1, 0)
-    (0, 0, 1)
-    (2, 0, 0)
+    Examples:
+        >>> for idx in range(5):
+        ...     print(chaospy.bertran.multi_index(idx, 3))
+        (0, 0, 0)
+        (1, 0, 0)
+        (0, 1, 0)
+        (0, 0, 1)
+        (2, 0, 0)
 
-    See Also
-    --------
-    single_index
+    See Also:
+        :func:`single_index`
     """
-    def _rec(idx, dim):
+    key = idx, dim
+    if key in _MULTI_INDEX_CACHE:
+        return _MULTI_INDEX_CACHE[key]
+
+    if not dim:
+        out = ()
+
+    elif idx == 0:
+        out = (0, )*dim
+
+    else:
         idxn = idxm = 0
-        if not dim:
-            return ()
-
-        if idx == 0:
-            return (0, )*dim
-
         while terms(idxn, dim) <= idx:
             idxn += 1
         idx -= terms(idxn-1, dim)
 
         if idx == 0:
-            return (idxn,) + (0,)*(dim-1)
-        while terms(idxm, dim-1) <= idx:
-            idxm += 1
+            out = (idxn,) + (0,)*(dim-1)
+        else:
+            while terms(idxm, dim-1) <= idx:
+                idxm += 1
+            out = (int(idxn-idxm),) + multi_index(idx, dim-1)
 
-        return (int(idxn-idxm),) + _rec(idx, dim-1)
+    _MULTI_INDEX_CACHE[key] = out
+    return out
 
-    return _rec(idx, dim)
+
+def bertran_indices(start, stop, dim=1):
+    """
+    >>> list(bertran_indices(start=3, stop=3, dim=2))
+    [(0, 3), (1, 2), (2, 1), (3, 0)]
+    >>> list(bertran_indices(start=0, stop=1, dim=3))
+    [(0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0)]
+    """
+    midx = [0]*dim
+    while stop is None or start <= stop:
+
+        for indices in itertools.combinations_with_replacement(
+                range(dim), start):
+            for idx in indices:
+                midx[dim-idx-1] += 1
+            yield tuple(midx)
+            for idx in indices:
+                midx[dim-idx-1] -= 1
+
+        start += 1
 
 
 def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
@@ -103,17 +140,20 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     Generator for creating multi-indices.
 
     Args:
-        start (int):
-            The lower order of the indices
-        stop (:py:data:typing.Optional[int]):
+        start (Union[int, numpy.ndarray]):
+            The lower order of the indices. If array of int, counts as lower
+            bound for each axis.
+        stop (Union[int, numpy.ndarray, None]):
             the maximum shape included. If omitted: stop <- start; start <- 0
             If int is provided, set as largest total order. If array of int,
-            set as largest order along each axis.
+            set as upper bound for each axis.
         dim (int):
             The number of dimensions in the expansion
+        sort (str):
+            Criteria to sort the indices by.
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
-            terms in expansion.
+            terms in expansion. Ignored if ``stop`` is a array.
 
     Returns:
         list:
@@ -121,9 +161,21 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
 
     Examples:
         >>> print(chaospy.bertran.bindex(2, 3, 2))
-        [[2, 0], [1, 1], [0, 2], [3, 0], [2, 1], [1, 2], [0, 3]]
+        [(0, 2), (1, 1), (2, 0), (0, 3), (1, 2), (2, 1), (3, 0)]
+        >>> print(chaospy.bertran.bindex(2, [1, 3], 2, cross_truncation=0))
+        [(0, 2), (1, 1), (0, 3), (1, 2), (1, 3)]
+        >>> print(chaospy.bertran.bindex([1, 2], [2, 3], 2, cross_truncation=0))
+        [(1, 2), (1, 3), (2, 2), (2, 3)]
+        >>> print(chaospy.bertran.bindex([1, 1], 3, 2, cross_truncation=0))
+        [(1, 1), (1, 2), (2, 1)]
+        >>> print(chaospy.bertran.bindex(1, 3, 2, cross_truncation=1))
+        [(0, 1), (1, 0), (0, 2), (1, 1), (2, 0), (0, 3), (1, 2), (2, 1), (3, 0)]
+        >>> print(chaospy.bertran.bindex(1, 3, 2, cross_truncation=1.5))
+        [(0, 1), (1, 0), (0, 2), (1, 1), (2, 0), (0, 3), (3, 0)]
+        >>> print(chaospy.bertran.bindex(1, 3, 2, cross_truncation=2))
+        [(0, 1), (1, 0), (0, 2), (2, 0), (0, 3), (3, 0)]
         >>> print(chaospy.bertran.bindex(0, 1, 3))
-        [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        [(0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0)]
     """
     if stop is None:
         start, stop = 0, start
@@ -131,33 +183,20 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     stop = numpy.array(stop, dtype=int).flatten()
     sort = sort.upper()
 
-    total = numpy.mgrid[(slice(numpy.max(stop), -1, -1),)*dim]
-    total = numpy.array(total).reshape(dim, -1)
-
-    if start.size > 1:
-        for idx, start_ in enumerate(start):
-            total = total[:, total[idx] >= start_]
+    if start.size > 1 and stop.size > 1:
+        include = lambda midx: numpy.all((start <= midx) & (midx <= stop))
+    elif start.size > 1:
+        include = lambda midx: numpy.all(start <= midx)
+    elif stop.size > 1:
+        include = lambda midx: numpy.all(midx <= stop)
     else:
-        total = total[:, total.sum(0) >= start]
-    if stop.size > 1:
-        for idx, stop_ in enumerate(stop):
-            total = total[:, total[idx] <= stop_]
+        include = lambda midx: True
 
-    total = total.T.tolist()
+    total = [midx for midx in bertran_indices(
+        min(start), sum(stop), dim=dim) if include(midx)]
 
-    if "G" in sort:
-        total = sorted(total, key=sum)
-
-    else:
-        def cmp_(idxi, idxj):
-            """Old style compare method."""
-            if not numpy.any(idxi):
-                return 0
-            if idxi[0] == idxj[0]:
-                return cmp(idxi[:-1], idxj[:-1])
-            return (idxi[-1] > idxj[-1]) - (idxi[-1] < idxj[-1])
-        key = functools.cmp_to_key(cmp_)
-        total = sorted(total, key=key)
+    if "G" not in sort:
+        total = sorted(total)
 
     if "I" in sort:
         total = total[::-1]
@@ -165,14 +204,16 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     if "R" in sort:
         total = [idx[::-1] for idx in total]
 
-    for pos, idx in reversed(list(enumerate(total))):
-        idx = numpy.array(idx)
-        cross_truncation = numpy.asfarray(cross_truncation)
-        try:
-            if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
-                del total[pos]
-        except (OverflowError, ZeroDivisionError):
-            pass
+    # only do cross truncation if integer bounds
+    if stop.size == 1:
+        for pos, idx in reversed(list(enumerate(total))):
+            idx = numpy.array(idx)
+            cross_truncation = numpy.asfarray(cross_truncation)
+            try:
+                if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
+                    del total[pos]
+            except (OverflowError, ZeroDivisionError):
+                pass
 
     return total
 

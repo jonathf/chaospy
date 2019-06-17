@@ -102,7 +102,7 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
-        >>> poly = chaospy.basis(2, 2, dim=2)
+        >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
         >>> print(poly)
         [q0^2, q0q1, q1^2]
         >>> print(numpy.around(Sens_m_sample(poly, dist, 10000, rule="M"), 4))
@@ -156,7 +156,7 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
-        >>> poly = chaospy.basis(2, 2, dim=2)
+        >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
         >>> print(poly)
         [q0^2, q0q1, q1^2]
         >>> print(numpy.around(Sens_m2_sample(poly, dist, 10000, rule="H"), 4))
@@ -233,7 +233,7 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
-        >>> poly = chaospy.basis(2, 2, dim=2)
+        >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
         >>> print(poly)
         [q0^2, q0q1, q1^2]
         >>> print(numpy.around(Sens_t_sample(poly, dist, 10000, rule="H"), 4))
@@ -250,8 +250,3 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
         (2*numpy.where(variance, variance, 1))
         for index in numpy.eye(dim, dtype=bool)
     ])
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

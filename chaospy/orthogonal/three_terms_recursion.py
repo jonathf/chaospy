@@ -56,7 +56,7 @@ import chaospy
 
 
 def orth_ttr(
-        order, dist, normed=False, sort="GR", retall=False,
+        order, dist, normed=False, sort="G", retall=False,
         cross_truncation=1., **kws):
     """
     Create orthogonal polynomial expansion from three terms recursion formula.

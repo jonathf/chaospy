@@ -2,6 +2,7 @@
 import numpy
 from scipy import special
 
+from chaospy.bertran import bindex
 from .normal import normal
 
 from ..baseclass import Dist
@@ -19,6 +20,9 @@ class MvNormal(Dist):
         >>> distribution = chaospy.MvNormal([1, 2], [[1, 0.6], [0.6, 1]])
         >>> print(distribution)
         MvNormal(loc=[1.0, 2.0], scale=[[1.0, 0.6], [0.6, 1.0]])
+        >>> print(chaospy.Cov(distribution))
+        [[1.  0.6]
+         [0.6 1. ]]
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
         >>> print(numpy.around(distribution.inv(mesh), 4))
         [[[0.3255 1.     1.6745]
@@ -85,43 +89,69 @@ class MvNormal(Dist):
 
     def _mom(self, k, C, Ci, loc):
         scale = numpy.dot(C, C.T)
-
-        def mom(k):
-
-            zeros = (numpy.sum(k,0)%2==1)+numpy.any(numpy.array(k)<0, 0)
-            if numpy.all(zeros, 0):
-                return 0.
-
-            dim, K = k.shape
-            ra = numpy.arange(dim).repeat(K).reshape(dim,K)
-
-            i = numpy.argmax(k != 0, 0)
-
-            out = numpy.zeros(k.shape[1:])
-            out[:] = numpy.where(numpy.choose(i,k),
-                    (numpy.choose(i,k)-1)*scale[i,i]*mom(k-2*(ra==i)), 1)
-            for x in range(1, dim):
-                out += \
-                (numpy.choose(i,k)!=0)*(x>i)*k[x]*scale[i,x]*mom(k-(ra==i)-(ra==x))
-
-            return out
-
-        dim = len(loc)
-        K = numpy.mgrid[[slice(0,_+1,1) for _ in k]]
-        K = K.reshape(dim, -1)
-        M = mom(K)
         out = 0.
-
-        for i in range(len(M)):
-            coef = numpy.prod(special.comb(k.T, K[:,i]).T, 0)
-            diff = k.T - K[:,i]
+        for idx, kdx in enumerate(bindex(k, dim=len(C), sort="G")):
+            coef = numpy.prod(special.comb(k.T, kdx).T, 0)
+            diff = k.T - kdx
             pos = diff >= 0
             diff = diff*pos
             pos = numpy.all(pos)
             loc_ = numpy.prod(loc**diff)
-            out += pos*coef*loc_*M[i]
 
-        return out
+            out += pos*coef*loc_*isserlis_moment(tuple(kdx), scale)
+
+        return float(out)
 
     def __len__(self):
         return len(self.prm["C"])
+
+
+def isserlis_moment(k, scale):
+    """
+    Raw statistical moments centralized Normal distribution using Isserlis'
+    theorem.
+
+    Args:
+        k (Tuple[int, ...]):
+            Moment orders.
+        scale (ndarray):
+            Covariance matrix defining dependencies between variables.
+
+    Returns:
+        Raw statistical moment of order ``k`` given covariance ``scale``.
+
+    Examples:
+        >>> scale = 0.5*numpy.eye(3)+0.5
+        >>> isserlis_moment((2, 2, 2), scale)
+        3.5
+        >>> isserlis_moment((0, 0, 0), scale)
+        1.0
+        >>> isserlis_moment((1, 0, 0), scale)
+        0.0
+        >>> isserlis_moment((0, 1, 1), scale)
+        0.5
+        >>> isserlis_moment((0, 0, 2), scale)
+        1.0
+    """
+    if not isinstance(k, numpy.ndarray):
+        k = numpy.asarray(k)
+    assert len(k.shape) == 1
+
+    # Recursive exit condition
+    if (numpy.sum(k) % 2 == 1) or numpy.any(k < 0):
+        return 0.
+
+    # Choose a pivot index as first non-zero entry
+    idx = numpy.nonzero(k)[0]
+    if not idx.size:
+        # Skip if no pivot found
+        return 1.
+    idx = idx[0]
+
+    eye = numpy.eye(len(k), dtype=int)
+    out = (k[idx]-1)*scale[idx, idx]*isserlis_moment(k-2*eye[idx], scale)
+    for idj in range(idx+1, len(k)):
+        out += k[idj]*scale[idx, idj]*isserlis_moment(
+            k-eye[idx]-eye[idj], scale)
+
+    return float(out)

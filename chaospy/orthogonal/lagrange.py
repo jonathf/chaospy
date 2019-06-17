@@ -10,7 +10,7 @@ For more details, see this `article on Lagrange polynomials`_.
 import numpy
 import chaospy
 
-def lagrange_polynomial(abscissas, sort="GR"):
+def lagrange_polynomial(abscissas, sort="G"):
     """
     Create Lagrange polynomials.
 

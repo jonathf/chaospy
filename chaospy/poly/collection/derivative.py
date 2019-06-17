@@ -78,7 +78,8 @@ def gradient(poly):
         >>> print(chaospy.gradient(poly))
         [2, q2, q1]
     """
-    return differential(poly, chaospy.poly.collection.basis(1, 1, poly.dim))
+    return differential(
+        poly, chaospy.poly.collection.basis(1, 1, poly.dim, sort="GR"))
 
 
 def hessian(poly):

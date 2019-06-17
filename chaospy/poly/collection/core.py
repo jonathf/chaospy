@@ -49,9 +49,9 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
         (Poly) : Polynomial array.
 
     Examples:
-        >>> print(chaospy.basis(4, 4, 2))
+        >>> print(chaospy.basis(4, 4, 2, sort="GR"))
         [q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
-        >>> print(chaospy.basis([1, 1], [2, 2]))
+        >>> print(chaospy.basis([1, 1], [2, 2], sort="GR"))
         [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
     """
     if stop is None:

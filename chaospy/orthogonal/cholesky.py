@@ -27,7 +27,7 @@ import numpy
 import chaospy
 
 
-def orth_chol(order, dist, normed=True, sort="GR", cross_truncation=1., **kws):
+def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
