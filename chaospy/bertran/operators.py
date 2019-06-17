@@ -1,7 +1,6 @@
 """
 Basic tools for Bertran index manipulation.
 """
-import math
 import functools
 import itertools
 
@@ -58,8 +57,7 @@ def terms(order, dim):
         The number of terms in an expansion of upper order ``order`` and number
         of dimensions ``dim``.
     """
-    return int(math.factorial(order+dim)/
-               (math.factorial(order)*math.factorial(dim)))
+    return int(scipy.special.comb(order+dim, dim, exact=True))
 
 
 def multi_index(idx, dim):

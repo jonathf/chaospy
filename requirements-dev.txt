@@ -7,4 +7,3 @@ pytest-cov
 coverage
 sphinx
 sphinx-autobuild
-seaborn

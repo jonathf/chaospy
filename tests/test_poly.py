@@ -28,12 +28,12 @@ def test_poly_matrix():
 
 
 def test_poly_basis():
-    basis = cp.basis(1, 2, 2)
+    basis = cp.basis(1, 2, 2, sort="GR")
     assert str(basis) == "[q0, q1, q0^2, q0q1, q1^2]"
 
 
 def test_poly_dimredux():
-    basis = cp.basis(1, 2, 2)
+    basis = cp.basis(1, 2, 2, sort="GR")
     X = cp.variable()
     assert basis[0] == X
 
@@ -51,7 +51,7 @@ def test_poly_evals():
 
 
 def test_poly_indirect_evals():
-    basis = cp.basis(1, 2, 2)
+    basis = cp.basis(1, 2, 2, sort="GR")
     x, y = cp.variable(2)
     assert basis(q1=3)[1] == 3
     assert basis(q1=3)[3] == 3*x

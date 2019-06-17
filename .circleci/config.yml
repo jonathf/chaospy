@@ -13,7 +13,7 @@ jobs:
                     sudo python setup.py install
             - run:
                 name: "Run tests"
-                command: pytest --cov=chaospy
+                command: pytest --cov=chaospy chaospy tests
             - run:
                 name: "Coverage report"
                 command: codecov
