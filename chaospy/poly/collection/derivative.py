@@ -3,7 +3,7 @@ Polynomial transformation functions involving derivatives.
 """
 
 import numpy as np
-from scipy.special import factorial as fac
+from scipy.special import factorial
 
 import chaospy.poly.caller
 import chaospy.poly.collection
@@ -56,7 +56,7 @@ def differential(poly, diffvar):
             continue
         newkey = tuple(newkey)
         core[newkey] = poly.A[key] * np.prod(
-            [fac(key[idx], exact=True) / fac(newkey[idx], exact=True)
+            [factorial(key[idx], exact=True) / factorial(newkey[idx], exact=True)
              for idx in range(poly.dim)])
 
     return Poly(core, poly.dim, poly.shape, poly.dtype)

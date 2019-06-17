@@ -43,7 +43,6 @@ from .pareto1 import Pareto1
 from .pareto2 import Pareto2
 from .power_log_normal import PowerLogNormal, PowerLognormal
 from .power_normal import PowerNormal, Powernorm
-from .raised_cosine import RaisedCosine, Raised_cosine
 from .reciprocal import Reciprocal
 from .student_t import StudentT, Student_t
 from .triangle import Triangle
