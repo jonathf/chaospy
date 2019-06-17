@@ -39,6 +39,9 @@ def Corr(poly, dist=None, **kws):
     else:
         poly = polynomials.Poly(poly)
 
+    if not poly.shape:
+        return numpy.ones((1, 1))
+
     cov = Cov(poly, dist, **kws)
     var = numpy.diag(cov)
     vvar = numpy.sqrt(numpy.outer(var, var))

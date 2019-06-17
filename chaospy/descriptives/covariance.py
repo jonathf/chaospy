@@ -1,6 +1,7 @@
 """Covariance matrix."""
 import numpy
 
+from .variance import Var
 from .. import distributions, poly as polynomials
 
 
@@ -40,6 +41,9 @@ def Cov(poly, dist=None, **kws):
         poly, dist = x, poly
     else:
         poly = polynomials.Poly(poly)
+
+    if not poly.shape:
+        return Var(poly, dist).reshape(1, 1)
 
     dim = len(dist)
     shape = poly.shape
