@@ -1,6 +1,6 @@
 """Power log-Normal probability distribution."""
 import numpy
-from scipy.special import ndtr, ndtri
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -15,13 +15,13 @@ class power_log_normal(Dist):
 
     def _pdf(self, x, c, s):
         norm = (2*numpy.pi)**-.5*numpy.exp(-(numpy.log(x)/s)**2/2.)
-        return c/(x*s)*norm*pow(ndtr(-numpy.log(x)/s), c*1.-1.)
+        return c/(x*s)*norm*pow(special.ndtr(-numpy.log(x)/s), c*1.-1.)
 
     def _cdf(self, x, c, s):
-        return 1. - pow(ndtr(-numpy.log(x)/s), c*1.)
+        return 1. - pow(special.ndtr(-numpy.log(x)/s), c*1.)
 
     def _ppf(self, q, c, s):
-        return numpy.exp(-s*ndtri(pow(1.-q, 1./c)))
+        return numpy.exp(-s*special.ndtri(pow(1.-q, 1./c)))
 
     def _bnd(self, x, c, s):
         return 0., self._ppf(1-1e-10, c, s)

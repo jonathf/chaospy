@@ -1,6 +1,6 @@
 """Power normal or Box-Cox distribution."""
 import numpy
-from scipy.special import ndtr, ndtri
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -15,13 +15,13 @@ class power_normal(Dist):
 
     def _pdf(self, x, c):
         norm = (2*numpy.pi)**-.5*numpy.exp(-x**2/2.)
-        return c*norm*ndtr(-x)**(c-1.)
+        return c*norm*special.ndtr(-x)**(c-1.)
 
     def _cdf(self, x, c):
-        return 1.-ndtr(-x)**c
+        return 1.-special.ndtr(-x)**c
 
     def _ppf(self, q, c):
-        return -ndtri(pow(1-q, 1./c))
+        return -special.ndtri(pow(1-q, 1./c))
 
     def _bnd(self, x, c):
         return self._ppf(1e-10, c), self._ppf(1-1e-10, c)

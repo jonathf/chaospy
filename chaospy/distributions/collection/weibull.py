@@ -1,6 +1,6 @@
 """Weibull Distribution."""
 import numpy
-from scipy.special import gamma
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -22,7 +22,7 @@ class weibull(Dist):
         return (-numpy.log(1-q+1*(q==1)))**(1./a)*(q!=1) + 30.**(1./a)*(q==1)
 
     def _mom(self, k, a):
-        return gamma(1.+k*1./a)
+        return special.gamma(1.+k*1./a)
 
     def _bnd(self, x, a):
         return 0, 30.**(1./a)

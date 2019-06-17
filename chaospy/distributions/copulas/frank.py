@@ -1,5 +1,6 @@
 """Frank copula."""
 import numpy
+from scipy import special
 
 from .baseclass import Archimedean, Copula
 from ..baseclass import Dist

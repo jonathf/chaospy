@@ -1,6 +1,6 @@
 """Burr Type III distribution."""
 import numpy
-from scipy.special import beta
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add

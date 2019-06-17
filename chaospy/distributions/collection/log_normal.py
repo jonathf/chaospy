@@ -1,6 +1,6 @@
 """Log-Normal probability distribution."""
 import numpy
-from scipy.special import ndtr, ndtri
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -18,10 +18,10 @@ class log_normal(Dist):
         return out
 
     def _cdf(self, x, a):
-        return ndtr(numpy.log(x+(1-x)*(x<=0))/a)*(x>0)
+        return special.ndtr(numpy.log(x+(1-x)*(x<=0))/a)*(x>0)
 
     def _ppf(self, x, a):
-        return numpy.e**(a*ndtri(x))
+        return numpy.e**(a*special.ndtri(x))
 
     def _mom(self, k, a):
         return numpy.e**(.5*a*a*k*k)

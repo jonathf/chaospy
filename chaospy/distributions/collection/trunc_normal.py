@@ -1,6 +1,6 @@
 """Truncated normal distribution."""
 import numpy
-from scipy.special import ndtr, ndtri
+from scipy import special
 
 from ..baseclass import Dist
 from .deprecate import deprecation_warning
@@ -39,22 +39,22 @@ class TruncNormal(Dist):
         Dist.__init__(self, a=lower, b=upper, sigma=sigma, mu=mu)
 
     def _pdf(self, x, a, b, mu, sigma):
-        fa = ndtr((a-mu)/sigma)
-        fb = ndtr((b-mu)/sigma)
+        fa = special.ndtr((a-mu)/sigma)
+        fb = special.ndtr((b-mu)/sigma)
         x = (x-mu)/sigma
         norm = (2*numpy.pi)**(-.5)*numpy.e**(-x**2/2.)
         return norm/(fb-fa)
 
     def _cdf(self, x, a, b, mu, sigma):
-        fa = ndtr((a-mu)/sigma)
-        fb = ndtr((b-mu)/sigma)
-        x = ndtr((x-mu)/sigma)
+        fa = special.ndtr((a-mu)/sigma)
+        fb = special.ndtr((b-mu)/sigma)
+        x = special.ndtr((x-mu)/sigma)
         return (x - fa) / (fb-fa)
 
     def _ppf(self, q, a, b, mu, sigma):
-        fa = ndtr((a-mu)/sigma)
-        fb = ndtr((b-mu)/sigma)
-        return ndtri(q*(fb-fa) + fa)*sigma + mu
+        fa = special.ndtr((a-mu)/sigma)
+        fb = special.ndtr((b-mu)/sigma)
+        return special.ndtri(q*(fb-fa) + fa)*sigma + mu
 
     def _bnd(self, x, a, b, mu, sigma):
         return a, b

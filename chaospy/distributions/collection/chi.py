@@ -1,6 +1,6 @@
 """Chi distribution."""
 import numpy
-from scipy.special import gamma, gammainc, gammaincinv
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -13,19 +13,21 @@ class chi(Dist):
         Dist.__init__(self, df=df)
 
     def _pdf(self, x, df):
-        return x**(df-1.)*numpy.exp(-x*x*0.5)/(2.0)**(df*0.5-1)/gamma(df*0.5)
+        return x**(df-1.)*numpy.exp(-x*x*0.5)/(2.0)**(df*0.5-1)\
+                /special.gamma(df*0.5)
 
     def _cdf(self, x, df):
-        return gammainc(df*0.5,0.5*x*x)
+        return special.gammainc(df*0.5,0.5*x*x)
 
     def _ppf(self, q, df):
-        return numpy.sqrt(2*gammaincinv(df*0.5,q))
+        return numpy.sqrt(2*special.gammaincinv(df*0.5,q))
 
     def _bnd(self, x, df):
         return 0, self._ppf(1-1e-10, df)
 
     def _mom(self, k, df):
-        return 2**(.5*k)*gamma(.5*(df+k))/gamma(.5*df)
+        return 2**(.5*k)*special.gamma(.5*(df+k))\
+                /special.gamma(.5*df)
 
 
 class Chi(Add):

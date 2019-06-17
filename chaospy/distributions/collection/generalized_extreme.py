@@ -1,5 +1,6 @@
 """Generalized extreme value distribution."""
 import numpy
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add

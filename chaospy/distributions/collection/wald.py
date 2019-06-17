@@ -1,6 +1,6 @@
 """Wald distribution."""
 import numpy
-from scipy.special import ndtr
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -25,8 +25,8 @@ class wald(Dist):
         isqx = numpy.tile(numpy.inf, x.shape)
         indices = x > 0
         isqx[indices] = 1./numpy.sqrt(x[indices])
-        out = 1.-ndtr(isqx*trm1)
-        out -= numpy.exp(2.0/mu)*ndtr(-isqx*trm2)
+        out = 1.-special.ndtr(isqx*trm1)
+        out -= numpy.exp(2.0/mu)*special.ndtr(-isqx*trm2)
         return out
 
     def _bnd(self, x, mu):

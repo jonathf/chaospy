@@ -1,6 +1,6 @@
 """Levy distribution."""
 import numpy
-from scipy.special import ndtr, ndtri
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -16,10 +16,10 @@ class levy(Dist):
         return 1/numpy.sqrt(2*numpy.pi*x)/x*numpy.exp(-1/(2*x))
 
     def _cdf(self, x):
-        return 2*(1-ndtr(1/numpy.sqrt(x)))
+        return 2*(1-special.ndtr(1/numpy.sqrt(x)))
 
     def _ppf(self, q):
-        val = ndtri(1-q/2.0)
+        val = special.ndtri(1-q/2.0)
         return 1.0/(val*val)
 
     def _bnd(self, x):

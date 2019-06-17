@@ -1,6 +1,6 @@
 """Raised cosine distribution."""
 import numpy
-from scipy.special import hyp1f2
+from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -23,7 +23,7 @@ class raised_cosine(Dist):
         return -1,1
 
     def _mom(self, k):
-        output = numpy.array([hyp1f2(k_+.5, .5, k_+1.5, -numpy.pi**2/4)[0]
+        output = numpy.array([special.hyp1f2(k_+.5, .5, k_+1.5, -numpy.pi**2/4)[0]
                               for k_ in k.flatten()]).reshape(k.shape)
         output = 1/(1.+k) + 1/(1.+2*k)*output
         output = numpy.where(k % 2, output, 0)
