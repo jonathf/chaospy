@@ -5,7 +5,7 @@ import functools
 import itertools
 
 import numpy
-import scipy.special
+from scipy.special import comb
 
 import chaospy.bertran
 
@@ -57,7 +57,7 @@ def terms(order, dim):
         The number of terms in an expansion of upper order ``order`` and number
         of dimensions ``dim``.
     """
-    return int(scipy.special.comb(order+dim, dim, exact=True))
+    return int(comb(order+dim, dim, exact=True))
 
 
 def multi_index(idx, dim):

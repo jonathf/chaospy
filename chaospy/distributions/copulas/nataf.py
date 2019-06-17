@@ -1,6 +1,6 @@
 """Nataf (normal) copula."""
 import numpy
-from scipy import special
+from scipy.special import ndtr, ndtri
 
 from .baseclass import Archimedean, Copula
 from ..baseclass import Dist

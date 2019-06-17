@@ -1,6 +1,5 @@
 """Log-laplace distribution."""
 import numpy
-from scipy import special, misc
 
 from ..baseclass import Dist
 from ..operators.addition import Add

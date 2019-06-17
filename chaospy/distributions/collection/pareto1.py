@@ -1,6 +1,5 @@
 """Pareto type 1 distribution."""
 import numpy
-from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add

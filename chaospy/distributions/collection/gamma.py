@@ -1,6 +1,6 @@
 """Gamma distribution."""
 import numpy
-from scipy import special
+from scipy.special import gamma, gammainc, gammaincinv
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -12,16 +12,16 @@ class gamma(Dist):
         Dist.__init__(self, a=a)
 
     def _pdf(self, x, a):
-        return x**(a-1)*numpy.e**(-x) / special.gamma(a)
+        return x**(a-1)*numpy.e**(-x) / gamma(a)
 
     def _cdf(self, x, a):
-        return special.gammainc(a, x)
+        return gammainc(a, x)
 
     def _ppf(self, q, a):
-        return special.gammaincinv(a, q)
+        return gammaincinv(a, q)
 
     def _mom(self, k, a):
-        return special.gamma(a+k)/special.gamma(a)
+        return gamma(a+k)/gamma(a)
 
     def _ttr(self, n, a):
         return 2.*n+a, n*n+n*(a-1)

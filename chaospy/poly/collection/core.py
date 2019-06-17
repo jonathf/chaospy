@@ -3,7 +3,7 @@ Collection of tools for manipulation polynomial.
 """
 
 import numpy
-from scipy.special import comb, factorial as fac
+from scipy.special import comb, factorial
 
 import chaospy.poly.dimension
 import chaospy.bertran
@@ -192,8 +192,8 @@ def differential(P, Q):
         if numpy.any(newkey<0):
             continue
 
-        A[tuple(newkey)] = P.A[key]*numpy.prod([fac(key[i], \
-            exact=True)/fac(newkey[i], exact=True) \
+        A[tuple(newkey)] = P.A[key]*numpy.prod([factorial(key[i], \
+            exact=True)/factorial(newkey[i], exact=True) \
             for i in range(P.dim)])
 
     return Poly(B, P.dim, P.shape, P.dtype)

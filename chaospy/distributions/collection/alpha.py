@@ -1,6 +1,6 @@
 """Alpha probability distribution."""
 import numpy
-from scipy import special
+from scipy.special import ndtr, ndtri
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -13,13 +13,13 @@ class alpha(Dist):
         Dist.__init__(self, a=a)
 
     def _cdf(self, x, a):
-        return special.ndtr(a-1./x) / special.ndtr(a)
+        return ndtr(a-1./x) / ndtr(a)
 
     def _ppf(self, q, a):
-        return 1.0/(a-special.ndtri(q*special.ndtr(a)))
+        return 1.0/(a-ndtri(q*ndtr(a)))
 
     def _pdf(self, x, a):
-        return 1.0/(x**2)/special.ndtr(a)*numpy.e**(.5*(a-1.0/x)**2)/numpy.sqrt(2*numpy.pi)
+        return 1.0/(x**2)/ndtr(a)*numpy.e**(.5*(a-1.0/x)**2)/numpy.sqrt(2*numpy.pi)
 
     def _bnd(self, x, a):
         return 0, self._ppf(1-1e-10, a)

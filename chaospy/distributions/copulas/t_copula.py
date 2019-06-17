@@ -1,6 +1,6 @@
 """T-Copula."""
 import numpy
-from scipy import special
+from scipy.special import stdtr, stdtrit
 
 from .baseclass import Archimedean, Copula
 from ..baseclass import Dist
@@ -18,11 +18,11 @@ class t_copula(Dist):
         return self.length
 
     def _cdf(self, x, df, C, Ci):
-        out = special.stdtr(df, numpy.dot(Ci, special.stdtrit(df, x)))
+        out = stdtr(df, numpy.dot(Ci, stdtrit(df, x)))
         return out
 
     def _ppf(self, q, df, C, Ci):
-        out = special.stdtr(df, numpy.dot(C, special.stdtrit(df, q)))
+        out = stdtr(df, numpy.dot(C, stdtrit(df, q)))
         return out
 
     def _bnd(self):

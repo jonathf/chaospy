@@ -1,6 +1,6 @@
 """Non-central Chi-squared distribution."""
 import numpy
-from scipy import special
+from scipy.special import iv, chndtr, chndtrix
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -16,14 +16,14 @@ class chi_squared(Dist):
     def _pdf(self, x, df, nc):
         output = 0.5*numpy.e**(-0.5*(x+nc))
         output *= (x/nc)**(0.25*df-0.5)
-        output *= special.iv(0.5*df-1, (nc*x)**0.5)
+        output *= iv(0.5*df-1, (nc*x)**0.5)
         return output
 
     def _cdf(self, x, df, nc):
-        return special.chndtr(x, df, nc)
+        return chndtr(x, df, nc)
 
     def _ppf(self, q, df, nc):
-        return special.chndtrix(q, df, nc)
+        return chndtrix(q, df, nc)
 
     def _bnd(self, x, df, nc):
         for expon in range(12, -1, -1):

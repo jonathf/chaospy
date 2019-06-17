@@ -1,6 +1,6 @@
 """Multivariate Normal Distribution."""
 import numpy
-from scipy import special
+from scipy.special import ndtr, ndtri, comb
 
 from chaospy.bertran import bindex
 from .normal import normal
@@ -68,10 +68,10 @@ class MvNormal(Dist):
         Dist.__init__(self, C=C, Ci=Ci, loc=loc)
 
     def _cdf(self, x, C, Ci, loc):
-        return special.ndtr(numpy.dot(Ci, (x.T-loc.T).T))
+        return ndtr(numpy.dot(Ci, (x.T-loc.T).T))
 
     def _ppf(self, q, C, Ci, loc):
-        return (numpy.dot(C, special.ndtri(q)).T+loc.T).T
+        return (numpy.dot(C, ndtri(q)).T+loc.T).T
 
     def _pdf(self, x, C, Ci, loc):
         det = numpy.linalg.det(numpy.dot(C,C.T))
@@ -91,7 +91,7 @@ class MvNormal(Dist):
         scale = numpy.dot(C, C.T)
         out = 0.
         for idx, kdx in enumerate(bindex(k, dim=len(C), sort="G")):
-            coef = numpy.prod(special.comb(k.T, kdx).T, 0)
+            coef = numpy.prod(comb(k.T, kdx).T, 0)
             diff = k.T - kdx
             pos = diff >= 0
             diff = diff*pos

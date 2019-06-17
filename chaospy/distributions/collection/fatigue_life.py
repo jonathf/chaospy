@@ -1,6 +1,6 @@
 """Fatigue-life distribution."""
 import numpy
-from scipy import special
+from scipy.special import ndtr, ndtri
 
 from ..baseclass import Dist
 from ..operators.addition import Add
@@ -20,10 +20,10 @@ class fatigue_life(Dist):
         return output
 
     def _cdf(self, x, c):
-        return special.ndtr(1.0/c*(numpy.sqrt(x)-1.0/numpy.sqrt(x)))
+        return ndtr(1.0/c*(numpy.sqrt(x)-1.0/numpy.sqrt(x)))
 
     def _ppf(self, q, c):
-        tmp = c*special.ndtri(q)
+        tmp = c*ndtri(q)
         return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
 
     def _bnd(self, x, c):
