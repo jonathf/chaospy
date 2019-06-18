@@ -78,5 +78,5 @@ from .constructor import construct
 
 from . import (
     sampler, evaluation, approximation,
-    copulas, collection, operators, construct
+    copulas, collection, operators, constructor
 )

@@ -1,2 +1,11 @@
 numpy
 scipy
+scikit-learn
+pytest
+pytest-runner
+codecov
+pytest-cov
+coverage
+sphinx
+sphinx-autobuild
+
