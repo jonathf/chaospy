@@ -9,7 +9,7 @@ or a single letter representing the rule. These are as follows.
     Optimal Gaussian quadrature from Golub-Welsch. A slow method for higher
     order.
 ``Legendre``, ``E``
-    Gauss-Legendre quadrature
+    Gauss-Legendre quadrature.
 ``Clenshaw``, ``C``
     Clenshaw-Curtis quadrature. Exponential growth rule is used when sparse is
     True to make the rule nested.
@@ -21,5 +21,7 @@ or a single letter representing the rule. These are as follows.
     Gauss-Patterson quadrature rule. Nested. Valid to order 8.
 ``Fejer``, ``F``
     Fejer quadrature. Same as Clenshaw-Curtis, but without the endpoints.
+``Kronrod``, ``K``
+    Gauss-Kronrod quadrature.
 """
 from .frontend import *

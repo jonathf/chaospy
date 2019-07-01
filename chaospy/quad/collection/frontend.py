@@ -5,6 +5,7 @@ import numpy
 from .clenshaw_curtis import quad_clenshaw_curtis
 from .gauss_patterson import quad_gauss_patterson
 from .gauss_legendre import quad_gauss_legendre
+from .gauss_kronrod import quad_gauss_kronrod
 from .genz_keister import quad_genz_keister
 from .golub_welsch import quad_golub_welsch
 from .leja import quad_leja
@@ -14,6 +15,7 @@ QUAD_FUNCTIONS = {
     "clenshaw_curtis": quad_clenshaw_curtis,
     "gauss_legendre": quad_gauss_legendre,
     "gauss_patterson": quad_gauss_patterson,
+    "gauss_kronrod": quad_gauss_kronrod,
     "genz_keister": quad_genz_keister,
     "golub_welsch": quad_golub_welsch,
     "leja": quad_leja,
@@ -28,12 +30,14 @@ QUAD_SHORT_NAMES = {
     "g": "golub_welsch",
     "j": "leja",
     "f": "fejer",
+    "k": "gauss_kronrod",
 }
 
 UNORMALIZED_QUADRATURE_RULES = (
     "clenshaw_curtis",
     "gauss_legendre",
     "gauss_patterson",
+    "gauss_kronrod",
     "genz_keister",
     "fejer",
 )
