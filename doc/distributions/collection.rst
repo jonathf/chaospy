@@ -248,11 +248,6 @@ Power-Normal Distribution
 
 .. autoclass:: chaospy.distributions.collection.power_normal.PowerNormal
 
-Raised Cosine Distribution
---------------------------
-
-.. autoclass:: chaospy.distributions.collection.raised_cosine.RaisedCosine
-
 Rayleigh Distribution
 ---------------------
 

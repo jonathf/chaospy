@@ -1,8 +1,8 @@
 version: 2
 jobs:
-    test-3.6: &test-template
+    test-3.7: &test-template
         docker:
-            - image: circleci/python:3.6.7
+            - image: circleci/python:3.7.3
         working_directory: ~/repo
         steps:
             - checkout
@@ -14,17 +14,31 @@ jobs:
             - run:
                 name: "Run tests"
                 command: pytest --cov=chaospy chaospy tests
+
             - run:
                 name: "Coverage report"
                 command: codecov
-    test-3.7:
+    test-3.6:
         <<: *test-template
         docker:
-            - image: circleci/python:3.7.1
+            - image: circleci/python:3.6.8
     test-2.7:
         <<: *test-template
         docker:
-            - image: circleci/python:2.7.15
+            - image: circleci/python:2.7.16
+    documentation:
+        <<: *test-template
+        steps:
+            - checkout
+            - run:
+                name: "Install Python requirements"
+                command: |
+                    sudo pip install -Ur requirements.txt
+                    sudo python setup.py install
+                    mkdir doc/.static
+            - run:
+                name: "Ensure documentation build"
+                command: sphinx-build doc/ doc/.build -b html -n -v --color -T -W
 workflows:
     version: 2
     test:
@@ -32,3 +46,4 @@ workflows:
             - test-3.6
             - test-3.7
             - test-2.7
+            - documentation
