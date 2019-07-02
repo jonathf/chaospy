@@ -67,6 +67,22 @@ exist::
     ValueError: Kronrod algorithm results in illegal coefficients;
     Gauss-Kronrod possibly not possible for Normal(mu=0, sigma=1)
 
+Multivariate support::
+
+    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
+    >>> X, W = chaospy.generate_quadrature(1, distribution, rule="K")
+    >>> print(numpy.around(X, 3))
+    [[0.037 0.037 0.037 0.037 0.037 0.211 0.211 0.211 0.211 0.211 0.5   0.5
+      0.5   0.5   0.5   0.789 0.789 0.789 0.789 0.789 0.963 0.963 0.963 0.963
+      0.963]
+     [0.144 0.297 0.444 0.612 0.796 0.144 0.297 0.444 0.612 0.796 0.144 0.297
+      0.444 0.612 0.796 0.144 0.297 0.444 0.612 0.796 0.144 0.297 0.444 0.612
+      0.796]]
+    >>> print(numpy.around(W, 3))
+    [0.006 0.027 0.035 0.026 0.004 0.016 0.067 0.086 0.065 0.011 0.02  0.085
+     0.11  0.083 0.014 0.016 0.067 0.086 0.065 0.011 0.006 0.027 0.035 0.026
+     0.004]
+
 Sources
 -------
 
@@ -85,6 +101,7 @@ import numpy
 
 from .golub_welsch import _golbub_welsch
 from ..stieltjes import generate_stieltjes
+from ..combine import combine
 
 
 def quad_gauss_kronrod(order, dist=None):
@@ -121,7 +138,9 @@ def quad_gauss_kronrod(order, dist=None):
     _, _, coeffs_a, coeffs_b = generate_stieltjes(dist, length, retall=True)
 
     # Extend coefficients with extra Kronrod coefficients
-    coeffs_a, coeffs_b = kronrod_jacobi(order+1, coeffs_a, coeffs_b)
+    results = numpy.array([kronrod_jacobi(order+1, *coeffs)
+                           for coeffs in zip(coeffs_a, coeffs_b)])
+    coeffs_a, coeffs_b = results[:, 0], results[:, 1]
     if numpy.any(coeffs_b < 0):
         raise ValueError(
             "Kronrod algorithm results in illegal coefficients;\n"
@@ -129,9 +148,11 @@ def quad_gauss_kronrod(order, dist=None):
         )
 
     # Solve eigen problem for a tridiagonal matrix with As and Bs
-    abscisas, weight = _golbub_welsch([len(coeffs_a[0])], coeffs_a, coeffs_b)
-
-    return numpy.asfarray(abscisas), numpy.asfarray(weight[0])
+    abscissas, weights = _golbub_welsch(
+        [len(coeffs_a[0])]*len(dist), coeffs_a, coeffs_b)
+    abscissas = combine(abscissas).T
+    weights = numpy.prod(combine(weights), -1)
+    return abscissas, weights
 
 
 def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
@@ -155,16 +176,21 @@ def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
         Three terms recurrence coefficients of the Gauss-Kronrod quadrature
         rule.
     """
-    assert len(coeffs_a0[0]) == int(math.ceil(3*order/2.0))+1
-    assert len(coeffs_b0[0]) == int(math.ceil(3*order/2.0))+1
+    if len(coeffs_a0.shape) == 2:
+        coeffs = numpy.array([kronrod_jacobi(order, *coeffs)
+                              for coeffs in zip(coeffs_a0, coeffs_b0)])
+        return coeffs[:, 0], coeffs[:, 1]
+
+    assert len(coeffs_a0) == int(math.ceil(3*order/2.0))+1
+    assert len(coeffs_b0) == int(math.ceil(3*order/2.0))+1
 
     bound = int(math.floor(3*order/2.0))+1
     coeffs_a = numpy.zeros(2*order+1)
-    coeffs_a[:bound] = coeffs_a0[0, :bound]
+    coeffs_a[:bound] = coeffs_a0[:bound]
 
     bound = int(math.ceil(3*order/2.0))+1
     coeffs_b = numpy.zeros(2*order+1)
-    coeffs_b[:bound] = coeffs_b0[0, :bound]
+    coeffs_b[:bound] = coeffs_b0[:bound]
 
     sigma = numpy.zeros((2, order//2+2))
     sigma[1, 1] = coeffs_b[order+1]
@@ -201,4 +227,4 @@ def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
 
     coeffs_a[2*order] = (coeffs_a[order-1]-
                          coeffs_b[2*order]*sigma[0, 1]/sigma[1, 1])
-    return coeffs_a.reshape(1, -1), coeffs_b.reshape(1, -1)
+    return coeffs_a, coeffs_b
