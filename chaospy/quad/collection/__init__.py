@@ -25,3 +25,4 @@ or a single letter representing the rule. These are as follows.
     Gauss-Kronrod quadrature.
 """
 from .frontend import *
+from .gauss_kronrod import kronrod_jacobi

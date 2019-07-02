@@ -37,6 +37,7 @@ Gauss-Kronrod
 
 .. automodule:: chaospy.quad.collection.gauss_kronrod
 .. autofunction:: chaospy.quad.collection.gauss_kronrod.quad_gauss_kronrod
+.. autofunction:: chaospy.quad.collection.gauss_kronrod.kronrod_jacobi
 
 .. _leja:
 
