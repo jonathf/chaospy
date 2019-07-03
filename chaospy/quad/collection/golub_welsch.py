@@ -133,7 +133,7 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
         dist, numpy.max(order), accuracy=accuracy, retall=True, **kws)
 
     dimensions = len(dist)
-    abscisas, weights = _golbub_welsch(order, coeff1, coeff2)
+    abscisas, weights = _golub_welsch(order, coeff1, coeff2)
 
     if dimensions == 1:
         abscisa = numpy.reshape(abscisas, (1, order[0]))
@@ -147,7 +147,7 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
     return abscisa, weight
 
 
-def _golbub_welsch(orders, coeff1, coeff2):
+def _golub_welsch(orders, coeff1, coeff2):
     """Recurrence coefficients to abscisas and weights."""
     abscisas, weights = [], []
 

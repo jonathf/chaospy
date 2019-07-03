@@ -1,6 +1,6 @@
 """
 Gauss-Kronrod quadrature is an adaptive method for Gaussian quadrature rule. It
-builds on to of other quadrature rules by extending "pure" Gaussian quadrature
+builds on top of other quadrature rules by extending "pure" Gaussian quadrature
 rules with extra abscissas and new weights such that already used abscissas can
 be reused. For more details, see `Wikipedia article`_.
 
@@ -99,7 +99,7 @@ import math
 
 import numpy
 
-from .golub_welsch import _golbub_welsch
+from .golub_welsch import _golub_welsch
 from ..stieltjes import generate_stieltjes
 from ..combine import combine
 
@@ -148,7 +148,7 @@ def quad_gauss_kronrod(order, dist=None):
         )
 
     # Solve eigen problem for a tridiagonal matrix with As and Bs
-    abscissas, weights = _golbub_welsch(
+    abscissas, weights = _golub_welsch(
         [len(coeffs_a[0])]*len(dist), coeffs_a, coeffs_b)
     abscissas = combine(abscissas).T
     weights = numpy.prod(combine(weights), -1)
