@@ -77,12 +77,13 @@ def quad_gauss_radau(order, dist=None, fixed_point=None):
             imitted, use distribution lower point ``dist.range()[0]``.
 
     Returns:
-        abscissas (numpy.ndarray):
-            The quadrature points for where to evaluate the model function with
-            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
-            samples.
-        weights (numpy.ndarray):
-            The quadrature weights with ``weights.shape == (N,)``.
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Raises:
         ValueError:
@@ -114,7 +115,7 @@ def quad_gauss_radau(order, dist=None, fixed_point=None):
 
     _, _, coeffs_a, coeffs_b = generate_stieltjes(dist, 2*order-1, retall=True)
     try:
-        results = numpy.array([_radau(*coeffs) for coeffs in zip(
+        results = numpy.array([radau_jakobi(*coeffs) for coeffs in zip(
             coeffs_a, coeffs_b, fixed_point)])
     except numpy.linalg.LinAlgError:
         raise ValueError(

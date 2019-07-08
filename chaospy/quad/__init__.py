@@ -50,7 +50,7 @@ to multiply the weights :math:`W_i` with some adjustment scalar. For example::
     >>> N = 3
     >>> adjust_scalar = 2
     >>> X, W = chaospy.generate_quadrature(N, distribution, rule="G")
-    >>> W *= adjust_scaler
+    >>> W *= adjust_scalar
     >>> print(X)
     [[-0.86113631 -0.33998104  0.33998104  0.86113631]]
     >>> print(W)

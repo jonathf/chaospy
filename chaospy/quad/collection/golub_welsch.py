@@ -101,7 +101,7 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
 
     Args:
         order (int):
-            Quadrature order
+            Quadrature order.
         dist (chaospy.distributions.baseclass.Dist):
             Distribution nodes and weights are found for with `dim=len(dist)`
         accuracy (int):
@@ -109,12 +109,13 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
             be increased by one for each iteration.
 
     Returns:
-        abscissas (numpy.ndarray):
-            The quadrature points for where to evaluate the model function with
-            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
-            samples.
-        weights (numpy.ndarray):
-            The quadrature weights with ``weights.shape == (N,)``.
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Examples:
         >>> Z = chaospy.Normal()
@@ -136,23 +137,23 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
         dist, numpy.max(order), accuracy=accuracy, retall=True, **kws)
 
     dimensions = len(dist)
-    abscisas, weights = _golub_welsch(order, coeff1, coeff2)
+    abscissas, weights = _golub_welsch(order, coeff1, coeff2)
 
     if dimensions == 1:
-        abscisa = numpy.reshape(abscisas, (1, order[0]))
+        abscissas = numpy.reshape(abscissas, (1, order[0]))
         weight = numpy.reshape(weights, (order[0],))
     else:
-        abscisa = chaospy.quad.combine(abscisas).T
+        abscissas = chaospy.quad.combine(abscissas).T
         weight = numpy.prod(chaospy.quad.combine(weights), -1)
 
-    assert len(abscisa) == dimensions
-    assert len(weight) == len(abscisa.T)
-    return abscisa, weight
+    assert len(abscissas) == dimensions
+    assert len(weight) == len(abscissas.T)
+    return abscissas, weight
 
 
 def _golub_welsch(orders, coeff1, coeff2):
-    """Recurrence coefficients to abscisas and weights."""
-    abscisas, weights = [], []
+    """Recurrence coefficients to abscissas and weights."""
+    abscissas, weights = [], []
 
     for dim, order in enumerate(orders):
         if order:
@@ -161,13 +162,13 @@ def _golub_welsch(orders, coeff1, coeff2):
             bands[1, :-1] = numpy.sqrt(coeff2[dim, 1:order])
             vals, vecs = scipy.linalg.eig_banded(bands, lower=True)
 
-            abscisa, weight = vals.real, vecs[0, :]**2
-            indices = numpy.argsort(abscisa)
-            abscisa, weight = abscisa[indices], weight[indices]
+            abscissa, weight = vals.real, vecs[0, :]**2
+            indices = numpy.argsort(abscissa)
+            abscissa, weight = abscissa[indices], weight[indices]
 
         else:
-            abscisa, weight = numpy.array([coeff1[dim, 0]]), numpy.array([1.])
+            abscissa, weight = numpy.array([coeff1[dim, 0]]), numpy.array([1.])
 
-        abscisas.append(abscisa)
+        abscissas.append(abscissa)
         weights.append(weight)
-    return abscisas, weights
+    return abscissas, weights

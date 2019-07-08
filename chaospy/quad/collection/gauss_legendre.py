@@ -74,12 +74,13 @@ def quad_gauss_legendre(order, lower=0, upper=1):
             Upper bounds of interval to integrate over.
 
     Returns:
-        abscissas (numpy.ndarray):
-            The quadrature points for where to evaluate the model function with
-            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
-            samples.
-        weights (numpy.ndarray):
-            The quadrature weights with ``weights.shape == (N,)``.
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> abscissas, weights = quad_gauss_legendre(3)

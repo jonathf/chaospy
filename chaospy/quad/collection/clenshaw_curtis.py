@@ -69,12 +69,13 @@ def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False):
             include orders that enhances nested samples.
 
     Returns:
-        abscissas (numpy.ndarray):
-            The quadrature points for where to evaluate the model function with
-            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
-            samples.
-        weights (numpy.ndarray):
-            The quadrature weights with ``weights.shape == (N,)``.
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> abscissas, weights = quad_clenshaw_curtis(3, 0, 1)

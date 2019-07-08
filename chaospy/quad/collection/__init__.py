@@ -1,9 +1,9 @@
 # pylint: disable=wildcard-import
 r"""
 To create quadrature abscissas and weights, use the
-:func:`~chaospy.quad.generate_quadrature` function. Which type of quadrature to
-use is defined by the flag ``rule``. This argument can either be the full name,
-or a single letter representing the rule. These are as follows.
+:func:`~chaospy.quad.interface.generate_quadrature` function. Which type of
+quadrature to use is defined by the flag ``rule``. This argument can either be
+the full name, or a single letter representing the rule. These are as follows.
 
 Gaussian Quadratures Rules
 --------------------------

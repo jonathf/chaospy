@@ -1,5 +1,5 @@
 """
-Newton–Cotes quadrature, are a group of formulas for numerical integration
+Newton-Cotes quadrature, are a group of formulas for numerical integration
 based on evaluating the integrand at equally spaced points.
 
 Example usage
@@ -62,12 +62,13 @@ def quad_newton_cotes(order, lower=0, upper=1, growth=False):
             Upper bounds of interval to integrate over.
 
     Returns:
-        abscissas (numpy.ndarray):
-            The quadrature points for where to evaluate the model function with
-            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
-            samples.
-        weights (numpy.ndarray):
-            The quadrature weights with ``weights.shape == (N,)``.
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Examples:
         >>> abscissas, weights = quad_newton_cotes(3)
