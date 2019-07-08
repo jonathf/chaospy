@@ -1,23 +1,25 @@
 """
-Cunction to combine two dataset together with a tensor product.
+Function to combine two dataset together with a tensor product.
 """
 
 import numpy
 import chaospy
 
-def combine(args, part=None):
+def combine(args):
     """
     All linear combination of a list of list.
 
     Args:
-        args (numpy.ndarray) : List of input arrays.  Components to take linear
-            combination of with `args[i].shape=(N[i], M[i])` where N is to be
-            taken linear combination of and M is static.  M[i] is set to 1 if
-            missing.
+        args (numpy.ndarray):
+            List of input arrays.  Components to take linear combination of
+            with ``args[i].shape == (N[i], M[i])`` where ``N`` is to be taken
+            linear combination of and ``M`` is constant.  ``M[i]`` is set to
+            1 if missing.
 
     Returns:
-        (numpy.array) : matrix of combinations with shape (numpy.prod(N),
-            numpy.sum(M)).
+        (numpy.array):
+            Matrix of combinations with
+            ``shape == (numpy.prod(N), numpy.sum(M))``.
 
     Examples:
         >>> A, B = [1,2], [[4,4],[5,6]]
@@ -28,18 +30,6 @@ def combine(args, part=None):
          [2. 5. 6.]]
     """
     args = [cleanup(arg) for arg in args]
-
-    if part is not None:
-        parts, orders = part
-        if numpy.array(orders).size == 1:
-            orders = [int(numpy.array(orders).item())]*len(args)
-        parts = numpy.array(parts).flatten()
-
-        for i, arg in enumerate(args):
-            m, n = float(parts[i]), float(orders[i])
-            l = len(arg)
-            args[i] = arg[int(m/n*l):int((m+1)/n*l)]
-
     shapes = [arg.shape for arg in args]
     size = numpy.prod(shapes, 0)[0]*numpy.sum(shapes, 0)[1]
 
@@ -76,7 +66,3 @@ def cleanup(arg):
     elif len(arg.shape) > 2:
         raise ValueError("shapes must be smaller than 3")
     return arg
-
-if __name__=="__main__":
-    import doctest
-    doctest.testmod()

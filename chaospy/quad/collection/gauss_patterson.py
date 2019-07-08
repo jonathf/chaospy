@@ -1,11 +1,22 @@
 """
-Gauss-Patterson quadrature rule.
+The Gauss-Patterson quadrature is a nested family which begins with the
+Gauss-Legendre rules of orders 1 and 3, and then successively inserts one new
+abscissa in each subinterval. Thus, after the second rule, the Gauss-Patterson
+rules do not have the super-high precision of the Gauss-Legendre rules. They
+trade this precision in exchange for the advantages of nestedness. This means
+that Gauss-Patterson rules are only available for orders of 1, 3, 7, 15, 31,
+63, 127, 255 or 511.
 
-Adapted from John Burkardt's implementation in Fortran
-
-Licensing
+Sources
 ---------
-This code is distributed under the GNU LGPL license.
+
+This code is an adapted of John Burkardt's implementation in Fortran. The
+algorithm is taken from "Handbook of Computational Methods for Integration" by
+P. Kythe and M. Schaeferkotter, and `The Optimal Addition of Points to
+Quadrature Formulae`_.
+
+.. _The Optimal Addition of Points to Quadrature Formulae: \
+    https://www.jstor.org/stable/2004583
 """
 
 import numpy
@@ -18,11 +29,18 @@ def quad_gauss_patterson(order, dist):
     Generate sets abscissas and weights for Gauss-Patterson quadrature.
 
     Args:
-        order (int) : The quadrature order. Must be in the interval (0, 8).
-        dist (Dist) : The domain to create quadrature over.
+        order (int):
+            The quadrature order. Must be in the interval (0, 8).
+        dist (Dist):
+            The domain to create quadrature over.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray) : Abscissas and weights.
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function with
+            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
+            samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> X, W = chaospy.quad_gauss_patterson(3, chaospy.Uniform(0, 1))
@@ -32,18 +50,6 @@ def quad_gauss_patterson(order, dist):
         >>> print(numpy.around(W, 4))
         [0.0085 0.0258 0.0465 0.0672 0.0858 0.1003 0.1096 0.1128 0.1096 0.1003
          0.0858 0.0672 0.0465 0.0258 0.0085]
-
-    Reference:
-        Prem Kythe, Michael Schaeferkotter,
-        Handbook of Computational Methods for Integration,
-        Chapman and Hall, 2004,
-        ISBN: 1-58488-428-2,
-        LC: QA299.3.K98.
-
-        Thomas Patterson,
-        The Optimal Addition of Points to Quadrature Formulae,
-        Mathematics of Computation,
-        Volume 22, Number 104, October 1968, pages 847-856.
     """
     if len(dist) > 1:
 

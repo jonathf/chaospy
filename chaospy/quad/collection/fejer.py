@@ -1,9 +1,9 @@
 """
-Fejer quadrature method.
-
-The same method as :ref:`clenshaw_curtis`, but without the end-points. This
-makes this a better method for performing quadrature on infinite intervals, as
-the evaluation does not contain illegal values.
+Fejér proposed two quadrature rules very similar to :ref:`clenshaw_curtis`.
+The only difference is that the endpoints are set to zero. That is, Fejér only
+used the interior extrema of the Chebyshev polynomials, i.e. the true
+stationary points. This makes this a better method for performing quadrature on
+infinite intervals, as the evaluation does not contain illegal values.
 
 Example usage
 -------------
@@ -14,7 +14,8 @@ The first few orders with linear growth rule::
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, normalize=True, rule="F")
-    ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0.25 0.75]] [0.5 0.5]
     2 [[0.146 0.5   0.854]] [0.286 0.429 0.286]
@@ -22,13 +23,15 @@ The first few orders with linear growth rule::
 
 The first few orders with exponential growth rule::
 
-    >>> for order in [0, 1, 2]:
+    >>> for order in [0, 1, 2]:  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, normalize=True, rule="F", growth=True)
-    ...     print("{} {} {}".format(order, numpy.around(X, 2), numpy.around(W, 2)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(X, 2), numpy.around(W, 2)))
     0 [[0.5]] [1.]
     1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]
-    2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]] [0.07 0.14 0.18 0.2  0.18 0.14 0.07]
+    2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]]
+        [0.07 0.14 0.18 0.2  0.18 0.14 0.07]
 
 Applying the rule using Smolyak sparse grid::
 
@@ -50,9 +53,28 @@ import numpy
 import chaospy.quad
 
 
-def quad_fejer(order, lower=0, upper=1, growth=False, part=None):
+def quad_fejer(order, lower=0, upper=1, growth=False):
     """
     Generate the quadrature abscissas and weights in Fejer quadrature.
+
+    Args:
+        order (int, numpy.ndarray):
+            Quadrature order.
+        lower (int, numpy.ndarray):
+            Lower bounds of interval to integrate over.
+        upper (int, numpy.ndarray):
+            Upper bounds of interval to integrate over.
+        growth (bool):
+            If True sets the growth rule for the composite quadrature rule to
+            only include orders that enhances nested samples.
+
+    Returns:
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function with
+            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
+            samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> abscissas, weights = quad_fejer(3, 0, 1)
@@ -86,8 +108,8 @@ def quad_fejer(order, lower=0, upper=1, growth=False, part=None):
     abscis = [_[0] for _ in results]
     weight = [_[1] for _ in results]
 
-    abscis = chaospy.quad.combine(abscis, part=part).T
-    weight = chaospy.quad.combine(weight, part=part)
+    abscis = chaospy.quad.combine(abscis).T
+    weight = chaospy.quad.combine(weight)
 
     abscis = ((upper-lower)*abscis.T + lower).T
     weight = numpy.prod(weight*(upper-lower), -1)

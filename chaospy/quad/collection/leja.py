@@ -13,7 +13,8 @@ The first few orders::
     >>> for order in [0, 1, 2, 3, 4]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="J")
-    ...     print("{} {} {}".format(order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
     1 [[0.5 1. ]] [1. 0.]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -29,6 +30,14 @@ import chaospy.quad
 def quad_leja(order, dist):
     """
     Generate Leja quadrature node.
+
+    Returns:
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function with
+            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
+            samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> abscisas, weights = quad_leja(3, chaospy.Normal(0, 1))

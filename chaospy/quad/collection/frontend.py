@@ -3,23 +3,29 @@ import inspect
 import numpy
 
 from .clenshaw_curtis import quad_clenshaw_curtis
+from .fejer import quad_fejer
 from .gauss_patterson import quad_gauss_patterson
 from .gauss_legendre import quad_gauss_legendre
+from .gauss_lobatto import quad_gauss_lobatto
 from .gauss_kronrod import quad_gauss_kronrod
+from .gauss_radau import quad_gauss_radau
 from .genz_keister import quad_genz_keister
 from .golub_welsch import quad_golub_welsch
 from .leja import quad_leja
-from .fejer import quad_fejer
+from .newton_cotes import quad_newton_cotes
 
 QUAD_FUNCTIONS = {
     "clenshaw_curtis": quad_clenshaw_curtis,
-    "gauss_legendre": quad_gauss_legendre,
-    "gauss_patterson": quad_gauss_patterson,
+    "fejer": quad_fejer,
     "gauss_kronrod": quad_gauss_kronrod,
+    "gauss_legendre": quad_gauss_legendre,
+    "gauss_lobatto": quad_gauss_lobatto,
+    "gauss_patterson": quad_gauss_patterson,
+    "gauss_radau": quad_gauss_radau,
     "genz_keister": quad_genz_keister,
     "golub_welsch": quad_golub_welsch,
     "leja": quad_leja,
-    "fejer": quad_fejer,
+    "newton_cotes": quad_newton_cotes,
 }
 
 QUAD_SHORT_NAMES = {
@@ -31,15 +37,18 @@ QUAD_SHORT_NAMES = {
     "j": "leja",
     "f": "fejer",
     "k": "gauss_kronrod",
+    "r": "gauss_radau",
+    "l": "gauss_lobatto",
+    "n": "newton_cotes",
 }
 
 UNORMALIZED_QUADRATURE_RULES = (
     "clenshaw_curtis",
+    "fejer",
     "gauss_legendre",
     "gauss_patterson",
-    "gauss_kronrod",
     "genz_keister",
-    "fejer",
+    "newton_cotes",
 )
 
 

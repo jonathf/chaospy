@@ -19,10 +19,8 @@ def rule_generator(*funcs):
     Returns:
         (:py:data:typing.Callable):
             Multidimensional integration quadrature function that takes the
-            arguments ``order`` and ``sparse``, and a optional ``part``. The
-            argument ``sparse`` is used to select for if Smolyak sparse grid is
-            used, and ``part`` defines if subset of rule should be generated
-            (for parallelization).
+            arguments ``order`` and ``sparse``. The argument ``sparse`` is used
+            to select for if Smolyak sparse grid is used.
 
     Example:
         >>> clenshaw_curtis = lambda order: chaospy.quad_clenshaw_curtis(
@@ -50,16 +48,16 @@ def create_tensorprod_function(funcs):
     """Combine 1-D rules into multivariate rule using tensor product."""
     dim = len(funcs)
 
-    def tensprod_rule(order, part=None):
+    def tensprod_rule(order):
         """Tensor product rule."""
         order = order*numpy.ones(dim, int)
         values = [funcs[idx](order[idx]) for idx in range(dim)]
 
         abscissas = [numpy.array(_[0]).flatten() for _ in values]
-        abscissas = chaospy.quad.combine(abscissas, part=part).T
+        abscissas = chaospy.quad.combine(abscissas).T
 
         weights = [numpy.array(_[1]).flatten() for _ in values]
-        weights = numpy.prod(chaospy.quad.combine(weights, part=part), -1)
+        weights = numpy.prod(chaospy.quad.combine(weights), -1)
 
         return abscissas, weights
 
@@ -68,7 +66,7 @@ def create_tensorprod_function(funcs):
 
 def create_mv_rule(tensorprod_rule, dim):
     """Convert tensor product rule into a multivariate quadrature generator."""
-    def mv_rule(order, sparse=False, part=None):
+    def mv_rule(order, sparse=False):
         """
         Multidimensional integration rule.
 
@@ -82,10 +80,7 @@ def create_mv_rule(tensorprod_rule, dim):
         """
         if sparse:
             order = numpy.ones(dim, dtype=int)*order
-            tensorprod_rule_ = lambda order, part=part:\
-                tensorprod_rule(order, part=part)
-            return chaospy.quad.sparse_grid(tensorprod_rule_, order)
-
-        return tensorprod_rule(order, part=part)
+            return chaospy.quad.sparse_grid(tensorprod_rule, order)
+        return tensorprod_rule(order)
 
     return mv_rule

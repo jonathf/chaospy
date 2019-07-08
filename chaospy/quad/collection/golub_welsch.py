@@ -102,16 +102,19 @@ def quad_golub_welsch(order, dist, accuracy=100, **kws):
     Args:
         order (int):
             Quadrature order
-        dist (Dist):
+        dist (chaospy.distributions.baseclass.Dist):
             Distribution nodes and weights are found for with `dim=len(dist)`
         accuracy (int):
             Accuracy used in discretized Stieltjes procedure. Will
             be increased by one for each iteration.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray):
-            Optimal collocation nodes with `x.shape=(dim, order+1)` and weights
-            with `w.shape=(order+1,)`.
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function with
+            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
+            samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
 
     Examples:
         >>> Z = chaospy.Normal()

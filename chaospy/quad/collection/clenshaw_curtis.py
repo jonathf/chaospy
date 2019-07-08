@@ -1,4 +1,4 @@
-r"""
+"""
 Clenshaw-Curtis quadrature method is a good all-around quadrature method
 comparable to Gaussian quadrature, but typically limited to finite intervals
 without a specific weight function. In addition to be quite accurate, the
@@ -17,7 +17,8 @@ The first few orders with linear growth rule::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(order, distribution, rule="C")
-    ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0. 1.]] [0.5 0.5]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -28,7 +29,8 @@ The first few orders with exponential growth rule::
     >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="C", growth=True)
-    ...     print("{} {} {}".format(order, numpy.around(X, 3), numpy.around(W, 3)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
     2 [[0.    0.146 0.5   0.854 1.   ]] [0.033 0.267 0.4   0.267 0.033]
@@ -51,9 +53,28 @@ import numpy
 import chaospy.quad
 
 
-def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False, part=None):
+def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
+
+    Args:
+        order (int, numpy.ndarray):
+            Quadrature order.
+        lower (int, numpy.ndarray):
+            Lower bounds of interval to integrate over.
+        upper (int, numpy.ndarray):
+            Upper bounds of interval to integrate over.
+        growth (bool):
+            If True sets the growth rule for the composite quadrature rule to
+            only include orders that enhances nested samples.
+
+    Returns:
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function with
+            ``abscissas.shape == (len(dist), N)`` where ``N`` is the number of
+            samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> abscissas, weights = quad_clenshaw_curtis(3, 0, 1)
@@ -72,23 +93,21 @@ def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False, part=None):
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    composite = numpy.array([numpy.arange(2)]*dim)
-
     if growth:
         results = [
-            _clenshaw_curtis(2**order[i]-1*(order[i] == 0), composite[i])
+            _clenshaw_curtis(2**order[i]-1*(order[i] == 0))
             for i in range(dim)
         ]
     else:
         results = [
-            _clenshaw_curtis(order[i], composite[i]) for i in range(dim)
+            _clenshaw_curtis(order[i]) for i in range(dim)
         ]
 
     abscis = [_[0] for _ in results]
     weight = [_[1] for _ in results]
 
-    abscis = chaospy.quad.combine(abscis, part=part).T
-    weight = chaospy.quad.combine(weight, part=part)
+    abscis = chaospy.quad.combine(abscis).T
+    weight = chaospy.quad.combine(weight)
 
     abscis = ((upper-lower)*abscis.T + lower).T
     weight = numpy.prod(weight*(upper-lower), -1)
@@ -99,7 +118,7 @@ def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False, part=None):
     return abscis, weight
 
 
-def _clenshaw_curtis(order, composite=None):
+def _clenshaw_curtis(order):
     r"""
     Backend method.
 
