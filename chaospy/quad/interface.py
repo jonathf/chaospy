@@ -9,7 +9,7 @@ from . import collection, sparse_grid
 
 def generate_quadrature(
         order, domain, accuracy=100, sparse=False, rule="C",
-        composite=1, growth=None, normalize=False, **kws
+        growth=None, normalize=False, **kws
 ):
     """
     Numerical quadrature node and weight generator.
@@ -32,10 +32,6 @@ def generate_quadrature(
         rule (str):
             Rule for generating abscissas and weights. Either done with
             quadrature rules, or with random samples with constant weights.
-        composite (int):
-            If provided, composite quadrature will be used.  Value determines
-            the number of domains along an axis. Ignored in the case
-            gaussian=True.
         normalize (bool):
             In the case of distributions, the abscissas and weights are not
             tailored to a distribution beyond matching the bounds. If True, the
@@ -43,9 +39,9 @@ def generate_quadrature(
             the distribution evaluated at the abscissas and normalized
             afterwards to sum to one.
         growth (bool, None):
-            If True sets the growth rule for the composite quadrature rule to
-            only include orders that enhances nested samples. Defaults to the
-            same value as ``sparse`` if omitted.
+            If True sets the growth rule for the quadrature rule to only
+            include orders that enhances nested samples. Defaults to the same
+            value as ``sparse`` if omitted.
     """
     from ..distributions.baseclass import Dist
     isdist = isinstance(domain, Dist)
@@ -63,7 +59,6 @@ def generate_quadrature(
         domain,
         normalize,
         growth=growth,
-        composite=composite,
         accuracy=accuracy,
     )
 

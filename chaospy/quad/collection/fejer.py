@@ -65,8 +65,8 @@ def quad_fejer(order, lower=0, upper=1, growth=False):
         upper (int, numpy.ndarray):
             Upper bounds of interval to integrate over.
         growth (bool):
-            If True sets the growth rule for the composite quadrature rule to
-            only include orders that enhances nested samples.
+            If True sets the growth rule for the quadrature rule to only
+            include orders that enhances nested samples.
 
     Returns:
         abscissas (numpy.ndarray):
@@ -93,17 +93,11 @@ def quad_fejer(order, lower=0, upper=1, growth=False):
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    composite = numpy.array([numpy.arange(2)]*dim)
-
     if growth:
-        results = [
-            _fejer(numpy.where(order[i] == 0, 0, 2.**(order[i]+1)-2))
-            for i in range(dim)
-        ]
+        results = [_fejer(numpy.where(order[i] == 0, 0, 2.**(order[i]+1)-2))
+                   for i in range(dim)]
     else:
-        results = [
-            _fejer(order[i], composite[i]) for i in range(dim)
-        ]
+        results = [_fejer(order[i]) for i in range(dim)]
 
     abscis = [_[0] for _ in results]
     weight = [_[1] for _ in results]
@@ -120,7 +114,7 @@ def quad_fejer(order, lower=0, upper=1, growth=False):
     return abscis, weight
 
 
-def _fejer(order, composite=None):
+def _fejer(order):
     r"""
     Backend method.
 

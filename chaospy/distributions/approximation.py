@@ -255,8 +255,8 @@ def approximate_moment(
             Quadrature rule
             Key     Description
             ----    -----------
-            "G"     Optiomal Gaussian quadrature from Golub-Welsch
-                    Slow for high order and composit is ignored.
+            "G"     Optimal Gaussian quadrature from Golub-Welsch. Slow for
+                    high order.
             "E"     Gauss-Legendre quadrature
             "C"     Clenshaw-Curtis quadrature. Exponential growth rule is
                     used when sparse is True to make the rule nested.
@@ -270,15 +270,6 @@ def approximate_moment(
             "M"     Hammersley sequence
             "R"     (Pseudo-)Random sampling
             "S"     Sobol sequence
-
-        composite (:py:data:typing.Optional[int, numpy.ndarray]):
-            If provided, composite quadrature will be used.
-            Ignored in the case if gaussian=True.
-
-            If int provided, determines number of even domain splits
-            If array of ints, determines number of even domain splits along
-                each axis
-            If array of arrays/floats, determines location of splits
 
         antithetic (:py:data:typing.Optional[numpy.ndarray]):
             List of bool. Represents the axes to mirror using antithetic

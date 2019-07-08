@@ -65,8 +65,8 @@ def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False):
         upper (int, numpy.ndarray):
             Upper bounds of interval to integrate over.
         growth (bool):
-            If True sets the growth rule for the composite quadrature rule to
-            only include orders that enhances nested samples.
+            If True sets the growth rule for the quadrature rule to only
+            include orders that enhances nested samples.
 
     Returns:
         abscissas (numpy.ndarray):
