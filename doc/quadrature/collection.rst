@@ -30,6 +30,15 @@ Gauss-Legendre
 .. automodule:: chaospy.quad.collection.gauss_legendre
 .. autofunction:: chaospy.quad.collection.gauss_legendre.quad_gauss_legendre
 
+.. _gauss_kronrod:
+
+Gauss-Kronrod
+-------------
+
+.. automodule:: chaospy.quad.collection.gauss_kronrod
+.. autofunction:: chaospy.quad.collection.gauss_kronrod.quad_gauss_kronrod
+.. autofunction:: chaospy.quad.collection.gauss_kronrod.kronrod_jacobi
+
 .. _leja:
 
 Leja
