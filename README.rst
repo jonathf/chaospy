@@ -55,7 +55,7 @@ point collocation method will look as follows:
         return prm[0] * numpy.e ** (-prm[1] * numpy.linspace(0, 10, 100))
 
     # bi-variate probability distribution
-    distribution = choaspy.J(cp.Uniform(1, 2), chaospy.Uniform(0.1, 0.2))
+    distribution = choaspy.J(chaospy.Uniform(1, 2), chaospy.Uniform(0.1, 0.2))
 
     # polynomial chaos expansion
     polynomial_expansion = chaospy.orth_ttr(8, distribution)
