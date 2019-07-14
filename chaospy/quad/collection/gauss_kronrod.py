@@ -106,7 +106,7 @@ from ..combine import combine
 
 def quad_gauss_kronrod(order, dist=None):
     """
-    Generate the quadrature nodes and weights in Gauss-Kronrod quadrature.
+    Generate the abscissas and weights in Gauss-Kronrod quadrature.
 
     Args:
         order (int):
@@ -114,6 +114,15 @@ def quad_gauss_kronrod(order, dist=None):
         dist (chaospy.distributions.baseclass.Dist):
             The distribution weights to be used to create higher order nodes
             from. If omitted, use ``Uniform(-1, 1)``.
+
+    Returns:
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Raises:
         ValueError:
@@ -159,6 +168,7 @@ def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
     """
     Create the three-terms-recursion coefficients resulting from the
     Kronrod-Jacobi matrix.
+
     Augment three terms recurrence coefficients to add extra Gauss-Kronrod
     terms.
 

@@ -23,6 +23,6 @@ Table of contents
     distributions/index.rst
     polynomials/index.rst
     sampling/index.rst
-    quadrature/index.rst
+    quadrature
     descriptives
     recipes/index.rst

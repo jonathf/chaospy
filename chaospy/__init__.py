@@ -7,8 +7,6 @@ This module contains tools for performing uncertainty quantification of models.
 import logging
 import os
 
-from chaospy.version import __version__
-
 import chaospy.bertran
 import chaospy.chol
 import chaospy.descriptives
@@ -35,3 +33,5 @@ streamer = logging.StreamHandler()
 streamer.setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 logger.addHandler(streamer)
+
+__version__ = "3.0.5"

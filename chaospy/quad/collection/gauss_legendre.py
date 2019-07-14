@@ -19,7 +19,8 @@ The first few orders::
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="E", normalize=True)
-    ...     print("{} {} {}".format(order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.5 0.5]
     2 [[0.113 0.5   0.887]] [0.278 0.444 0.278]
@@ -31,7 +32,8 @@ Using an alternative distribution::
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="E", normalize=True)
-    ...     print("{} {} {}".format(order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
+    ...     print("{} {} {}".format(
+    ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.933 0.067]
     2 [[0.113 0.5   0.887]] [0.437 0.556 0.007]
@@ -45,9 +47,40 @@ import numpy
 import chaospy.quad
 
 
-def quad_gauss_legendre(order, lower=0, upper=1, composite=None):
+def quad_gauss_legendre(order, lower=0, upper=1):
     """
     Generate the quadrature nodes and weights in Gauss-Legendre quadrature.
+
+    Note that this rule exists to allow for integrating functions with weight
+    functions without actually adding the quadrature. Like:
+
+    .. math:
+        \int_a^b p(x) f(x) dx \approx \sum_i p(X_i) f(X_i) W_i
+
+    instead of the more traditional:
+
+    .. math:
+        \int_a^b p(x) f(x) dx \approx \sum_i f(X_i) W_i
+
+    To get the behavior where the weight function is taken into consideration,
+    use :func:`~chaospy.quad.collection.golub_welsch.quad_golub_welsch`.
+
+    Args:
+        order (int, numpy.ndarray):
+            Quadrature order.
+        lower (int, numpy.ndarray):
+            Lower bounds of interval to integrate over.
+        upper (int, numpy.ndarray):
+            Upper bounds of interval to integrate over.
+
+    Returns:
+        (numpy.ndarray, numpy.ndarray):
+            abscissas:
+                The quadrature points for where to evaluate the model function
+                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+                number of samples.
+            weights:
+                The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
         >>> abscissas, weights = quad_gauss_legendre(3)
@@ -65,20 +98,7 @@ def quad_gauss_legendre(order, lower=0, upper=1, composite=None):
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    if composite is None:
-        composite = numpy.array(0)
-    composite = numpy.asarray(composite)
-
-    if not composite.size:
-        composite = numpy.array([numpy.linspace(0, 1, composite+1)]*dim)
-
-    else:
-        composite = numpy.array(composite)
-        if len(composite.shape) <= 1:
-            composite = numpy.transpose([composite])
-        composite = ((composite.T-lower)/(upper-lower)).T
-
-    results = [_gauss_legendre(order[i], composite[i]) for i in range(dim)]
+    results = [_gauss_legendre(order[i]) for i in range(dim)]
     abscis = numpy.array([_[0] for _ in results])
     weights = numpy.array([_[1] for _ in results])
 
@@ -86,12 +106,12 @@ def quad_gauss_legendre(order, lower=0, upper=1, composite=None):
     weights = chaospy.quad.combine(weights)
 
     abscis = (upper-lower)*abscis + lower
-    weights = numpy.prod(weights*(upper-lower), 1)
+    weights = numpy.prod(weights*(upper-lower), -1)
 
     return abscis.T, weights
 
 
-def _gauss_legendre(order, composite=1):
+def _gauss_legendre(order):
     """Backend function."""
     inner = numpy.ones(order+1)*0.5
     outer = numpy.arange(order+1)**2
@@ -101,24 +121,7 @@ def _gauss_legendre(order, composite=1):
             numpy.diag(numpy.sqrt(outer[1:]), k=1)
     vals, vecs = numpy.linalg.eig(banded)
 
-    abscis, weight = vals.real, vecs[0, :]**2
-    indices = numpy.argsort(abscis)
-    abscis, weight = abscis[indices], weight[indices]
-
-    n_abscis = len(abscis)
-
-    composite = numpy.array(composite).flatten()
-    composite = list(set(composite))
-    composite = [comp for comp in composite if (comp < 1) and (comp > 0)]
-    composite.sort()
-    composite = [0]+composite+[1]
-
-    abscissas = numpy.empty(n_abscis*(len(composite)-1))
-    weights = numpy.empty(n_abscis*(len(composite)-1))
-    for dim in range(len(composite)-1):
-        abscissas[dim*n_abscis:(dim+1)*n_abscis] = \
-            abscis*(composite[dim+1]-composite[dim]) + composite[dim]
-        weights[dim*n_abscis:(dim+1)*n_abscis] = \
-            weight*(composite[dim+1]-composite[dim])
-
+    abscissas, weights = vals.real, vecs[0, :]**2
+    indices = numpy.argsort(abscissas)
+    abscissas, weights = abscissas[indices], weights[indices]
     return abscissas, weights

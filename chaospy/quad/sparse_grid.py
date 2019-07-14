@@ -11,7 +11,8 @@ To use Smolyak sparse-grid in ``chaospy``, just pass the flag ``sparse=True``
 to the ``generate_quadrature`` function. For example::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
-    >>> X, W = chaospy.generate_quadrature(3, distribution, normalize=True, sparse=True)
+    >>> X, W = chaospy.generate_quadrature(
+    ...     3, distribution, normalize=True, sparse=True)
     >>> print(numpy.around(X, 4))
     [[0. 2. 4. 2. 0. 1. 2. 3. 4. 2. 0. 2. 4.]
      [0. 0. 0. 1. 2. 2. 2. 2. 2. 3. 4. 4. 4.]]
@@ -34,15 +35,14 @@ inefficient when applied to rules that can not be nested. For example using
 Gauss-Legendre samples::
 
     >>> X, W = chaospy.generate_quadrature(
-    ...     3, distribution, rule="E", sparse=True)
+    ...     6, distribution, rule="E", sparse=True)
     >>> print(len(W))
-    119
+    140
     >>> X, W = chaospy.generate_quadrature(
-    ...     3, distribution, rule="E", sparse=False)
+    ...     6, distribution, rule="E", sparse=False)
     >>> print(len(W))
-    64
+    49
 """
-
 import numpy
 from scipy.special import comb
 

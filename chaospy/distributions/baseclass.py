@@ -312,12 +312,6 @@ class Dist(object):
                 Carlo
             rule (str):
                 rule for estimating the moment if the analytical method fails.
-            composite (numpy.ndarray):
-                If provided, composit quadrature will be used.  Ignored in the
-                case if gaussian=True.  If int provided, determines number of
-                even domain splits. If array of ints, determines number of even
-                domain splits along each axis. If array of arrays/floats,
-                determines location of splits.
             antithetic (numpy.ndarray):
                 List of bool. Represents the axes to mirror using antithetic
                 variable during MCI.

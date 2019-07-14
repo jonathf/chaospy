@@ -12,7 +12,8 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
+import re
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
@@ -23,10 +24,14 @@ project = 'chaospy'
 copyright = '2019, Jonathan Feinberg'
 author = 'Jonathan Feinberg'
 
-# The short X.Y version
-version = ''
-# The full version, including alpha/beta/rc tags
-release = '3.0.0'
+with open(os.path.join(os.pardir, "chaospy", "__init__.py")) as src:
+    regex = r"^__version__\s*=\s*['\"]([^'\"]+)['\"]"
+
+    # The full version, including alpha/beta/rc tags
+    release = re.search(regex, src.read(), flags=re.M).group(1)
+
+    # The short X.Y version
+    version = ".".join(release.split(".")[:2])
 
 
 # -- General configuration ---------------------------------------------------
