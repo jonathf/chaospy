@@ -9,39 +9,40 @@ Generate Newton-Cotes quadrature rules::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in range(5):
-    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="N")
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="newton_cotes")
     ...     print("{} {} {}".format(
     ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
     1 [[0. 1.]] [0.5 0.5]
-    2 [[0.  0.5 1. ]] [0.333 1.333 0.333]
-    3 [[0.    0.333 0.667 1.   ]] [0.375 1.125 1.125 0.375]
-    4 [[0.   0.25 0.5  0.75 1.  ]] [0.311 1.422 0.533 1.422 0.311]
+    2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    3 [[0.    0.333 0.667 1.   ]] [0.125 0.375 0.375 0.125]
+    4 [[0.   0.25 0.5  0.75 1.  ]] [0.078 0.356 0.133 0.356 0.078]
 
 The first few orders with exponential growth rule::
 
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="N", growth=True)
+    ...         order, distribution, rule="newton_cotes", growth=True)
     ...     print("{} {} {}".format(
     ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
-    1 [[0.  0.5 1. ]] [0.333 1.333 0.333]
-    2 [[0.   0.25 0.5  0.75 1.  ]] [0.311 1.422 0.533 1.422 0.311]
+    1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    2 [[0.   0.25 0.5  0.75 1.  ]] [0.078 0.356 0.133 0.356 0.078]
     3 [[0.    0.125 0.25  0.375 0.5   0.625 0.75  0.875 1.   ]]
-       [ 0.279  1.662 -0.262  2.962 -1.281  2.962 -0.262  1.662  0.279]
+       [ 0.035  0.208 -0.033  0.37  -0.16   0.37  -0.033  0.208  0.035]
 
 Applying Smolyak sparse grid on Newton-Cotes::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> X, W = chaospy.generate_quadrature(
-    ...     2, distribution, rule="N", growth=True, sparse=True)
+    ...     2, distribution, rule="newton_cotes", growth=True, sparse=True)
     >>> print(numpy.around(X, 2))
-    [[0.   0.5  1.   0.5  0.   0.25 0.5  0.75 1.   0.5  0.   0.5  1.  ]
-     [0.   0.   0.   0.25 0.5  0.5  0.5  0.5  0.5  0.75 1.   1.   1.  ]]
+    [[0.   0.   0.   0.25 0.5  0.5  0.5  0.5  0.5  0.75 1.   1.   1.  ]
+     [0.   0.5  1.   0.5  0.   0.25 0.5  0.75 1.   0.5  0.   0.5  1.  ]]
     >>> print(numpy.around(W, 3))
-    [0.111 0.422 0.111 1.422 0.422 1.422 0.178 1.422 0.422 1.422 0.111 0.422
-     0.111]
+    [ 0.028  0.022  0.028  0.356  0.022  0.356 -0.622  0.356  0.022  0.356
+      0.028  0.022  0.028]
 """
 import numpy
 from scipy.integrate import newton_cotes
@@ -49,17 +50,18 @@ from scipy.integrate import newton_cotes
 from ..combine import combine
 
 
-def quad_newton_cotes(order, lower=0, upper=1, growth=False):
+def quad_newton_cotes(order, domain=(0, 1), growth=False):
     """
     Generate the abscissas and weights in Newton-Cotes quadrature.
 
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        lower (int, numpy.ndarray):
-            Lower bounds of interval to integrate over.
-        upper (int, numpy.ndarray):
-            Upper bounds of interval to integrate over.
+        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+            Either distribution or bounding of interval to integrate over.
+        growth (bool):
+            If True sets the growth rule for the quadrature rule to only
+            include orders that enhances nested samples.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -77,7 +79,16 @@ def quad_newton_cotes(order, lower=0, upper=1, growth=False):
         >>> print(numpy.around(weights, 4))
         [0.375 1.125 1.125 0.375]
     """
+    from ...distributions.baseclass import Dist
+    if isinstance(domain, Dist):
+        abscissas, weights = quad_newton_cotes(
+            order, domain.range(), growth)
+        weights *= domain.pdf(abscissas).flatten()
+        weights /= numpy.sum(weights)
+        return abscissas, weights
+
     order = numpy.asarray(order, dtype=int).flatten()
+    lower, upper = domain
     lower = numpy.asarray(lower).flatten()
     upper = numpy.asarray(upper).flatten()
     dim = max(lower.size, upper.size, order.size)

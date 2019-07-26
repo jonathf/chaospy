@@ -49,9 +49,6 @@ class Logistic(Add):
         [4.8799 0.6656 9.3128 3.6415]
         >>> print(numpy.around(distribution.mom(1), 4))
         4.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[ 7.378   6.7092 11.1254]
-         [ 5.0797 25.1775 61.184 ]]
     """
     def __init__(self, loc=0, scale=1, skew=1):
         self._repr = {"loc": loc, "scale": scale, "skew": skew}

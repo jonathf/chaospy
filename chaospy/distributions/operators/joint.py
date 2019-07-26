@@ -197,11 +197,11 @@ class J(Dist):
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal(), chaospy.Exponential())
             >>> print(numpy.around(dist.ttr([[1, 2, 3], [1, 2, 3], [1, 2, 3]]), 4))
             [[[0.5    0.5    0.5   ]
-              [0.0833 0.0667 0.0643]
-              [0.     0.     0.    ]]
+              [0.     0.     0.    ]
+              [3.     5.     7.    ]]
             <BLANKLINE>
-             [[1.     2.     3.    ]
-              [3.     5.     7.    ]
+             [[0.0833 0.0667 0.0643]
+              [1.     2.     3.    ]
               [1.     4.     9.    ]]]
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())

@@ -113,9 +113,6 @@ def SampleDist(samples, lo=None, up=None):
         [-0.4123  1.1645 -0.0131  1.3302]
         >>> print(numpy.around(distribution.mom(1), 4))
         1.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[1.3835 0.7983 1.1872]
-         [0.2429 0.2693 0.4102]]
     """
     samples = numpy.asarray(samples)
     if lo is None:

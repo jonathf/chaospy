@@ -1,19 +1,15 @@
 # pylint: disable=wildcard-import
 r"""
-To create quadrature abscissas and weights, use the
-:func:`~chaospy.quad.interface.generate_quadrature` function. Which type of
-quadrature to use is defined by the flag ``rule``. This argument can either be
-the full name, or a single letter representing the rule. These are as follows.
-
 Gaussian Quadratures Rules
 --------------------------
 
-:ref:`gaussian_quadrature`
-    Optimal Gaussian quadrature using the Golub-Welsch algorithm.
+:ref:`gaussian`
+    The classical Gaussian quadrature scheme applied on any probability
+    distribution.
 :ref:`gauss_legendre`
-    Same as :ref:`gaussian_quadrature` for uniform distribution, but applicable
-    to other distribution by incorporating the probability density as part of
-    the function to be integrated.
+    Same as :ref:`gaussian` for uniform distribution, but applicable to other
+    distribution by incorporating the probability density as part of the
+    function to be integrated.
 :ref:`gauss_patterson`
     Extension of Gauss-Legendre rule. Valid to order 8.
 :ref:`gauss_kronrod`
@@ -40,5 +36,29 @@ Non-Gaussian Quadrature Rules
 :ref:`newton_cotes`
     Numerical integration rule based on fixed width abscissas.
 """
-from .frontend import *
-from .gauss_kronrod import kronrod_jacobi
+from .clenshaw_curtis import quad_clenshaw_curtis
+from .fejer import quad_fejer
+from .gaussian import quad_gaussian
+from .gauss_patterson import quad_gauss_patterson
+from .gauss_legendre import quad_gauss_legendre
+from .gauss_lobatto import quad_gauss_lobatto
+from .gauss_kronrod import quad_gauss_kronrod
+from .gauss_radau import quad_gauss_radau
+from .genz_keister import quad_genz_keister
+from .leja import quad_leja
+from .newton_cotes import quad_newton_cotes
+
+
+QUAD_FUNCTIONS = {
+    "clenshaw_curtis": quad_clenshaw_curtis,
+    "fejer": quad_fejer,
+    "gaussian": quad_gaussian,
+    "gauss_kronrod": quad_gauss_kronrod,
+    "gauss_legendre": quad_gauss_legendre,
+    "gauss_lobatto": quad_gauss_lobatto,
+    "gauss_patterson": quad_gauss_patterson,
+    "gauss_radau": quad_gauss_radau,
+    "genz_keister": quad_genz_keister,
+    "leja": quad_leja,
+    "newton_cotes": quad_newton_cotes,
+}

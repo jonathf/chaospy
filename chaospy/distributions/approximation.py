@@ -283,7 +283,7 @@ def approximate_moment(
     if dim > 1:
         shape = shape[1:]
 
-    X, W = quad.generate_quadrature(order, dist, rule=rule, normalize=True, **kws)
+    X, W = quad.generate_quadrature(order, dist, rule=rule, **kws)
 
     grid = numpy.mgrid[:len(X[0]), :size]
     X = X.T[grid[0]].T

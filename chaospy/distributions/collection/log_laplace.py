@@ -49,9 +49,6 @@ class LogLaplace(Add):
         [0.3162 0.4472 0.3578 0.1265]
         >>> print(numpy.around(distribution.sample(4), 4))
         [4.4028 2.9592 8.3425 3.9641]
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[1.50754850e+04 8.55924444e+04 7.34709025e+04]
-         [3.75253000e+01 8.38737855e+08 1.22092854e+09]]
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

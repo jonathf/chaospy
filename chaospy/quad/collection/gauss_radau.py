@@ -17,7 +17,8 @@ With increasing order::
 
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
-    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="R")
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gauss_radau")
     ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
     [[-1.]] [1.]
     [[-1.   0.2]] [0.17 0.83]
@@ -27,7 +28,8 @@ With increasing order::
 Multivariate samples::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
-    >>> X, W = chaospy.generate_quadrature(1, distribution, rule="R")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     1, distribution, rule="gauss_radau")
     >>> print(numpy.around(X, 3))
     [[0.    0.    0.667 0.667]
      [0.    0.5   0.    0.5  ]]
@@ -49,20 +51,27 @@ To change the fixed point, the direct generating function has to be used::
 
 However, a fixed point at 0 is not allowed::
 
-    >>> chaospy.quad_gauss_radau(3, distribution, fixed_point=0)
+    >>> chaospy.quad_gauss_radau(3, distribution, fixed_point=0)  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    ValueError: Radau algorithm received illegal fixed points: [0.]
+    numpy.linalg.LinAlgError: Illegal Radau fixed point: 0.0
 """
 import numpy
 import scipy.linalg
 
-from .golub_welsch import _golub_welsch
-from ..stieltjes import generate_stieltjes
+from ..recurrence import (
+    construct_recurrence_coefficients, coefficients_to_quadrature)
 from ..combine import combine
 
 
-def quad_gauss_radau(order, dist=None, fixed_point=None):
+def quad_gauss_radau(
+        order,
+        dist,
+        fixed_point=None,
+        rule="F",
+        accuracy=100,
+        recurrence_algorithm="",
+):
     """
     Generate the quadrature nodes and weights in Gauss-Radau quadrature.
 
@@ -71,7 +80,7 @@ def quad_gauss_radau(order, dist=None, fixed_point=None):
             Quadrature order.
         dist (chaospy.distributions.baseclass.Dist):
             The distribution weights to be used to create higher order nodes
-            from. If omitted, use ``Uniform(-1, 1)``.
+            from.
         fixed_point (float):
             Fixed point abscissas assumed to be included in the quadrature. If
             imitted, use distribution lower point ``dist.range()[0]``.
@@ -91,20 +100,17 @@ def quad_gauss_radau(order, dist=None, fixed_point=None):
             coefficients.
 
     Example:
-        >>> abscissas, weights = quad_gauss_radau(4)
+        >>> abscissas, weights = quad_gauss_radau(4, chaospy.Uniform(-1, 1))
         >>> print(numpy.around(abscissas, 3))
         [[-1.    -0.887 -0.64  -0.295  0.094  0.468  0.771  0.955]]
         >>> print(numpy.around(weights, 3))
         [0.016 0.093 0.152 0.188 0.196 0.174 0.125 0.057]
-        >>> abscissas, weights = quad_gauss_radau(4, fixed_point=0)
+        >>> abscissas, weights = quad_gauss_radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
+        ...     4, chaospy.Uniform(-1, 1), fixed_point=0)
         Traceback (most recent call last):
             ...
-        ValueError: Radau algorithm received illegal fixed points: [0.]
+        numpy.linalg.LinAlgError: Illegal Radau fixed point: 0.0
     """
-    if dist is None:
-        from chaospy.distributions.collection import Uniform
-        dist = Uniform(lower=-1, upper=1)
-
     if fixed_point is None:
         fixed_point, _ = dist.range()
     else:
@@ -113,31 +119,20 @@ def quad_gauss_radau(order, dist=None, fixed_point=None):
     if order == 0:
         return fixed_point.reshape(-1, 1), numpy.ones(1)
 
-    _, _, coeffs_a, coeffs_b = generate_stieltjes(dist, 2*order-1, retall=True)
-    try:
-        results = numpy.array([radau_jakobi(*coeffs) for coeffs in zip(
-            coeffs_a, coeffs_b, fixed_point)])
-    except numpy.linalg.LinAlgError:
-        raise ValueError(
-            "Radau algorithm received illegal fixed points: %s" % fixed_point)
+    coefficients = construct_recurrence_coefficients(
+        2*order-1, dist, rule, accuracy, recurrence_algorithm)
+    coefficients = [radau_jakobi(coeffs, point)
+                    for point, coeffs in zip(fixed_point, coefficients)]
 
-    coeffs_a, coeffs_b = results[:, 0], results[:, 1]
+    abscissas, weights = coefficients_to_quadrature(coefficients)
 
-    if numpy.any(coeffs_b < 0):
-        raise ValueError(
-            "Radau algorithm results in illegal coefficients;\n"
-            "Gauss-Radau might not be  possible for %s" % dist
-        )
-
-    # Solve eigen problem for a tridiagonal matrix with As and Bs
-    abscissas, weights = _golub_welsch(
-        [len(coeffs_a[0])]*len(dist), coeffs_a, coeffs_b)
-    abscissas = combine(abscissas).T
+    abscissas = combine(abscissas).T.reshape(len(dist), -1)
     weights = numpy.prod(combine(weights), -1)
+
     return abscissas, weights
 
 
-def radau_jakobi(coeffs_a, coeffs_b, fixed_point):
+def radau_jakobi(coeffs, fixed_point):
     """
     Compute the Radau coefficients.
 
@@ -158,14 +153,18 @@ def radau_jakobi(coeffs_a, coeffs_b, fixed_point):
         Three terms recurrence coefficients of the Gauss-Radau quadrature rule.
 
     Raises:
-        scipy.linalg.LinAlgError:
+        numpy.linalg.LinAlgError:
             Error raised if fixed point causes the algorithm to break down.
     """
-    right_hand_side = numpy.zeros(len(coeffs_a)-1)
-    right_hand_side[-1] = coeffs_b[-1]
-    bands_a = numpy.vstack([numpy.sqrt(coeffs_b), coeffs_a-fixed_point])
+    right_hand_side = numpy.zeros(len(coeffs[0])-1)
+    right_hand_side[-1] = coeffs[1][-1]
+    bands_a = numpy.vstack([numpy.sqrt(coeffs[1]), coeffs[0]-fixed_point])
     bands_j = numpy.vstack((bands_a[:, 0:-1], bands_a[0, 1:]))
-    delta = scipy.linalg.solve_banded((1, 1), bands_j, right_hand_side)
-    coeffs_a = coeffs_a.copy()
-    coeffs_a[-1] = fixed_point+delta[-1]
-    return coeffs_a, coeffs_b.copy()
+    try:
+        delta = scipy.linalg.solve_banded((1, 1), bands_j, right_hand_side)
+    except numpy.linalg.LinAlgError as err:
+        raise numpy.linalg.LinAlgError(
+            "Illegal Radau fixed point: %s" % fixed_point.item())
+    coeffs = coeffs.copy()
+    coeffs[0, -1] = fixed_point+delta[-1]
+    return coeffs

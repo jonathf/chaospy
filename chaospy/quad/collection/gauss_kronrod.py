@@ -24,7 +24,8 @@ Generate Gauss-Kronrod quadrature rules::
 
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
-    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="K")
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gauss_kronrod")
     ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
     [[-0.65 -0.    0.65]] [0.23 0.53 0.23]
     [[-0.82 -0.45  0.    0.45  0.82]] [0.07 0.26 0.34 0.26 0.07]
@@ -38,8 +39,10 @@ Gauss-Legendre::
 
     >>> distribution = chaospy.Uniform(-1, 1)
     >>> for order in range(5):
-    ...     Xl, Wl = chaospy.generate_quadrature(order, distribution, rule="G")
-    ...     Xk, Wk = chaospy.generate_quadrature(order, distribution, rule="K")
+    ...     Xl, Wl = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gaussian")
+    ...     Xk, Wk = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gauss_kronrod")
     ...     print("{} {}".format(
     ...         numpy.around(Xl, 2), numpy.around(Xk[:, 1::2], 2)))
     [[0.]] [[-0.]]
@@ -52,8 +55,10 @@ Gauss-Kronrod build on top of Gauss-Hermite quadrature::
 
     >>> distribution = chaospy.Normal(0, 1)
     >>> for order in range(2):
-    ...     Xl, Wl = chaospy.generate_quadrature(order, distribution, rule="G")
-    ...     Xk, Wk = chaospy.generate_quadrature(order, distribution, rule="K")
+    ...     Xl, Wl = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gaussian")
+    ...     Xk, Wk = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gauss_kronrod")
     ...     print("{} {}".format(numpy.around(Xl, 2), numpy.around(Xk, 2)))
     [[0.]] [[-1.73  0.    1.73]]
     [[-1.  1.]] [[-2.45 -1.    0.    1.    2.45]]
@@ -61,16 +66,17 @@ Gauss-Kronrod build on top of Gauss-Hermite quadrature::
 Applying Gauss-Kronrod to Gauss-Hermite quadrature, for an order known to not
 exist::
 
-    >>> chaospy.generate_quadrature(5, distribution, rule="K")
+    >>> chaospy.generate_quadrature(5, distribution, rule="gauss_kronrod")  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    ValueError: Kronrod algorithm results in illegal coefficients;
-    Gauss-Kronrod possibly not possible for Normal(mu=0, sigma=1)
+    numpy.linalg.LinAlgError: \
+Invalid recurrence coefficients can not be used for constructing Gaussian quadrature rule
 
 Multivariate support::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
-    >>> X, W = chaospy.generate_quadrature(1, distribution, rule="K")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     1, distribution, rule="gauss_kronrod")
     >>> print(numpy.around(X, 3))
     [[0.037 0.037 0.037 0.037 0.037 0.211 0.211 0.211 0.211 0.211 0.5   0.5
       0.5   0.5   0.5   0.789 0.789 0.789 0.789 0.789 0.963 0.963 0.963 0.963
@@ -99,21 +105,37 @@ import math
 
 import numpy
 
-from .golub_welsch import _golub_welsch
-from ..stieltjes import generate_stieltjes
+from ..recurrence import (
+    construct_recurrence_coefficients, coefficients_to_quadrature)
 from ..combine import combine
 
 
-def quad_gauss_kronrod(order, dist=None):
+def quad_gauss_kronrod(
+        order,
+        dist,
+        rule="F",
+        accuracy=100,
+        recurrence_algorithm="",
+):
     """
     Generate the abscissas and weights in Gauss-Kronrod quadrature.
 
     Args:
-        order (int):
-            Quadrature order.
         dist (chaospy.distributions.baseclass.Dist):
-            The distribution weights to be used to create higher order nodes
-            from. If omitted, use ``Uniform(-1, 1)``.
+            The distribution which density will be used as weight function.
+        order (int):
+            The order of the quadrature.
+        rule (str):
+            In the case of ``lanczos`` or ``stieltjes``, defines the
+            proxy-integration scheme.
+        accuracy (int):
+            In the case ``rule`` is used, defines the quadrature order of the
+            scheme used. In practice, must be at least as large as ``order``.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights. If
+            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
+            if that fails. See \
+:func:`~chaospy.quad.recurrence.recurrence.construct_recurrence_coefficients`.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -130,7 +152,8 @@ def quad_gauss_kronrod(order, dist=None):
             coefficients.
 
     Example:
-        >>> abscissas, weights = quad_gauss_kronrod(6)
+        >>> distribution = chaospy.Uniform(-1, 1)
+        >>> abscissas, weights = quad_gauss_kronrod(6, distribution)
         >>> print(numpy.around(abscissas, 3))
         [[-0.991 -0.949 -0.865 -0.742 -0.586 -0.406 -0.208 -0.     0.208  0.406
            0.586  0.742  0.865  0.949  0.991]]
@@ -138,33 +161,23 @@ def quad_gauss_kronrod(order, dist=None):
         [0.011 0.032 0.052 0.07  0.085 0.095 0.102 0.105 0.102 0.095 0.085 0.07
          0.052 0.032 0.011]
     """
-    if dist is None:
-        from chaospy.distributions.collection import Uniform
-        dist = Uniform(lower=-1, upper=1)
+    # assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
 
-    # Get the Jacobi recurrence coefficients
-    length = int(math.ceil(3 * (order+1) / 2.0))
-    _, _, coeffs_a, coeffs_b = generate_stieltjes(dist, length, retall=True)
+    length = int(numpy.ceil(3*(order+1) / 2.0))
+    coefficients = construct_recurrence_coefficients(
+        length, dist, rule, accuracy, recurrence_algorithm)
 
-    # Extend coefficients with extra Kronrod coefficients
-    results = numpy.array([kronrod_jacobi(order+1, *coeffs)
-                           for coeffs in zip(coeffs_a, coeffs_b)])
-    coeffs_a, coeffs_b = results[:, 0], results[:, 1]
-    if numpy.any(coeffs_b < 0):
-        raise ValueError(
-            "Kronrod algorithm results in illegal coefficients;\n"
-            "Gauss-Kronrod possibly not possible for %s" % dist
-        )
+    coefficients = [kronrod_jacobi(order+1, coeffs) for coeffs in coefficients]
 
-    # Solve eigen problem for a tridiagonal matrix with As and Bs
-    abscissas, weights = _golub_welsch(
-        [len(coeffs_a[0])]*len(dist), coeffs_a, coeffs_b)
-    abscissas = combine(abscissas).T
+    abscissas, weights = coefficients_to_quadrature(coefficients)
+
+    abscissas = combine(abscissas).T.reshape(len(dist), -1)
     weights = numpy.prod(combine(weights), -1)
+
     return abscissas, weights
 
 
-def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
+def kronrod_jacobi(order, coeffs):
     """
     Create the three-terms-recursion coefficients resulting from the
     Kronrod-Jacobi matrix.
@@ -175,32 +188,23 @@ def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
     Args:
         order (int):
             Order of the Gaussian quadrature rule.
-        coeffs_a0 (numpy.ndarray):
-            The first three terms recurrence coefficients of the Gaussian
-            quadrature rule.
-        coeffs_b0 (numpy.ndarray):
-            The second three terms recurrence coefficients of the Gaussian
-            quadrature rule.
+        coeffs (numpy.ndarray):
+            Three terms recurrence coefficients of the Gaussian quadrature
+            rule.
 
     Returns:
         Three terms recurrence coefficients of the Gauss-Kronrod quadrature
         rule.
     """
-    if len(coeffs_a0.shape) == 2:
-        coeffs = numpy.array([kronrod_jacobi(order, *coeffs)
-                              for coeffs in zip(coeffs_a0, coeffs_b0)])
-        return coeffs[:, 0], coeffs[:, 1]
-
-    assert len(coeffs_a0) == int(math.ceil(3*order/2.0))+1
-    assert len(coeffs_b0) == int(math.ceil(3*order/2.0))+1
+    assert len(coeffs[0]) == int(math.ceil(3*order/2.0))+1
 
     bound = int(math.floor(3*order/2.0))+1
     coeffs_a = numpy.zeros(2*order+1)
-    coeffs_a[:bound] = coeffs_a0[:bound]
+    coeffs_a[:bound] = coeffs[0][:bound]
 
     bound = int(math.ceil(3*order/2.0))+1
     coeffs_b = numpy.zeros(2*order+1)
-    coeffs_b[:bound] = coeffs_b0[:bound]
+    coeffs_b[:bound] = coeffs[1][:bound]
 
     sigma = numpy.zeros((2, order//2+2))
     sigma[1, 1] = coeffs_b[order+1]
@@ -237,4 +241,4 @@ def kronrod_jacobi(order, coeffs_a0, coeffs_b0):
 
     coeffs_a[2*order] = (coeffs_a[order-1]-
                          coeffs_b[2*order]*sigma[0, 1]/sigma[1, 1])
-    return coeffs_a, coeffs_b
+    return numpy.asfarray([coeffs_a, coeffs_b])

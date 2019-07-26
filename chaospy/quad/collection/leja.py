@@ -12,7 +12,7 @@ The first few orders::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3, 4]:
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="J")
+    ...         order, distribution, rule="leja")
     ...     print("{} {} {}".format(
     ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
@@ -24,7 +24,9 @@ The first few orders::
 import numpy
 from scipy.optimize import fminbound
 
-import chaospy.quad
+from ..combine import combine
+from ..recurrence import analytical_stieljes, discretized_stieltjes
+from .. import interface
 
 
 def quad_leja(order, dist):
@@ -48,11 +50,11 @@ def quad_leja(order, dist):
         [0.022  0.1629 0.6506 0.1645]
     """
     from chaospy.distributions import evaluation
-    if len(dist) > 1 and evaluation.get_dependencies(*list(dist)):
-        raise evaluation.DependencyError(
-            "Leja quadrature do not supper distribution with dependencies.")
 
     if len(dist) > 1:
+        if evaluation.get_dependencies(*list(dist)):
+            raise evaluation.DependencyError(
+                "Leja quadrature do not supper distribution with dependencies.")
         if isinstance(order, int):
             out = [quad_leja(order, _) for _ in dist]
         else:
@@ -60,8 +62,8 @@ def quad_leja(order, dist):
 
         abscissas = [_[0][0] for _ in out]
         weights = [_[1] for _ in out]
-        abscissas = chaospy.quad.combine(abscissas).T
-        weights = chaospy.quad.combine(weights)
+        abscissas = combine(abscissas).T
+        weights = combine(weights)
         weights = numpy.prod(weights, -1)
 
         return abscissas, weights
@@ -70,10 +72,14 @@ def quad_leja(order, dist):
     abscissas = [lower, dist.mom(1), upper]
     for _ in range(int(order)):
 
-        obj = create_objective(dist, abscissas)
+        def objective(abscissas_):
+            """Local objective function."""
+            return -numpy.sqrt(dist.pdf(abscissas_))*numpy.prod(
+                numpy.abs(abscissas[1:-1]-abscissas_))
+
         opts, vals = zip(
             *[fminbound(
-                obj, abscissas[idx], abscissas[idx+1], full_output=1)[:2]
+                objective, abscissas[idx], abscissas[idx+1], full_output=1)[:2]
               for idx in range(len(abscissas)-1)]
         )
         index = numpy.argmin(vals)
@@ -83,24 +89,17 @@ def quad_leja(order, dist):
     weights = create_weights(abscissas, dist)
     abscissas = abscissas.reshape(1, abscissas.size)
 
-    return numpy.array(abscissas), numpy.array(weights)
-
-
-def create_objective(dist, abscissas):
-    """Create objective function."""
-    abscissas_ = numpy.array(abscissas[1:-1])
-    def obj(absisa):
-        """Local objective function."""
-        out = -numpy.sqrt(dist.pdf(absisa))
-        out *= numpy.prod(numpy.abs(abscissas_ - absisa))
-        return out
-    return obj
+    return numpy.asfarray(abscissas), numpy.asfarray(weights)
 
 
 def create_weights(nodes, dist):
     """Create weights for the Laja method."""
-    poly = chaospy.quad.generate_stieltjes(dist, len(nodes)-1, retall=True)[0]
-    poly = chaospy.poly.flatten(chaospy.poly.Poly(poly))
-    weights_inverse = poly(nodes)
-    weights = numpy.linalg.inv(weights_inverse)
+    try:
+        _, poly, _ = analytical_stieljes(len(nodes)-1, dist)
+    except NotImplementedError:
+        abscissas, weights = interface.construct_quadrature(
+            100*len(nodes), dist, rule="C")
+        _, poly, _ = discretized_stieltjes(
+            len(nodes)-1, abscissas, weights)
+    weights = numpy.linalg.inv(poly(nodes))
     return weights[:, 0]

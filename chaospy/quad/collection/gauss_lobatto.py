@@ -16,7 +16,8 @@ With increasing order::
 
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
-    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="L")
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gauss_lobatto")
     ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
     [[-1.]] [1.]
     [[-1.  1.]] [0.5 0.5]
@@ -26,7 +27,8 @@ With increasing order::
 Multivariate samples::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
-    >>> X, W = chaospy.generate_quadrature(2, distribution, rule="L")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     2, distribution, rule="gauss_lobatto")
     >>> print(numpy.around(X, 3))
     [[-0.    -0.    -0.    -0.     0.276  0.276  0.276  0.276  0.724  0.724
        0.724  0.724  1.     1.     1.     1.   ]
@@ -39,12 +41,18 @@ Multivariate samples::
 import numpy
 from scipy.linalg import solve_banded, solve
 
-from .golub_welsch import _golub_welsch
-from ..stieltjes import generate_stieltjes
+from ..recurrence import (
+    construct_recurrence_coefficients, coefficients_to_quadrature)
 from ..combine import combine
 
 
-def quad_gauss_lobatto(order, dist=None):
+def quad_gauss_lobatto(
+        order,
+        dist,
+        rule="F",
+        accuracy=100,
+        recurrence_algorithm="",
+):
     """
     Generate the abscissas and weights in Gauss-Loboto quadrature.
 
@@ -70,42 +78,31 @@ def quad_gauss_lobatto(order, dist=None):
             coefficients.
 
     Example:
-        >>> abscissas, weights = quad_gauss_lobatto(4)
+        >>> abscissas, weights = quad_gauss_lobatto(4, chaospy.Uniform(-1, 1))
         >>> print(numpy.around(abscissas, 3))
         [[-1.    -0.872 -0.592 -0.209  0.209  0.592  0.872  1.   ]]
         >>> print(numpy.around(weights, 3))
         [0.018 0.105 0.171 0.206 0.206 0.171 0.105 0.018]
     """
-    if dist is None:
-        from chaospy.distributions.collection import Uniform
-        dist = Uniform(lower=-1, upper=1)
-
     lower, upper = dist.range()
     if order == 0:
-        return lower.reshape(-1, 1), numpy.array([1.])
+        return lower.reshape(1, -1), numpy.array([1.])
 
-    _, _, coeffs_a, coeffs_b = generate_stieltjes(dist, 2*order-1, retall=True)
+    coefficients = construct_recurrence_coefficients(
+        2*order-1, dist, rule, accuracy, recurrence_algorithm)
+    coefficients = [_lobatto(coeffs, lo, up)
+                    for coeffs, lo, up in zip(coefficients, lower, upper)]
+    abscissas, weights = coefficients_to_quadrature(coefficients)
 
-    results = numpy.array([_lobatto(*coeffs) for coeffs in zip(
-        coeffs_a, coeffs_b, lower, upper)])
-    coeffs_a, coeffs_b = results[:, 0], results[:, 1]
-
-    if numpy.any(coeffs_b < 0):
-        raise ValueError(
-            "Lobatto algorithm results in illegal coefficients;\n"
-            "Gauss-Lobatto possibly not possible for %s" % dist
-        )
-
-    # Solve eigen problem for a tridiagonal matrix with As and Bs
-    abscissas, weights = _golub_welsch(
-        [len(coeffs_a[0])]*len(dist), coeffs_a, coeffs_b)
-    abscissas = combine(abscissas).T
+    abscissas = combine(abscissas).T.reshape(len(dist), -1)
     weights = numpy.prod(combine(weights), -1)
+
     return abscissas, weights
 
 
-def _lobatto(alpha, beta, xl1, xl2):
-    """Compute the Lobatto nodes and weights with the preassigned node xl1, xl2.
+def _lobatto(coeffs, xl1, xl2):
+    """
+    Compute the Lobatto nodes and weights with the preassigned node xl1, xl2.
     Based on the section 7 of the paper
 
         Some modified matrix eigenvalue problems,
@@ -116,14 +113,8 @@ def _lobatto(alpha, beta, xl1, xl2):
 
         http://www.scientificpython.net/pyblog/radau-quadrature
     """
-    assert alpha.shape == beta.shape
-    if len(alpha.shape) == 2:
-        coeffs = numpy.array([_lobatto(*args, xl1=xl1, xl2=xl2)
-                              for args in zip(alpha, beta)])
-        return coeffs[:, 0], coeffs[:, 1]
-
-    alpha = numpy.array(alpha)
-    beta = numpy.array(beta)
+    alpha = numpy.array(coeffs[0])
+    beta = numpy.array(coeffs[1])
     en = numpy.zeros(len(alpha)-1)
     en[-1] = 1
     A1 = numpy.vstack((numpy.sqrt(beta), alpha - xl1))
@@ -138,4 +129,4 @@ def _lobatto(alpha, beta, xl1, xl2):
 
     alpha[-1] = ab[0]
     beta[-1] = ab[1]
-    return alpha, beta
+    return numpy.array([alpha, beta])

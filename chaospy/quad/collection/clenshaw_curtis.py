@@ -16,7 +16,8 @@ The first few orders with linear growth rule::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
-    ...     X, W = chaospy.generate_quadrature(order, distribution, rule="C")
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="clenshaw_curtis")
     ...     print("{} {} {}".format(
     ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
@@ -28,7 +29,7 @@ The first few orders with exponential growth rule::
 
     >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="C", growth=True)
+    ...         order, distribution, rule="clenshaw_curtis", growth=True)
     ...     print("{} {} {}".format(
     ...         order, numpy.around(X, 3), numpy.around(W, 3)))
     0 [[0.5]] [1.]
@@ -39,10 +40,10 @@ Applying the rule using Smolyak sparse grid::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> X, W = chaospy.generate_quadrature(
-    ...     2, distribution, rule="C", growth=True, sparse=True)
+    ...     2, distribution, rule="clenshaw_curtis", growth=True, sparse=True)
     >>> print(numpy.around(X, 2))
-    [[0.   0.5  1.   0.5  0.   0.15 0.5  0.85 1.   0.5  0.   0.5  1.  ]
-     [0.   0.   0.   0.15 0.5  0.5  0.5  0.5  0.5  0.85 1.   1.   1.  ]]
+    [[0.   0.   0.   0.15 0.5  0.5  0.5  0.5  0.5  0.85 1.   1.   1.  ]
+     [0.   0.5  1.   0.5  0.   0.15 0.5  0.85 1.   0.5  0.   0.5  1.  ]]
     >>> print(numpy.around(W, 3))
     [ 0.028 -0.022  0.028  0.267 -0.022  0.267 -0.089  0.267 -0.022  0.267
       0.028 -0.022  0.028]
@@ -50,20 +51,19 @@ Applying the rule using Smolyak sparse grid::
 from __future__ import division
 
 import numpy
-import chaospy.quad
+
+from ..combine import combine
 
 
-def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False):
+def quad_clenshaw_curtis(order, domain, growth=False):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        lower (int, numpy.ndarray):
-            Lower bounds of interval to integrate over.
-        upper (int, numpy.ndarray):
-            Upper bounds of interval to integrate over.
+        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+            Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples.
@@ -78,13 +78,22 @@ def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_clenshaw_curtis(3, 0, 1)
+        >>> abscissas, weights = quad_clenshaw_curtis(3, (0, 1))
         >>> print(numpy.around(abscissas, 4))
         [[0.   0.25 0.75 1.  ]]
         >>> print(numpy.around(weights, 4))
         [0.0556 0.4444 0.4444 0.0556]
     """
+    from ...distributions.baseclass import Dist
+    if isinstance(domain, Dist):
+        abscissas, weights = quad_clenshaw_curtis(
+            order, domain.range(), growth)
+        weights *= domain.pdf(abscissas).flatten()
+        weights /= numpy.sum(weights)
+        return abscissas, weights
+
     order = numpy.asarray(order, dtype=int).flatten()
+    lower, upper = numpy.array(domain)
     lower = numpy.asarray(lower).flatten()
     upper = numpy.asarray(upper).flatten()
 
@@ -95,28 +104,17 @@ def quad_clenshaw_curtis(order, lower=0, upper=1, growth=False):
     upper = numpy.ones(dim)*upper
 
     if growth:
-        results = [
-            _clenshaw_curtis(2**order[i]-1*(order[i] == 0))
-            for i in range(dim)
-        ]
-    else:
-        results = [
-            _clenshaw_curtis(order[i]) for i in range(dim)
-        ]
+        order = numpy.where(order > 0, 2**order, 0)
 
-    abscis = [_[0] for _ in results]
-    weight = [_[1] for _ in results]
+    abscissas, weights = zip(*[_clenshaw_curtis(order_) for order_ in order])
 
-    abscis = chaospy.quad.combine(abscis).T
-    weight = chaospy.quad.combine(weight)
+    abscissas = ((upper-lower)*combine(abscissas) + lower).T
+    weights = numpy.prod(combine(weights)*(upper-lower), -1)
 
-    abscis = ((upper-lower)*abscis.T + lower).T
-    weight = numpy.prod(weight*(upper-lower), -1)
+    assert len(abscissas) == dim
+    assert len(weights) == len(abscissas.T)
 
-    assert len(abscis) == dim
-    assert len(weight) == len(abscis.T)
-
-    return abscis, weight
+    return abscissas, weights
 
 
 def _clenshaw_curtis(order):

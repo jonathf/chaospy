@@ -127,7 +127,6 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
         norms = numpy.sum(ovals**2*weights, -1)
     else:
         norms = numpy.array(norms).flatten()
-        assert len(norms) == len(orth)
 
     coefs = (numpy.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])

@@ -1,9 +1,9 @@
 """
 Function to combine two dataset together with a tensor product.
 """
-
 import numpy
 import chaospy
+
 
 def combine(args):
     """

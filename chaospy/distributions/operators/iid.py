@@ -112,12 +112,14 @@ class Iid(Dist):
             >>> print(numpy.around(chaospy.Iid(chaospy.Uniform(), 2).ttr(
             ...     [[0, 0, 1], [0, 1, 1]]), 4))
             [[[ 0.5     0.5     0.5   ]
-              [-0.     -0.      0.0833]]
+              [ 0.5     0.5     0.5   ]]
             <BLANKLINE>
-             [[ 0.5     0.5     0.5   ]
+             [[-0.     -0.      0.0833]
               [-0.      0.0833  0.0833]]]
         """
-        return dist.ttr(k)
+        coeffs = [dist.ttr(k_).T for k_ in k]
+        coeffs = list(zip(*coeffs))
+        return coeffs
 
     def __getitem__(self, i):
         """

@@ -52,7 +52,7 @@ class Arccosh(Dist):
             dist, numpy.cosh(x), cache=cache))
 
     def _mom(self, x, dist, cache):
-        return approximation.approximate_moment(self, x, cache=cache)
+        return approximation.approximate_moment(self, x)
 
     def __len__(self):
         return len(self.prm["dist"])

@@ -1,14 +1,13 @@
-"""
-The Gauss-Legendre quadrature rule is properly supported by in
-:ref:`gaussian_quadrature`. However, as Gauss-Legendre is a special case where
-the weight function is constant, it can in principle be used to integrate any
-weighting function. In other words, this is the same Gauss-Legendre integration
-rule, but only in the context of uniform distribution as weight function.
-Normalization of the weights will be used to achieve the general integration
-form.
+r"""
+The Gauss-Legendre quadrature rule is properly supported by in :ref:`gaussian`.
+However, as Gauss-Legendre is a special case where the weight function is
+constant, it can in principle be used to integrate any weighting function. In
+other words, this is the same Gauss-Legendre integration rule, but only in the
+context of uniform distribution as weight function. Normalization of the
+weights will be used to achieve the general integration form.
 
 It is also worth noting that this specific implementation of Gauss-Legendre is
-faster to compute than the general version in :ref:`gaussian_quadrature`.
+faster to compute than the general version in :ref:`gaussian`.
 
 Example usage
 -------------
@@ -18,7 +17,7 @@ The first few orders::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="E", normalize=True)
+    ...         order, distribution, rule="gauss_legendre")
     ...     print("{} {} {}".format(
     ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
@@ -31,7 +30,7 @@ Using an alternative distribution::
     >>> distribution = chaospy.Beta(2, 4)
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="E", normalize=True)
+    ...         order, distribution, rule="gauss_legendre")
     ...     print("{} {} {}".format(
     ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
     0 [[0.5]] [1.]
@@ -44,11 +43,19 @@ weight function.
 """
 import numpy
 
-import chaospy.quad
+from ..recurrence import (
+    construct_recurrence_coefficients, coefficients_to_quadrature)
+from ..combine import combine
 
 
-def quad_gauss_legendre(order, lower=0, upper=1):
-    """
+def quad_gauss_legendre(
+        order,
+        domain=(0, 1),
+        rule="F",
+        accuracy=100,
+        recurrence_algorithm="",
+):
+    r"""
     Generate the quadrature nodes and weights in Gauss-Legendre quadrature.
 
     Note that this rule exists to allow for integrating functions with weight
@@ -68,10 +75,8 @@ def quad_gauss_legendre(order, lower=0, upper=1):
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        lower (int, numpy.ndarray):
-            Lower bounds of interval to integrate over.
-        upper (int, numpy.ndarray):
-            Upper bounds of interval to integrate over.
+        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+            Either distribution or bounding of interval to integrate over.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -89,7 +94,21 @@ def quad_gauss_legendre(order, lower=0, upper=1):
         >>> print(numpy.around(weights, 4))
         [0.1739 0.3261 0.3261 0.1739]
     """
+    from ...distributions.baseclass import Dist
+    if isinstance(domain, Dist):
+        abscissas, weights = quad_gauss_legendre(
+            order, domain.range(), rule, accuracy, recurrence_algorithm)
+
+        pdf = domain.pdf(abscissas)
+        if len(domain) > 1:
+            weights = (weights.T*pdf).T
+        else:
+            weights *= pdf.flatten()
+        weights /= numpy.sum(weights)
+        return abscissas, weights
+
     order = numpy.asarray(order, dtype=int).flatten()
+    lower, upper = numpy.array(domain)
     lower = numpy.asarray(lower).flatten()
     upper = numpy.asarray(upper).flatten()
 
@@ -98,30 +117,18 @@ def quad_gauss_legendre(order, lower=0, upper=1):
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    results = [_gauss_legendre(order[i]) for i in range(dim)]
-    abscis = numpy.array([_[0] for _ in results])
-    weights = numpy.array([_[1] for _ in results])
+    from ...distributions.collection import Uniform
+    coefficients = construct_recurrence_coefficients(
+        numpy.max(order), Uniform(0, 1), rule, accuracy, recurrence_algorithm)
+    abscissas, weights = zip(*[coefficients_to_quadrature(
+        coefficients[:order_+1]) for order_ in order])
+    abscissas = list(numpy.asarray(abscissas).reshape(dim, -1))
+    weights = list(numpy.asarray(weights).reshape(dim, -1))
 
-    abscis = chaospy.quad.combine(abscis)
-    weights = chaospy.quad.combine(weights)
+    abscissas = ((upper-lower)*combine(abscissas) + lower).T
+    weights = numpy.prod(combine(weights)*(upper-lower), -1)
 
-    abscis = (upper-lower)*abscis + lower
-    weights = numpy.prod(weights*(upper-lower), -1)
+    assert len(abscissas) == dim
+    assert len(weights) == len(abscissas.T)
 
-    return abscis.T, weights
-
-
-def _gauss_legendre(order):
-    """Backend function."""
-    inner = numpy.ones(order+1)*0.5
-    outer = numpy.arange(order+1)**2
-    outer = outer/(16*outer-4.)
-
-    banded = numpy.diag(numpy.sqrt(outer[1:]), k=-1) + numpy.diag(inner) + \
-            numpy.diag(numpy.sqrt(outer[1:]), k=1)
-    vals, vecs = numpy.linalg.eig(banded)
-
-    abscissas, weights = vals.real, vecs[0, :]**2
-    indices = numpy.argsort(abscissas)
-    abscissas, weights = abscissas[indices], weights[indices]
     return abscissas, weights

@@ -8,6 +8,7 @@ import numpy
 from scipy.special import comb
 
 import chaospy.bertran
+from .indices import bindex
 
 _ADD_CACHE = {}
 _MULTI_INDEX_CACHE = {}
@@ -110,111 +111,6 @@ def multi_index(idx, dim):
 
     _MULTI_INDEX_CACHE[key] = out
     return out
-
-
-def bertran_indices(start, stop, dim=1):
-    """
-    >>> list(bertran_indices(start=3, stop=3, dim=2))
-    [(0, 3), (1, 2), (2, 1), (3, 0)]
-    >>> list(bertran_indices(start=0, stop=1, dim=3))
-    [(0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0)]
-    """
-    midx = [0]*dim
-    while stop is None or start <= stop:
-
-        for indices in itertools.combinations_with_replacement(
-                range(dim), start):
-            for idx in indices:
-                midx[dim-idx-1] += 1
-            yield tuple(midx)
-            for idx in indices:
-                midx[dim-idx-1] -= 1
-
-        start += 1
-
-
-def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
-    """
-    Generator for creating multi-indices.
-
-    Args:
-        start (Union[int, numpy.ndarray]):
-            The lower order of the indices. If array of int, counts as lower
-            bound for each axis.
-        stop (Union[int, numpy.ndarray, None]):
-            the maximum shape included. If omitted: stop <- start; start <- 0
-            If int is provided, set as largest total order. If array of int,
-            set as upper bound for each axis.
-        dim (int):
-            The number of dimensions in the expansion
-        sort (str):
-            Criteria to sort the indices by.
-        cross_truncation (float):
-            Use hyperbolic cross truncation scheme to reduce the number of
-            terms in expansion. Ignored if ``stop`` is a array.
-
-    Returns:
-        list:
-            Order list of indices.
-
-    Examples:
-        >>> print(chaospy.bertran.bindex(2, 3, 2))
-        [(0, 2), (1, 1), (2, 0), (0, 3), (1, 2), (2, 1), (3, 0)]
-        >>> print(chaospy.bertran.bindex(2, [1, 3], 2, cross_truncation=0))
-        [(0, 2), (1, 1), (0, 3), (1, 2), (1, 3)]
-        >>> print(chaospy.bertran.bindex([1, 2], [2, 3], 2, cross_truncation=0))
-        [(1, 2), (1, 3), (2, 2), (2, 3)]
-        >>> print(chaospy.bertran.bindex([1, 1], 3, 2, cross_truncation=0))
-        [(1, 1), (1, 2), (2, 1)]
-        >>> print(chaospy.bertran.bindex(1, 3, 2, cross_truncation=1))
-        [(0, 1), (1, 0), (0, 2), (1, 1), (2, 0), (0, 3), (1, 2), (2, 1), (3, 0)]
-        >>> print(chaospy.bertran.bindex(1, 3, 2, cross_truncation=1.5))
-        [(0, 1), (1, 0), (0, 2), (1, 1), (2, 0), (0, 3), (3, 0)]
-        >>> print(chaospy.bertran.bindex(1, 3, 2, cross_truncation=2))
-        [(0, 1), (1, 0), (0, 2), (2, 0), (0, 3), (3, 0)]
-        >>> print(chaospy.bertran.bindex(0, 1, 3))
-        [(0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0)]
-    """
-    if stop is None:
-        start, stop = 0, start
-    start = numpy.array(start, dtype=int).flatten()
-    stop = numpy.array(stop, dtype=int).flatten()
-    sort = sort.upper()
-    start[start < 0] = 0
-
-    if start.size > 1 and stop.size > 1:
-        include = lambda midx: numpy.all((start <= midx) & (midx <= stop))
-    elif start.size > 1:
-        include = lambda midx: numpy.all(start <= midx)
-    elif stop.size > 1:
-        include = lambda midx: numpy.all(midx <= stop)
-    else:
-        include = lambda midx: True
-
-    total = [midx for midx in bertran_indices(
-        min(start), sum(stop), dim=dim) if include(midx)]
-
-    if "G" not in sort:
-        total = sorted(total)
-
-    if "I" in sort:
-        total = total[::-1]
-
-    if "R" in sort:
-        total = [idx[::-1] for idx in total]
-
-    # only do cross truncation if integer bounds
-    if stop.size == 1:
-        for pos, idx in reversed(list(enumerate(total))):
-            idx = numpy.array(idx)
-            cross_truncation = numpy.asfarray(cross_truncation)
-            try:
-                if numpy.any(numpy.sum(idx**(1./cross_truncation)) > numpy.max(stop)**(1./cross_truncation)):
-                    del total[pos]
-            except (OverflowError, ZeroDivisionError):
-                pass
-
-    return total
 
 
 def single_index(idxm):
