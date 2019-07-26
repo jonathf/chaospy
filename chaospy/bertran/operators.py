@@ -181,7 +181,6 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
     stop = numpy.array(stop, dtype=int).flatten()
     sort = sort.upper()
     start[start < 0] = 0
-    assert numpy.all(stop >= start), "stop ends before start"
 
     if start.size > 1 and stop.size > 1:
         include = lambda midx: numpy.all((start <= midx) & (midx <= stop))
