@@ -407,7 +407,10 @@ class Poly(object):
         out = numpy.array(self.keys)
         return out
 
-
 def sort_key(val):
     """Sort key for sorting keys in grevlex order."""
-    return numpy.sum((max(val)+1)**numpy.arange(len(val)-1, -1, -1)*val)
+    maxval = max(val)
+    lenval = len(val)
+    exponents = range(lenval-1, -1, -1)
+    r = [(maxval+1)**expo*val[lenval-1-expo] for expo in exponents]
+    return sum(r)
