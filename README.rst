@@ -80,6 +80,45 @@ For a more extensive description of what going on, see the `tutorial
 For a collection of recipes, see the `cookbook
 <https://chaospy.readthedocs.io/en/master/cookbook.html>`_.
 
+Related Projects
+----------------
+
+Chaospy is being used in other related projects that requires uncertainty
+quantification components ``chaospy`` provides.
+
++-----------------+-----------------------------------------------------------+
+| `UncertainPy`_  | Uncertainty quantification and sensitivity analysis,      |
+|                 | tailored towards computational neuroscience.              |
++-----------------+-----------------------------------------------------------+
+| `STARFiSh`_     | Shell-based, scientific simulation program                |
+|                 | for blood flow in mammals.                                |
++-----------------+-----------------------------------------------------------+
+| `SurUQ`_        | Surrogate modeling with nested uncertainty quantification.|
++-----------------+-----------------------------------------------------------+
+
+Also a few shout-outs:
+
++--------------+--------------------------------------------------------------+
+| `OpenTURNS`_ | Thanks to `Régis Lebrun`_ for both proposing a collaboration |
+|              | and creating an initial implementation of both               |
+|              | `Chaospy Compatibility`_ in `OpenTURNS`_ and                 |
+|              | :ref:`_openturns` in ``chaospy``.                            |
++--------------+--------------------------------------------------------------+
+| `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
+| `quadpy`_    | for several of the quadrature integration methods.           |
++--------------+--------------------------------------------------------------+
+
+.. _UncertainPy: https://github.com/simetenn/uncertainpy
+.. _STARFiSh: https://www.ntnu.no/starfish
+.. _SurUQ: https://github.com/redmod-team/suruq
+.. _OpenTURNS: http://openturns.github.io/openturns/latest
+.. _Régis Lebrun: https://github.com/regislebrun
+.. _Chaospy Compatability: http://openturns.github.io/openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
+.. _orthopy: https://github.com/nschloe/orthopy
+.. _quadpy: https://github.com/nschloe/quadpy
+.. _Nico Schlömer: https://github.com/nschloe
+
+
 Questions & Troubleshooting
 ---------------------------
 

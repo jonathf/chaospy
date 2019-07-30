@@ -6,10 +6,6 @@ toolkit with a lot of functionality beyond what ``chaospy`` delivers. If one
 wants to combine the strength of the two projects, it is possible to interpret
 distributions in `OpenTURNS`_ as ``chaospy`` distributions or vise versa.
 
-A special thanks to `Régis Lebrun`_ for both proposing a collaboration and
-creating the initial implementation in both projects. See also the
-`corresponding compatibility layer`_ in `OpenTURNS`_.
-
 To interpret a ``chaospy`` distribution as an `OpenTURNS`_ distribution, see
 the `OpenTURNS distribution wrapper`_.
 
@@ -61,9 +57,6 @@ Though multivariate distributions are supported, dependencies are not::
     chaospy...DependencyError: Stochastically dependent OpenTURNS distribution unsupported
 
 .. _OpenTURNS: http://openturns.github.io/openturns/latest
-.. _OpenTURNS wrapper: http://openturns.github.io/openturns/latest/\
-user_manual/_generated/openturns.ChaospyDistribution.html
-.. _Régis Lebrun: https://github.com/regislebrun
 .. _corresponding compatibility layer: http://openturns.github.io/\
 openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
 """

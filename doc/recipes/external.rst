@@ -5,14 +5,14 @@ Compatibility Layers
 
 .. _openturns:
 
-OpenTURNS Distribution
-----------------------
+OpenTURNS Compatibility
+-----------------------
 
 .. automodule:: chaospy.external.openturns_
 .. autoclass:: chaospy.external.openturns_.OpenTURNSDist
 
-SciPy Stats Distribution
-------------------------
+SciPy Stats Compatibility
+-------------------------
 
 .. automodule:: chaospy.external.scipy_stats
 .. autoclass:: chaospy.external.scipy_stats.ScipyStatsDist
