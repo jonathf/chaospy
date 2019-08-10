@@ -85,7 +85,7 @@ Genz-Keister Quadrature
 -----------------------
 
 .. automodule:: chaospy.quadrature.genz_keister
-.. autofunction:: chaospy.quadrature.genz_keister.genz_keister.quad_genz_keister
+.. autofunction:: chaospy.quadrature.genz_keister.frontend.quad_genz_keister
 
 .. _leja:
 

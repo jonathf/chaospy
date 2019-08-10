@@ -47,7 +47,7 @@ import numpy
 
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_gauss_legendre(
@@ -72,7 +72,7 @@ def quad_gauss_legendre(
         \int_a^b p(x) f(x) dx \approx \sum_i f(X_i) W_i
 
     To get the behavior where the weight function is taken into consideration,
-    use :func:`~chaospy.quadrature.collection.gaussian.quad_gaussian`.
+    use :func:`~chaospy.quadrature.gaussian.quad_gaussian`.
 
     Args:
         order (int, numpy.ndarray):
@@ -132,15 +132,10 @@ def quad_gauss_legendre(
 
     coefficients = construct_recurrence_coefficients(
         numpy.max(order), Uniform(0, 1), rule, accuracy, recurrence_algorithm)
+
     abscissas, weights = zip(*[coefficients_to_quadrature(
         coefficients[:order_+1]) for order_ in order])
     abscissas = list(numpy.asarray(abscissas).reshape(dim, -1))
     weights = list(numpy.asarray(weights).reshape(dim, -1))
 
-    abscissas = ((upper-lower)*combine(abscissas) + lower).T
-    weights = numpy.prod(combine(weights)*(upper-lower), -1)
-
-    assert len(abscissas) == dim
-    assert len(weights) == len(abscissas.T)
-
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights, (lower, upper))

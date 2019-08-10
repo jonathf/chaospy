@@ -53,7 +53,8 @@ To change the fixed point, the direct generating function has to be used::
 
 However, a fixed point at 0 is not allowed::
 
-    >>> chaospy.quad_gauss_radau(3, distribution, fixed_point=0)  # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> chaospy.quad_gauss_radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
+    ...     3, distribution, fixed_point=0)
     Traceback (most recent call last):
         ...
     numpy.linalg.LinAlgError: Illegal Radau fixed point: 0.0
@@ -65,7 +66,7 @@ import scipy.linalg
 
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_gauss_radau(
@@ -136,10 +137,7 @@ def quad_gauss_radau(
 
     abscissas, weights = coefficients_to_quadrature(coefficients)
 
-    abscissas = combine(abscissas).T.reshape(len(dist), -1)
-    weights = numpy.prod(combine(weights), -1)
-
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights)
 
 
 def radau_jakobi(coeffs, fixed_point):
@@ -172,7 +170,7 @@ def radau_jakobi(coeffs, fixed_point):
     bands_j = numpy.vstack((bands_a[:, 0:-1], bands_a[0, 1:]))
     try:
         delta = scipy.linalg.solve_banded((1, 1), bands_j, right_hand_side)
-    except numpy.linalg.LinAlgError as err:
+    except numpy.linalg.LinAlgError:
         raise numpy.linalg.LinAlgError(
             "Illegal Radau fixed point: %s" % fixed_point.item())
     coeffs = coeffs.copy()

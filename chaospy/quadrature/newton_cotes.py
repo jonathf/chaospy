@@ -48,7 +48,7 @@ from __future__ import print_function
 import numpy
 from scipy.integrate import newton_cotes
 
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_newton_cotes(order, domain=(0, 1), growth=False):
@@ -100,18 +100,15 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False):
     results = [_newton_cotes(*args, growth=growth)
                for args in zip(order, lower, upper)]
     abscissas = [args[0] for args in results]
-    abscissas = combine(abscissas).T
     weights = [args[1] for args in results]
-    weights = numpy.prod(combine(weights), -1)
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights)
 
 
 def _newton_cotes(order, lower, upper, growth):
     """Backend for Newton-Cotes quadrature rule."""
     if order == 0:
         return numpy.array([0.5*(lower+upper)]), numpy.ones(1)
-    if growth:
-        order = 2**order
+    order = 2**order if growth else order
     return (
         numpy.linspace(lower, upper, order+1),
         newton_cotes(order)[0]/(upper-lower),

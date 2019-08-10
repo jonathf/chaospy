@@ -65,7 +65,8 @@ Gauss-Kronrod build on top of Gauss-Hermite quadrature::
 Applying Gauss-Kronrod to Gauss-Hermite quadrature, for an order known to not
 exist::
 
-    >>> chaospy.generate_quadrature(5, distribution, rule="gauss_kronrod")  # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> chaospy.generate_quadrature(  # doctest: +IGNORE_EXCEPTION_DETAIL
+    ...     5, distribution, rule="gauss_kronrod")
     Traceback (most recent call last):
         ...
     numpy.linalg.LinAlgError: \
@@ -107,7 +108,7 @@ import numpy
 
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_gauss_kronrod(
@@ -167,11 +168,7 @@ def quad_gauss_kronrod(
     coefficients = [kronrod_jacobi(order+1, coeffs) for coeffs in coefficients]
 
     abscissas, weights = coefficients_to_quadrature(coefficients)
-
-    abscissas = combine(abscissas).T.reshape(len(dist), -1)
-    weights = numpy.prod(combine(weights), -1)
-
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights)
 
 
 def kronrod_jacobi(order, coeffs):

@@ -28,7 +28,6 @@ from scipy.optimize import fminbound
 
 from .combine import combine
 from .recurrence import analytical_stieljes, discretized_stieltjes
-from . import frontend
 
 
 def quad_leja(
@@ -128,10 +127,9 @@ def create_weights(
     try:
         _, poly, _ = analytical_stieljes(len(nodes)-1, dist)
     except NotImplementedError:
-        abscissas, weights = frontend.generate_quadrature(
-            order=accuracy,
-            dist=dist,
-            rule="fejer",
+        from .frontend import generate_quadrature
+        abscissas, weights = generate_quadrature(
+            order=accuracy, dist=dist, rule=rule,
             recurrence_algorithm=recurrence_algorithm,
         )
         _, poly, _ = discretized_stieltjes(

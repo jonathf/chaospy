@@ -50,7 +50,7 @@ from __future__ import division, print_function
 
 import numpy
 
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_fejer(order, domain=(0, 1), growth=False):
@@ -106,13 +106,7 @@ def quad_fejer(order, domain=(0, 1), growth=False):
 
     abscissas, weights = zip(*[_fejer(order_) for order_ in order])
 
-    abscissas = ((upper-lower)*combine(abscissas) + lower).T
-    weights = numpy.prod(combine(weights)*(upper-lower), -1)
-
-    assert len(abscissas) == dim
-    assert len(weights) == len(abscissas.T)
-
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights, (lower, upper))
 
 
 def _fejer(order):
@@ -160,8 +154,8 @@ def _fejer(order):
     theta = (order-numpy.arange(order+1))*numpy.pi/order
     abscisas = 0.5*numpy.cos(theta) + 0.5
 
-    N, K = numpy.mgrid[:order+1, :order//2]
-    weights = 2*numpy.cos(2*(K+1)*theta[N])/(4*K*(K+2)+3)
+    idx, idy = numpy.mgrid[:order+1, :order//2]
+    weights = 2*numpy.cos(2*(idy+1)*theta[idx])/(4*idy*(idy+2)+3)
     if order % 2 == 0:
         weights[:, -1] *= 0.5
     weights = (1-numpy.sum(weights, -1)) / order

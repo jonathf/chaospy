@@ -36,9 +36,7 @@ Non-Gaussian Quadrature Rules
     Numerical integration rule based on fixed width abscissas.
 """
 import numpy
-from scipy.special import comb
 
-from . import sparse_grid
 from .combine import combine
 
 from .clenshaw_curtis import quad_clenshaw_curtis
@@ -121,19 +119,30 @@ def generate_quadrature(
         (numpy.ndarray, numpy.ndarray):
             Abscissas and weights created from full tensor grid rule. Flatten
             such that ``abscissas.shape == (len(dist), len(weights))``.
+
+    Examples:
+        >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 3)
+        >>> abscissas, weights = generate_quadrature(
+        ...     1, distribution, rule=("gaussian", "fejer"))
+        >>> print(abscissas)
+        [[-1.   -1.    1.    1.  ]
+         [-3.75  3.75 -3.75  3.75]]
+        >>> print(weights)
+        [0.25 0.25 0.25 0.25]
     """
     if sparse:
+        from . import sparse_grid
         return sparse_grid.construct_sparse_grid(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
     if not isinstance(rule, str):
         order = numpy.ones(len(dist), dtype=int)*order
         abscissas, weights = zip(*[
-            construct_quadrature(order_, dist_, rule_, growth)
+            generate_quadrature(order_, dist_, rule_, growth)
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
-        abscissas = combine(abscissas).T.reshape(len(dist), -1)
-        weights = numpy.prod(combine(weights), -1)
+        abscissas = combine([abscissa.T for abscissa in abscissas]).T
+        weights = numpy.prod(combine([abscissa.T for abscissa in weights]), -1)
         return abscissas, weights
 
     rule = QUAD_NAMES[rule.lower()]

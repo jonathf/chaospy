@@ -2,8 +2,7 @@ import pytest
 import numpy
 
 from chaospy import E, Iid, Uniform, Normal
-from chaospy.quad.collection import quad_gaussian
-from chaospy.quad.recurrence import RECURRENCE_ALGORITHMS
+from chaospy.quadrature import quad_gaussian, RECURRENCE_ALGORITHMS
 
 
 @pytest.fixture(params=RECURRENCE_ALGORITHMS)

@@ -1,8 +1,6 @@
 """Construct recurrence coefficients."""
 import numpy
 
-from .. import frontend
-
 from .chebyshev import modified_chebyshev
 from .jacobi import coefficients_to_quadrature
 from .lanczos import lanczos
@@ -110,13 +108,13 @@ def construct_recurrence_coefficients(
         coeffs = modified_chebyshev(moments)
 
     elif recurrence_algorithm == "lanczos":
-        abscissas, weights = frontend.generate_quadrature(
-            accuracy, dist, rule=rule)
+        from ..frontend import generate_quadrature
+        abscissas, weights = generate_quadrature(accuracy, dist, rule=rule)
         coeffs = lanczos(order, abscissas, weights)
 
     elif recurrence_algorithm == "stieltjes":
-        abscissas, weights = frontend.generate_quadrature(
-            accuracy, dist, rule=rule)
+        from ..frontend import generate_quadrature
+        abscissas, weights = generate_quadrature(accuracy, dist, rule=rule)
         coeffs, _, _ = discretized_stieltjes(order, abscissas, weights)
 
     return [coeffs.reshape(2, int(order)+1)]

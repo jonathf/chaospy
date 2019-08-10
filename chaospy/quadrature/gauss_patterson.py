@@ -34,7 +34,6 @@ With increasing order::
      [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
 """
 from __future__ import print_function
-import logging
 
 import numpy
 
@@ -81,11 +80,8 @@ def quad_gauss_patterson(order, domain):
 
     if len(lower) > 1:
 
-        if isinstance(order, int):
-            values = [quad_gauss_patterson(order, d) for d in dist]
-        else:
-            values = [quad_gauss_patterson(order[i], dist[i])
-                      for i in range(len(dist))]
+        values = [quad_gauss_patterson(order[i], (domain[0][i], domain[1][i]))
+                  for i in range(len(domain[0]))]
 
         abscissas = [_[0][0] for _ in values]
         weights = [_[1] for _ in values]

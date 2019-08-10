@@ -46,7 +46,7 @@ from scipy.linalg import solve_banded, solve
 
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_gauss_lobatto(
@@ -105,19 +105,16 @@ def quad_gauss_lobatto(
 
     coefficients = construct_recurrence_coefficients(
         2*order-1, dist, rule, accuracy, recurrence_algorithm)
-    coefficients = [_lobatto(coeffs, lo, up)
+    coefficients = [_lobatto(coeffs, (lo, up))
                     for coeffs, lo, up in zip(coefficients, lower, upper)]
     abscissas, weights = coefficients_to_quadrature(coefficients)
 
-    abscissas = combine(abscissas).T.reshape(len(dist), -1)
-    weights = numpy.prod(combine(weights), -1)
-
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights)
 
 
-def _lobatto(coeffs, xl1, xl2):
+def _lobatto(coefficients, preassigned):
     """
-    Compute the Lobatto nodes and weights with the preassigned node xl1, xl2.
+    Compute the Lobatto nodes and weights with the preassigned value pair.
     Based on the section 7 of the paper
 
         Some modified matrix eigenvalue problems,
@@ -127,21 +124,24 @@ def _lobatto(coeffs, xl1, xl2):
     and
 
         http://www.scientificpython.net/pyblog/radau-quadrature
-    """
-    alpha = numpy.array(coeffs[0])
-    beta = numpy.array(coeffs[1])
-    en = numpy.zeros(len(alpha)-1)
-    en[-1] = 1
-    A1 = numpy.vstack((numpy.sqrt(beta), alpha - xl1))
-    J1 = numpy.vstack((A1[:, 0:-1], A1[0, 1:]))
-    A2 = numpy.vstack((numpy.sqrt(beta), alpha - xl2))
-    J2 = numpy.vstack((A2[:, 0:-1], A2[0, 1:]))
-    g1 = solve_banded((1, 1), J1, en)
-    g2 = solve_banded((1, 1), J2, en)
-    C = numpy.array(((1, -g1[-1]), (1, -g2[-1])))
-    xl = numpy.array((xl1, xl2))
-    ab = solve(C, xl)
 
-    alpha[-1] = ab[0]
-    beta[-1] = ab[1]
+    Args:
+        coefficients (numpy.ndarray):
+            Three terms recurrence coefficients.
+        preassigned (Tuple[float, float]):
+            Values that are assume to be fixed.
+    """
+    alpha = numpy.array(coefficients[0])
+    beta = numpy.array(coefficients[1])
+    vec_en = numpy.zeros(len(alpha)-1)
+    vec_en[-1] = 1
+    mat_a1 = numpy.vstack((numpy.sqrt(beta), alpha-preassigned[0]))
+    mat_j1 = numpy.vstack((mat_a1[:, 0:-1], mat_a1[0, 1:]))
+    mat_a2 = numpy.vstack((numpy.sqrt(beta), alpha - preassigned[1]))
+    mat_j2 = numpy.vstack((mat_a2[:, 0:-1], mat_a2[0, 1:]))
+    mat_g1 = solve_banded((1, 1), mat_j1, vec_en)
+    mat_g2 = solve_banded((1, 1), mat_j2, vec_en)
+    mat_c = numpy.array(((1, -mat_g1[-1]), (1, -mat_g2[-1])))
+    alpha[-1], beta[-1] = solve(mat_c, preassigned)
+
     return numpy.array([alpha, beta])

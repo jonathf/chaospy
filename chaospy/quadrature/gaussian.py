@@ -111,11 +111,9 @@ For example, to mention a few:
     >>> print(numpy.around(W, 4))
     [9.600e-02 3.591e-01 3.891e-01 1.412e-01 1.430e-02 2.000e-04]
 """
-import numpy
-
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from .combine import combine
+from .combine import combine_quadrature
 
 
 def quad_gaussian(
@@ -183,10 +181,5 @@ def quad_gaussian(
     """
     coefficients = construct_recurrence_coefficients(
         order, dist, rule, accuracy, recurrence_algorithm)
-
     abscissas, weights = coefficients_to_quadrature(coefficients)
-
-    abscissas = combine(abscissas).T.reshape(len(dist), -1)
-    weights = numpy.prod(combine(weights), -1)
-
-    return abscissas, weights
+    return combine_quadrature(abscissas, weights)

@@ -1,10 +1,8 @@
-"""
-Hermite Genz-Keister 22 rule.
-"""
+"""Hermite Genz-Keister 22 rule."""
 import numpy
 
 
-def quad_genz_keister_22 ( order ):
+def quad_genz_keister_22(order):
     """
     Hermite Genz-Keister 22 rule.
 

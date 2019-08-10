@@ -1,10 +1,21 @@
 """
 Frontend for the Hermite Genz-Keister quadrature rule.
 """
-import numpy as np
+import numpy
 import scipy.special
 
-import chaospy.quadrature
+from ..combine import combine
+from .gk16 import quad_genz_keister_16
+from .gk18 import quad_genz_keister_18
+from .gk22 import quad_genz_keister_22
+from .gk24 import quad_genz_keister_24
+
+GENS_KEISTER_FUNCTIONS = {
+    16: quad_genz_keister_16,
+    18: quad_genz_keister_18,
+    22: quad_genz_keister_22,
+    24: quad_genz_keister_24,
+}
 
 
 def quad_genz_keister(order, dist, rule=24):
@@ -30,13 +41,13 @@ def quad_genz_keister(order, dist, rule=24):
                       for i in range(len(dist))]
 
         abscissas = [_[0][0] for _ in values]
-        abscissas = chaospy.quadrature.combine(abscissas).T
+        abscissas = combine(abscissas).T
         weights = [_[1] for _ in values]
-        weights = np.prod(chaospy.quadrature.combine(weights), -1)
+        weights = numpy.prod(combine(weights), -1)
 
         return abscissas, weights
 
-    foo = chaospy.quadrature.genz_keister.COLLECTION[rule]
+    foo = GENS_KEISTER_FUNCTIONS[rule]
     abscissas, weights = foo(order)
     abscissas = dist.inv(scipy.special.ndtr(abscissas))
     abscissas = abscissas.reshape(1, abscissas.size)

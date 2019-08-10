@@ -115,24 +115,31 @@ def construct_sparse_grid(
         >>> print(numpy.around(W, 3))
         [ 0.167  0.25  -0.5    0.25   0.667  0.25  -0.5    0.25   0.167]
     """
-    from . import frontend
     orders = order*numpy.ones(len(dist), dtype=int)
-    order = numpy.min(orders)
-    skew = orders-order
 
     if isinstance(rule, str):
         rule = (rule,)*len(dist)
 
-    # Create a quick look-up table so values do not need to be re-calculatated
-    # on the fly.
-    abscissas_ = [[] for _ in range(len(dist))]
-    weights_ = [[] for _ in range(len(dist))]
-    for idx, (order_, dist_, rule_) in enumerate(zip(orders, dist, rule)):
-        for idy in range(order_+1):
-            (abscissas,), weights = frontend.generate_quadrature(
-                idy, dist_, accuracy=accuracy, rule=rule_, growth=growth)
-            abscissas_[idx].append(abscissas)
-            weights_[idx].append(weights)
+    x_lookup, w_lookup = _construct_lookup(
+        orders, dist, rule, accuracy, growth, recurrence_algorithm)
+    collection = _construct_collection(
+        order, dist, x_lookup, w_lookup)
+
+    abscissas = sorted(collection)
+    weights = numpy.array([collection[key] for key in abscissas])
+    abscissas = numpy.array(abscissas).T
+    return abscissas, weights
+
+
+def _construct_collection(
+        orders,
+        dist,
+        x_lookup,
+        w_lookup,
+):
+    """Create a collection of {abscissa: weight} key-value pairs."""
+    order = numpy.min(orders)
+    skew = orders-order
 
     # Indices and coefficients used in the calculations
     indices = bindex(order-len(dist)+1, order, dim=len(dist))
@@ -141,12 +148,41 @@ def construct_sparse_grid(
 
     collection = defaultdict(float)
     for bidx, coeff in zip(indices+skew, coeffs.tolist()):
-        xs = [xw[idx] for idx, xw in zip(bidx, abscissas_)]
-        ws = [xw[idx] for idx, xw in zip(bidx, weights_)]
-        for x, w in zip(product(*xs), product(*ws)):
-            collection[x] += numpy.prod(w)*coeff
+        abscissas = [value[idx] for idx, value in zip(bidx, x_lookup)]
+        weights = [value[idx] for idx, value in zip(bidx, w_lookup)]
+        for abscissa, weight in zip(product(*abscissas), product(*weights)):
+            collection[abscissa] += numpy.prod(weight)*coeff
 
-    abscissas = sorted(collection)
-    weights = numpy.array([collection[key] for key in abscissas])
-    abscissas = numpy.array(abscissas).T
-    return abscissas, weights
+    return collection
+
+
+def _construct_lookup(
+        orders,
+        dists,
+        rules,
+        accuracy,
+        growth,
+        recurrence_algorithm,
+):
+    """
+    Create abscissas and weights look-up table so values do not need to be
+    re-calculatated on the fly.
+    """
+    from .frontend import generate_quadrature
+    x_lookup = []
+    w_lookup = []
+    for max_order, dist, rule in zip(orders, dists, rules):
+        x_lookup.append([])
+        w_lookup.append([])
+        for order in range(max_order+1):
+            (abscissas,), weights = generate_quadrature(
+                order,
+                dist,
+                accuracy=accuracy,
+                rule=rule,
+                growth=growth,
+                recurrence_algorithm=recurrence_algorithm,
+            )
+            x_lookup[-1].append(abscissas)
+            w_lookup[-1].append(weights)
+    return x_lookup, w_lookup
