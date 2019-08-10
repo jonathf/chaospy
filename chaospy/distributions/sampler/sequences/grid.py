@@ -42,7 +42,7 @@ Multivariate usage::
 """
 import numpy
 
-import chaospy.quad
+import chaospy.quadrature
 
 
 def create_grid_samples(order, dim=1):
@@ -59,7 +59,7 @@ def create_grid_samples(order, dim=1):
         Regular grid with ``shape == (dim, order)``.
     """
     x_data = numpy.arange(1, order+1)/(order+1.)
-    x_data = chaospy.quad.combine([x_data]*dim)
+    x_data = chaospy.quadrature.combine([x_data]*dim)
     return x_data.T
 
 

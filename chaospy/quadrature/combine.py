@@ -1,6 +1,4 @@
-"""
-Function to combine two dataset together with a tensor product.
-"""
+"""Function to combine two dataset together with a tensor product."""
 import numpy
 import chaospy
 
@@ -23,7 +21,7 @@ def combine(args):
 
     Examples:
         >>> A, B = [1,2], [[4,4],[5,6]]
-        >>> print(chaospy.quad.combine([A, B]))
+        >>> print(chaospy.quadrature.combine([A, B]))
         [[1. 4. 4.]
          [1. 5. 6.]
          [2. 4. 4.]
@@ -36,20 +34,13 @@ def combine(args):
     if size > 10**9:
         raise MemoryError("Too large sets")
 
-    if len(args) == 1:
-        out = args[0]
-
-    elif len(args) == 2:
-        out = combine_two(*args)
-
-    else:
-        arg1 = combine_two(*args[:2])
-        out = combine([arg1,]+args[2:])
-
+    out = args[0]
+    for arg in args[1:]:
+        out = _combine(out, arg)
     return out
 
 
-def combine_two(arg1, arg2):
+def _combine(arg1, arg2):
     l1, d1 = arg1.shape
     l2, d2 = arg2.shape
     out = numpy.empty((l1*l2, d1+d2))

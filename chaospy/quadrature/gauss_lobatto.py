@@ -18,38 +18,41 @@ With increasing order::
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_lobatto")
-    ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
+    ...     print(numpy.around(X, 2), numpy.around(W, 2))
     [[-1.]] [1.]
     [[-1.  1.]] [0.5 0.5]
     [[-1.   -0.38  0.38  1.  ]] [0.03 0.47 0.47 0.03]
-    [[-1.   -0.69 -0.25  0.25  0.69  1.  ]] [0.01 0.15 0.35 0.35 0.15 0.01]
+    [[-1.   -0.69 -0.25  0.25  0.69  1.  ]]
+     [0.01 0.15 0.35 0.35 0.15 0.01]
 
 Multivariate samples::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
     ...     2, distribution, rule="gauss_lobatto")
-    >>> print(numpy.around(X, 3))
-    [[-0.    -0.    -0.    -0.     0.276  0.276  0.276  0.276  0.724  0.724
-       0.724  0.724  1.     1.     1.     1.   ]
-     [ 0.     0.318  0.605  1.     0.     0.318  0.605  1.     0.     0.318
-       0.605  1.     0.     0.318  0.605  1.   ]]
-    >>> print(numpy.around(W, 3))
-    [0.001 0.045 0.037 0.    0.006 0.224 0.184 0.002 0.006 0.224 0.184 0.002
-     0.001 0.045 0.037 0.   ]
+    >>> print(numpy.around(X, 3))  # doctest: +NORMALIZE_WHITESPACE
+    [[-0.    -0.    -0.    -0.     0.276  0.276  0.276  0.276
+       0.724  0.724  0.724  0.724  1.     1.     1.     1.   ]
+     [ 0.     0.318  0.605  1.     0.     0.318  0.605  1.
+       0.     0.318  0.605  1.     0.     0.318  0.605  1.   ]]
+    >>> print(numpy.around(W, 3))  # doctest: +NORMALIZE_WHITESPACE
+    [0.001 0.045 0.037 0.    0.006 0.224 0.184 0.002
+     0.006 0.224 0.184 0.002 0.001 0.045 0.037 0.   ]
 """
+from __future__ import print_function
+
 import numpy
 from scipy.linalg import solve_banded, solve
 
-from ..recurrence import (
+from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from ..combine import combine
+from .combine import combine
 
 
 def quad_gauss_lobatto(
         order,
         dist,
-        rule="F",
+        rule="fejer",
         accuracy=100,
         recurrence_algorithm="",
 ):
@@ -61,7 +64,17 @@ def quad_gauss_lobatto(
             Quadrature order.
         dist (chaospy.distributions.baseclass.Dist):
             The distribution weights to be used to create higher order nodes
-            from. If omitted, use ``Uniform(-1, 1)``.
+            from.
+        rule (str):
+            In the case of ``lanczos`` or ``stieltjes``, defines the
+            proxy-integration scheme.
+        accuracy (int):
+            In the case ``rule`` is used, defines the quadrature order of the
+            scheme used. In practice, must be at least as large as ``order``.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights. If
+            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
+            if that fails.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -78,12 +91,14 @@ def quad_gauss_lobatto(
             coefficients.
 
     Example:
-        >>> abscissas, weights = quad_gauss_lobatto(4, chaospy.Uniform(-1, 1))
+        >>> abscissas, weights = quad_gauss_lobatto(
+        ...     4, chaospy.Uniform(-1, 1))
         >>> print(numpy.around(abscissas, 3))
         [[-1.    -0.872 -0.592 -0.209  0.209  0.592  0.872  1.   ]]
         >>> print(numpy.around(weights, 3))
         [0.018 0.105 0.171 0.206 0.206 0.171 0.105 0.018]
     """
+    assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     lower, upper = dist.range()
     if order == 0:
         return lower.reshape(1, -1), numpy.array([1.])

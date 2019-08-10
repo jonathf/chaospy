@@ -38,13 +38,12 @@ class triangle(Dist):
         if a == 1:
             return beta_()._ttr(k, 2, 1)
 
-        from ...quad.collection import quad_fejer
+        from ...quadrature import quad_fejer, discretized_stieltjes
         q1, w1 = quad_fejer(int(1000*a), (0, a))
         q2, w2 = quad_fejer(int(1000*(1-a)), (a, 1))
         q = numpy.concatenate([q1,q2], 1)
         w = numpy.concatenate([w1,w2])*self.pdf(q[0])
 
-        from ...quad.recurrence import discretized_stieltjes
         coeffs, _, _ = discretized_stieltjes(k, q, w)
         return coeffs[:, 0, -1]
 

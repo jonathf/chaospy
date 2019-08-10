@@ -27,16 +27,18 @@ With increasing order::
     >>> for order in range(3):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_patterson")
-    ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
+    ...     print(numpy.around(X, 2), numpy.around(W, 2))
     [[0.]] [1.]
     [[-0.77  0.    0.77]] [0.17 0.67 0.17]
     [[-0.96 -0.77 -0.43  0.    0.43  0.77  0.96]]
      [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
 """
+from __future__ import print_function
+import logging
 
 import numpy
 
-from ..combine import combine
+from .combine import combine
 
 
 def quad_gauss_patterson(order, domain):
@@ -59,15 +61,13 @@ def quad_gauss_patterson(order, domain):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> X, W = chaospy.quad_gauss_patterson(3, chaospy.Uniform(0, 1))
+        >>> X, W = chaospy.quad_gauss_patterson(2, chaospy.Uniform(0, 1))
         >>> print(numpy.around(X, 4))
-        [[0.0031 0.0198 0.0558 0.1127 0.1894 0.2829 0.3883 0.5    0.6117 0.7171
-          0.8106 0.8873 0.9442 0.9802 0.9969]]
+        [[0.0198 0.1127 0.2829 0.5    0.7171 0.8873 0.9802]]
         >>> print(numpy.around(W, 4))
-        [0.0085 0.0258 0.0465 0.0672 0.0858 0.1003 0.1096 0.1128 0.1096 0.1003
-         0.0858 0.0672 0.0465 0.0258 0.0085]
+        [0.0523 0.1342 0.2007 0.2255 0.2007 0.1342 0.0523]
     """
-    from ...distributions.baseclass import Dist
+    from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
         abscissas, weights = quad_gauss_patterson(
             order, domain.range())

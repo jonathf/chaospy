@@ -53,22 +53,38 @@ Monto Carlo is your best choice, it might be worth taking a look at
 
     * Use a uniform distribution on an arbitrary interval ``Uniform(a, b)``,
       and multiply the weight terms with the interval length: ``W *= (b-a)``
-    * Use the quadrature rules directly from ``chaospy.quad.collection``.
+    * Use the quadrature rules directly from ``chaospy.quadrature.collection``.
     * Adjust weights afterwards: ``W /= dist.pdf(X)``
 
 To create quadrature abscissas and weights, use the
-:func:`~chaospy.quad.interface.generate_quadrature` function. Which type of
-quadrature to use is defined by the flag ``rule``. This argument can either be
-the full name, or a single letter representing the rule. These are as follows.
+:func:`~chaospy.quadrature.frontend.generate_quadrature` function. Which type
+of quadrature to use is defined by the flag ``rule``. This argument can either
+be the full name, or a single letter representing the rule. These are as
+follows.
 
 """
-from .combine import combine
 from .frontend import generate_quadrature
+from .sparse_grid import construct_sparse_grid
+from .combine import combine
 
-from .collection import *
-from .sparse_grid import sparse_grid
+from .clenshaw_curtis import quad_clenshaw_curtis
+from .fejer import quad_fejer
+from .gaussian import quad_gaussian
+from .gauss_patterson import quad_gauss_patterson
+from .gauss_legendre import quad_gauss_legendre
+from .gauss_lobatto import quad_gauss_lobatto
+from .gauss_kronrod import quad_gauss_kronrod
+from .gauss_radau import quad_gauss_radau
+from .genz_keister import quad_genz_keister
+from .leja import quad_leja
+from .newton_cotes import quad_newton_cotes
 
 from .recurrence import (
-    construct_recurrence_coefficients,
+    analytical_stieljes,
+    modified_chebyshev,
     coefficients_to_quadrature,
+    construct_recurrence_coefficients,
+    discretized_stieltjes,
+    lanczos,
+    RECURRENCE_ALGORITHMS,
 )

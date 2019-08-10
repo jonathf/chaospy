@@ -9,7 +9,8 @@ Example usage
 Basic usage::
 
     >>> dist = chaospy.Beta(3, 6)
-    >>> abscissas, weights = chaospy.generate_quadrature(10, dist, rule="C")
+    >>> abscissas, weights = chaospy.generate_quadrature(
+    ...     10, dist, rule="clenshaw_curtis")
     >>> alpha, beta = lanczos(3, abscissas, weights)
     >>> print(alpha)
     [0.33333333 0.39393939 0.42680399 0.44727847]
@@ -20,7 +21,6 @@ import numpy
 
 import chaospy.poly.base
 import chaospy.poly.collection
-import chaospy.quad
 
 
 def lanczos(order, abscissas, weights):

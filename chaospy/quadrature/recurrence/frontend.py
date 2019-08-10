@@ -1,7 +1,7 @@
 """Construct recurrence coefficients."""
 import numpy
 
-from .. import interface
+from .. import frontend
 
 from .chebyshev import modified_chebyshev
 from .jacobi import coefficients_to_quadrature
@@ -14,7 +14,7 @@ RECURRENCE_ALGORITHMS = ("analytical", "chebyshev", "lanczos", "stieltjes")
 def construct_recurrence_coefficients(
         order,
         dist,
-        rule="F",
+        rule="fejer",
         accuracy=100,
         recurrence_algorithm="",
 ):
@@ -58,7 +58,7 @@ def construct_recurrence_coefficients(
         recurrence_algorithm (str):
             Name of the algorithm used to generate abscissas and weights. If
             omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails. See \
+            if that fails.
 
     Returns:
         (typing.List[numpy.ndarray]):
@@ -99,6 +99,8 @@ def construct_recurrence_coefficients(
 
     assert recurrence_algorithm in RECURRENCE_ALGORITHMS, (
         "recurrence algorithm '%s' not recognized" % recurrence_algorithm)
+    assert not rule.startswith("gauss"), (
+        "recursive Gaussian quadrature construct")
 
     if recurrence_algorithm == "analytical":
         coeffs = dist.ttr(numpy.arange(order+1, dtype=int))
@@ -108,12 +110,12 @@ def construct_recurrence_coefficients(
         coeffs = modified_chebyshev(moments)
 
     elif recurrence_algorithm == "lanczos":
-        abscissas, weights = interface.construct_quadrature(
+        abscissas, weights = frontend.generate_quadrature(
             accuracy, dist, rule=rule)
         coeffs = lanczos(order, abscissas, weights)
 
     elif recurrence_algorithm == "stieltjes":
-        abscissas, weights = interface.construct_quadrature(
+        abscissas, weights = frontend.generate_quadrature(
             accuracy, dist, rule=rule)
         coeffs, _, _ = discretized_stieltjes(order, abscissas, weights)
 

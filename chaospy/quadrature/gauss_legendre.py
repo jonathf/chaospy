@@ -18,8 +18,8 @@ The first few orders::
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_legendre")
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
+    ...     print(order, numpy.around(abscissas, 3),
+    ...           numpy.around(weights, 3))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.5 0.5]
     2 [[0.113 0.5   0.887]] [0.278 0.444 0.278]
@@ -31,8 +31,8 @@ Using an alternative distribution::
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_legendre")
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
+    ...     print(order, numpy.around(abscissas, 3),
+    ...           numpy.around(weights, 3))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.933 0.067]
     2 [[0.113 0.5   0.887]] [0.437 0.556 0.007]
@@ -41,17 +41,19 @@ Using an alternative distribution::
 The abscissas stays the same, but the weights are re-adjusted for the new
 weight function.
 """
+from __future__ import print_function
+
 import numpy
 
-from ..recurrence import (
+from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from ..combine import combine
+from .combine import combine
 
 
 def quad_gauss_legendre(
         order,
         domain=(0, 1),
-        rule="F",
+        rule="fejer",
         accuracy=100,
         recurrence_algorithm="",
 ):
@@ -70,13 +72,23 @@ def quad_gauss_legendre(
         \int_a^b p(x) f(x) dx \approx \sum_i f(X_i) W_i
 
     To get the behavior where the weight function is taken into consideration,
-    use :func:`~chaospy.quad.collection.golub_welsch.quad_golub_welsch`.
+    use :func:`~chaospy.quadrature.collection.gaussian.quad_gaussian`.
 
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
         domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
+        rule (str):
+            In the case of ``lanczos`` or ``stieltjes``, defines the
+            proxy-integration scheme.
+        accuracy (int):
+            In the case ``rule`` is used, defines the quadrature order of the
+            scheme used. In practice, must be at least as large as ``order``.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights. If
+            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
+            if that fails.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -94,7 +106,8 @@ def quad_gauss_legendre(
         >>> print(numpy.around(weights, 4))
         [0.1739 0.3261 0.3261 0.1739]
     """
-    from ...distributions.baseclass import Dist
+    from ..distributions.baseclass import Dist
+    from ..distributions.collection import Uniform
     if isinstance(domain, Dist):
         abscissas, weights = quad_gauss_legendre(
             order, domain.range(), rule, accuracy, recurrence_algorithm)
@@ -117,7 +130,6 @@ def quad_gauss_legendre(
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    from ...distributions.collection import Uniform
     coefficients = construct_recurrence_coefficients(
         numpy.max(order), Uniform(0, 1), rule, accuracy, recurrence_algorithm)
     abscissas, weights = zip(*[coefficients_to_quadrature(

@@ -10,14 +10,15 @@ a scheme that uses fewer abscissas points than a full tensor-product approach.
 To use Smolyak sparse-grid in ``chaospy``, just pass the flag ``sparse=True``
 to the ``generate_quadrature`` function. For example::
 
-    >>> distribution = chaospy.J(chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
+    >>> distribution = chaospy.J(
+    ...     chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
     >>> X, W = chaospy.generate_quadrature(3, distribution, sparse=True)
     >>> print(numpy.around(X, 4))
     [[0. 0. 0. 1. 2. 2. 2. 2. 2. 3. 4. 4. 4.]
      [0. 2. 4. 2. 0. 1. 2. 3. 4. 2. 0. 2. 4.]]
-    >>> print(numpy.around(W, 4))
-    [-0.0833  0.2222 -0.0833  0.4444  0.2222  0.4444 -1.3333  0.4444  0.2222
-      0.4444 -0.0833  0.2222 -0.0833]
+    >>> print(numpy.around(W, 4))  # doctest: +NORMALIZE_WHITESPACE
+    [-0.0833  0.2222 -0.0833  0.4444  0.2222  0.4444 -1.3333
+      0.4444  0.2222  0.4444 -0.0833  0.2222 -0.0833]
 
 This compared to the full tensor-product grid::
 
@@ -25,9 +26,9 @@ This compared to the full tensor-product grid::
     >>> print(numpy.around(X, 4))
     [[0. 0. 0. 0. 1. 1. 1. 1. 3. 3. 3. 3. 4. 4. 4. 4.]
      [0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4.]]
-    >>> print(numpy.around(W, 4))
-    [0.0031 0.0247 0.0247 0.0031 0.0247 0.1975 0.1975 0.0247 0.0247 0.1975
-     0.1975 0.0247 0.0031 0.0247 0.0247 0.0031]
+    >>> print(numpy.around(W, 4))  # doctest: +NORMALIZE_WHITESPACE
+    [0.0031 0.0247 0.0247 0.0031 0.0247 0.1975 0.1975 0.0247
+     0.0247 0.1975 0.1975 0.0247 0.0031 0.0247 0.0247 0.0031]
 
 The method works with all quadrature rules, but is known to be quite
 inefficient when applied to rules that can not be nested. For example using
@@ -59,44 +60,62 @@ from scipy.special import comb
 
 from ..bertran import bindex
 
-from .interface import construct_quadrature
 
-
-def sparse_grid(
+def construct_sparse_grid(
         order,
         dist,
+        rule="gaussian",
         accuracy=100,
-        rule="G",
         growth=None,
+        recurrence_algorithm="",
 ):
     """
     Smolyak sparse grid constructor.
 
     Args:
-        func (:py:data:typing.Callable):
-            Function that takes a single argument ``order`` of type
-            ``numpy.ndarray`` and with ``order.shape = (dim,)``
         order (int, numpy.ndarray):
             The order of the grid. If ``numpy.ndarray``, it overrides both
             ``dim`` and ``skew``.
-        dim (int):
-            Number of dimension.
+        dist (chaospy.distributions.baseclass.Dist):
+            The distribution which density will be used as weight function.
+        rule (str):
+            Rule for generating abscissas and weights. Either done with
+            quadrature rules, or with random samples with constant weights.
+        accuracy (int):
+            If gaussian is set, but the Dist provieded in domain does not
+            provide an analytical TTR, ac sets the approximation order for the
+            descitized Stieltje's method.
+        growth (bool, None):
+            If True sets the growth rule for the quadrature rule to only
+            include orders that enhances nested samples. Defaults to the same
+            value as ``sparse`` if omitted.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights in
+            case of Gaussian quadrature scheme. If omitted, ``analytical`` will
+            be tried first, and ``stieltjes`` used if that fails.
+
+    Returns:
+        (numpy.ndarray, numpy.ndarray):
+            Abscissas and weights created from sparse grid rule. Flatten such
+            that ``abscissas.shape == (len(dist), len(weights))``.
 
     Example:
-        >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Uniform(-1, 1))
-        >>> X, W = sparse_grid(1, distribution)
+        >>> distribution = chaospy.J(
+        ...     chaospy.Normal(0, 1), chaospy.Uniform(-1, 1))
+        >>> X, W = construct_sparse_grid(1, distribution)
         >>> print(numpy.around(X, 4))
         [[-1.      0.      0.      0.      1.    ]
          [ 0.     -0.5774  0.      0.5774  0.    ]]
         >>> print(numpy.around(W, 4))
         [ 0.5  0.5 -1.   0.5  0.5]
-        >>> X, W = sparse_grid([2, 1], distribution)
+        >>> X, W = construct_sparse_grid([2, 1], distribution)
         >>> print(numpy.around(X, 3))
         [[-1.732 -1.    -1.    -1.     0.     1.     1.     1.     1.732]
          [ 0.    -0.577  0.     0.577  0.    -0.577  0.     0.577  0.   ]]
         >>> print(numpy.around(W, 3))
         [ 0.167  0.25  -0.5    0.25   0.667  0.25  -0.5    0.25   0.167]
     """
+    from . import frontend
     orders = order*numpy.ones(len(dist), dtype=int)
     order = numpy.min(orders)
     skew = orders-order
@@ -110,7 +129,7 @@ def sparse_grid(
     weights_ = [[] for _ in range(len(dist))]
     for idx, (order_, dist_, rule_) in enumerate(zip(orders, dist, rule)):
         for idy in range(order_+1):
-            (abscissas,), weights = construct_quadrature(
+            (abscissas,), weights = frontend.generate_quadrature(
                 idy, dist_, accuracy=accuracy, rule=rule_, growth=growth)
             abscissas_[idx].append(abscissas)
             weights_[idx].append(weights)

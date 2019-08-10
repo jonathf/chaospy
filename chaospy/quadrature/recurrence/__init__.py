@@ -25,15 +25,15 @@ to multiply the weights :math:`W_i` with some adjustment scalar. For example::
     >>> distribution = chaospy.Uniform(-1, 1)
     >>> N = 3
     >>> adjust_scalar = 2
-    >>> X, W = chaospy.generate_quadrature(N, distribution, rule="G")
+    >>> X, W = chaospy.generate_quadrature(N, distribution, rule="gaussian")
     >>> W *= adjust_scalar
     >>> print(X)
     [[-0.86113631 -0.33998104  0.33998104  0.86113631]]
     >>> print(W)
     [0.34785485 0.65214515 0.65214515 0.34785485]
 
-Here ``rule="G"`` is the flag that indicate that Gaussian quadrature should be
-used.
+Here ``rule="gaussian"`` is the flag that indicate that Gaussian quadrature
+should be used.
 
 The various constants and distributions to achieve the various quadrature rules
 are as follows.
@@ -57,9 +57,9 @@ work very well. E.g. using the log-normal probability density function as
 a weight function is known to scale badly. Which one works or not, depends on
 context, so any non-standard use has to be done with some care.
 """
-from .jacobi import coefficients_to_quadrature
-from .recurrence import (
+from .frontend import (
     construct_recurrence_coefficients, RECURRENCE_ALGORITHMS)
+from .jacobi import coefficients_to_quadrature
 
 from .chebyshev import modified_chebyshev
 from .lanczos import lanczos

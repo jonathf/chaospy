@@ -29,13 +29,12 @@ class laplace(Dist):
         return -32., 32.
 
     def _ttr(self, k):
-        from ...quad.collection import quad_fejer
+        from ...quadrature import quad_fejer, discretized_stieltjes
         q1, w1 = quad_fejer(500, (-32, 0))
         q2, w2 = quad_fejer(500, (0, 32))
         q = numpy.concatenate([q1,q2], 1)
         w = numpy.concatenate([w1,w2])*self.pdf(q[0])
 
-        from ...quad.recurrence import discretized_stieltjes
         coeffs, _, _ = discretized_stieltjes(k, q, w)
         return coeffs[:, 0, -1]
 

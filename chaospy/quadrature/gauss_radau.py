@@ -19,15 +19,17 @@ With increasing order::
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_radau")
-    ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
+    ...     print(numpy.around(X, 2), numpy.around(W, 2))
     [[-1.]] [1.]
     [[-1.   0.2]] [0.17 0.83]
     [[-1.   -0.51  0.13  0.71]] [0.02 0.33 0.48 0.17]
-    [[-1.   -0.74 -0.35  0.1   0.53  0.85]] [0.01 0.11 0.28 0.34 0.21 0.05]
+    [[-1.   -0.74 -0.35  0.1   0.53  0.85]]
+     [0.01 0.11 0.28 0.34 0.21 0.05]
 
 Multivariate samples::
 
-    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
+    >>> distribution = chaospy.J(
+    ...     chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
     ...     1, distribution, rule="gauss_radau")
     >>> print(numpy.around(X, 3))
@@ -40,14 +42,14 @@ To change the fixed point, the direct generating function has to be used::
 
     >>> distribution = chaospy.Uniform(lower=-1, upper=1)
     >>> for fixed_point in numpy.linspace(-1, 1, 6):
-    ...     X, W = chaospy.quad_gauss_radau(3, distribution, fixed_point)
-    ...     print("{} {}".format(numpy.around(X, 2), numpy.around(W, 2)))
-    [[-1.   -0.8  -0.39  0.12  0.6   0.92]] [0.03 0.16 0.24 0.26 0.21 0.1 ]
-    [[-0.92 -0.6  -0.12  0.4   0.82  1.02]] [0.1  0.21 0.26 0.25 0.16 0.02]
-    [[-0.93 -0.64 -0.2   0.28  0.69  0.94]] [0.09 0.19 0.24 0.23 0.17 0.08]
-    [[-0.94 -0.69 -0.28  0.2   0.64  0.93]] [0.08 0.17 0.23 0.24 0.19 0.09]
-    [[-1.02 -0.82 -0.4   0.12  0.6   0.92]] [0.02 0.16 0.25 0.26 0.21 0.1 ]
-    [[-0.92 -0.6  -0.12  0.39  0.8   1.  ]] [0.1  0.21 0.26 0.24 0.16 0.03]
+    ...     X, W = chaospy.quad_gauss_radau(2, distribution, fixed_point)
+    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    [[-1.   -0.58  0.18  0.82]] [0.06 0.33 0.39 0.22]
+    [[-1.04 -0.6   0.17  0.82]] [0.05 0.33 0.39 0.22]
+    [[-0.83 -0.2   0.54  0.96]] [0.22 0.38 0.32 0.08]
+    [[-0.96 -0.54  0.2   0.83]] [0.08 0.32 0.38 0.22]
+    [[-0.82 -0.17  0.6   1.04]] [0.22 0.39 0.33 0.05]
+    [[-0.82 -0.18  0.58  1.  ]] [0.22 0.39 0.33 0.06]
 
 However, a fixed point at 0 is not allowed::
 
@@ -56,19 +58,21 @@ However, a fixed point at 0 is not allowed::
         ...
     numpy.linalg.LinAlgError: Illegal Radau fixed point: 0.0
 """
+from __future__ import print_function
+
 import numpy
 import scipy.linalg
 
-from ..recurrence import (
+from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from ..combine import combine
+from .combine import combine
 
 
 def quad_gauss_radau(
         order,
         dist,
         fixed_point=None,
-        rule="F",
+        rule="fejer",
         accuracy=100,
         recurrence_algorithm="",
 ):
@@ -84,6 +88,16 @@ def quad_gauss_radau(
         fixed_point (float):
             Fixed point abscissas assumed to be included in the quadrature. If
             imitted, use distribution lower point ``dist.range()[0]``.
+        rule (str):
+            In the case of ``lanczos`` or ``stieltjes``, defines the
+            proxy-integration scheme.
+        accuracy (int):
+            In the case ``rule`` is used, defines the quadrature order of the
+            scheme used. In practice, must be at least as large as ``order``.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights. If
+            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
+            if that fails.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -105,12 +119,8 @@ def quad_gauss_radau(
         [[-1.    -0.887 -0.64  -0.295  0.094  0.468  0.771  0.955]]
         >>> print(numpy.around(weights, 3))
         [0.016 0.093 0.152 0.188 0.196 0.174 0.125 0.057]
-        >>> abscissas, weights = quad_gauss_radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
-        ...     4, chaospy.Uniform(-1, 1), fixed_point=0)
-        Traceback (most recent call last):
-            ...
-        numpy.linalg.LinAlgError: Illegal Radau fixed point: 0.0
     """
+    assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if fixed_point is None:
         fixed_point, _ = dist.range()
     else:

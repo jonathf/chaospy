@@ -7,7 +7,7 @@ from scipy.special import comb, factorial
 
 import chaospy.poly.dimension
 import chaospy.bertran
-import chaospy.quad
+import chaospy.quadrature
 
 from chaospy.poly.base import Poly
 

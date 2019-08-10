@@ -2,7 +2,7 @@
 from itertools import product
 import numpy
 
-from .. import distributions, poly as polynomials, quad as quadrature
+from .. import distributions, poly as polynomials, quadrature
 
 
 def E_cond(poly, freeze, dist, **kws):

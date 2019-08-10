@@ -92,12 +92,12 @@ def orth_ttr(
         [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
     try:
-        _, polynomials, norms, = chaospy.quad.recurrence.analytical_stieljes(
+        _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
             numpy.max(order), dist, normed=normed)
     except NotImplementedError:
-        abscissas, weights = chaospy.quad.generate_quadrature(
+        abscissas, weights = chaospy.quadrature.generate_quadrature(
             int(10000**(1/len(dist))), dist, rule="F")
-        _, polynomials, norms, = chaospy.quad.recurrence.discretized_stieltjes(
+        _, polynomials, norms, = chaospy.quadrature.recurrence.discretized_stieltjes(
             numpy.max(order), abscissas, weights, normed=normed)
 
     polynomials = chaospy.poly.reshape(

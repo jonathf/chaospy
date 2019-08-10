@@ -19,7 +19,8 @@ For example for the tailored quadrature rules defined above:
 * Gauss-Hermit quadrature is tailored to the normal (Gaussian) distribution::
 
     >>> distribution = chaospy.Normal(0, 1)
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[-3.3243 -1.8892 -0.6167  0.6167  1.8892  3.3243]]
     >>> print(numpy.around(W, 4))
@@ -28,7 +29,8 @@ For example for the tailored quadrature rules defined above:
 * Gauss-Legendre quadrature is tailored to the Uniform distributions::
 
     >>> distribution = chaospy.Uniform(-1, 1)
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[-0.9325 -0.6612 -0.2386  0.2386  0.6612  0.9325]]
     >>> print(numpy.around(W, 4))
@@ -37,7 +39,8 @@ For example for the tailored quadrature rules defined above:
 * Gauss-Jacobi quadrature is tailored to the Beta distribution::
 
     >>> distribution = chaospy.Beta(2, 4, lower=-1, upper=1)
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[-0.8969 -0.6679 -0.3448  0.0289  0.4029  0.7279]]
     >>> print(numpy.around(W, 4))
@@ -46,7 +49,8 @@ For example for the tailored quadrature rules defined above:
 * Gauss-Laguerre quadrature is tailored to the Exponential distribution::
 
     >>> distribution = chaospy.Exponential()
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[ 0.2228  1.1889  2.9927  5.7751  9.8375 15.9829]]
     >>> print(numpy.around(W, 4))
@@ -55,7 +59,8 @@ For example for the tailored quadrature rules defined above:
 * Generalized Gauss-Laguerre quadrature is tailored to the Gamma distribution::
 
     >>> distribution = chaospy.Gamma(2, 4)
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[ 2.1107  7.1852 15.5066 27.6753 44.9384 70.5839]]
     >>> print(numpy.around(W, 4))
@@ -69,7 +74,8 @@ For example, to mention a few:
 * The Triangle distribution::
 
     >>> distribution = chaospy.Triangle(-1, 0, 1)
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[-0.8657 -0.5766 -0.1943  0.1943  0.5766  0.8657]]
     >>> print(numpy.around(W, 4))
@@ -78,7 +84,8 @@ For example, to mention a few:
 * The Laplace distribution::
 
     >>> distribution = chaospy.Laplace(0, 1)
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[-10.5577  -4.6629  -1.0424   1.0424   4.6629  10.5577]]
     >>> print(numpy.around(W, 4))
@@ -87,7 +94,8 @@ For example, to mention a few:
 * The Weibull distribution::
 
     >>> distribution = chaospy.Weibull()
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[ 0.2228  1.1886  2.9918  5.7731  9.8334 15.9737]]
     >>> print(numpy.around(W, 4))
@@ -96,7 +104,8 @@ For example, to mention a few:
 * The Rayleigh distribution::
 
     >>> distribution = chaospy.Rayleigh()
-    >>> X, W = chaospy.generate_quadrature(5, distribution, rule="gaussian")
+    >>> X, W = chaospy.generate_quadrature(
+    ...     5, distribution, rule="gaussian")
     >>> print(numpy.around(X, 4))
     [[0.2473 0.7687 1.4795 2.3314 3.3228 4.5295]]
     >>> print(numpy.around(W, 4))
@@ -104,15 +113,15 @@ For example, to mention a few:
 """
 import numpy
 
-from ..recurrence import (
+from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
-from ..combine import combine
+from .combine import combine
 
 
 def quad_gaussian(
         order,
         dist,
-        rule="F",
+        rule="fejer",
         accuracy=100,
         recurrence_algorithm="",
 ):
@@ -139,8 +148,7 @@ def quad_gaussian(
         recurrence_algorithm (str):
             Name of the algorithm used to generate abscissas and weights. If
             omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails. See \
-:func:`~chaospy.quad.recurrence.recurrence.construct_recurrence_coefficients`.
+            if that fails.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):

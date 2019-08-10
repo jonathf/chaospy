@@ -13,25 +13,49 @@ The first few orders::
     >>> for order in [0, 1, 2, 3, 4]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="leja")
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(abscissas, 3), numpy.around(weights, 3)))
+    ...     print(order, numpy.around(abscissas, 3),
+    ...           numpy.around(weights, 3))
     0 [[0.5]] [1.]
     1 [[0.5 1. ]] [1. 0.]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
     3 [[0.    0.5   0.789 1.   ]] [0.167 0.667 0.    0.167]
     4 [[0.    0.171 0.5   0.789 1.   ]] [0.043 0.289 0.316 0.28  0.072]
 """
+from __future__ import print_function
+
 import numpy
 from scipy.optimize import fminbound
 
-from ..combine import combine
-from ..recurrence import analytical_stieljes, discretized_stieltjes
-from .. import interface
+from .combine import combine
+from .recurrence import analytical_stieljes, discretized_stieltjes
+from . import frontend
 
 
-def quad_leja(order, dist):
+def quad_leja(
+        order,
+        dist,
+        rule="fejer",
+        accuracy=100,
+        recurrence_algorithm="",
+):
     """
     Generate Leja quadrature node.
+
+    Args:
+        order (int):
+            The order of the quadrature.
+        dist (chaospy.distributions.baseclass.Dist):
+            The distribution which density will be used as weight function.
+        rule (str):
+            In the case of ``lanczos`` or ``stieltjes``, defines the
+            proxy-integration scheme.
+        accuracy (int):
+            In the case ``rule`` is used, defines the quadrature order of the
+            scheme used. In practice, must be at least as large as ``order``.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights. If
+            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
+            if that fails.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -86,19 +110,30 @@ def quad_leja(order, dist):
         abscissas.insert(index+1, opts[index])
 
     abscissas = numpy.asfarray(abscissas).flatten()[1:-1]
-    weights = create_weights(abscissas, dist)
+    weights = create_weights(
+        abscissas, dist, rule, accuracy, recurrence_algorithm)
     abscissas = abscissas.reshape(1, abscissas.size)
 
     return numpy.asfarray(abscissas), numpy.asfarray(weights)
 
 
-def create_weights(nodes, dist):
+def create_weights(
+        nodes,
+        dist,
+        rule="fejer",
+        accuracy=100,
+        recurrence_algorithm="",
+):
     """Create weights for the Laja method."""
     try:
         _, poly, _ = analytical_stieljes(len(nodes)-1, dist)
     except NotImplementedError:
-        abscissas, weights = interface.construct_quadrature(
-            100*len(nodes), dist, rule="C")
+        abscissas, weights = frontend.generate_quadrature(
+            order=accuracy,
+            dist=dist,
+            rule="fejer",
+            recurrence_algorithm=recurrence_algorithm,
+        )
         _, poly, _ = discretized_stieltjes(
             len(nodes)-1, abscissas, weights)
     weights = numpy.linalg.inv(poly(nodes))

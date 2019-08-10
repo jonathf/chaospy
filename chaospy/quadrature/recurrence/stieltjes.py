@@ -34,7 +34,8 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(3, 4))
-        >>> abscissas, weights = chaospy.generate_quadrature(9, dist, rule="C")
+        >>> abscissas, weights = chaospy.generate_quadrature(
+        ...     9, dist, rule="clenshaw_curtis")
         >>> coeffs, orth, norms = discretized_stieltjes(2, abscissas, weights)
         >>> print(numpy.around(coeffs, 5))
         [[[0.5     0.5     0.5    ]

@@ -1,10 +1,13 @@
-# -*- coding: utf-8 -*-
 """
-Fejér proposed two quadrature rules very similar to :ref:`clenshaw_curtis`.
-The only difference is that the endpoints are set to zero. That is, Fejér only
-used the interior extrema of the Chebyshev polynomials, i.e. the true
-stationary points. This makes this a better method for performing quadrature on
-infinite intervals, as the evaluation does not contain illegal values.
+Clenshaw-Curtis quadrature method is a good all-around quadrature method
+comparable to Gaussian quadrature, but typically limited to finite intervals
+without a specific weight function. In addition to be quite accurate, the
+weights and abscissas can be calculated quite fast.
+
+Another thing to note is that Clenshaw-Curtis, with an appropriate growth rule
+is fully nested. This means, if one applies a method that combines different
+order of quadrature rules, the number of evaluations can often be reduced as
+the abscissas can be used across levels.
 
 Example usage
 -------------
@@ -14,50 +17,46 @@ The first few orders with linear growth rule::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="fejer")
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(X, 3), numpy.around(W, 3)))
+    ...         order, distribution, rule="clenshaw_curtis")
+    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
     0 [[0.5]] [1.]
-    1 [[0.25 0.75]] [0.5 0.5]
-    2 [[0.146 0.5   0.854]] [0.286 0.429 0.286]
-    3 [[0.095 0.345 0.655 0.905]] [0.188 0.312 0.312 0.188]
+    1 [[0. 1.]] [0.5 0.5]
+    2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    3 [[0.   0.25 0.75 1.  ]] [0.056 0.444 0.444 0.056]
 
 The first few orders with exponential growth rule::
 
-    >>> for order in [0, 1, 2]:  # doctest: +NORMALIZE_WHITESPACE
+    >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="fejer", growth=True)
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(X, 2), numpy.around(W, 2)))
+    ...         order, distribution, rule="clenshaw_curtis", growth=True)
+    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
     0 [[0.5]] [1.]
-    1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]
-    2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]]
-        [0.07 0.14 0.18 0.2  0.18 0.14 0.07]
+    1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
+    2 [[0.    0.146 0.5   0.854 1.   ]] [0.033 0.267 0.4   0.267 0.033]
 
 Applying the rule using Smolyak sparse grid::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> X, W = chaospy.generate_quadrature(
-    ...     2, distribution, rule="fejer", growth=True, sparse=True)
-    >>> print(numpy.around(X, 3))
-    [[0.038 0.146 0.146 0.146 0.309 0.5   0.5   0.5   0.5   0.5   0.5   0.5
-      0.691 0.854 0.854 0.854 0.962]
-     [0.5   0.146 0.5   0.854 0.5   0.038 0.146 0.309 0.5   0.691 0.854 0.962
-      0.5   0.146 0.5   0.854 0.5  ]]
+    ...     2, distribution, rule="clenshaw_curtis",
+    ...     growth=True, sparse=True)
+    >>> print(numpy.around(X, 2))
+    [[0.   0.   0.   0.15 0.5  0.5  0.5  0.5  0.5  0.85 1.   1.   1.  ]
+     [0.   0.5  1.   0.5  0.   0.15 0.5  0.85 1.   0.5  0.   0.5  1.  ]]
     >>> print(numpy.around(W, 3))
-    [ 0.074  0.082 -0.021  0.082  0.184  0.074 -0.021  0.184 -0.273  0.184
-     -0.021  0.074  0.184  0.082 -0.021  0.082  0.074]
+    [ 0.028 -0.022  0.028  0.267 -0.022  0.267 -0.089  0.267 -0.022  0.267
+      0.028 -0.022  0.028]
 """
-from __future__ import division
+from __future__ import division, print_function
 
 import numpy
 
-from ..combine import combine
+from .combine import combine
 
 
-def quad_fejer(order, domain=(0, 1), growth=False):
+def quad_clenshaw_curtis(order, domain, growth=False):
     """
-    Generate the quadrature abscissas and weights in Fejer quadrature.
+    Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
     Args:
         order (int, numpy.ndarray):
@@ -78,15 +77,15 @@ def quad_fejer(order, domain=(0, 1), growth=False):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_fejer(3, (0, 1))
+        >>> abscissas, weights = quad_clenshaw_curtis(3, (0, 1))
         >>> print(numpy.around(abscissas, 4))
-        [[0.0955 0.3455 0.6545 0.9045]]
+        [[0.   0.25 0.75 1.  ]]
         >>> print(numpy.around(weights, 4))
-        [0.1804 0.2996 0.2996 0.1804]
+        [0.0556 0.4444 0.4444 0.0556]
     """
-    from ...distributions.baseclass import Dist
+    from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
-        abscissas, weights = quad_fejer(
+        abscissas, weights = quad_clenshaw_curtis(
             order, domain.range(), growth)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
@@ -104,9 +103,9 @@ def quad_fejer(order, domain=(0, 1), growth=False):
     upper = numpy.ones(dim)*upper
 
     if growth:
-        order = numpy.where(order > 0, 2**(order+1)-2, 0)
+        order = numpy.where(order > 0, 2**order, 0)
 
-    abscissas, weights = zip(*[_fejer(order_) for order_ in order])
+    abscissas, weights = zip(*[_clenshaw_curtis(order_) for order_ in order])
 
     abscissas = ((upper-lower)*combine(abscissas) + lower).T
     weights = numpy.prod(combine(weights)*(upper-lower), -1)
@@ -117,47 +116,44 @@ def quad_fejer(order, domain=(0, 1), growth=False):
     return abscissas, weights
 
 
-def _fejer(order):
+def _clenshaw_curtis(order):
     r"""
     Backend method.
 
     Examples:
-        >>> abscissas, weights = _fejer(0)
+        >>> abscissas, weights = _clenshaw_curtis(0)
         >>> print(abscissas)
         [0.5]
         >>> print(weights)
         [1.]
-        >>> abscissas, weights = _fejer(1)
+        >>> abscissas, weights = _clenshaw_curtis(1)
         >>> print(abscissas)
-        [0.25 0.75]
+        [0. 1.]
         >>> print(weights)
-        [0.44444444 0.44444444]
-        >>> abscissas, weights = _fejer(2)
+        [0.5 0.5]
+        >>> abscissas, weights = _clenshaw_curtis(2)
         >>> print(abscissas)
-        [0.14644661 0.5        0.85355339]
+        [0.  0.5 1. ]
         >>> print(weights)
-        [0.26666667 0.4        0.26666667]
-        >>> abscissas, weights = _fejer(3)
+        [0.16666667 0.66666667 0.16666667]
+        >>> abscissas, weights = _clenshaw_curtis(3)
         >>> print(abscissas)
-        [0.0954915 0.3454915 0.6545085 0.9045085]
+        [0.   0.25 0.75 1.  ]
         >>> print(weights)
-        [0.18037152 0.29962848 0.29962848 0.18037152]
-        >>> abscissas, weights = _fejer(4)
+        [0.05555556 0.44444444 0.44444444 0.05555556]
+        >>> abscissas, weights = _clenshaw_curtis(4)
         >>> print(abscissas)
-        [0.0669873 0.25      0.5       0.75      0.9330127]
+        [0.         0.14644661 0.5        0.85355339 1.        ]
         >>> print(weights)
-        [0.12698413 0.22857143 0.26031746 0.22857143 0.12698413]
-        >>> abscissas, weights = _fejer(5)
+        [0.03333333 0.26666667 0.4        0.26666667 0.03333333]
+        >>> abscissas, weights = _clenshaw_curtis(5)
         >>> print(abscissas)
-        [0.04951557 0.1882551  0.38873953 0.61126047 0.8117449  0.95048443]
+        [0.        0.0954915 0.3454915 0.6545085 0.9045085 1.       ]
         >>> print(weights)
-        [0.0950705  0.17612121 0.2186042  0.2186042  0.17612121 0.0950705 ]
+        [0.02       0.18037152 0.29962848 0.29962848 0.18037152 0.02      ]
     """
-    order = int(order)
     if order == 0:
         return numpy.array([.5]), numpy.array([1.])
-
-    order += 2
 
     theta = (order-numpy.arange(order+1))*numpy.pi/order
     abscisas = 0.5*numpy.cos(theta) + 0.5
@@ -168,4 +164,7 @@ def _fejer(order):
         weights[:, -1] *= 0.5
     weights = (1-numpy.sum(weights, -1)) / order
 
-    return abscisas[1:-1], weights[1:-1]
+    weights[0] /= 2
+    weights[-1] /= 2
+
+    return abscisas, weights

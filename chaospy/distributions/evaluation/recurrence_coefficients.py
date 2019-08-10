@@ -84,8 +84,8 @@ def evaluate_recurrence_coefficients(
         coeff1, coeff2 = distribution._ttr(k_data, **parameters)
 
     except NotImplementedError:
-        from ...quad import generate_quadrature
-        from ...quad.recurrence.stieltjes import discretized_stieltjes
+        from ...quadrature import generate_quadrature
+        from ...quadrature.recurrence.stieltjes import discretized_stieltjes
         abscissas, weights = generate_quadrature(100, distribution, rule="C")
         (coeff1, coeff2), _, _ = discretized_stieltjes(
             numpy.max(k_data), abscissas, weights, normed=False)
