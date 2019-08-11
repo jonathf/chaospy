@@ -1,6 +1,4 @@
-"""
-Hermite Genz-Keister 18 rule.
-"""
+"""Hermite Genz-Keister 18 rule."""
 import numpy
 
 

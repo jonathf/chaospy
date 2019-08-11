@@ -6,6 +6,7 @@ from ..baseclass import Dist
 from ..operators.addition import Add
 
 
+
 class laplace(Dist):
     """Laplace Probability Distribution."""
 
@@ -26,6 +27,16 @@ class laplace(Dist):
 
     def _bnd(self, x):
         return -32., 32.
+
+    def _ttr(self, k):
+        from ...quadrature import quad_fejer, discretized_stieltjes
+        q1, w1 = quad_fejer(500, (-32, 0))
+        q2, w2 = quad_fejer(500, (0, 32))
+        q = numpy.concatenate([q1,q2], 1)
+        w = numpy.concatenate([w1,w2])*self.pdf(q[0])
+
+        coeffs, _, _ = discretized_stieltjes(k, q, w)
+        return coeffs[:, 0, -1]
 
 
 class Laplace(Add):
@@ -51,7 +62,7 @@ class Laplace(Add):
         2.0
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 2.      2.      2.    ]
-         [ 7.9685 40.888  84.6276]]
+         [ 8.     39.9995 86.4011]]
     """
     def __init__(self, mu=0, scale=1):
         self._repr = {"mu": mu, "scale": scale}

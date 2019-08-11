@@ -17,22 +17,38 @@ Quadrature Formulae`_.
 
 .. _The Optimal Addition of Points to Quadrature Formulae: \
     https://www.jstor.org/stable/2004583
+
+Example usage
+-------------
+
+With increasing order::
+
+    >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
+    >>> for order in range(3):  # doctest: +NORMALIZE_WHITESPACE
+    ...     X, W = chaospy.generate_quadrature(
+    ...         order, distribution, rule="gauss_patterson")
+    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    [[0.]] [1.]
+    [[-0.77  0.    0.77]] [0.17 0.67 0.17]
+    [[-0.96 -0.77 -0.43  0.    0.43  0.77  0.96]]
+     [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
 """
+from __future__ import print_function
 
 import numpy
 
-import chaospy.quad
+from .combine import combine
 
 
-def quad_gauss_patterson(order, dist):
+def quad_gauss_patterson(order, domain):
     """
     Generate sets abscissas and weights for Gauss-Patterson quadrature.
 
     Args:
         order (int):
             The quadrature order. Must be in the interval (0, 8).
-        dist (Dist):
-            The domain to create quadrature over.
+        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+            Either distribution or bounding of interval to integrate over.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -44,33 +60,38 @@ def quad_gauss_patterson(order, dist):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> X, W = chaospy.quad_gauss_patterson(3, chaospy.Uniform(0, 1))
+        >>> X, W = chaospy.quad_gauss_patterson(2, chaospy.Uniform(0, 1))
         >>> print(numpy.around(X, 4))
-        [[0.0031 0.0198 0.0558 0.1127 0.1894 0.2829 0.3883 0.5    0.6117 0.7171
-          0.8106 0.8873 0.9442 0.9802 0.9969]]
+        [[0.0198 0.1127 0.2829 0.5    0.7171 0.8873 0.9802]]
         >>> print(numpy.around(W, 4))
-        [0.0085 0.0258 0.0465 0.0672 0.0858 0.1003 0.1096 0.1128 0.1096 0.1003
-         0.0858 0.0672 0.0465 0.0258 0.0085]
+        [0.0523 0.1342 0.2007 0.2255 0.2007 0.1342 0.0523]
     """
-    if len(dist) > 1:
+    from ..distributions.baseclass import Dist
+    if isinstance(domain, Dist):
+        abscissas, weights = quad_gauss_patterson(
+            order, domain.range())
+        weights *= domain.pdf(abscissas).flatten()
+        weights /= numpy.sum(weights)
+        return abscissas, weights
 
-        if isinstance(order, int):
-            values = [quad_gauss_patterson(order, d) for d in dist]
-        else:
-            values = [quad_gauss_patterson(order[i], dist[i])
-                      for i in range(len(dist))]
+    lower, upper = numpy.array(domain)
+    lower = numpy.asarray(lower).flatten()
+    upper = numpy.asarray(upper).flatten()
+
+    if len(lower) > 1:
+
+        values = [quad_gauss_patterson(order[i], (domain[0][i], domain[1][i]))
+                  for i in range(len(domain[0]))]
 
         abscissas = [_[0][0] for _ in values]
         weights = [_[1] for _ in values]
-        abscissas = chaospy.quad.combine(abscissas).T
-        weights = numpy.prod(chaospy.quad.combine(weights), -1)
+        abscissas = combine(abscissas).T
+        weights = numpy.prod(combine(weights), -1)
 
         return abscissas, weights
 
     order = sorted(PATTERSON_VALUES.keys())[order]
     abscissas, weights = PATTERSON_VALUES[order]
-
-    lower, upper = dist.range()
 
     abscissas = .5*(abscissas*(upper-lower)+upper+lower)
     abscissas = abscissas.reshape(1, abscissas.size)

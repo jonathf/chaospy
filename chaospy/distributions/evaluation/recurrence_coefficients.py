@@ -84,9 +84,11 @@ def evaluate_recurrence_coefficients(
         coeff1, coeff2 = distribution._ttr(k_data, **parameters)
 
     except NotImplementedError:
-        from ... import quad
-        _, _, coeff1, coeff2 = quad.stieltjes._stieltjes_approx(
-            distribution, order=numpy.max(k_data), accuracy=100, normed=False)
+        from ...quadrature import generate_quadrature
+        from ...quadrature.recurrence.stieltjes import discretized_stieltjes
+        abscissas, weights = generate_quadrature(100, distribution, rule="C")
+        (coeff1, coeff2), _, _ = discretized_stieltjes(
+            numpy.max(k_data), abscissas, weights, normed=False)
         range_ = numpy.arange(len(distribution), dtype=int)
         coeff1 = coeff1[range_, k_data]
         coeff2 = coeff2[range_, k_data]

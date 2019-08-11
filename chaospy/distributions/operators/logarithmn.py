@@ -59,8 +59,7 @@ class Logn(Dist):
             dist, base**xloc, cache=cache)) / numpy.log(base)
 
     def _mom(self, x, dist, base, cache):
-        return approximation.approximate_moment(
-            self, x, params={"base": base}, cache=cache)
+        return approximation.approximate_moment(self, x)
 
     def __len__(self):
         return len(self.prm["dist"])

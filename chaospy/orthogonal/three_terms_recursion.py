@@ -91,40 +91,30 @@ def orth_ttr(
         >>> print(chaospy.around(chaospy.orth_ttr(4, Z), 4))
         [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
     """
-    polynomials, norms, _, _ = chaospy.quad.generate_stieltjes(
-        dist=dist, order=numpy.max(order), retall=True, **kws)
+    try:
+        _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
+            numpy.max(order), dist, normed=normed)
+    except NotImplementedError:
+        abscissas, weights = chaospy.quadrature.generate_quadrature(
+            int(10000**(1/len(dist))), dist, rule="F")
+        _, polynomials, norms, = chaospy.quadrature.recurrence.discretized_stieltjes(
+            numpy.max(order), abscissas, weights, normed=normed)
 
-    if normed:
-        for idx, poly in enumerate(polynomials):
-            polynomials[idx] = poly / numpy.sqrt(norms[:, idx])
-        norms = norms**0
+    polynomials = chaospy.poly.reshape(
+        polynomials, (len(dist), numpy.max(order)+1))
 
-    dim = len(dist)
-    if dim > 1:
-        mv_polynomials = []
-        mv_norms = []
-        indices = chaospy.bertran.bindex(
-            start=0, stop=order, dim=dim, sort=sort,
-            cross_truncation=cross_truncation,
-        )
-
-        for index in indices:
-            poly = polynomials[index[0]][0]
-            for idx in range(1, dim):
-                poly = poly * polynomials[index[idx]][idx]
-            mv_polynomials.append(poly)
-
-        if retall:
-            for index in indices:
-                mv_norms.append(
-                    numpy.prod([norms[idx, index[idx]] for idx in range(dim)]))
-
+    indices = chaospy.bertran.bindex(
+        start=0, stop=order, dim=len(dist), sort=sort,
+        cross_truncation=cross_truncation,
+    )
+    if len(dist) > 1:
+        polynomials = chaospy.poly.prod(chaospy.poly.Poly([
+            poly[idx] for poly, idx in zip(polynomials, indices.T)]), 0)
+        norms = numpy.prod([
+            norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)
     else:
-        mv_norms = norms[0]
-        mv_polynomials = polynomials
-
-    polynomials = chaospy.poly.flatten(chaospy.poly.Poly(mv_polynomials))
+        polynomials = chaospy.poly.flatten(polynomials)
 
     if retall:
-        return polynomials, numpy.array(mv_norms)
+        return polynomials, norms
     return polynomials

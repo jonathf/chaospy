@@ -1,7 +1,7 @@
 """Expected value."""
 import numpy
 
-from .. import distributions, poly as polynomials, quad as quadrature
+from .. import distributions, poly as polynomials, quadrature
 
 
 def E(poly, dist=None, **kws):
@@ -32,13 +32,6 @@ def E(poly, dist=None, **kws):
         >>> print(chaospy.E(poly, dist))
         [1. 1. 0. 0.]
     """
-    if not isinstance(poly, (distributions.Dist, polynomials.Poly)):
-        print(type(poly))
-        print("Approximating expected value...")
-        out = quadrature.quad(poly, dist, veceval=True, **kws)
-        print("done")
-        return out
-
     if isinstance(poly, distributions.Dist):
         dist, poly = poly, polynomials.variable(len(poly))
 

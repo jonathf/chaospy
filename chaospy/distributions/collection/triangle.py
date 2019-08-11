@@ -7,43 +7,6 @@ from ..operators.addition import Add
 from .beta import beta_
 
 
-def tri_ttr(k, a):
-    """
-    Custom TTR function.
-
-    Triangle distribution does not have an analytical TTR function, but because
-    of its non-smooth nature, a blind integration scheme will converge very
-    slowly. However, by splitting the integration into two divided at the
-    discontinuity in the derivative, TTR can be made operative.
-    """
-    from ...quad import quad_clenshaw_curtis
-    q1, w1 = quad_clenshaw_curtis(int(10**3*a), 0, a)
-    q2, w2 = quad_clenshaw_curtis(int(10**3*(1-a)), a, 1)
-    q = numpy.concatenate([q1,q2], 1)
-    w = numpy.concatenate([w1,w2])
-    w = w*numpy.where(q<a, 2*q/a, 2*(1-q)/(1-a))
-
-    from chaospy.poly import variable
-    x = variable()
-
-    orth = [x*0, x**0]
-    inner = numpy.sum(q*w, -1)
-    norms = [1., 1.]
-    A,B = [],[]
-
-    for n in range(k):
-        A.append(inner/norms[-1])
-        B.append(norms[-1]/norms[-2])
-        orth.append((x-A[-1])*orth[-1]-orth[-2]*B[-1])
-
-        y = orth[-1](*q)**2*w
-        inner = numpy.sum(q*y, -1)
-        norms.append(numpy.sum(y, -1))
-
-    A, B = numpy.array(A).T[0], numpy.array(B).T
-    return A[-1], B[-1]
-
-
 class triangle(Dist):
     """Triangle probability distribution."""
 
@@ -74,7 +37,15 @@ class triangle(Dist):
             return beta_()._ttr(k, 1, 2)
         if a == 1:
             return beta_()._ttr(k, 2, 1)
-        return tri_ttr(k.item()+1, a)
+
+        from ...quadrature import quad_fejer, discretized_stieltjes
+        q1, w1 = quad_fejer(int(1000*a), (0, a))
+        q2, w2 = quad_fejer(int(1000*(1-a)), (a, 1))
+        q = numpy.concatenate([q1,q2], 1)
+        w = numpy.concatenate([w1,w2])*self.pdf(q[0])
+
+        coeffs, _, _ = discretized_stieltjes(k, q, w)
+        return coeffs[:, 0, -1]
 
 
 class Triangle(Add):

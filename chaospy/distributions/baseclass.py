@@ -362,7 +362,8 @@ class Dist(object):
         cache = {}
         out = [evaluation.evaluate_recurrence_coefficients(self, k)
                for k in kloc.T]
-        out = numpy.array(out).T
+        alpha, beta = numpy.asfarray(list(zip(*out)))
+        out = numpy.array([alpha.T, beta.T])
         return out.reshape((2,)+shape)
 
 

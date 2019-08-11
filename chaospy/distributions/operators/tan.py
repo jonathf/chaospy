@@ -42,7 +42,7 @@ class Tan(Dist):
             dist, numpy.arctan(x), cache=cache)/(1+x*x)
 
     def _cdf(self, x, dist, cache):
-        return evaluation.evaluate_forward(dist, numpy.arctan(x), cache=cache)
+        return evaluation.evaluate_forward(dist, numpy.arctan(x))
 
     def _ppf(self, q, dist, cache):
         return numpy.tan(evaluation.evaluate_inverse(
@@ -53,7 +53,7 @@ class Tan(Dist):
             dist, numpy.arctan(x), cache=cache))
 
     def _mom(self, x, dist, cache):
-        return approximation.approximate_moment(self, x, cache=cache)
+        return approximation.approximate_moment(self, x)
 
     def __len__(self):
         return len(self.prm["dist"])

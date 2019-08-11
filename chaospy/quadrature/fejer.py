@@ -14,9 +14,8 @@ The first few orders with linear growth rule::
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, normalize=True, rule="F")
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(X, 3), numpy.around(W, 3)))
+    ...         order, distribution, rule="fejer")
+    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
     0 [[0.5]] [1.]
     1 [[0.25 0.75]] [0.5 0.5]
     2 [[0.146 0.5   0.854]] [0.286 0.429 0.286]
@@ -26,9 +25,8 @@ The first few orders with exponential growth rule::
 
     >>> for order in [0, 1, 2]:  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, normalize=True, rule="F", growth=True)
-    ...     print("{} {} {}".format(
-    ...         order, numpy.around(X, 2), numpy.around(W, 2)))
+    ...         order, distribution, rule="fejer", growth=True)
+    ...     print(order, numpy.around(X, 2), numpy.around(W, 2))
     0 [[0.5]] [1.]
     1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]
     2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]]
@@ -38,33 +36,32 @@ Applying the rule using Smolyak sparse grid::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> X, W = chaospy.generate_quadrature(
-    ...     2, distribution, rule="F", growth=True, sparse=True)
-    >>> print(numpy.around(X, 3))
-    [[0.5   0.146 0.5   0.854 0.5   0.038 0.146 0.309 0.5   0.691 0.854 0.962
-      0.5   0.146 0.5   0.854 0.5  ]
-     [0.038 0.146 0.146 0.146 0.309 0.5   0.5   0.5   0.5   0.5   0.5   0.5
-      0.691 0.854 0.854 0.854 0.962]]
-    >>> print(numpy.around(W, 3))
-    [ 0.073  0.071 -0.02   0.071  0.181  0.073 -0.02   0.181 -0.246  0.181
-     -0.02   0.073  0.181  0.071 -0.02   0.071  0.073]
+    ...     2, distribution, rule="fejer", growth=True, sparse=True)
+    >>> print(numpy.around(X, 3))  # doctest: +NORMALIZE_WHITESPACE
+    [[0.038 0.146 0.146 0.146 0.309 0.5   0.5   0.5   0.5
+      0.5   0.5   0.5   0.691 0.854 0.854 0.854 0.962]
+     [0.5   0.146 0.5   0.854 0.5   0.038 0.146 0.309 0.5
+      0.691 0.854 0.962 0.5   0.146 0.5   0.854 0.5  ]]
+    >>> print(numpy.around(W, 3))  # doctest: +NORMALIZE_WHITESPACE
+    [ 0.074  0.082 -0.021  0.082  0.184  0.074 -0.021  0.184 -0.273
+      0.184 -0.021  0.074  0.184  0.082 -0.021  0.082  0.074]
 """
-from __future__ import division
+from __future__ import division, print_function
 
 import numpy
-import chaospy.quad
+
+from .combine import combine_quadrature
 
 
-def quad_fejer(order, lower=0, upper=1, growth=False):
+def quad_fejer(order, domain=(0, 1), growth=False):
     """
     Generate the quadrature abscissas and weights in Fejer quadrature.
 
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        lower (int, numpy.ndarray):
-            Lower bounds of interval to integrate over.
-        upper (int, numpy.ndarray):
-            Upper bounds of interval to integrate over.
+        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+            Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples.
@@ -79,13 +76,22 @@ def quad_fejer(order, lower=0, upper=1, growth=False):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_fejer(3, 0, 1)
+        >>> abscissas, weights = quad_fejer(3, (0, 1))
         >>> print(numpy.around(abscissas, 4))
         [[0.0955 0.3455 0.6545 0.9045]]
         >>> print(numpy.around(weights, 4))
         [0.1804 0.2996 0.2996 0.1804]
     """
+    from ..distributions.baseclass import Dist
+    if isinstance(domain, Dist):
+        abscissas, weights = quad_fejer(
+            order, domain.range(), growth)
+        weights *= domain.pdf(abscissas).flatten()
+        weights /= numpy.sum(weights)
+        return abscissas, weights
+
     order = numpy.asarray(order, dtype=int).flatten()
+    lower, upper = numpy.array(domain)
     lower = numpy.asarray(lower).flatten()
     upper = numpy.asarray(upper).flatten()
 
@@ -96,24 +102,11 @@ def quad_fejer(order, lower=0, upper=1, growth=False):
     upper = numpy.ones(dim)*upper
 
     if growth:
-        results = [_fejer(numpy.where(order[i] == 0, 0, 2.**(order[i]+1)-2))
-                   for i in range(dim)]
-    else:
-        results = [_fejer(order[i]) for i in range(dim)]
+        order = numpy.where(order > 0, 2**(order+1)-2, 0)
 
-    abscis = [_[0] for _ in results]
-    weight = [_[1] for _ in results]
+    abscissas, weights = zip(*[_fejer(order_) for order_ in order])
 
-    abscis = chaospy.quad.combine(abscis).T
-    weight = chaospy.quad.combine(weight)
-
-    abscis = ((upper-lower)*abscis.T + lower).T
-    weight = numpy.prod(weight*(upper-lower), -1)
-
-    assert len(abscis) == dim
-    assert len(weight) == len(abscis.T)
-
-    return abscis, weight
+    return combine_quadrature(abscissas, weights, (lower, upper))
 
 
 def _fejer(order):
@@ -161,8 +154,8 @@ def _fejer(order):
     theta = (order-numpy.arange(order+1))*numpy.pi/order
     abscisas = 0.5*numpy.cos(theta) + 0.5
 
-    N, K = numpy.mgrid[:order+1, :order//2]
-    weights = 2*numpy.cos(2*(K+1)*theta[N])/(4*K*(K+2)+3)
+    idx, idy = numpy.mgrid[:order+1, :order//2]
+    weights = 2*numpy.cos(2*(idy+1)*theta[idx])/(4*idy*(idy+2)+3)
     if order % 2 == 0:
         weights[:, -1] *= 0.5
     weights = (1-numpy.sum(weights, -1)) / order

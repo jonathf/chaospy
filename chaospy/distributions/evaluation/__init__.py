@@ -3,7 +3,7 @@ import inspect
 
 import numpy
 
-from ... import quad
+from ... import quadrature
 
 from .common import DependencyError
 from .parameters import load_parameters as load_inputs

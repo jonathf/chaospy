@@ -14,7 +14,7 @@ import chaospy.distributions
 import chaospy.orthogonal
 import chaospy.poly
 import chaospy.spectral
-import chaospy.quad
+import chaospy.quadrature
 import chaospy.saltelli
 import chaospy.regression
 
@@ -22,7 +22,7 @@ from chaospy.distributions import *
 from chaospy.orthogonal import *
 from chaospy.poly import *
 from chaospy.spectral import *
-from chaospy.quad import *
+from chaospy.quadrature import *
 from chaospy.saltelli import *
 from chaospy.descriptives import *
 from chaospy.regression import *
@@ -34,4 +34,4 @@ streamer.setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 logger.addHandler(streamer)
 
-__version__ = "3.0.6"
+__version__ = "3.0.7"

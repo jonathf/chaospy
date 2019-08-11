@@ -26,9 +26,6 @@ class Arcsinh(Dist):
         [0.6142 0.1148 0.8458 0.4652]
         >>> print(numpy.around(distribution.mom(1), 4))
         0.4917
-        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
-        [[0.8479 0.2254 0.5361]
-         [1.     0.3332 0.7026]]
     """
 
     def __init__(self, dist):
@@ -51,7 +48,7 @@ class Arcsinh(Dist):
             dist, numpy.sinh(x), cache=cache))
 
     def _mom(self, x, dist, cache):
-        return approximation.approximate_moment(self, x, cache=cache)
+        return approximation.approximate_moment(self, x)
 
     def __len__(self):
         return len(self.prm["dist"])
