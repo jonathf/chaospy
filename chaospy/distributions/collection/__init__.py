@@ -38,7 +38,6 @@ from .mv_normal import MvNormal
 from .mv_student_t import MvStudentT, MvStudent_t
 from .nakagami import Nakagami
 from .normal import Normal
-from .openturns import OTDistribution
 from .pareto1 import Pareto1
 from .pareto2 import Pareto2
 from .power_log_normal import PowerLogNormal, PowerLognormal
@@ -53,5 +52,3 @@ from .uniform import Uniform
 from .wald import Wald
 from .weibull import Weibull
 from .wrapped_cauchy import WrappedCauchy
-
-from .sample_dist import SampleDist

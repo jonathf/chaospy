@@ -4,7 +4,11 @@ driven. In such scenarios it make sense to make use of
 `kernel density estimation`_ (KDE). In ``chaospy`` KDE can be accessed through
 the :func:`SampleDist` constructor.
 
-Basic usage of the constructor involves just passing the data::
+A special thanks to `Florian Kunzner`_ for contributing with the initial
+implementation.
+
+Basic usage of the :func:`SampleDist` constructor involves just passing the
+data as input argument::
 
     >>> data = [3, 4, 5, 5]
     >>> distribution = chaospy.SampleDist(data)
@@ -25,14 +29,19 @@ appear, which gives a slightly different distribution::
     >>> print(numpy.around(distribution.mom(1), 4))
     4.2149
 
-.. _kernel density estimation: https://en.wikipedia.org/wiki/Kernel_density_estimation
+Currently the wrapper is limited to only support univariate distributions.
+
+.. _kernel density estimation: \
+https://en.wikipedia.org/wiki/Kernel_density_estimation
+.. _Florian Kunzner: https://github.com/flo2k
 """
 import numpy
 from scipy.stats import gaussian_kde
 
-from ..baseclass import Dist
-from ..operators.addition import Add
-from .uniform import Uniform
+from chaospy.distributions.baseclass import Dist
+from chaospy.distributions.operators.addition import Add
+from chaospy.distributions.collection.uniform import Uniform
+from chaospy.distributions.collection.deprecate import deprecation_warning
 
 
 class sample_dist(Dist):
@@ -93,10 +102,12 @@ def SampleDist(samples, lo=None, up=None):
     density estimator (KDE).
 
     Args:
-        samples:
+        samples (numpy.ndarray):
             Sample values to construction of the KDE
-        lo (float) : Location of lower threshold
-        up (float) : Location of upper threshold
+        lo (float):
+            Location of lower threshold
+        up (float):
+            Location of upper threshold
 
     Example:
         >>> distribution = chaospy.SampleDist([0, 1, 1, 1, 2])
