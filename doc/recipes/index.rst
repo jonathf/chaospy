@@ -9,3 +9,4 @@ Cookbook Recipes
    regression
    spectral
    galerkin
+   external

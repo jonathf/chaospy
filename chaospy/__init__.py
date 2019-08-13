@@ -26,6 +26,7 @@ from chaospy.quadrature import *
 from chaospy.saltelli import *
 from chaospy.descriptives import *
 from chaospy.regression import *
+from chaospy.external import *
 
 LOGPATH = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
 logging.basicConfig(level=logging.DEBUG, filename=LOGPATH, filemode="w")

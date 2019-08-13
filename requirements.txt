@@ -8,4 +8,4 @@ pytest-cov
 coverage
 sphinx
 sphinx-autobuild
-
+openturns
