@@ -1,6 +1,7 @@
 import numpy
 
 from .. import distributions, poly as polynomials
+from ..external import SampleDist
 
 
 def QoI_Dist(poly, dist, sample=10000, **kws):
@@ -55,7 +56,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         up = dataset.max()
 
         #creates qoi_dist
-        qoi_dist = distributions.SampleDist(dataset, lo, up)
+        qoi_dist = SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
 
     #reshape the qoi_dists to match the shape of the inumpyut poly

@@ -4,9 +4,6 @@ driven. In such scenarios it make sense to make use of
 `kernel density estimation`_ (KDE). In ``chaospy`` KDE can be accessed through
 the :func:`SampleDist` constructor.
 
-A special thanks to `Florian Kunzner`_ for contributing with the initial
-implementation.
-
 Basic usage of the :func:`SampleDist` constructor involves just passing the
 data as input argument::
 
@@ -33,7 +30,6 @@ Currently the wrapper is limited to only support univariate distributions.
 
 .. _kernel density estimation: \
 https://en.wikipedia.org/wiki/Kernel_density_estimation
-.. _Florian Kunzner: https://github.com/flo2k
 """
 import numpy
 from scipy.stats import gaussian_kde

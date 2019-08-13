@@ -4,8 +4,8 @@ Historically, the syntax for ``chaospy``'s distributions is inspired by the
 developed into different entities making them incompatible. The
 :class:`ScipyStatsDist` exists to restore this incompatibility again.
 
-Basic usage of the :func:`SampleDist` constructor involves just passing the
-``scipy.stats`` distributions as input argument::
+Basic usage of the :class:`ScipyStatsDist` constructor involves just passing
+the ``scipy.stats`` distributions as input argument::
 
     >>> from scipy.stats import norm
     >>> st_distribution = norm(0, 1)
@@ -55,8 +55,7 @@ class ScipyStatsDist(Dist):
         return self.distribution.ppf(q_loc)
 
     def _bnd(self, x_loc):
-        del x_loc
-        return self.distribution.support()
+        return self.distribution.interval(1-1e-14)
 
     def _mom(self, k_loc):
         return self.distribution.moment(int(k_loc))

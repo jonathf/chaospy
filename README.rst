@@ -102,7 +102,7 @@ Also a few shout-outs:
 | `OpenTURNS`_ | Thanks to `Régis Lebrun`_ for both proposing a collaboration |
 |              | and creating an initial implementation of both               |
 |              | `Chaospy Compatibility`_ in `OpenTURNS`_ and                 |
-|              | :ref:`openturns` in ``chaospy``.                             |
+|              | `OpenTURNS Compatibility`_ in ``chaospy``.                   |
 +--------------+--------------------------------------------------------------+
 | `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
 | `quadpy`_    | for several of the quadrature integration methods.           |
@@ -114,10 +114,10 @@ Also a few shout-outs:
 .. _OpenTURNS: http://openturns.github.io/openturns/latest
 .. _Régis Lebrun: https://github.com/regislebrun
 .. _Chaospy Compatibility: http://openturns.github.io/openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
+.. _OpenTURNS Compatibility: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.openturns_
 .. _orthopy: https://github.com/nschloe/orthopy
 .. _quadpy: https://github.com/nschloe/quadpy
 .. _Nico Schlömer: https://github.com/nschloe
-
 
 Questions & Troubleshooting
 ---------------------------

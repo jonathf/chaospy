@@ -10,7 +10,7 @@ To interpret a ``chaospy`` distribution as an `OpenTURNS`_ distribution, see
 the `OpenTURNS distribution wrapper`_.
 
 To interpret an `OpenTURNS`_ distribution as a ``chaospy`` distribution, it is
-possible to use the :func:`OpenTURNSDist` wrapper. For example to interpret
+possible to use the :class:`OpenTURNSDist` wrapper. For example to interpret
 a simple univariate Gaussian random variable::
 
     >>> import openturns
@@ -42,7 +42,7 @@ form lists::
 
     >>> mv_distribution = chaospy.OpenTURNSDist([
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
-    >>> print(mv_distribution)
+    >>> print(mv_distribution)  # doctest: +NORMALIZE_WHITESPACE
     OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
                    Uniform(a = -1, b = 1)])
 
@@ -58,8 +58,7 @@ Though multivariate distributions are supported, dependencies are not::
         ...
     chaospy...DependencyError: Stochastically dependent OpenTURNS distribution unsupported
 
-.. _OpenTURNS: http://openturns.github.io/openturns/latest
-.. _corresponding compatibility layer: http://openturns.github.io/\
+.. _OpenTURNS distribution wrapper: http://openturns.github.io/\
 openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
 """
 from typing import Iterable
@@ -118,8 +117,9 @@ class OpenTURNSDist(J):
         >>> from openturns import ComposedDistribution, Normal
         >>> ot_distribution = ComposedDistribution([Normal(), Normal()])
         >>> distribution = chaospy.OpenTURNSDist(ot_distribution)
-        >>> print(distribution)
-        OpenTURNSDist([Normal(mu = 0, sigma = 1), Normal(mu = 0, sigma = 1)])
+        >>> print(distribution)  # doctest: +NORMALIZE_WHITESPACE
+        OpenTURNSDist([Normal(mu = 0, sigma = 1),
+                       Normal(mu = 0, sigma = 1)])
     """
 
     def __init__(self, distribution):

@@ -21,4 +21,4 @@ Samples Distribution
 --------------------
 
 .. automodule:: chaospy.external.samples
-.. autoclass:: chaospy.external.samples.SampleDist
+.. autofunction:: chaospy.external.samples.SampleDist
