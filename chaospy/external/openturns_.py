@@ -30,8 +30,9 @@ The wrapper also supports multivariate distributions::
     >>> composed_distribution = openturns.ComposedDistribution([
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
     >>> mv_distribution = chaospy.OpenTURNSDist(composed_distribution)
-    >>> print(mv_distribution)
-    OpenTURNSDist([Triangular(a = -1, m = 0, b = 1), Uniform(a = -1, b = 1)])
+    >>> print(mv_distribution)  # doctest: +NORMALIZE_WHITESPACE
+    OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
+                   Uniform(a = -1, b = 1)])
     >>> print(numpy.around(mv_distribution.sample(4), 4))
     [[ 0.1676 -0.5204  0.6847 -0.018 ]
      [ 0.7449 -0.5753 -0.9186 -0.2056]]
@@ -42,7 +43,8 @@ form lists::
     >>> mv_distribution = chaospy.OpenTURNSDist([
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
     >>> print(mv_distribution)
-    OpenTURNSDist([Triangular(a = -1, m = 0, b = 1), Uniform(a = -1, b = 1)])
+    OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
+                   Uniform(a = -1, b = 1)])
 
 Though multivariate distributions are supported, dependencies are not::
 
