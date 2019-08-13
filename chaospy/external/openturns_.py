@@ -125,15 +125,13 @@ class OpenTURNSDist(J):
     def __init__(self, distribution):
         from openturns import ComposedDistribution, ContinuousDistribution
         if isinstance(distribution, ComposedDistribution):
-            distributions = distribution.getDistributionCollection()
-            if not numpy.allclose(
-                distribution.getLinearCorrelation(),
-                numpy.eye(len(distributions))
-            ):
+            if not distribution.hasIndependentCopula():
                 raise DependencyError("Stochastically dependent "
                                       "OpenTURNS distribution unsupported")
             distributions = [
-                openturns_dist(distribution) for distribution in distributions]
+                openturns_dist(dist)
+                for dist in distribution.getDistributionCollection()
+            ]
         elif isinstance(distribution, ContinuousDistribution):
             distributions = [openturns_dist(distribution)]
         else:

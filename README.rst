@@ -1,9 +1,20 @@
 Chaospy
 =======
 
-|travis| |codecov| |pypi| |readthedocs|
+|circlci| |codecov| |pypi| |readthedocs|
 
 |logo|
+
+.. |circleci| image:: https://circleci.com/gh/jonathf/chaospy/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/jonathf/chaospy/tree/master
+.. |codecov| image:: https://codecov.io/gh/jonathf/chaospy/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jonathf/chaospy
+.. |pypi| image:: https://badge.fury.io/py/chaospy.svg
+    :target: https://badge.fury.io/py/chaospy
+.. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
+    :target: http://chaospy.readthedocs.io/en/master/?badge=master
+.. |logo| image:: logo.jpg
+    :target: https://gihub.com/jonathf/chaospy
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
@@ -107,6 +118,9 @@ Also a few shout-outs:
 | `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
 | `quadpy`_    | for several of the quadrature integration methods.           |
 +--------------+--------------------------------------------------------------+
+| ``UQRF``     | Thanks to `Florian Künzner`_ for providing the               |
+|              | implementation for `sample distribution`_.                   |
++--------------+--------------------------------------------------------------+
 
 .. _UncertainPy: https://github.com/simetenn/uncertainpy
 .. _STARFiSh: https://www.ntnu.no/starfish
@@ -118,21 +132,11 @@ Also a few shout-outs:
 .. _orthopy: https://github.com/nschloe/orthopy
 .. _quadpy: https://github.com/nschloe/quadpy
 .. _Nico Schlömer: https://github.com/nschloe
+.. _Florian Künzner: https://github.com/flo2k
+.. _sample distribution: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.samples
 
 Questions & Troubleshooting
 ---------------------------
 
 For any problems and questions you might have related to ``chaospy``, please
 feel free to file an `issue <https://github.com/jonathf/chaospy/issues>`_.
-
-
-.. |travis| image:: https://travis-ci.org/jonathf/chaospy.svg?branch=master
-    :target: https://travis-ci.org/jonathf/chaospy
-.. |codecov| image:: https://codecov.io/gh/jonathf/chaospy/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jonathf/chaospy
-.. |pypi| image:: https://img.shields.io/pypi/v/chaospy.svg
-    :target: https://pypi.python.org/pypi/chaospy
-.. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
-    :target: http://chaospy.readthedocs.io/en/master/?badge=master
-.. |logo| image:: logo.jpg
-    :target: https://gihub.com/jonathf/chaospy
