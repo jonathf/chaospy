@@ -97,7 +97,7 @@ html_theme_options = {
     "github_user": "jonathf",
     "github_repo": "chaospy",
     "github_banner": True,
-    "logo": "logo.jpg",
+    "logo": "logo.png",
     "logo_name": True,
     "logo_text_align": "center",
     "description": ("Uncertainty quantification with polynomial chaos "
