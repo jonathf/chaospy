@@ -27,6 +27,7 @@ class log_normal(Dist):
         return numpy.e**(.5*a*a*k*k)
 
     def _ttr(self, n, a):
+        """Stieltjes-Wigert."""
         return \
     (numpy.e**(n*a*a)*(numpy.e**(a*a)+1)-1)*numpy.e**(.5*(2*n-1)*a*a), \
                 (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
