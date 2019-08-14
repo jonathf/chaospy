@@ -14,8 +14,9 @@
 #
 import os
 import re
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -91,8 +92,17 @@ html_theme = 'alabaster'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#
-# html_theme_options = {}
+
+html_theme_options = {
+    "github_user": "jonathf",
+    "github_repo": "chaospy",
+    "github_banner": True,
+    "logo": "logo.jpg",
+    "logo_name": True,
+    "logo_text_align": "center",
+    "description": ("Uncertainty quantification with polynomial chaos "
+                    "expansions and advanced Monte Carlo integration"),
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -106,8 +116,15 @@ html_static_path = ['.static']
 # defined by theme itself.  Builtin themes are using these templates by
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
-#
-# html_sidebars = {}
+
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+    ]
+ }
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -140,7 +157,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'chaospy.tex', 'chaospy Documentation',
+    (master_doc, 'chaospy.tex', 'Chaospy Documentation',
      'Jonathan Feinberg', 'manual'),
 ]
 
@@ -150,7 +167,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'chaospy', 'chaospy Documentation',
+    (master_doc, 'chaospy', 'Chaospy Documentation',
      [author], 1)
 ]
 
