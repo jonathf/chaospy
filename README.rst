@@ -1,7 +1,7 @@
 Chaospy
 =======
 
-|circlci| |codecov| |pypi| |readthedocs|
+|circleci| |codecov| |pypi| |readthedocs|
 
 |logo|
 
