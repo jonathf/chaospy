@@ -1,11 +1,11 @@
-Chaospy
-=======
+.. image:: doc/.static/chaospy_logo.svg
+   :height: 300 px
+   :width: 300 px
+   :align: center
 
 |circleci| |codecov| |pypi| |readthedocs|
 
-|logo|
-
-.. |circleci| image:: https://circleci.com/gh/jonathf/chaospy/tree/master.svg?style=svg
+.. |circleci| image:: https://circleci.com/gh/jonathf/chaospy/tree/master.svg?style=shield
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
 .. |codecov| image:: https://codecov.io/gh/jonathf/chaospy/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/jonathf/chaospy
@@ -13,8 +13,6 @@ Chaospy
     :target: https://badge.fury.io/py/chaospy
 .. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
     :target: http://chaospy.readthedocs.io/en/master/?badge=master
-.. |logo| image:: logo.jpg
-    :target: https://gihub.com/jonathf/chaospy
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
@@ -24,6 +22,8 @@ A article in Elsevier Journal of Computational Science has been published
 introducing the software: `here
 <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.  If you are using this
 software in work that will be published, please cite this paper.
+
+.. contents:: Table of Contents:
 
 Installation
 ------------
@@ -39,15 +39,11 @@ installed from Github as follows::
 
     git clone git@github.com:jonathf/chaospy.git
     cd chaospy
-    pip install -r requirements.txt
     python setup.py install
 
-The last command might need ``sudo`` prefix, depending on your python setup.
+To developer tools, also install requirements from file::
 
-Optionally, to support more regression methods, install the Scikit-learn
-package::
-
-    pip install scikit-learn
+    pip install -r requirements.txt
 
 Example Usage
 -------------
@@ -98,14 +94,22 @@ Chaospy is being used in other related projects that requires uncertainty
 quantification components ``chaospy`` provides.
 
 +-----------------+-----------------------------------------------------------+
-| `UncertainPy`_  | Uncertainty quantification and sensitivity analysis,      |
-|                 | tailored towards computational neuroscience.              |
+| `easyVVUQ`_     | Library designed to facilitate verification, validation   |
+|                 | and uncertainty quantification.                           |
 +-----------------+-----------------------------------------------------------+
 | `STARFiSh`_     | Shell-based, scientific simulation program                |
 |                 | for blood flow in mammals.                                |
 +-----------------+-----------------------------------------------------------+
 | `SurUQ`_        | Surrogate modeling with nested uncertainty quantification.|
 +-----------------+-----------------------------------------------------------+
+| `UncertainPy`_  | Uncertainty quantification and sensitivity analysis,      |
+|                 | tailored towards computational neuroscience.              |
++-----------------+-----------------------------------------------------------+
+
+.. _easyVVUQ: https://github.com/UCL-CCS/EasyVVUQ
+.. _STARFiSh: https://www.ntnu.no/starfish
+.. _SurUQ: https://github.com/redmod-team/suruq
+.. _UncertainPy: https://github.com/simetenn/uncertainpy
 
 Also a few shout-outs:
 
@@ -122,9 +126,6 @@ Also a few shout-outs:
 |              | implementation for `sample distribution`_.                   |
 +--------------+--------------------------------------------------------------+
 
-.. _UncertainPy: https://github.com/simetenn/uncertainpy
-.. _STARFiSh: https://www.ntnu.no/starfish
-.. _SurUQ: https://github.com/redmod-team/suruq
 .. _OpenTURNS: http://openturns.github.io/openturns/latest
 .. _Régis Lebrun: https://github.com/regislebrun
 .. _Chaospy Compatibility: http://openturns.github.io/openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
