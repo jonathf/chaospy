@@ -35,7 +35,6 @@ jobs:
                 command: |
                     sudo pip install -Ur requirements.txt
                     sudo python setup.py install
-                    mkdir doc/.static
             - run:
                 name: "Ensure documentation build"
                 command: sphinx-build doc/ doc/.build -b html -n -v --color -T -W

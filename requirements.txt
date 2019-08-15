@@ -1,5 +1,3 @@
-numpy
-scipy
 scikit-learn
 pytest
 pytest-runner
