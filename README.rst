@@ -1,9 +1,12 @@
 Chaospy
 =======
 
-|circleci| |codecov| |pypi| |readthedocs|
+.. image:: doc/.static/chaospy_logo.svg
+   :height: 300 px
+   :width: 300 px
+   :align: center
 
-|logo|
+|circleci| |codecov| |pypi| |readthedocs|
 
 .. |circleci| image:: https://circleci.com/gh/jonathf/chaospy/tree/master.svg?style=svg
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
@@ -13,8 +16,7 @@ Chaospy
     :target: https://badge.fury.io/py/chaospy
 .. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
     :target: http://chaospy.readthedocs.io/en/master/?badge=master
-.. |logo| image:: logo.jpg
-    :target: https://gihub.com/jonathf/chaospy
+
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in

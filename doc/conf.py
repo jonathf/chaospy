@@ -97,8 +97,8 @@ html_theme_options = {
     "github_user": "jonathf",
     "github_repo": "chaospy",
     "github_banner": True,
-    "logo": "logo.png",
-    "logo_name": True,
+    "logo": "chaospy_logo.svg",
+    "logo_name": False,
     "logo_text_align": "center",
     "description": ("Uncertainty quantification with polynomial chaos "
                     "expansions and advanced Monte Carlo integration"),
