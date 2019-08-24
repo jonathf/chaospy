@@ -1,11 +1,13 @@
 from .alpha import Alpha
 from .anglit import Anglit
 from .beta import Beta, ArcSinus, Arcsinus, PowerLaw, Powerlaw, Wigner
+from .binomial import Binomial
 from .bradford import Bradford
 from .burr import Burr
 from .cauchy import Cauchy
 from .chi import Chi, Maxwell, Rayleigh
 from .chi_squared import ChiSquared, Chisquared
+from .discrete_uniform import DiscreteUniform
 from .double_gamma import DoubleGamma, Dbl_gamma
 from .double_weibull import DoubleWeibull, Dbl_weibull
 from .exponential_power import ExponentialPower, Exponpow
