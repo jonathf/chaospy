@@ -11,7 +11,6 @@ Below you will find the various topics related to distribution construction:
     :maxdepth: 2
 
     multivariate
-    dependent
     copulas
     custom
     baseclass
