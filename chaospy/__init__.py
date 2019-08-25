@@ -35,4 +35,4 @@ streamer.setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 logger.addHandler(streamer)
 
-__version__ = "3.0.8"
+__version__ = "3.0.9"
