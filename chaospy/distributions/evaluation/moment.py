@@ -94,7 +94,7 @@ def evaluate_moment(
 
     except baseclass.StochasticallyDependentError:
 
-        logger.warning(
+        logger.info(
             "Distribution %s has stochastic dependencies; "
             "Approximating moments with quadrature.", distribution)
         from .. import approximation
