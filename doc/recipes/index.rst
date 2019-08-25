@@ -10,3 +10,4 @@ Cookbook Recipes
    spectral
    galerkin
    external
+   dependent
