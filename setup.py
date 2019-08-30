@@ -1,17 +1,23 @@
 #!/usr/bin/env python
 import inspect
 import os
+import sys
 import re
 from setuptools import setup, find_packages
 
 # move to current directory:
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-with open(os.path.join("chaospy", "__init__.py"), encoding="utf8") as src:
-    regex = r"^__version__\s*=\s*['\"]([^'\"]+)['\"]"
-    VERSION = re.search(regex, src.read(), flags=re.M).group(1)
+VERSION_REGEX = r"^__version__\s*=\s*['\"]([^'\"]+)['\"]"
+KWARGS = {}
+if sys.version_info == 3:
+    KWARGS = {"encoding": "utf8"}
 
-with open("README.rst") as src:
+
+with open(os.path.join("chaospy", "__init__.py"), **KWARGS) as src:
+    VERSION = re.search(VERSION_REGEX, src.read(), flags=re.M).group(1)
+
+with open("README.rst", **KWARGS) as src:
     LONG_DESCRIPTION = src.read()
 
 setup(
