@@ -1,4 +1,4 @@
-"""
+r"""
 Monte Carlo simulation is by nature a very slow converging method.  The error
 in convergence is proportional to :math:`1/\sqrt{K}` where :math:`K` is the
 number of samples.  It is somewhat better with variance reduction techniques

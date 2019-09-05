@@ -1,4 +1,4 @@
-"""
+r"""
 A simple polynomial can be created through ``variable`` constructor. For
 example to construct a simple bivariate polynomial::
 

@@ -1,4 +1,4 @@
-"""
+r"""
 One of the more popular integration schemes when dealing with orthogonal
 polynomials are known as Gaussian quadrature. These are specially tailored
 integration schemes each for different weighting schemes. Traditionally the

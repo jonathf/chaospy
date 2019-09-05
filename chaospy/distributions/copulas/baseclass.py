@@ -55,7 +55,7 @@ from .. import evaluation
 class Copula(Dist):
 
     def __init__(self, dist, trans):
-        """
+        r"""
         Args:
             dist (Dist) : Distribution to wrap the copula around.
             trans (Dist) : The copula wrapper `[0,1]^D \into [0,1]^D`.
