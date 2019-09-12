@@ -23,7 +23,7 @@ def Acf(poly, dist, N=None, **kws):
             definition ``Q[0]=1``.
 
     Examples:
-        >>> poly = chaospy.prange(10)[1:]
+        >>> poly = numpoly.monomial("x", start=1, stop=9)
         >>> Z = chaospy.Uniform()
         >>> print(numpy.around(chaospy.Acf(poly, Z, 5), 4))
         [1.     0.9915 0.9722 0.9457 0.9127]

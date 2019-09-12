@@ -19,9 +19,6 @@ Basic usage::
 """
 import numpy
 
-import chaospy.poly.base
-import chaospy.poly.collection
-
 
 def lanczos(order, abscissas, weights):
 

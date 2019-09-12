@@ -12,9 +12,9 @@ def Sens_m(poly, dist, **kws):
     First order sensitivity indices.
 
     Args:
-        poly (Poly):
+        poly (numpoly.ndpoly):
             Polynomial to find first order Sobol indices on.
-        dist (Dist):
+        dist (chaospy.Dist):
             The distributions of the input used in ``poly``.
 
     Returns:
@@ -23,8 +23,8 @@ def Sens_m(poly, dist, **kws):
             with shape ``(len(dist),) + poly.shape``.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> x, y = numpoly.symbols("x y")
+        >>> poly = numpoly.polynomial([1, x, y, 10*x*y])
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
         >>> indices = chaospy.Sens_m(poly, dist)
         >>> print(indices)
@@ -32,9 +32,6 @@ def Sens_m(poly, dist, **kws):
          [0.         0.         1.         0.42857143]]
     """
     dim = len(dist)
-    if poly.dim < dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
-
     zero = [0]*dim
     out = numpy.zeros((dim,) + poly.shape)
     V = Var(poly, dist, **kws)

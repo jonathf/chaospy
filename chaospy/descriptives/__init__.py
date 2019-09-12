@@ -30,10 +30,10 @@ distribution. For example::
     ...     chaospy.Uniform(0, 1),
     ...     chaospy.Normal(0, 1)
     ... )
-    >>> q0, q1 = chaospy.variable(2)
-    >>> expected = chaospy.E(q1, distribution)
+    >>> xy = numpoly.symbols("x y")
+    >>> expected = chaospy.E(xy, distribution)
     >>> print(expected)
-    0.0
+    [0.5 0. ]
 """
 from .expected import E
 from .conditional import E_cond

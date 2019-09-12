@@ -1,7 +1,8 @@
 """Expected value."""
 import numpy
+import numpoly
 
-from .. import distributions, poly as polynomials, quadrature
+from .. import distributions, quadrature
 
 
 def E(poly, dist=None, **kws):
@@ -12,7 +13,7 @@ def E(poly, dist=None, **kws):
     probability space.
 
     Args:
-        poly (Poly, Dist):
+        poly (numpoly.ndpoly, Dist):
             Input to take expected value on.
         dist (Dist):
             Defines the space the expected value is taken on. It is ignored if
@@ -25,38 +26,35 @@ def E(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
+        >>> x, y = numpoly.symbols("x y")
         >>> print(chaospy.E(dist))
         [1. 0.]
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> print(chaospy.E(x**2, chaospy.Uniform(0, 3)))
+        3.0
+        >>> poly = numpoly.polynomial([1, 10*x, y, x*y**2])
         >>> print(chaospy.E(poly, dist))
-        [1. 1. 0. 0.]
+        [ 1. 10.  0.  4.]
     """
     if isinstance(poly, distributions.Dist):
-        dist, poly = poly, polynomials.variable(len(poly))
+        dist, poly = poly, numpoly.symbols("q:%d" % len(poly))
+    poly = numpoly.polynomial(poly)
 
-    if not poly.keys:
-        return numpy.zeros(poly.shape, dtype=int)
+    if len(dist) > len(poly._indeterminants):
+        exponents = numpy.zeros((len(poly._exponents), len(dist)), dtype=int)
+        exponents[:, :len(poly._indeterminants)] = poly.exponents
+        poly = numpoly.polynomial_from_attributes(
+            exponents=exponents,
+            coefficients=poly.coefficients,
+            indeterminants="q",
+            trim=False,
+        )
+    elif len(dist) < len(poly._indeterminants):
+        poly = numpoly.polynomial_from_attributes(
+            exponents=poly.exponents[:, :len(dist)],
+            coefficients=poly.coefficients,
+            indeterminants="q",
+            trim=False,
+        )
 
-    if isinstance(poly, (list, tuple, numpy.ndarray)):
-        return [E(_, dist, **kws) for _ in poly]
-
-    if poly.dim < len(dist):
-        poly = polynomials.setdim(poly, len(dist))
-
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    keys = poly.keys
-    mom = dist.mom(numpy.array(keys).T, **kws)
-    A = poly.A
-
-    if len(dist) == 1:
-        mom = mom[0]
-
-    out = numpy.zeros(poly.shape)
-    for i in range(len(keys)):
-        out += A[keys[i]]*mom[i]
-
-    out = numpy.reshape(out, shape)
-    return out
+    moments = dist.mom(poly.exponents.T, **kws).flatten()
+    return sum(coeff*mom for coeff, mom in zip(poly.coefficients, moments))

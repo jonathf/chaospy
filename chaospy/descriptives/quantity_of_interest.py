@@ -1,6 +1,7 @@
 import numpy
+import numpoly
 
-from .. import distributions, poly as polynomials
+from .. import distributions
 from ..external import SampleDist
 
 
@@ -30,15 +31,16 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
 
     Examples:
         >>> dist = chaospy.Normal(0, 1)
-        >>> x = chaospy.variable(1)
-        >>> poly = chaospy.Poly([x])
+        >>> x = numpoly.symbols("x")
+        >>> poly = numpoly.polynomial([x])
         >>> qoi_dist = chaospy.QoI_Dist(poly, dist)
         >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
         >>> print(numpy.around(values, 8))
         [0.29143037 0.39931708 0.29536329]
     """
+    poly = numpoly.polynomial(poly)
     shape = poly.shape
-    poly = polynomials.flatten(poly)
+    poly = poly.flatten()
     dim = len(dist)
 
     #sample from the inumpyut dist
@@ -48,9 +50,9 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     for i in range(0, len(poly)):
         #sample the polynomial solution
         if dim == 1:
-            dataset = poly[i](samples)
+            dataset = poly[i](samples).toarray()
         else:
-            dataset = poly[i](*samples)
+            dataset = poly[i](*samples).toarray()
 
         lo = dataset.min()
         up = dataset.max()

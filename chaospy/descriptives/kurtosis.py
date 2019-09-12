@@ -1,7 +1,8 @@
 """Kurtosis operator."""
 import numpy
+import numpoly
 
-from .. import distributions, poly as polynomials
+from .. import distributions
 from .expected import E
 
 
@@ -32,32 +33,22 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         [6. 0.]
         >>> print(numpy.around(chaospy.Kurt(dist, fisher=False), 4))
         [9. 3.]
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> x, y = numpoly.symbols("x y")
+        >>> poly = numpoly.polynomial([1, x, y, 10*x*y])
         >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
         [nan  6.  0. 15.]
     """
     if isinstance(poly, distributions.Dist):
-        x = polynomials.variable(len(poly))
-        poly, dist = x, poly
-    else:
-        poly = polynomials.Poly(poly)
+        poly, dist = numpoly.symbols("q:%d" % len(poly)), poly
+    poly = numpoly.polynomial(poly)
 
     if fisher:
         adjust = 3
     else:
         adjust = 0
 
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    m1 = E(poly, dist)
-    m2 = E(poly**2, dist)
-    m3 = E(poly**3, dist)
-    m4 = E(poly**4, dist)
-
-    out = (m4-4*m3*m1 + 6*m2*m1**2 - 3*m1**4) /\
-            (m2**2-2*m2*m1**2+m1**4) - adjust
-
-    out = numpy.reshape(out, shape)
-    return out
+    poly = poly[numpy.newaxis]
+    poly = numpoly.concatenate([poly, poly**2, poly**3, poly**4], axis=0)
+    mu1, mu2, mu3, mu4 = E(poly, dist)
+    return ((mu4-4*mu3*mu1+6*mu2*mu1**2-3*mu1**4)/
+            (mu2**2-2*mu2*mu1**2+mu1**4)-adjust)

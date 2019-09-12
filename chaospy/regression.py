@@ -86,6 +86,7 @@ Note that the option ``fit_intercept=False``. This is a prerequisite for
 import numpy
 from scipy import linalg
 
+import numpoly
 import chaospy
 
 
@@ -102,7 +103,7 @@ def fit_regression(
     Fit a polynomial chaos expansion using linear regression.
 
     Args:
-        polynomials (chaospy.poly.base.Poly):
+        polynomials (numpoly.ndpoly):
             Polynomial expansion with ``polynomials.shape=(M,)`` and
             `polynomials.dim=D`.
         abscissas (numpy.ndarray):
@@ -118,18 +119,18 @@ def fit_regression(
             automatically if negative.
 
     Returns:
-        (Poly, numpy.ndarray):
+        (numpoly.ndpoly, numpy.ndarray):
             Fitted polynomial with ``R.shape=evals.shape[1:]`` and ``R.dim=D``.
             The Fourier coefficients in the estimation.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> polynomials = chaospy.Poly([1, x, y])
+        >>> x, y = numpoly.symbols("x y")
+        >>> polynomials = numpoly.polynomial([1, x, y])
         >>> abscissas = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> evals = [0,1,1,2]
         >>> print(chaospy.around(chaospy.fit_regression(
         ...     polynomials, abscissas, evals), 14))
-        0.5q0+0.5q1+1.0
+        0.5x+0.5y+1.0
     """
     abscissas = numpy.asarray(abscissas)
     if len(abscissas.shape) == 1:
@@ -160,8 +161,8 @@ def fit_regression(
 
     evals = evals.reshape(evals.shape[0], *shape)
 
-    approx_model = chaospy.poly.sum((polynomials*uhat.T), -1)
-    approx_model = chaospy.poly.reshape(approx_model, shape)
+    approx_model = numpoly.sum((polynomials*uhat.T), -1)
+    approx_model = numpoly.reshape(approx_model, shape)
 
     if retall == 1:
         return approx_model, uhat

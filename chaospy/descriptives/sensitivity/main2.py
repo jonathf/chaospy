@@ -23,8 +23,8 @@ def Sens_m2(poly, dist, **kws):
             with shape ``(len(dist), len(dist)) + poly.shape``.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x*y, x*x*y*y, x*y*y*y])
+        >>> x, y = numpoly.symbols("x y")
+        >>> poly = numpoly.polynomial([1, x*y, x*x*y*y, x*y*y*y])
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
         >>> indices = chaospy.Sens_m2(poly, dist)
         >>> print(indices)
@@ -35,21 +35,14 @@ def Sens_m2(poly, dist, **kws):
           [0.         0.         0.         0.        ]]]
     """
     dim = len(dist)
-    if poly.dim<dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
-
     zero = [0]*dim
     out = numpy.zeros((dim, dim) + poly.shape)
 
     mean = E(poly, dist)
     V_total = Var(poly, dist)
-    E_cond_i = [None]*dim
-    V_E_cond_i = [None]*dim
-    for i in range(dim):
-        zero[i] = 1
-        E_cond_i[i] = E_cond(poly, zero, dist, **kws) 
-        V_E_cond_i[i] = Var(E_cond_i[i], dist, **kws)
-        zero[i] = 0
+    mu_conds = [E_cond(poly, mu_cond, dist, **kws)
+                for mu_cond in numpy.eye(len(dist), dtype=int)]
+    mu2_conds = [Var(mu_cond, dist, **kws) for mu_cond in mu_conds]
 
     for i in range(dim):
 
@@ -58,7 +51,7 @@ def Sens_m2(poly, dist, **kws):
 
             zero[j] = 1
             E_cond_ij = E_cond(poly, zero, dist, **kws)
-            out[i, j] = ((Var(E_cond_ij, dist, **kws)-V_E_cond_i[i] - V_E_cond_i[j]) /
+            out[i, j] = ((Var(E_cond_ij, dist, **kws)-mu2_conds[i]-mu2_conds[j])/
                          (V_total+(V_total == 0))*(V_total != 0))
             out[j, i] = out[i, j]
             zero[j] = 0

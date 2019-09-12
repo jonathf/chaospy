@@ -39,8 +39,8 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
         normed (bool):
             If True orthonormal polynomials will be used instead of monic.
         sort (str):
-            Ordering argument passed to poly.basis.  If custom basis is used,
-            argument is ignored.
+            Ordering argument passed to numpoly.basis.  If custom basis is
+            used, argument is ignored.
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
             terms in expansion.
@@ -51,7 +51,7 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
         [1.0, q0, 0.7071q0^2-0.7071, 0.4082q0^3-1.2247q0]
     """
     dim = len(dist)
-    basis = chaospy.poly.basis(
+    basis = numpoly.basis(
         start=1, stop=order, dim=dim, sort=sort,
         cross_truncation=cross_truncation,
     )

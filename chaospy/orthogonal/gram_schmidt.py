@@ -22,7 +22,7 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
         normed (bool):
             If True orthonormal polynomials will be used instead of monic.
         sort (str):
-            Ordering argument passed to poly.basis. If custom basis is used,
+            Ordering argument passed to numpoly.basis. If custom basis is used,
             argument is ignored.
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
@@ -42,8 +42,8 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
     if isinstance(order, int):
         if order == 0:
-            return chaospy.poly.Poly(1, dim=dim)
-        basis = chaospy.poly.basis(
+            return numpoly.polynomial(1)
+        basis = numpoly.basis(
             0, order, dim, sort, cross_truncation=cross_truncation)
     else:
         basis = order
@@ -89,4 +89,4 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
             polynomials.append(basis[idx])
 
-    return chaospy.poly.Poly(polynomials, dim=dim, shape=(len(polynomials),))
+    return numpoly.polynomial(polynomials)
