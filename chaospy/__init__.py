@@ -4,6 +4,8 @@ Uncertainty Quantification Toolbox
 
 This module contains tools for performing uncertainty quantification of models.
 """
+from numpoly import *
+
 import logging
 import os
 
