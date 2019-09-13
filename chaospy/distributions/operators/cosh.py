@@ -17,15 +17,15 @@ class Cosh(Dist):
         >>> print(distribution)
         Cosh(Uniform(lower=0, upper=1))
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [1.0201 1.0811 1.1855 1.3374]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [4.9668 2.4346 1.5707 1.126 ]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [1.2213 1.0066 1.4865 1.1185]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         1.1754
     """
 

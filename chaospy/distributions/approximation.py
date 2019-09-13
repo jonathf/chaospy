@@ -42,18 +42,18 @@ def find_interior_point(
         ...     distribution, retall=True, seed=1234)
         >>> print(lower.T)
         [[-64. -64. -64.]]
-        >>> print(numpy.around(midpoint, 4).T)
+        >>> print(midpoint.round(4).T)
         [[  0.6784 -33.7687 -19.0182]]
         >>> print(upper.T)
         [[16. 16. 16.]]
         >>> distribution = chaospy.Uniform(1000, 1010)
         >>> midpoint, lower, upper = find_interior_point(
         ...     distribution, retall=True, seed=1234)
-        >>> print(numpy.around(lower, 4))
+        >>> print(lower.round(4))
         [[-1.]]
-        >>> print(numpy.around(midpoint, 4))
+        >>> print(midpoint.round(4))
         [[1009.8873]]
-        >>> print(numpy.around(upper, 4))
+        >>> print(upper.round(4))
         [[1024.]]
     """
     random_state = numpy.random.get_state()
@@ -157,10 +157,9 @@ def approximate_inverse(
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> qloc = numpy.array([[0.1, 0.2, 0.9]])
-        >>> print(numpy.around(approximate_inverse(
-        ...     distribution, qloc, seed=1234), 4))
+        >>> print(approximate_inverse(distribution, qloc, seed=1234).round(4))
         [[ 987.1845  991.5838 1012.8155]]
-        >>> print(numpy.around(distribution.inv(qloc), 4))
+        >>> print(distribution.inv(qloc).round(4))
         [[ 987.1845  991.5838 1012.8155]]
     """
     logger = logging.getLogger(__name__)
@@ -335,9 +334,9 @@ def approximate_density(
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> xloc = numpy.array([[990, 1000, 1010]])
-        >>> print(numpy.around(approximate_density(distribution, xloc), 4))
+        >>> print(approximate_density(distribution, xloc).round(4))
         [[0.0242 0.0399 0.0242]]
-        >>> print(numpy.around(distribution.pdf(xloc), 4))
+        >>> print(distribution.pdf(xloc).round(4))
         [[0.0242 0.0399 0.0242]]
     """
     if parameters is None:

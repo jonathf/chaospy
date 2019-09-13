@@ -43,17 +43,17 @@ class LogUniform(Add):
         >>> print(distribution)
         LogUniform(lower=2, scale=2, shift=3, upper=3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [21.05   25.0464 29.9275 35.8893]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.0554 0.0454 0.0371 0.0304]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [31.4099 19.5793 41.2227 26.9349]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         28.393
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[30.8948 30.5352 30.4949]
          [52.8588 42.8862 41.419 ]]
     """

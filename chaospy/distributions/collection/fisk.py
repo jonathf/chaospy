@@ -38,15 +38,15 @@ class Fisk(Add):
         >>> print(distribution)
         Fisk(scale=2, shape=3, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [2.2599 2.7472 3.2894 4.1748]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.381  0.4121 0.3145 0.1512]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [3.4714 2.013  6.3474 2.9531]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         3.4184
     """
     def __init__(self, shape=1, scale=1, shift=0):

@@ -20,7 +20,7 @@ a simple univariate Gaussian random variable::
 
 This distribution then behaves as a normal ``chaospy`` distribution::
 
-    >>> print(numpy.around(distribution.pdf([-1, 0, 1]), 4))
+    >>> print(distribution.pdf([-1, 0, 1]).round(4))
     [0.242  0.3989 0.242 ]
     >>> print(distribution.mom([0, 1, 2]))
     [1. 0. 1.]
@@ -33,7 +33,7 @@ The wrapper also supports multivariate distributions::
     >>> print(mv_distribution)  # doctest: +NORMALIZE_WHITESPACE
     OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
                    Uniform(a = -1, b = 1)])
-    >>> print(numpy.around(mv_distribution.sample(4), 4))
+    >>> print(mv_distribution.sample(4).round(4))
     [[ 0.1676 -0.5204  0.6847 -0.018 ]
      [ 0.7449 -0.5753 -0.9186 -0.2056]]
 

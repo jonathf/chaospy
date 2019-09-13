@@ -18,7 +18,7 @@ With increasing order::
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_lobatto")
-    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    ...     print(X.round(2), W.round(2))
     [[-1.]] [1.]
     [[-1.  1.]] [0.5 0.5]
     [[-1.   -0.38  0.38  1.  ]] [0.03 0.47 0.47 0.03]
@@ -30,12 +30,12 @@ Multivariate samples::
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
     ...     2, distribution, rule="gauss_lobatto")
-    >>> print(numpy.around(X, 3))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(X.round(3))  # doctest: +NORMALIZE_WHITESPACE
     [[-0.    -0.    -0.    -0.     0.276  0.276  0.276  0.276
        0.724  0.724  0.724  0.724  1.     1.     1.     1.   ]
      [ 0.     0.318  0.605  1.     0.     0.318  0.605  1.
        0.     0.318  0.605  1.     0.     0.318  0.605  1.   ]]
-    >>> print(numpy.around(W, 3))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(W.round(3))  # doctest: +NORMALIZE_WHITESPACE
     [0.001 0.045 0.037 0.    0.006 0.224 0.184 0.002
      0.006 0.224 0.184 0.002 0.001 0.045 0.037 0.   ]
 """
@@ -93,9 +93,9 @@ def quad_gauss_lobatto(
     Example:
         >>> abscissas, weights = quad_gauss_lobatto(
         ...     4, chaospy.Uniform(-1, 1))
-        >>> print(numpy.around(abscissas, 3))
+        >>> print(abscissas.round(3))
         [[-1.    -0.872 -0.592 -0.209  0.209  0.592  0.872  1.   ]]
-        >>> print(numpy.around(weights, 3))
+        >>> print(weights.round(3))
         [0.018 0.105 0.171 0.206 0.206 0.171 0.105 0.018]
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"

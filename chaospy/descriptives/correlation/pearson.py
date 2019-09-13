@@ -24,13 +24,13 @@ def Corr(poly, dist=None, **kws):
 
     Examples:
         >>> Z = chaospy.MvNormal([3, 4], [[2, .5], [.5, 1]])
-        >>> print(numpy.around(chaospy.Corr(Z), 4))
+        >>> print(chaospy.Corr(Z).round(4))
         [[1.     0.3536]
          [0.3536 1.    ]]
 
         >>> x = numpoly.symbols("x")
         >>> Z = chaospy.Normal()
-        >>> print(numpy.around(chaospy.Corr([1, x, x**2], Z), 4))
+        >>> print(chaospy.Corr([1, x, x**2], Z).round(4))
         [[0. 0. 0.]
          [0. 1. 0.]
          [0. 0. 1.]]

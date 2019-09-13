@@ -15,7 +15,7 @@ The first few orders with linear growth rule::
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="fejer")
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print(order, X.round(3), W.round(3))
     0 [[0.5]] [1.]
     1 [[0.25 0.75]] [0.5 0.5]
     2 [[0.146 0.5   0.854]] [0.286 0.429 0.286]
@@ -26,7 +26,7 @@ The first few orders with exponential growth rule::
     >>> for order in [0, 1, 2]:  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="fejer", growth=True)
-    ...     print(order, numpy.around(X, 2), numpy.around(W, 2))
+    ...     print(order, X.round(2), W.round(2))
     0 [[0.5]] [1.]
     1 [[0.15 0.5  0.85]] [0.29 0.43 0.29]
     2 [[0.04 0.15 0.31 0.5  0.69 0.85 0.96]]
@@ -37,12 +37,12 @@ Applying the rule using Smolyak sparse grid::
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> X, W = chaospy.generate_quadrature(
     ...     2, distribution, rule="fejer", growth=True, sparse=True)
-    >>> print(numpy.around(X, 3))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(X.round(3))  # doctest: +NORMALIZE_WHITESPACE
     [[0.038 0.146 0.146 0.146 0.309 0.5   0.5   0.5   0.5
       0.5   0.5   0.5   0.691 0.854 0.854 0.854 0.962]
      [0.5   0.146 0.5   0.854 0.5   0.038 0.146 0.309 0.5
       0.691 0.854 0.962 0.5   0.146 0.5   0.854 0.5  ]]
-    >>> print(numpy.around(W, 3))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(W.round(3))  # doctest: +NORMALIZE_WHITESPACE
     [ 0.074  0.082 -0.021  0.082  0.184  0.074 -0.021  0.184 -0.273
       0.184 -0.021  0.074  0.184  0.082 -0.021  0.082  0.074]
 """
@@ -77,9 +77,9 @@ def quad_fejer(order, domain=(0, 1), growth=False):
 
     Example:
         >>> abscissas, weights = quad_fejer(3, (0, 1))
-        >>> print(numpy.around(abscissas, 4))
+        >>> print(abscissas.round(4))
         [[0.0955 0.3455 0.6545 0.9045]]
-        >>> print(numpy.around(weights, 4))
+        >>> print(weights.round(4))
         [0.1804 0.2996 0.2996 0.1804]
     """
     from ..distributions.baseclass import Dist

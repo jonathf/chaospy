@@ -18,17 +18,17 @@ class Logn(Dist):
         >>> print(distribution)
         Logn(Uniform(lower=1, upper=2), 3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [0.166  0.3063 0.4278 0.535 ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [1.3183 1.5381 1.7578 1.9775]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [0.4578 0.0991 0.608  0.3582]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         0.3516
-        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
+        >>> print(distribution.ttr([0, 1, 2]).round(4))
         [[0.3516 0.3085 0.3144]
          [1.     0.0324 0.0266]]
     """

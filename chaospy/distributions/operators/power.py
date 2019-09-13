@@ -244,17 +244,17 @@ class Pow(Dist):
         Statistical moments.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Uniform().mom([0, 1, 2, 3]).round(4))
             [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(chaospy.Pow(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Pow(chaospy.Uniform(), 2).mom([0, 1, 2, 3]).round(4))
             [1.     0.3333 0.2    0.1429]
-            >>> print(numpy.around(chaospy.Pow(chaospy.Uniform(1, 2), -1).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Pow(chaospy.Uniform(1, 2), -1).mom([0, 1, 2, 3]).round(4))
             [1.     0.6931 0.5    0.375 ]
-            >>> print(numpy.around(chaospy.Pow(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Pow(2, chaospy.Uniform()).mom([0, 1, 2, 3]).round(4))
             [1.     1.4427 2.164  3.3663]
-            >>> print(numpy.around(chaospy.Pow(2, chaospy.Uniform(-1, 0)).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).mom([0, 1, 2, 3]).round(4))
             [1.     0.7213 0.541  0.4208]
-            >>> print(numpy.around(chaospy.Pow(2, 1).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Pow(2, 1).mom([0, 1, 2, 3]).round(4))
             [1. 2. 4. 8.]
         """
         if isinstance(right, Dist):

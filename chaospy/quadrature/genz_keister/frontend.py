@@ -25,9 +25,9 @@ def quad_genz_keister(order, dist, rule=24):
     Eabsicassample:
         >>> abscissas, weights = quad_genz_keister(
         ...         order=1, dist=chaospy.Uniform(0, 1))
-        >>> print(numpy.around(abscissas, 4))
+        >>> print(abscissas.round(4))
         [[0.0416 0.5    0.9584]]
-        >>> print(numpy.around(weights, 4))
+        >>> print(weights.round(4))
         [0.1667 0.6667 0.1667]
     """
     assert isinstance(rule, int)

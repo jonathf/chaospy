@@ -23,19 +23,19 @@ using the ``antithetic`` flag::
 
 Antithetic variates contains compliment values of itself::
 
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [0.6536 0.3464 0.115  0.885  0.9503 0.0497]
-    >>> print(numpy.around(1-samples, 4))
+    >>> print((1-samples).round(4))
     [0.3464 0.6536 0.885  0.115  0.0497 0.9503]
 
 Antithetic variates can also be used in multiple dimensions::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> samples = distribution.sample(6, antithetic=True)
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [[0.0407 0.9593 0.0407 0.9593 0.3972 0.6028]
      [0.8417 0.8417 0.1583 0.1583 0.2071 0.2071]]
-    >>> print(numpy.around(1-samples, 4))
+    >>> print((1-samples).round(4))
     [[0.9593 0.0407 0.9593 0.0407 0.6028 0.3972]
      [0.1583 0.1583 0.8417 0.8417 0.7929 0.7929]]
 
@@ -44,17 +44,17 @@ applying the variate by passing a bool array. For axes that are "false", the
 value is frozen in place::
 
     >>> samples = distribution.sample(6, antithetic=[True, False])
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [[0.3922 0.6078 0.1823 0.8177 0.7435 0.2565]
      [0.0696 0.0696 0.8853 0.8853 0.9526 0.9526]]
-    >>> print(numpy.around(1-samples, 4))
+    >>> print((1-samples).round(4))
     [[0.6078 0.3922 0.8177 0.1823 0.2565 0.7435]
      [0.9304 0.9304 0.1147 0.1147 0.0474 0.0474]]
     >>> samples = distribution.sample(6, antithetic=[False, True])
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [[0.9311 0.9311 0.4154 0.4154 0.029  0.029 ]
      [0.982  0.018  0.3396 0.6604 0.7067 0.2933]]
-    >>> print(numpy.around(1-samples, 4))
+    >>> print((1-samples).round(4))
     [[0.0689 0.0689 0.5846 0.5846 0.971  0.971 ]
      [0.018  0.982  0.6604 0.3396 0.2933 0.7067]]
 

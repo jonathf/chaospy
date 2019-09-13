@@ -17,17 +17,17 @@ class Binomial(Dist):
         >>> print(distribution)
         Binomial(prob=0.5, size=5)
         >>> q = numpy.linspace(0, 1, 8)
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [0. 1. 2. 2. 3. 3. 4. 5.]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.0312 0.1875 0.5    0.5    0.8125 0.8125 0.9688 1.    ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.0312 0.1562 0.3125 0.3125 0.3125 0.3125 0.1562 0.0312]
-        >>> print(numpy.around(distribution.sample(10), 4))
+        >>> print(distribution.sample(10).round(4))
         [3. 1. 4. 2. 4. 2. 1. 2. 2. 4.]
-        >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
+        >>> print(distribution.mom([1, 2, 3]).round(4))
         [ 2.5  7.5 25. ]
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[2.5  2.5  2.5 ]
          [1.25 2.   2.25]]
     """

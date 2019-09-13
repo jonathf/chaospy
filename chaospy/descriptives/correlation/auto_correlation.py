@@ -25,7 +25,7 @@ def Acf(poly, dist, N=None, **kws):
     Examples:
         >>> poly = numpoly.monomial("x", start=1, stop=9)
         >>> Z = chaospy.Uniform()
-        >>> print(numpy.around(chaospy.Acf(poly, Z, 5), 4))
+        >>> print(chaospy.Acf(poly, Z, 5).round(4))
         [1.     0.9915 0.9722 0.9457 0.9127]
     """
     if N is None:

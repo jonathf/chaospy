@@ -52,17 +52,17 @@ class LogNormal(Add):
         >>> print(distribution)
         LogNormal(mu=0, scale=1, shift=0, sigma=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [0.431  0.7762 1.2883 2.3201]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.6495 0.4977 0.2999 0.1207]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [1.4844 0.3011 5.1945 0.9563]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         1.6487
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[1.50155000e+01 1.18650900e+02 8.97651100e+02]
          [4.67080000e+00 3.48830600e+02 2.09298326e+04]]
     """
@@ -91,17 +91,17 @@ class Gilbrat(Add):
         >>> print(distribution)
         Gilbrat(scale=3, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [3.293  4.3286 5.865  8.9604]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.2165 0.1659 0.1    0.0402]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [ 6.4533  2.9033 17.5835  4.869 ]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         6.9462
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[4.70464000e+01 3.57952700e+02 2.69495320e+03]
          [4.20370000e+01 3.13947580e+03 1.88368494e+05]]
     """

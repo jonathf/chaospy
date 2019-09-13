@@ -8,6 +8,7 @@ For more details, see this `article on Lagrange polynomials`_.
 .. _article on Lagrange polynomials: https://en.wikipedia.org/wiki/Lagrange_polynomial
 """
 import numpy
+import numpoly
 import chaospy
 
 def lagrange_polynomial(abscissas, sort="G"):
@@ -19,14 +20,14 @@ def lagrange_polynomial(abscissas, sort="G"):
             Sample points where the Lagrange polynomials shall be defined.
 
     Example:
-        >>> print(chaospy.around(chaospy.lagrange_polynomial([-10, 10]), 4))
-        [-0.05q0+0.5, 0.05q0+0.5]
-        >>> print(chaospy.around(chaospy.lagrange_polynomial([-1, 0, 1]), 4))
-        [0.5q0^2-0.5q0, -q0^2+1.0, 0.5q0^2+0.5q0]
-        >>> poly = chaospy.lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
-        >>> print(chaospy.around(poly, 4))
-        [0.5q0-0.5q1+0.5, -q0+1.0, 0.5q0+0.5q1-0.5]
-        >>> print(numpy.around(poly([1, 0, 1], [0, 1, 2]), 4))
+        >>> print(lagrange_polynomial([-10, 10]).round(4))
+        [0.5-0.05*q0 0.5+0.05*q0]
+        >>> print(lagrange_polynomial([-1, 0, 1]).round(4))
+        [-0.5*q0+0.5*q0**2 1.0-q0**2 0.5*q0+0.5*q0**2]
+        >>> poly = lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
+        >>> print(poly.round(4))
+        [0.5-0.5*q1+0.5*q0 1.0-q0 -0.5+0.5*q1+0.5*q0]
+        >>> print(poly([1, 0, 1], [0, 1, 2]).round(4))
         [[1. 0. 0.]
          [0. 1. 0.]
          [0. 0. 1.]]
@@ -55,7 +56,14 @@ def lagrange_polynomial(abscissas, sort="G"):
         raise numpy.linalg.LinAlgError(
             "Lagrange abscissas resulted in invertible matrix")
 
+<<<<<<< HEAD
     vec = numpoly.basis(0, order, dim, sort)[:size]
+||||||| merged common ancestors
+    vec = numpoly.basis(0, order-1, dim, sort)[:size]
+=======
+    vec = numpoly.monomial(numpoly.symbols("q:%d" % dim, asarray=True),
+                           start=0, stop=order-1, ordering=sort)[:size]
+>>>>>>> full replace
 
     coeffs = numpy.zeros((size, size))
 
@@ -64,7 +72,7 @@ def lagrange_polynomial(abscissas, sort="G"):
 
     elif size == 2:
         coeffs = numpy.linalg.inv(matrix)
-        out = chaospy.poly.sum(vec*(coeffs.T), 1)
+        out = numpoly.sum(coeffs.T*vec, 1)
 
     else:
         for i in range(size):
@@ -73,6 +81,6 @@ def lagrange_polynomial(abscissas, sort="G"):
                 matrix = numpy.roll(matrix, -1, axis=0)
             matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
-        out = chaospy.poly.sum(vec*(coeffs.T), 1)
+        out = numpoly.sum(coeffs.T*vec, 1)
 
     return out

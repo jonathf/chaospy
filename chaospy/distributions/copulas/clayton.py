@@ -39,7 +39,7 @@ class Clayton(Copula):
         >>> print(distribution)
         Clayton(Iid(Uniform(lower=0, upper=1), 2), theta=2)
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
+        >>> print(distribution.inv(mesh).round(4))
         [[[0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]]
@@ -47,7 +47,7 @@ class Clayton(Copula):
          [[0.1987 0.3758 0.5197]
           [0.3101 0.5464 0.6994]
           [0.4777 0.7361 0.8525]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
+        >>> print(distribution.fwd(distribution.inv(mesh)).round(4))
         [[[0.25 0.5  0.75]
           [0.25 0.5  0.75]
           [0.25 0.5  0.75]]
@@ -55,14 +55,14 @@ class Clayton(Copula):
          [[0.25 0.25 0.25]
           [0.5  0.5  0.5 ]
           [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
+        >>> print(distribution.pdf(distribution.inv(mesh)).round(4))
         [[2.3697 1.4016 1.1925]
          [1.9803 1.4482 1.5538]
          [1.0651 1.1642 1.6861]]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.9043 0.0852 0.3288 0.4633]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
+        >>> print(distribution.mom((1, 2)).round(4))
         0.2196
     """
 

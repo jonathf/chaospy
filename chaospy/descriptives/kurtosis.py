@@ -29,13 +29,13 @@ def Kurt(poly, dist=None, fisher=True, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(numpy.around(chaospy.Kurt(dist), 4))
+        >>> print(chaospy.Kurt(dist).round(4))
         [6. 0.]
-        >>> print(numpy.around(chaospy.Kurt(dist, fisher=False), 4))
+        >>> print(chaospy.Kurt(dist, fisher=False).round(4))
         [9. 3.]
         >>> x, y = numpoly.symbols("x y")
         >>> poly = numpoly.polynomial([1, x, y, 10*x*y])
-        >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
+        >>> print(chaospy.Kurt(poly, dist).round(4))
         [nan  6.  0. 15.]
     """
     if isinstance(poly, distributions.Dist):

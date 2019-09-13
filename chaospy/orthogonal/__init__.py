@@ -14,9 +14,9 @@ expected values:
 
 This relationship can in the case of ``chaospy`` be expressed as follows::
 
-    >>> polynomials = chaospy.prange(4)
+    >>> polynomials = numpoly.monomial(numpoly.symbols("q0,"), start=0, stop=3)
     >>> print(polynomials)
-    [1, q0, q0^2, q0^3]
+    [1 q0 q0**2 q0**3]
     >>> distribution = chaospy.Normal(0, 1)
     >>> print(chaospy.E(polynomials[0]*polynomials[1], distribution))
     0.0
@@ -28,7 +28,7 @@ defined explicitly.
 For a more convenient way to check all pairs at the same time, it is possible
 to use the ``chaospy.outer`` function::
 
-    >>> print(chaospy.E(chaospy.outer(polynomials, polynomials), distribution))
+    >>> print(chaospy.E(numpoly.outer(polynomials, polynomials), distribution))
     [[ 1.  0.  1.  0.]
      [ 0.  1.  0.  3.]
      [ 1.  0.  3.  0.]

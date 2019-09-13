@@ -18,15 +18,15 @@ class Arctanh(Dist):
         >>> print(distribution)
         Arctanh(Uniform(lower=-0.5, upper=0.5))
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [-0.3095 -0.1003  0.1003  0.3095]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.91 0.99 0.99 0.91]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [ 0.1548 -0.4059  0.4851 -0.0178]
-        >>> print(numpy.around(distribution.mom(2), 4))
+        >>> print(distribution.mom(2).round(4))
         0.093
     """
 

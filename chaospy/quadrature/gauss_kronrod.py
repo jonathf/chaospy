@@ -26,7 +26,7 @@ Generate Gauss-Kronrod quadrature rules::
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_kronrod")
-    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    ...     print(X.round(2), W.round(2))
     [[-0.65 -0.    0.65]] [0.23 0.53 0.23]
     [[-0.82 -0.45  0.    0.45  0.82]] [0.07 0.26 0.34 0.26 0.07]
     [[-0.89 -0.65 -0.34 -0.    0.34  0.65  0.89]]
@@ -43,7 +43,7 @@ Gauss-Legendre::
     ...         order, distribution, rule="gaussian")
     ...     Xk, Wk = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_kronrod")
-    ...     print(numpy.around(Xl, 2), numpy.around(Xk[:, 1::2], 2))
+    ...     print(Xl.round(2), Xk[:, 1::2].round(2))
     [[0.]] [[-0.]]
     [[-0.58  0.58]] [[-0.58  0.58]]
     [[-0.77 -0.    0.77]] [[-0.77 -0.    0.77]]
@@ -58,7 +58,7 @@ Gauss-Kronrod build on top of Gauss-Hermite quadrature::
     ...         order, distribution, rule="gaussian")
     ...     Xk, Wk = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_kronrod")
-    ...     print(numpy.around(Xl, 2), numpy.around(Xk, 2))
+    ...     print(Xl.round(2), Xk.round(2))
     [[0.]] [[-1.73  0.    1.73]]
     [[-1.  1.]] [[-2.45 -1.    0.    1.    2.45]]
 
@@ -78,14 +78,14 @@ Multivariate support::
     ...     chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
     ...     1, distribution, rule="gauss_kronrod")
-    >>> print(numpy.around(X, 3))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(X.round(3))  # doctest: +NORMALIZE_WHITESPACE
     [[0.037 0.037 0.037 0.037 0.037 0.211 0.211 0.211 0.211
       0.211 0.5   0.5   0.5   0.5   0.5   0.789 0.789 0.789
       0.789 0.789 0.963 0.963 0.963 0.963 0.963]
      [0.144 0.297 0.444 0.612 0.796 0.144 0.297 0.444 0.612
       0.796 0.144 0.297 0.444 0.612 0.796 0.144 0.297 0.444
       0.612 0.796 0.144 0.297 0.444 0.612 0.796]]
-    >>> print(numpy.around(W, 3))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(W.round(3))  # doctest: +NORMALIZE_WHITESPACE
     [0.006 0.027 0.035 0.026 0.004 0.016 0.067 0.086 0.065
      0.011 0.02  0.085 0.11  0.083 0.014 0.016 0.067 0.086
      0.065 0.011 0.006 0.027 0.035 0.026 0.004]
@@ -154,9 +154,9 @@ def quad_gauss_kronrod(
     Example:
         >>> distribution = chaospy.Uniform(-1, 1)
         >>> abscissas, weights = quad_gauss_kronrod(3, distribution)
-        >>> print(numpy.around(abscissas, 3))
+        >>> print(abscissas.round(3))
         [[-0.977 -0.861 -0.64  -0.34   0.     0.34   0.64   0.861  0.977]]
-        >>> print(numpy.around(weights, 3))
+        >>> print(weights.round(3))
         [0.031 0.085 0.133 0.163 0.173 0.163 0.133 0.085 0.031]
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"

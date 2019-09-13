@@ -15,7 +15,7 @@ the ``scipy.stats`` distributions as input argument::
 
 This distribution then behaves as a normal ``chaospy`` distribution::
 
-    >>> print(numpy.around(distribution.pdf([-1, 0, 1]), 4))
+    >>> print(distribution.pdf([-1, 0, 1]).round(4))
     [0.242  0.3989 0.242 ]
     >>> print(distribution.mom([0, 1, 2]))
     [1. 0. 1.]

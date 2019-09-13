@@ -34,12 +34,12 @@ def bastos_ohagen(mat, eps=1e-16):
         [[0 1 0]
          [1 0 0]
          [0 0 1]]
-        >>> print(numpy.around(lowtri, 4))
+        >>> print(lowtri.round(4))
         [[ 2.4495  0.      0.    ]
          [ 0.8165  1.8257  0.    ]
          [ 1.2247 -0.      0.9129]]
         >>> comp = numpy.dot(perm, lowtri)
-        >>> print(numpy.around(numpy.dot(comp, comp.T), 4))
+        >>> print(numpy.dot(comp, comp.T).round(4))
         [[4.     2.     1.    ]
          [2.     6.     3.    ]
          [1.     3.     2.3333]]

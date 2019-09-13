@@ -15,11 +15,11 @@ Standard usage::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
     >>> samples = distribution.sample(3, rule="H")
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [[0.125  0.625  0.375 ]
      [0.4444 0.7778 0.2222]]
     >>> samples = distribution.sample(4, rule="H")
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [[0.125  0.625  0.375  0.875 ]
      [0.4444 0.7778 0.2222 0.5556]]
 

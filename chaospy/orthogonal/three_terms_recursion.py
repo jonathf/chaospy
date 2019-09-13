@@ -28,7 +28,7 @@ In the ``chaospy`` toolbox three terms recursion coefficient can be
 generating by calling the ``ttr`` instance method::
 
     >>> dist = chaospy.Uniform(-1,1)
-    >>> print(numpy.around(dist.ttr([0,1,2,3]), 4))
+    >>> print(dist.ttr([0,1,2,3]).round(4))
     [[ 0.      0.      0.      0.    ]
      [-0.      0.3333  0.2667  0.2571]]
 
@@ -42,8 +42,8 @@ recursion scheme can be done through ``orth_ttr``. For example::
 
     >>> dist = chaospy.Iid(chaospy.Gamma(1), 2)
     >>> orths = chaospy.orth_ttr(2, dist)
-    >>> print(chaospy.around(orths, 4))
-    [1.0, q1-1.0, q0-1.0, q1^2-4.0q1+2.0, q0q1-q0-q1+1.0, q0^2-4.0q0+2.0]
+    >>> print(orths.round(4))
+    [1.0 -1.0+q1 -1.0+q0 2.0-4.0*q1+q1**2 1.0-q1-q0+q0*q1 2.0-4.0*q0+q0**2]
 
 The method will use the ``ttr`` function if available, and discretized
 Stieltjes otherwise.
@@ -52,6 +52,7 @@ Stieltjes otherwise.
 .. _paper by Golub and Welsch: https://web.stanford.edu/class/cme335/spr11/S0025-5718-69-99647-1.pdf
 """
 import numpy
+import numpoly
 import chaospy
 
 
@@ -88,8 +89,8 @@ def orth_ttr(
 
     Examples:
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.around(chaospy.orth_ttr(4, Z), 4))
-        [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
+        >>> print(chaospy.orth_ttr(4, Z))
+        [1.0 q0 -1.0+q0**2 -3.0*q0+q0**3 3.0-6.0*q0**2+q0**4]
     """
     try:
         _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
@@ -100,20 +101,21 @@ def orth_ttr(
         _, polynomials, norms, = chaospy.quadrature.recurrence.discretized_stieltjes(
             numpy.max(order), abscissas, weights, normed=normed)
 
-    polynomials = chaospy.poly.reshape(
-        polynomials, (len(dist), numpy.max(order)+1))
+    polynomials = polynomials.reshape(len(dist), numpy.max(order)+1)
 
-    indices = chaospy.bertran.bindex(
-        start=0, stop=order, dim=len(dist), sort=sort,
-        cross_truncation=cross_truncation,
-    )
     if len(dist) > 1:
-        polynomials = chaospy.poly.prod(chaospy.poly.Poly([
-            poly[idx] for poly, idx in zip(polynomials, indices.T)]), 0)
+        indices = chaospy.bertran.bindex(
+            start=0, stop=order, dim=len(dist), sort=sort,
+            cross_truncation=cross_truncation,
+        )
+        polynomials = [poly[idx] for poly, idx in zip(polynomials, indices.T)]
+        polynomials = numpoly.concatenate([poly[numpy.newaxis]
+                                           for poly in polynomials], axis=0)
+        polynomials = numpoly.prod(polynomials, 0)
         norms = numpy.prod([
             norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)
     else:
-        polynomials = chaospy.poly.flatten(polynomials)
+        polynomials = polynomials.flatten()
 
     if retall:
         return polynomials, norms

@@ -11,7 +11,7 @@ samples and evaluations. The experiment can be done as follows:
 
     >>> orthogonal_expansion = chaospy.orth_ttr(2, distribution)
     >>> print(orthogonal_expansion)
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    [1.0 q1 q0 -1.0+q1**2 q0*q1 -1.0+q0**2]
 
 - Generate samples using :ref:`sampling` (or alternative abscissas from
   :ref:`quadrature`)::
@@ -37,8 +37,8 @@ samples and evaluations. The experiment can be done as follows:
 
     >>> approx_model = chaospy.fit_regression(
     ...      orthogonal_expansion, samples, solves)
-    >>> print(chaospy.around(approx_model, 5))
-    [q0q1, 0.0478q0^2-1.4354q0q1+0.1108q1^2+1.22377q0-0.0907q1+0.93973]
+    >>> print(approx_model.round(4))
+    [q0*q1 0.9397-0.0907*q1+0.1108*q1**2+1.2238*q0-1.4354*q0*q1+0.0478*q0**2]
 
 In this example, the number of collocation points is selected to be twice the
 number of unknown coefficients :math:`N+1`. Changing this is obviously
@@ -77,7 +77,7 @@ coefficients to be for example 1: ``n_nonzero_coefs=1``. In practice::
     >>> omp = OrthogonalMatchingPursuit(fit_intercept=False, n_nonzero_coefs=1)  # doctest: +SKIP
     >>> approx_model = chaospy.fit_regression(  # doctest: +SKIP
     ...     orthogonal_expansion, samples, solves, rule=omp)
-    >>> print(chaospy.around(approx_model, 8))  # doctest: +SKIP
+    >>> print(approx_model.round(8))  # doctest: +SKIP
     [3.46375077q0q1, 11.63750715]
 
 Note that the option ``fit_intercept=False``. This is a prerequisite for
@@ -128,9 +128,9 @@ def fit_regression(
         >>> polynomials = numpoly.polynomial([1, x, y])
         >>> abscissas = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> evals = [0,1,1,2]
-        >>> print(chaospy.around(chaospy.fit_regression(
-        ...     polynomials, abscissas, evals), 14))
-        0.5x+0.5y+1.0
+        >>> print(chaospy.fit_regression(
+        ...     polynomials, abscissas, evals).round(14))
+        1.0+0.5*y+0.5*x
     """
     abscissas = numpy.asarray(abscissas)
     if len(abscissas.shape) == 1:
@@ -161,8 +161,8 @@ def fit_regression(
 
     evals = evals.reshape(evals.shape[0], *shape)
 
-    approx_model = numpoly.sum((polynomials*uhat.T), -1)
-    approx_model = numpoly.reshape(approx_model, shape)
+    approx_model = numpoly.sum((uhat.T*polynomials), -1)
+    approx_model = approx_model.reshape(shape)
 
     if retall == 1:
         return approx_model, uhat

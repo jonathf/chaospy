@@ -42,17 +42,17 @@ class Uniform(Add):
         >>> print(distribution)
         Uniform(lower=2, upper=4)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [2.  2.5 3.  3.5 4. ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.5 0.5 0.5 0.5 0.5]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [3.3072 2.23   3.9006 2.9644]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         3.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[3.     3.     3.    ]
          [0.3333 0.2667 0.2571]]
     """

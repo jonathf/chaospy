@@ -16,13 +16,13 @@ Define a simple distribution and data::
 
 Normal usage::
 
-    >>> print(numpy.around(evaluate_forward(dist, x_data), 4))
+    >>> print(evaluate_forward(dist, x_data).round(4))
     [[0.1813 0.3297 0.4512]]
 
 Use non-default parameters::
 
-    >>> print(numpy.around(evaluate_forward(
-    ...     dist, x_data, parameters={"alpha": 1}), 4))
+    >>> print(evaluate_forward(
+    ...     dist, x_data, parameters={"alpha": 1}).round(4))
     [[0.0952 0.1813 0.2592]]
 """
 import numpy

@@ -13,8 +13,7 @@ The first few orders::
     >>> for order in [0, 1, 2, 3, 4]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="leja")
-    ...     print(order, numpy.around(abscissas, 3),
-    ...           numpy.around(weights, 3))
+    ...     print(order, abscissas.round(3), weights.round(3))
     0 [[0.5]] [1.]
     1 [[0.5 1. ]] [1. 0.]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -67,9 +66,9 @@ def quad_leja(
 
     Example:
         >>> abscisas, weights = quad_leja(3, chaospy.Normal(0, 1))
-        >>> print(numpy.around(abscisas, 4))
+        >>> print(abscisas.round(4))
         [[-2.7173 -1.4142  0.      1.7635]]
-        >>> print(numpy.around(weights, 4))
+        >>> print(weights.round(4))
         [0.022  0.1629 0.6506 0.1645]
     """
     from chaospy.distributions import evaluation
@@ -132,7 +131,6 @@ def create_weights(
             order=accuracy, dist=dist, rule=rule,
             recurrence_algorithm=recurrence_algorithm,
         )
-        _, poly, _ = discretized_stieltjes(
-            len(nodes)-1, abscissas, weights)
-    weights = numpy.linalg.inv(poly(nodes))
+        _, poly, _ = discretized_stieltjes(len(nodes)-1, abscissas, weights)
+    weights = numpy.linalg.inv(poly(nodes)[0])
     return weights[:, 0]

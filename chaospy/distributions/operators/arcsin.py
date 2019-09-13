@@ -16,17 +16,17 @@ class Arcsin(Dist):
         >>> print(distribution)
         Arcsin(Uniform(lower=0, upper=1))
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [0.2014 0.4115 0.6435 0.9273]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.9798 0.9165 0.8    0.6   ]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [0.7123 0.1153 1.2541 0.5032]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         0.5708
-        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
+        >>> print(distribution.ttr([0, 1, 2]).round(4))
         [[0.5708 0.7302 0.7625]
          [1.     0.1416 0.1492]]
     """

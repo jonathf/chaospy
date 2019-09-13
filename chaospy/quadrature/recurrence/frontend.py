@@ -74,10 +74,10 @@ def construct_recurrence_coefficients(
         >>> distribution = chaospy.J(chaospy.Exponential(), chaospy.Uniform())
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     [2, 4], distribution, recurrence_algorithm="chebyshev")
-        >>> print(numpy.around(coefficients[0], 4))
+        >>> print(coefficients[0].round(4))
         [[1. 3. 5.]
          [1. 1. 4.]]
-        >>> print(numpy.around(coefficients[1], 4))
+        >>> print(coefficients[1].round(4))
         [[0.5    0.5    0.5    0.5    0.5   ]
          [1.     0.0833 0.0667 0.0643 0.0635]]
     """

@@ -39,15 +39,15 @@ class Logistic(Add):
         >>> print(distribution)
         Logistic(loc=2, scale=2, skew=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [1.5761 3.0855 4.4689 6.2736]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.0553 0.0735 0.0676 0.0422]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [4.8799 0.6656 9.3128 3.6415]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         4.0
     """
     def __init__(self, loc=0, scale=1, skew=1):

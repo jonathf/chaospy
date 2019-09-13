@@ -35,7 +35,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         >>> poly = numpoly.polynomial([x])
         >>> qoi_dist = chaospy.QoI_Dist(poly, dist)
         >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
-        >>> print(numpy.around(values, 8))
+        >>> print(values.round(8))
         [0.29143037 0.39931708 0.29536329]
     """
     poly = numpoly.polynomial(poly)
@@ -50,9 +50,9 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     for i in range(0, len(poly)):
         #sample the polynomial solution
         if dim == 1:
-            dataset = poly[i](samples).toarray()
+            dataset = poly[i](samples)
         else:
-            dataset = poly[i](*samples).toarray()
+            dataset = poly[i](*samples)
 
         lo = dataset.min()
         up = dataset.max()

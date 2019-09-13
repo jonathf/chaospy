@@ -32,7 +32,7 @@ class Frank(Copula):
         >>> print(distribution)
         Frank(Iid(Uniform(lower=0, upper=1), 2), theta=1.0)
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
+        >>> print(distribution.inv(mesh).round(4))
         [[[0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]]
@@ -40,7 +40,7 @@ class Frank(Copula):
          [[0.2101 0.2539 0.3032]
           [0.4391 0.5    0.5609]
           [0.6968 0.7462 0.7899]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
+        >>> print(distribution.fwd(distribution.inv(mesh)).round(4))
         [[[0.25 0.5  0.75]
           [0.25 0.5  0.75]
           [0.25 0.5  0.75]]
@@ -48,14 +48,14 @@ class Frank(Copula):
          [[0.25 0.25 0.25]
           [0.5  0.5  0.5 ]
           [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
+        >>> print(distribution.pdf(distribution.inv(mesh)).round(4))
         [[1.1454 1.0054 0.9031]
          [1.0358 1.0207 1.0358]
          [0.9031 1.0055 1.1454]]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.8854 0.1587 0.0646 0.395 ]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
+        >>> print(distribution.mom((1, 2)).round(4))
         0.1804
     """
 

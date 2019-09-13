@@ -15,14 +15,14 @@ Define a simple distribution and data::
 Normal usage::
 
     >>> lower, upper = evaluate_bound(dist, x_data)
-    >>> print(numpy.around(lower, 4))
+    >>> print(lower.round(4))
     [[1. 1. 1.]]
-    >>> print(numpy.around(upper, 4))
+    >>> print(upper.round(4))
     [[3. 3. 3.]]
     >>> lower, upper = evaluate_bound(dist, x_data, parameters={"lo": -1})
-    >>> print(numpy.around(lower, 4))
+    >>> print(lower.round(4))
     [[-1. -1. -1.]]
-    >>> print(numpy.around(upper, 4))
+    >>> print(upper.round(4))
     [[3. 3. 3.]]
 """
 import numpy

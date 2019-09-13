@@ -36,13 +36,13 @@ class FoldedCauchy(Add):
         >>> print(distribution)
         FoldedCauchy(scale=2, shape=3, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [ 5.1449  6.708   8.0077 10.6504]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.0915 0.1603 0.1306 0.0393]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [ 8.4584  3.9544 27.8887  7.2135]
     """
 

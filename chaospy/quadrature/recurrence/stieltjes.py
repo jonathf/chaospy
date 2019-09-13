@@ -37,28 +37,28 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
         >>> abscissas, weights = chaospy.generate_quadrature(
         ...     9, dist, rule="clenshaw_curtis")
         >>> coeffs, orth, norms = discretized_stieltjes(2, abscissas, weights)
-        >>> print(numpy.around(coeffs, 5))
+        >>> print(coeffs.round(5))
         [[[0.5     0.5     0.5    ]
           [0.42857 0.46032 0.47525]]
         <BLANKLINE>
          [[1.      0.08333 0.06667]
           [1.      0.03061 0.04321]]]
-        >>> print(numpoly.around(orth[2], 5))
+        >>> print(orth[2].round(5))
         [0.16667-q0+q0**2 0.16667-0.88889*q1+q1**2]
-        >>> print(numpy.around(norms, 5))
+        >>> print(norms.round(5))
         [[1.      0.08333 0.00556]
          [1.      0.03061 0.00132]]
         >>> coeffs, orth, norms = discretized_stieltjes(
         ...     2, abscissas, weights, normed=True)
-        >>> print(numpy.around(coeffs, 5))
+        >>> print(coeffs.round(5))
         [[[0.5     0.04167 0.26424]
           [0.42857 0.01409 0.31365]]
         <BLANKLINE>
          [[1.      1.      1.     ]
           [1.      1.      1.     ]]]
-        >>> print(numpoly.around(orth[2], 5))
+        >>> print(orth[2].round(5))
         [-1.04874-2.1209*q0+3.9155*q0**2 -1.00494-2.63343*q1+5.94906*q1**2]
-        >>> print(numpy.around(norms, 5))
+        >>> print(norms.round(5))
         [[1. 1. 1.]
          [1. 1. 1.]]
     """
@@ -81,7 +81,7 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
         coeffs.append((inner/norms[-1], norms[-1]/norms[-2]))
         orth.append((poly-coeffs[-1][0])*orth[-1] - orth[-2]*coeffs[-1][1])
 
-        raw_nodes = orth[-1](*abscissas).toarray()**2*weights
+        raw_nodes = orth[-1](*abscissas)**2*weights
         inner = numpy.sum(abscissas*raw_nodes, -1)
         norms.append(numpy.sum(raw_nodes, -1))
 
@@ -106,27 +106,27 @@ def analytical_stieljes(order, dist, normed=False):
     Examples:
         >>> dist = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(3, 4))
         >>> coeffs, orth, norms = analytical_stieljes(2, dist)
-        >>> print(numpy.around(coeffs, 5))
+        >>> print(coeffs.round(5))
         [[[0.5     0.5     0.5    ]
           [0.42857 0.46032 0.47475]]
         <BLANKLINE>
          [[1.      0.08333 0.06667]
           [1.      0.03061 0.04321]]]
-        >>> print(numpoly.around(orth[:, 2], 5))
-        [q0^2-q0+0.16667, q1^2-0.88889q1+0.16667]
-        >>> print(numpy.around(norms, 5))
+        >>> print(orth[:, 2].round(5))
+        [0.16667-q0+q0**2 0.16667-0.88889*q1+q1**2]
+        >>> print(norms.round(5))
         [[1.      0.08333 0.00556]
          [1.      0.03061 0.00132]]
         >>> coeffs, orth, norms = analytical_stieljes(2, dist, normed=True)
-        >>> print(numpy.around(coeffs, 5))
+        >>> print(coeffs.round(5))
         [[[0.5     0.5     0.5    ]
           [0.42857 0.46032 0.47475]]
         <BLANKLINE>
          [[1.      0.08333 0.06667]
           [1.      0.03061 0.04321]]]
-        >>> print(chaospy.around(orth[:, 2], 5))
-        [13.41641q0^2-13.41641q0+2.23607, 27.49545q1^2-24.4404q1+4.58258]
-        >>> print(numpy.around(norms, 5))
+        >>> print(orth[:, 2].round(5))
+        [2.23607-13.41641*q0+13.41641*q0**2 4.58258-24.4404*q1+27.49545*q1**2]
+        >>> print(norms.round(5))
         [[1. 1. 1.]
          [1. 1. 1.]]
     """
@@ -138,14 +138,14 @@ def analytical_stieljes(order, dist, normed=False):
 
     var = numpoly.symbols("q:%d" % len(dist))
     orth = list(numpoly.polynomial([
-        numpy.zeros(len(dist)), numpy.ones(len(dist))]))
+        numpy.zeros((1, len(dist))), numpy.ones((1, len(dist)))]))
 
     for order_ in range(order):
         orth.append(
             orth[-1]*(var-coeffs[0, :, order_])
             - orth[-2]*coeffs[1, :, order_]
         )
-    orth = numpoly.polynomial(orth[1:]).T
+    orth = numpoly.concatenate(orth[1:], axis=0).T
 
     norms = numpy.cumprod(coeffs[1], 1)
     if normed:

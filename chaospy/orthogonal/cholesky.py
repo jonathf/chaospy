@@ -24,6 +24,7 @@ various methods. To this end a few modified Cholesky decompositions are
 available in ``chaospy``.
 """
 import numpy
+import numpoly
 import chaospy
 
 
@@ -47,17 +48,17 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
 
     Examples:
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.around(chaospy.orth_chol(3, Z), 4))
-        [1.0, q0, 0.7071q0^2-0.7071, 0.4082q0^3-1.2247q0]
+        >>> print(chaospy.orth_chol(3, Z).round(4))
+        [1.0 q0 -0.7071+0.7071*q0**2 -1.2247*q0+0.4082*q0**3]
     """
     dim = len(dist)
-    basis = numpoly.basis(
-        start=1, stop=order, dim=dim, sort=sort,
-        cross_truncation=cross_truncation,
+    basis = numpoly.monomial(
+        numpoly.symbols("q:%d" % dim, asarray=True), start=0, stop=order,
+        ordering=sort, cross_truncation=cross_truncation,
     )
-    length = len(basis)
+    length = len(basis[1:])
 
-    cholmat = chaospy.chol.gill_king(chaospy.descriptives.Cov(basis, dist))
+    cholmat = chaospy.chol.gill_king(chaospy.descriptives.Cov(basis[1:], dist))
     cholmat_inv = numpy.linalg.inv(cholmat.T).T
     if not normed:
         diag_mesh = numpy.repeat(numpy.diag(cholmat_inv), len(cholmat_inv))
@@ -70,20 +71,10 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
     coefs[0, 1:] = 0
 
     expected = -numpy.sum(
-        cholmat_inv*chaospy.descriptives.E(basis, dist, **kws), -1)
+        cholmat_inv*chaospy.descriptives.E(basis[1:], dist, **kws), -1)
     coefs[1:, 0] = expected
 
-    coefs = coefs.T
-
-    out = {}
-    out[(0,)*dim] = coefs[0]
-    for idx in range(length):
-        index = basis[idx].keys[0]
-        out[index] = coefs[idx+1]
-
-    polynomials = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
-
-    return polynomials
+    return numpoly.sum(coefs*basis, -1)
 
 
 def norm(order, dist, orth=None):

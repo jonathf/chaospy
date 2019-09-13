@@ -42,17 +42,17 @@ class ExponentialWeibull(Add):
         >>> print(distribution)
         ExponentialWeibull(alpha=2, kappa=2, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [2.5398 3.0009 3.4412 3.9989]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.3807 0.4651 0.4262 0.2832]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [3.5711 2.2872 4.8376 3.1776]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         3.2916
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[3.731  4.1391 4.5115]
          [0.7486 1.4897 2.2135]]
     """

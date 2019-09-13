@@ -18,7 +18,7 @@ The first few orders with linear growth rule::
     >>> for order in [0, 1, 2, 3]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="clenshaw_curtis")
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print(order, X.round(3), W.round(3))
     0 [[0.5]] [1.]
     1 [[0. 1.]] [0.5 0.5]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -29,7 +29,7 @@ The first few orders with exponential growth rule::
     >>> for order in [0, 1, 2]:
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="clenshaw_curtis", growth=True)
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print(order, X.round(3), W.round(3))
     0 [[0.5]] [1.]
     1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
     2 [[0.    0.146 0.5   0.854 1.   ]] [0.033 0.267 0.4   0.267 0.033]
@@ -40,10 +40,10 @@ Applying the rule using Smolyak sparse grid::
     >>> X, W = chaospy.generate_quadrature(
     ...     2, distribution, rule="clenshaw_curtis",
     ...     growth=True, sparse=True)
-    >>> print(numpy.around(X, 2))
+    >>> print(X.round(2))
     [[0.   0.   0.   0.15 0.5  0.5  0.5  0.5  0.5  0.85 1.   1.   1.  ]
      [0.   0.5  1.   0.5  0.   0.15 0.5  0.85 1.   0.5  0.   0.5  1.  ]]
-    >>> print(numpy.around(W, 3))
+    >>> print(W.round(3))
     [ 0.028 -0.022  0.028  0.267 -0.022  0.267 -0.089  0.267 -0.022  0.267
       0.028 -0.022  0.028]
 """
@@ -78,9 +78,9 @@ def quad_clenshaw_curtis(order, domain, growth=False):
 
     Example:
         >>> abscissas, weights = quad_clenshaw_curtis(3, (0, 1))
-        >>> print(numpy.around(abscissas, 4))
+        >>> print(abscissas.round(4))
         [[0.   0.25 0.75 1.  ]]
-        >>> print(numpy.around(weights, 4))
+        >>> print(weights.round(4))
         [0.0556 0.4444 0.4444 0.0556]
     """
     from ..distributions.baseclass import Dist

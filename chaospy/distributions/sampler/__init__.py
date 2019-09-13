@@ -14,7 +14,7 @@ from the Korobov lattice::
 
     >>> distribution = chaospy.Iid(chaospy.Beta(2, 2), 2)
     >>> samples = distribution.sample(4, rule="K")
-    >>> print(numpy.around(samples, 4))
+    >>> print(samples.round(4))
     [[0.2871 0.4329 0.5671 0.7129]
      [0.4329 0.7129 0.2871 0.5671]]
 

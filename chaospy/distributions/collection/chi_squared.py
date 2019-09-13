@@ -41,17 +41,17 @@ class ChiSquared(Add):
         >>> print(distribution)
         ChiSquared(df=2, nc=1, scale=4, shift=1)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [ 3.369   6.1849  9.7082 14.5166 22.4295]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.065  0.0536 0.0414 0.0286 0.0149]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [14.0669  2.595  35.6294  9.2851]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         13.0001
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[ 33.      51.6666  69.8034]
          [128.     432.     895.9962]]
     """

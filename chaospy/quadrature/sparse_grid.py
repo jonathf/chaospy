@@ -13,20 +13,20 @@ to the ``generate_quadrature`` function. For example::
     >>> distribution = chaospy.J(
     ...     chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
     >>> X, W = chaospy.generate_quadrature(3, distribution, sparse=True)
-    >>> print(numpy.around(X, 4))
+    >>> print(X.round(4))
     [[0. 0. 0. 1. 2. 2. 2. 2. 2. 3. 4. 4. 4.]
      [0. 2. 4. 2. 0. 1. 2. 3. 4. 2. 0. 2. 4.]]
-    >>> print(numpy.around(W, 4))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(W.round(4))  # doctest: +NORMALIZE_WHITESPACE
     [-0.0833  0.2222 -0.0833  0.4444  0.2222  0.4444 -1.3333
       0.4444  0.2222  0.4444 -0.0833  0.2222 -0.0833]
 
 This compared to the full tensor-product grid::
 
     >>> X, W = chaospy.generate_quadrature(3, distribution, sparse=False)
-    >>> print(numpy.around(X, 4))
+    >>> print(X.round(4))
     [[0. 0. 0. 0. 1. 1. 1. 1. 3. 3. 3. 3. 4. 4. 4. 4.]
      [0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4.]]
-    >>> print(numpy.around(W, 4))  # doctest: +NORMALIZE_WHITESPACE
+    >>> print(W.round(4))  # doctest: +NORMALIZE_WHITESPACE
     [0.0031 0.0247 0.0247 0.0031 0.0247 0.1975 0.1975 0.0247
      0.0247 0.1975 0.1975 0.0247 0.0031 0.0247 0.0247 0.0031]
 
@@ -103,16 +103,16 @@ def construct_sparse_grid(
         >>> distribution = chaospy.J(
         ...     chaospy.Normal(0, 1), chaospy.Uniform(-1, 1))
         >>> X, W = construct_sparse_grid(1, distribution)
-        >>> print(numpy.around(X, 4))
+        >>> print(X.round(4))
         [[-1.      0.      0.      0.      1.    ]
          [ 0.     -0.5774  0.      0.5774  0.    ]]
-        >>> print(numpy.around(W, 4))
+        >>> print(W.round(4))
         [ 0.5  0.5 -1.   0.5  0.5]
         >>> X, W = construct_sparse_grid([2, 1], distribution)
-        >>> print(numpy.around(X, 3))
+        >>> print(X.round(3))
         [[-1.732 -1.    -1.    -1.     0.     1.     1.     1.     1.732]
          [ 0.    -0.577  0.     0.577  0.    -0.577  0.     0.577  0.   ]]
-        >>> print(numpy.around(W, 3))
+        >>> print(W.round(3))
         [ 0.167  0.25  -0.5    0.25   0.667  0.25  -0.5    0.25   0.167]
     """
     orders = order*numpy.ones(len(dist), dtype=int)

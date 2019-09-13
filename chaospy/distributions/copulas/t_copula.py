@@ -40,7 +40,7 @@ class TCopula(Copula):
         >>> print(copula)
         TCopula(Iid(Uniform(lower=0, upper=1), 2), R=[[1, 0.5], [0.5, 1]], df=5)
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(copula.inv(mesh), 4))
+        >>> print(copula.inv(mesh).round(4))
         [[[0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]]
@@ -48,7 +48,7 @@ class TCopula(Copula):
          [[0.1832 0.2784 0.4004]
           [0.3656 0.5    0.6344]
           [0.5996 0.7216 0.8168]]]
-        >>> print(numpy.around(copula.fwd(copula.inv(mesh)), 4))
+        >>> print(copula.fwd(copula.inv(mesh)).round(4))
         [[[0.25 0.5  0.75]
           [0.25 0.5  0.75]
           [0.25 0.5  0.75]]
@@ -56,11 +56,11 @@ class TCopula(Copula):
          [[0.25 0.25 0.25]
           [0.5  0.5  0.5 ]
           [0.75 0.75 0.75]]]
-        >>> print(numpy.around(copula.pdf(copula.inv(mesh)), 4))
+        >>> print(copula.pdf(copula.inv(mesh)).round(4))
         [[1.4656 1.0739 0.8912]
          [1.2486 1.1547 1.2486]
          [0.8912 1.0739 1.4656]]
-        >>> print(numpy.around(copula.sample(4), 4))
+        >>> print(copula.sample(4).round(4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.8783 0.1053 0.2107 0.4021]]
     """

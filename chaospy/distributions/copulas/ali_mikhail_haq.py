@@ -34,7 +34,7 @@ class AliMikhailHaq(Copula):
         >>> print(distribution)
         AliMikhailHaq(Iid(Uniform(lower=0, upper=1), 2), theta=0.5)
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
+        >>> print(distribution.inv(mesh).round(4))
         [[[0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]]
@@ -42,7 +42,7 @@ class AliMikhailHaq(Copula):
          [[0.2044 0.2634 0.3175]
           [0.4326 0.5099 0.5703]
           [0.6939 0.7533 0.7937]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
+        >>> print(distribution.fwd(distribution.inv(mesh)).round(4))
         [[[0.25 0.5  0.75]
           [0.25 0.5  0.75]
           [0.25 0.5  0.75]]
@@ -50,14 +50,14 @@ class AliMikhailHaq(Copula):
          [[0.25 0.25 0.25]
           [0.5  0.5  0.5 ]
           [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
+        >>> print(distribution.pdf(distribution.inv(mesh)).round(4))
         [[1.1636 0.9937 0.9088]
          [1.0285 1.0267 1.0631]
          [0.8882 1.0238 1.1705]]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.8886 0.1432 0.0725 0.4046]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
+        >>> print(distribution.mom((1, 2)).round(4))
         0.1822
     """
 

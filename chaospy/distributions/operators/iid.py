@@ -109,8 +109,8 @@ class Iid(Dist):
         Three terms recursion generating function.
 
         Example:
-            >>> print(numpy.around(chaospy.Iid(chaospy.Uniform(), 2).ttr(
-            ...     [[0, 0, 1], [0, 1, 1]]), 4))
+            >>> print(chaospy.Iid(chaospy.Uniform(), 2).ttr(
+            ...     [[0, 0, 1], [0, 1, 1]]).round(4))
             [[[ 0.5     0.5     0.5   ]
               [ 0.5     0.5     0.5   ]]
             <BLANKLINE>

@@ -6,6 +6,7 @@ terms in an expansion orthogonal to the previous ones.
 import logging
 
 import numpy
+import numpoly
 import chaospy
 
 
@@ -34,8 +35,8 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
     Examples:
         >>> Z = chaospy.J(chaospy.Normal(), chaospy.Normal())
-        >>> print(chaospy.around(chaospy.orth_gs(2, Z), 4))
-        [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+        >>> print(chaospy.orth_gs(2, Z).round(4))
+        [1.0 q1 q0 -1.0+q1**2 q0*q1 -1.0+q0**2]
     """
     logger = logging.getLogger(__name__)
     dim = len(dist)
@@ -43,8 +44,9 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
     if isinstance(order, int):
         if order == 0:
             return numpoly.polynomial(1)
-        basis = numpoly.basis(
-            0, order, dim, sort, cross_truncation=cross_truncation)
+        basis = numpoly.monomial(
+            numpoly.symbols("q:%d" % dim), start=0, stop=order,
+            ordering=sort, cross_truncation=cross_truncation)
     else:
         basis = order
 

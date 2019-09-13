@@ -21,17 +21,17 @@ class DiscreteUniform(Dist):
         >>> print(distribution)
         DiscreteUniform(lower=2, upper=4)
         >>> q = numpy.linspace(0, 1, 9)
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [2. 2. 2. 3. 3. 3. 4. 4. 4.]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.  0.  0.  0.5 0.5 0.5 1.  1.  1. ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [3. 2. 4. 3.]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> print(distribution.mom(1).round(4))
         3.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+        >>> print(distribution.ttr([1, 2, 3]).round(4))
         [[3.     3.     3.3333]
          [0.6667 0.3333 0.    ]]
     """

@@ -16,13 +16,13 @@ Define a simple distribution and data::
 
 Normal usage::
 
-    >>> print(numpy.around(evaluate_inverse(dist, u_data), 4))
+    >>> print(evaluate_inverse(dist, u_data).round(4))
     [[0.0527 0.1116 0.1783]]
 
 Use non-default parameters::
 
-    >>> print(numpy.around(evaluate_inverse(
-    ...     dist, u_data, parameters={"alpha": 1}), 4))
+    >>> print(evaluate_inverse(
+    ...     dist, u_data, parameters={"alpha": 1}).round(4))
     [[0.1054 0.2231 0.3567]]
 
 If a distribution is missing the definition of the density function, it is
@@ -32,7 +32,7 @@ instead estimated from cumulative distribution function and boundary function::
     ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
     ...     def _bnd(self, x_data, alpha): return 0, 100
     >>> dist = Exponential(alpha=1)
-    >>> print(numpy.around(evaluate_inverse(dist, u_data), 4))
+    >>> print(evaluate_inverse(dist, u_data).round(4))
     [[0.1054 0.2231 0.3567]]
 """
 import numpy

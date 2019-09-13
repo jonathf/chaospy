@@ -9,13 +9,13 @@ Distribution and a constant::
     >>> distribution = chaospy.Normal(0, 1) + 10
     >>> print(distribution)
     Add(Normal(mu=0, sigma=1), 10)
-    >>> print(numpy.around(distribution.sample(5), 4))
+    >>> print(distribution.sample(5).round(4))
     [10.395   8.7997 11.6476  9.9553 11.1382]
-    >>> print(numpy.around(distribution.fwd([9, 10, 11]), 4))
+    >>> print(distribution.fwd([9, 10, 11]).round(4))
     [0.1587 0.5    0.8413]
-    >>> print(numpy.around(distribution.inv(distribution.fwd([9, 10, 11])), 4))
+    >>> print(distribution.inv(distribution.fwd([9, 10, 11])).round(4))
     [ 9. 10. 11.]
-    >>> print(numpy.around(distribution.pdf([9, 10, 11]), 4))
+    >>> print(distribution.pdf([9, 10, 11]).round(4))
     [0.242  0.3989 0.242 ]
     >>> print(distribution.mom([1, 2, 3]))
     [  10.  101. 1030.]
@@ -35,10 +35,10 @@ Construct joint addition distribution::
 
 Generate random samples::
 
-    >>> print(numpy.around(joint1.sample(4), 4))
+    >>> print(joint1.sample(4).round(4))
     [[2.2123 2.0407 2.3972 2.2331]
      [6.0541 5.2478 6.1397 5.6253]]
-    >>> print(numpy.around(joint2.sample(4), 4))
+    >>> print(joint2.sample(4).round(4))
     [[3.1823 3.7435 3.0696 3.8853]
      [6.1349 6.6747 5.485  5.9143]]
 
@@ -46,27 +46,27 @@ Forward transformations::
 
     >>> lcorr = numpy.array([2.1, 2.5, 2.9])
     >>> rcorr = numpy.array([3.01, 3.5, 3.99])
-    >>> print(numpy.around(joint1.fwd([lcorr, lcorr+rcorr]), 4))
+    >>> print(joint1.fwd([lcorr, lcorr+rcorr]).round(4))
     [[0.1  0.5  0.9 ]
      [0.01 0.5  0.99]]
-    >>> print(numpy.around(joint2.fwd([rcorr, lcorr+rcorr]), 4))
+    >>> print(joint2.fwd([rcorr, lcorr+rcorr]).round(4))
     [[0.01 0.5  0.99]
      [0.1  0.5  0.9 ]]
 
 Inverse transformations::
 
-    >>> print(numpy.around(joint1.inv(joint1.fwd([lcorr, lcorr+rcorr])), 4))
+    >>> print(joint1.inv(joint1.fwd([lcorr, lcorr+rcorr])).round(4))
     [[2.1  2.5  2.9 ]
      [5.11 6.   6.89]]
-    >>> print(numpy.around(joint2.inv(joint2.fwd([rcorr, lcorr+rcorr])), 4))
+    >>> print(joint2.inv(joint2.fwd([rcorr, lcorr+rcorr])).round(4))
     [[3.01 3.5  3.99]
      [5.11 6.   6.89]]
 
 Raw moments::
 
-    >>> print(numpy.around(joint1.mom([(0, 1, 1), (1, 0, 1)]), 4))
+    >>> print(joint1.mom([(0, 1, 1), (1, 0, 1)]).round(4))
     [ 6.      2.5    15.0833]
-    >>> print(numpy.around(joint2.mom([(0, 1, 1), (1, 0, 1)]), 4))
+    >>> print(joint2.mom([(0, 1, 1), (1, 0, 1)]).round(4))
     [ 6.      3.5    21.0833]
 """
 from __future__ import division
@@ -236,13 +236,13 @@ class Add(Dist):
         Statistical moments.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Uniform().mom([0, 1, 2, 3]).round(4))
             [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(chaospy.Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]).round(4))
             [ 1.      2.5     6.3333 16.25  ]
-            >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]).round(4))
             [ 1.      2.5     6.3333 16.25  ]
-            >>> print(numpy.around(chaospy.Add(1, 1).mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Add(1, 1).mom([0, 1, 2, 3]).round(4))
             [1. 2. 4. 8.]
         """
         if evaluation.get_dependencies(left, right):
@@ -284,16 +284,16 @@ class Add(Dist):
         Three terms recursion coefficients.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().ttr([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Uniform().ttr([0, 1, 2, 3]).round(4))
             [[ 0.5     0.5     0.5     0.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]).round(4))
             [[ 2.5     2.5     2.5     2.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]).round(4))
             [[ 2.5     2.5     2.5     2.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(1, 1).ttr([0, 1, 2, 3]), 4)) # doctest: +IGNORE_EXCEPTION_DETAIL
+            >>> print(chaospy.Add(1, 1).ttr([0, 1, 2, 3]).round(4)) # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                 ...
             chaospy.distributions.baseclass.StochasticallyDependentError: recurrence ...

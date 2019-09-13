@@ -31,13 +31,10 @@ def Sens_m(poly, dist, **kws):
         [[0.         1.         0.         0.42857143]
          [0.         0.         1.         0.42857143]]
     """
-    dim = len(dist)
-    zero = [0]*dim
-    out = numpy.zeros((dim,) + poly.shape)
-    V = Var(poly, dist, **kws)
-    for i in range(dim):
-        zero[i] = 1
-        out[i] = Var(E_cond(poly, zero, dist, **kws),
-                     dist, **kws)/(V+(V == 0))*(V != 0)
-        zero[i] = 0
+    out = numpy.concatenate([
+        Var(E_cond(poly, cond, dist, **kws), dist)[numpy.newaxis]
+        for cond in numpy.eye(len(dist), dtype=int)
+    ], axis=0)
+    variance = Var(poly, dist, **kws)
+    out *= numpy.where(variance, 1./variance, 0.)
     return out

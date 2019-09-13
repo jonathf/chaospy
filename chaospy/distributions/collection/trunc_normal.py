@@ -21,13 +21,13 @@ class TruncNormal(Dist):
         >>> print(distribution)
         TruncNormal(lower=2, mu=2, sigma=2, upper=4)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [2.     2.4311 2.8835 3.387  4.    ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [1.1687 1.1419 1.0601 0.9189 0.7089]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [3.1841 2.1971 3.8643 2.8501]
     """
 

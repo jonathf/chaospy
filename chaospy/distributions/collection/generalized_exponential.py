@@ -48,13 +48,13 @@ class GeneralizedExponential(Add):
         >>> print(distribution)
         GeneralizedExponential(a=3, b=2, c=2, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [2.1423 2.3113 2.5314 2.8774]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [1.3061 1.0605 0.7649 0.4168]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [2.6058 2.0794 3.5124 2.3933]
     """
 

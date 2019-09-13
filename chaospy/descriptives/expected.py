@@ -39,22 +39,9 @@ def E(poly, dist=None, **kws):
         dist, poly = poly, numpoly.symbols("q:%d" % len(poly))
     poly = numpoly.polynomial(poly)
 
-    if len(dist) > len(poly._indeterminants):
-        exponents = numpy.zeros((len(poly._exponents), len(dist)), dtype=int)
-        exponents[:, :len(poly._indeterminants)] = poly.exponents
-        poly = numpoly.polynomial_from_attributes(
-            exponents=exponents,
-            coefficients=poly.coefficients,
-            indeterminants="q",
-            trim=False,
-        )
-    elif len(dist) < len(poly._indeterminants):
-        poly = numpoly.polynomial_from_attributes(
-            exponents=poly.exponents[:, :len(dist)],
-            coefficients=poly.coefficients,
-            indeterminants="q",
-            trim=False,
-        )
+    poly, _ = numpoly.align_indeterminants(poly, numpoly.symbols(
+        poly.names+tuple("zzz%d__" % idx
+                         for idx in range(len(dist)-len(poly.names)))))
 
     moments = dist.mom(poly.exponents.T, **kws).flatten()
     return sum(coeff*mom for coeff, mom in zip(poly.coefficients, moments))

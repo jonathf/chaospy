@@ -11,10 +11,10 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
     >>> absissas, weights = chaospy.generate_quadrature(
     ...     2, distribution, rule="G")
-    >>> print(numpy.around(absissas, 4))
+    >>> print(absissas.round(4))
     [[-1.7321 -1.7321 -1.7321  0.      0.      0.      1.7321  1.7321  1.7321]
      [-1.7321  0.      1.7321 -1.7321  0.      1.7321 -1.7321  0.      1.7321]]
-    >>> print(numpy.around(weights, 4))
+    >>> print(weights.round(4))
     [0.0278 0.1111 0.0278 0.1111 0.4444 0.1111 0.0278 0.1111 0.0278]
 
 - An orthogonal polynomial expansion (as described in section
@@ -23,7 +23,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
     >>> expansion = chaospy.orth_ttr(2, distribution)
     >>> print(expansion)
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    [1.0 q1 q0 -1.0+q1**2 q0*q1 -1.0+q0**2]
 
 - A function evaluated using the nodes generated in the second step.
   For example::
@@ -42,8 +42,8 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
     >>> approx = chaospy.fit_quadrature(
     ...     expansion, absissas, weights, solves)
-    >>> print(chaospy.around(approx, 4))
-    [q0q1, -1.5806q0q1+1.6382q0+1.0]
+    >>> print(approx.round(4))
+    [q0*q1 1.0+1.6382*q0-1.5806*q0*q1]
 
 Note that in this case the function output is
 bivariate. The software is designed to create an approximation of any
@@ -64,14 +64,14 @@ can be added::
     >>> expansion, norms = chaospy.orth_ttr(2, distribution, retall=True)
     >>> approx2 = chaospy.fit_quadrature(
     ...     expansion, absissas, weights, solves, norms=norms)
-    >>> print(chaospy.around(approx2, 4))
-    [q0q1, -1.5806q0q1+1.6382q0+1.0]
+    >>> print(approx2.round(4))
+    [q0*q1 1.0+1.6382*q0-1.5806*q0*q1]
 
 Note that at low polynomial order, the error is very small. For example the
 largest coefficient between the two approximation::
 
-    >>> print(numpy.max(abs(approx-approx2).coefficients, -1) < 1e-12)
-    [ True  True]
+    >>> print(numpoly.allclose(approx, approx2))
+    True
 
 The ``coefficients`` function returns all the polynomial coefficients.
 """

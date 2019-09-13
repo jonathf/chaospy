@@ -27,7 +27,7 @@ With increasing order::
     >>> for order in range(3):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_patterson")
-    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    ...     print(X.round(2), W.round(2))
     [[0.]] [1.]
     [[-0.77  0.    0.77]] [0.17 0.67 0.17]
     [[-0.96 -0.77 -0.43  0.    0.43  0.77  0.96]]
@@ -61,9 +61,9 @@ def quad_gauss_patterson(order, domain):
 
     Example:
         >>> X, W = chaospy.quad_gauss_patterson(2, chaospy.Uniform(0, 1))
-        >>> print(numpy.around(X, 4))
+        >>> print(X.round(4))
         [[0.0198 0.1127 0.2829 0.5    0.7171 0.8873 0.9802]]
-        >>> print(numpy.around(W, 4))
+        >>> print(W.round(4))
         [0.0523 0.1342 0.2007 0.2255 0.2007 0.1342 0.0523]
     """
     from ..distributions.baseclass import Dist

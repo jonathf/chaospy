@@ -9,17 +9,17 @@ Distribution * a constant::
     >>> distribution = chaospy.Uniform(0, 1) * 4
     >>> print(distribution)
     Mul(Uniform(lower=0, upper=1), 4)
-    >>> print(numpy.around(distribution.sample(5), 4))
+    >>> print(distribution.sample(5).round(4))
     [2.6144 0.46   3.8011 1.9288 3.4899]
-    >>> print(numpy.around(distribution.fwd([1, 2, 3]), 4))
+    >>> print(distribution.fwd([1, 2, 3]).round(4))
     [0.25 0.5  0.75]
-    >>> print(numpy.around(distribution.inv(distribution.fwd([1, 2, 3])), 4))
+    >>> print(distribution.inv(distribution.fwd([1, 2, 3])).round(4))
     [1. 2. 3.]
-    >>> print(numpy.around(distribution.pdf([1, 2, 3]), 4))
+    >>> print(distribution.pdf([1, 2, 3]).round(4))
     [0.25 0.25 0.25]
-    >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
+    >>> print(distribution.mom([1, 2, 3]).round(4))
     [ 2.      5.3333 16.    ]
-    >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
+    >>> print(distribution.ttr([1, 2, 3]).round(4))
     [[2.     2.     2.    ]
      [1.3333 1.0667 1.0286]]
 
@@ -49,10 +49,10 @@ Construct joint multiplication distribution::
 
 Generate random samples::
 
-    >>> print(numpy.around(joint1.sample(4), 4))
+    >>> print(joint1.sample(4).round(4))
     [[-0.7877 -0.9593 -0.6028 -0.7669]
      [ 2.2383  2.1172  1.6532  1.8345]]
-    >>> print(numpy.around(joint2.sample(4), 4))
+    >>> print(joint2.sample(4).round(4))
     [[-2.8177 -2.2565 -2.9304 -2.1147]
      [ 2.6843  2.1011  1.2174  0.0613]]
 
@@ -60,19 +60,19 @@ Forward transformations::
 
     >>> lcorr = numpy.array([-0.9, -0.5, -0.1])
     >>> rcorr = numpy.array([-2.99, -2.5, -2.01])
-    >>> print(numpy.around(joint1.fwd([lcorr, lcorr*rcorr]), 4))
+    >>> print(joint1.fwd([lcorr, lcorr*rcorr]).round(4))
     [[0.1  0.5  0.9 ]
      [0.99 0.5  0.01]]
-    >>> print(numpy.around(joint2.fwd([rcorr, lcorr*rcorr]), 4))
+    >>> print(joint2.fwd([rcorr, lcorr*rcorr]).round(4))
     [[0.01 0.5  0.99]
      [0.9  0.5  0.1 ]]
 
 Inverse transformations::
 
-    >>> print(numpy.around(joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])), 4))
+    >>> print(joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])).round(4))
     [[-0.9   -0.5   -0.1  ]
      [ 2.691  1.25   0.201]]
-    >>> print(numpy.around(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])), 4))
+    >>> print(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])).round(4))
     [[-2.99  -2.5   -2.01 ]
      [ 2.691  1.25   0.201]]
 """
@@ -429,15 +429,15 @@ class Mul(Dist):
         Statistical moments.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
+            >>> print(chaospy.Uniform().mom([0, 1, 2, 3]).round(4))
             [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(Mul(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
+            >>> print(Mul(chaospy.Uniform(), 2).mom([0, 1, 2, 3]).round(4))
             [1.     1.     1.3333 2.    ]
-            >>> print(numpy.around(Mul(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
+            >>> print(Mul(2, chaospy.Uniform()).mom([0, 1, 2, 3]).round(4))
             [1.     1.     1.3333 2.    ]
-            >>> print(numpy.around(Mul(chaospy.Uniform(), chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
+            >>> print(Mul(chaospy.Uniform(), chaospy.Uniform()).mom([0, 1, 2, 3]).round(4))
             [1.     0.25   0.1111 0.0625]
-            >>> print(numpy.around(Mul(2, 2).mom([0, 1, 2, 3]), 4))
+            >>> print(Mul(2, 2).mom([0, 1, 2, 3]).round(4))
             [ 1.  4. 16. 64.]
         """
         if evaluation.get_dependencies(left, right):

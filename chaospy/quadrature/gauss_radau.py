@@ -19,7 +19,7 @@ With increasing order::
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_radau")
-    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    ...     print(X.round(2), W.round(2))
     [[-1.]] [1.]
     [[-1.   0.2]] [0.17 0.83]
     [[-1.   -0.51  0.13  0.71]] [0.02 0.33 0.48 0.17]
@@ -32,10 +32,10 @@ Multivariate samples::
     ...     chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
     ...     1, distribution, rule="gauss_radau")
-    >>> print(numpy.around(X, 3))
+    >>> print(X.round(3))
     [[0.    0.    0.667 0.667]
      [0.    0.5   0.    0.5  ]]
-    >>> print(numpy.around(W, 3))
+    >>> print(W.round(3))
     [0.028 0.222 0.083 0.667]
 
 To change the fixed point, the direct generating function has to be used::
@@ -43,7 +43,7 @@ To change the fixed point, the direct generating function has to be used::
     >>> distribution = chaospy.Uniform(lower=-1, upper=1)
     >>> for fixed_point in numpy.linspace(-1, 1, 6):
     ...     X, W = chaospy.quad_gauss_radau(2, distribution, fixed_point)
-    ...     print(numpy.around(X, 2), numpy.around(W, 2))
+    ...     print(X.round(2), W.round(2))
     [[-1.   -0.58  0.18  0.82]] [0.06 0.33 0.39 0.22]
     [[-1.04 -0.6   0.17  0.82]] [0.05 0.33 0.39 0.22]
     [[-0.83 -0.2   0.54  0.96]] [0.22 0.38 0.32 0.08]
@@ -116,9 +116,9 @@ def quad_gauss_radau(
 
     Example:
         >>> abscissas, weights = quad_gauss_radau(4, chaospy.Uniform(-1, 1))
-        >>> print(numpy.around(abscissas, 3))
+        >>> print(abscissas.round(3))
         [[-1.    -0.887 -0.64  -0.295  0.094  0.468  0.771  0.955]]
-        >>> print(numpy.around(weights, 3))
+        >>> print(weights.round(3))
         [0.016 0.093 0.152 0.188 0.196 0.174 0.125 0.057]
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"

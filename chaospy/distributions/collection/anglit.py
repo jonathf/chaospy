@@ -37,15 +37,15 @@ class Anglit(Add):
         >>> print(distribution)
         Anglit(loc=2, scale=4)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
+        >>> print(distribution.inv(q).round(4))
         [-1.1416  0.9528  2.      3.0472  5.1416]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        >>> print(distribution.fwd(distribution.inv(q)).round(4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        >>> print(distribution.pdf(distribution.inv(q)).round(4))
         [0.     0.2165 0.25   0.2165 0.    ]
-        >>> print(numpy.around(distribution.sample(4), 4))
+        >>> print(distribution.sample(4).round(4))
         [2.6245 0.2424 4.2421 1.9288]
-        >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
+        >>> print(distribution.mom([1, 2, 3]).round(4))
         [ 2.      5.8696 19.2176]
     """
 
