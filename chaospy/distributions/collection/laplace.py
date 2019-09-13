@@ -50,17 +50,17 @@ class Laplace(Add):
     Examples:
         >>> distribution = chaospy.Laplace(2, 2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [0.1674 1.5537 2.4463 3.8326]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.1 0.2 0.2 0.1]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.734  -0.9392  6.6165  1.9275]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.0
-        >>> print(distribution.ttr([1, 2, 3]).round(4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 2.      2.      2.    ]
          [ 8.     39.9995 86.4011]]
     """

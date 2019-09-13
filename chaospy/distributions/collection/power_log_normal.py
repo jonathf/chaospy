@@ -44,13 +44,13 @@ class PowerLogNormal(Add):
         >>> print(distribution)
         PowerLogNormal(mu=2, scale=2, shape=2, shift=2, sigma=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [ 3.212   5.2707  9.5114 21.2701]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.1347 0.0711 0.0317 0.0092]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [11.4445  2.6512 69.8654  6.6177]
     """
     def __init__(self, shape=1, mu=0, sigma=1, shift=0, scale=1):

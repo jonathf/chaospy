@@ -5,13 +5,13 @@ Example usage
 -------------
 
     >>> distribution = chaospy.Normal(0, 1)
-    >>> print(distribution.inv([0.9, 0.99, 0.999]).round(4))
+    >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
     [1.2816 2.3263 3.0902]
     >>> distribution = chaospy.Normal(0, 1) < 1
-    >>> print(distribution.inv([0.9, 0.99, 0.999]).round(4))
+    >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
     [0.6974 0.9658 0.9965]
     >>> distribution = chaospy.Normal(0, 1) < 2
-    >>> print(distribution.inv([0.9, 0.99, 0.999]).round(4))
+    >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
     [1.1726 1.8449 1.9822]
 
 Illegal dependencies:

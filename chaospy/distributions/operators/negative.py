@@ -9,7 +9,7 @@ Invert sign of a distribution::
     >>> distribution = -chaospy.Uniform(0, 1)
     >>> print(distribution)
     Neg(Uniform(lower=0, upper=1))
-    >>> print(distribution.sample(5).round(4))
+    >>> print(numpy.around(distribution.sample(5), 4))
     [-0.3464 -0.885  -0.0497 -0.5178 -0.1275]
     >>> print(distribution.fwd([-0.3, -0.2, -0.1]))
     [0.7 0.8 0.9]
@@ -17,9 +17,9 @@ Invert sign of a distribution::
     [-0.3 -0.2 -0.1]
     >>> print(distribution.pdf([-0.3, -0.2, -0.1]))
     [1. 1. 1.]
-    >>> print(distribution.mom([1, 2, 3]).round(4))
+    >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
     [-0.5     0.3333 -0.25  ]
-    >>> print(distribution.ttr([1, 2, 3]).round(4))
+    >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
     [[-0.5    -0.5    -0.5   ]
      [ 0.0833  0.0667  0.0643]]
 

@@ -51,13 +51,13 @@ class StudentT(Add):
         >>> print(distribution)
         StudentT(df=2, loc=2, scale=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [-0.1213  1.4226  2.5774  4.1213]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.0905 0.1663 0.1663 0.0905]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.913  -1.4132  7.8594  1.8992]
         >>> print(distribution.mom(1))
         2.0

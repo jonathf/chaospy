@@ -43,15 +43,15 @@ class DoubleGamma(Add):
         >>> print(distribution)
         DoubleGamma(scale=4, shape=2, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [-100.4566   -4.7134    2.        8.7134  104.4566]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.     0.0392 0.     0.0392 0.    ]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 6.4679 -9.2251 17.5874  0.8239]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.0
     """
 

@@ -39,13 +39,13 @@ class Alpha(Add):
         >>> print(distribution)
         Alpha(scale=0.5, shape=2, shift=4)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [4.1676 4.2039 4.2465 4.3104 4.4521]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [11.7723  5.4345  3.361   2.2848  1.4892]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [4.304  4.1556 4.9362 4.2413]
     """
 

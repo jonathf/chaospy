@@ -45,7 +45,7 @@ class Nataf(Copula):
         >>> print(copula)
         Nataf(Iid(Uniform(lower=0, upper=1), 2), R=[[1, 0.5], [0.5, 1]])
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(copula.inv(mesh).round(4))
+        >>> print(numpy.around(copula.inv(mesh), 4))
         [[[0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]]
@@ -53,7 +53,7 @@ class Nataf(Copula):
          [[0.1784 0.2796 0.4025]
           [0.368  0.5    0.632 ]
           [0.5975 0.7204 0.8216]]]
-        >>> print(copula.fwd(copula.inv(mesh)).round(4))
+        >>> print(numpy.around(copula.fwd(copula.inv(mesh)), 4))
         [[[0.25 0.5  0.75]
           [0.25 0.5  0.75]
           [0.25 0.5  0.75]]
@@ -61,11 +61,11 @@ class Nataf(Copula):
          [[0.25 0.25 0.25]
           [0.5  0.5  0.5 ]
           [0.75 0.75 0.75]]]
-        >>> print(copula.pdf(copula.inv(mesh)).round(4))
+        >>> print(numpy.around(copula.pdf(copula.inv(mesh)), 4))
         [[1.4061 1.0909 0.9482]
          [1.2223 1.1547 1.2223]
          [0.9482 1.0909 1.4061]]
-        >>> print(copula.sample(4).round(4))
+        >>> print(numpy.around(copula.sample(4), 4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.8816 0.0983 0.2466 0.4021]]
     """

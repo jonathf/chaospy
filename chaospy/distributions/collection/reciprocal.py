@@ -19,17 +19,17 @@ class Reciprocal(Dist):
         >>> print(distribution)
         Reciprocal(lower=2, upper=4)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [2.     2.3784 2.8284 3.3636 4.    ]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.7213 0.6066 0.5101 0.4289 0.3607]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [3.1462 2.166  3.8645 2.7937]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         7.8433
-        >>> print(distribution.ttr([1, 2, 3]).round(4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[3.023  3.0033 3.0011]
          [0.3307 0.2664 0.257 ]]
     """

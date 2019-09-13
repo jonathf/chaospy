@@ -38,17 +38,17 @@ class Bradford(Add):
         >>> print(distribution)
         Bradford(lower=4, shape=0.8, upper=6)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [4.     4.3957 4.8541 5.385  6.    ]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.6805 0.5875 0.5072 0.4379 0.3781]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [5.171  4.1748 5.8704 4.8192]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         4.9026
-        >>> print(distribution.ttr([1, 2, 3]).round(4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[5.0195 5.0028 5.0009]
          [0.3314 0.2664 0.2571]]
     """

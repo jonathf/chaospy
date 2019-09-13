@@ -17,17 +17,17 @@ class Arccosh(Dist):
         >>> print(distribution)
         Arccosh(Uniform(lower=1, upper=2))
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [0.6224 0.867  1.047  1.1929]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.6633 0.9798 1.249  1.4967]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [1.0887 0.4751 1.2878 0.9463]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         0.9019
-        >>> print(distribution.ttr([0, 1, 2]).round(4))
+        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
         [[0.9019 0.7012 0.6772]
          [1.     0.0933 0.1037]]
     """

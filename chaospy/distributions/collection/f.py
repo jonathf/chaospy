@@ -49,13 +49,13 @@ class F(Add):
         >>> print(distribution)
         F(m=3, n=3, nc=1, scale=2, shift=1)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [1.9336 2.9751 4.7028 8.8521]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.2277 0.1572 0.0837 0.027 ]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 5.4212  1.5739 25.7656  3.5586]
         >>> print(distribution.mom(1) > 10**8) # undefined
         True

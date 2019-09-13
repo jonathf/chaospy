@@ -40,17 +40,17 @@ class TruncExponential(Add):
         >>> print(distribution)
         TruncExponential(scale=4, shift=0, upper=2)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [0.     0.4142 0.8763 1.3988 2.    ]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.6354 0.5729 0.5104 0.4479 0.3854]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [1.1891 0.1852 1.873  0.8415]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         0.917
-        >>> print(distribution.ttr([1, 2, 3]).round(4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[1.0163 1.0024 1.0008]
          [0.3292 0.2671 0.2572]]
     """

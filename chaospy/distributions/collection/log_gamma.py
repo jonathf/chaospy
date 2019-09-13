@@ -40,17 +40,17 @@ class LogGamma(Add):
         >>> print(distribution)
         LogGamma(scale=2, shape=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [0.6138 1.639  2.4085 3.1934]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.149  0.2392 0.2706 0.2245]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.6074 -0.0932  4.1166  1.9675]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         1.8456
-        >>> print(distribution.ttr([1, 2, 3]).round(4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 0.5924 -0.8925 -2.5379]
          [ 2.5797  6.6525 12.5947]]
     """

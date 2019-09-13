@@ -8,35 +8,35 @@ Basic usage::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> samples = distribution.sample(2, rule="G")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [0.3333 0.6667]
     >>> samples = distribution.sample(5, rule="G")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [0.1667 0.3333 0.5    0.6667 0.8333]
 
 Certain orders are nested::
 
     >>> samples = distribution.sample(3, rule="G")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [0.25 0.5  0.75]
     >>> samples = distribution.sample(7, rule="G")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [0.125 0.25  0.375 0.5   0.625 0.75  0.875]
 
 Create nested samples directly with the dedicated function::
 
     >>> samples = distribution.sample(2, rule="NG")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [0.25 0.5  0.75]
     >>> samples = distribution.sample(3, rule="NG")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [0.125 0.25  0.375 0.5   0.625 0.75  0.875]
 
 Multivariate usage::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
     >>> samples = distribution.sample(2, rule="G")
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[0.3333 0.3333 0.6667 0.6667]
      [0.3333 0.6667 0.3333 0.6667]]
 """

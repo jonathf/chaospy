@@ -35,7 +35,7 @@ Approximate with the use of density function if moment is missing::
     ...     def _bnd(self, x_data, alpha): return 0, 50
     ...     def _pdf(self, x_data, alpha): return alpha*numpy.e**(-alpha*x_data)
     >>> dist = Exponential(alpha=2)
-    >>> print(round(evaluate_moment(dist, k_data), 4))
+    >>> print(numpy.around(evaluate_moment(dist, k_data), 4))
     0.5
 """
 import logging

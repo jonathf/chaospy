@@ -62,17 +62,17 @@ class WrappedCauchy(Add):
         >>> print(distribution)
         WrappedCauchy(scale=4, shape=0.8, shift=6)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [ 6.5125  7.521  18.5664 29.6117 30.6202]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.2697 0.0928 0.0044 0.0928 0.2697]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [29.4606  6.3357 30.9928 14.8313]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         18.5664
-        >>> print(distribution.ttr([1, 2, 3]).round(4))
+        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[ 18.5664  18.5664  18.5664]
          [121.4247  12.6649  47.0276]]
     """

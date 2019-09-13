@@ -50,15 +50,15 @@ class DoubleWeibull(Add):
         >>> print(distribution)
         DoubleWeibull(scale=4, shape=2, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [-16.903   -1.3302   2.       5.3302  20.903 ]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.   0.25 0.5  0.75 1.  ]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.     0.1041 0.     0.1041 0.    ]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 4.4232 -2.8491  8.0772  1.2382]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         2.0
     """
 

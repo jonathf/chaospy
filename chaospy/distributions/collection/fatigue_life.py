@@ -44,15 +44,15 @@ class FatigueLife(Add):
         >>> print(distribution)
         FatigueLife(scale=2, shape=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [ 1.4332  2.2113  4.3021 10.2334]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.4223 0.1645 0.0603 0.0198]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 5.3231  1.2621 26.5603  2.8292]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         7.0
     """
     def __init__(self, shape=1, scale=1, shift=0):

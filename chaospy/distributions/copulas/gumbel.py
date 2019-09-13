@@ -46,7 +46,7 @@ class Gumbel(Copula):
         >>> print(distribution)
         Gumbel(Iid(Uniform(lower=0, upper=1), 2), theta=2)
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(distribution.inv(mesh).round(4))
+        >>> print(numpy.around(distribution.inv(mesh), 4))
         [[[0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]
           [0.25   0.5    0.75  ]]
@@ -54,7 +54,7 @@ class Gumbel(Copula):
          [[0.5439 0.3319 0.2369]
           [0.6426 0.3802 0.2534]
           [0.7482 0.4292 0.2653]]]
-        >>> print(distribution.fwd(distribution.inv(mesh)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
         [[[0.25 0.5  0.75]
           [0.25 0.5  0.75]
           [0.25 0.5  0.75]]
@@ -62,11 +62,11 @@ class Gumbel(Copula):
          [[0.25 0.25 0.25]
           [0.5  0.5  0.5 ]
           [0.75 0.75 0.75]]]
-        >>> print(distribution.pdf(distribution.inv(mesh)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
         [[ 2.3224  4.6584 11.7092]
          [ 2.5896  5.4078 18.5493]
          [ 2.0433  4.601  23.5876]]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [[0.6536 0.115  0.9503 0.4822]
          [0.3151 0.665  0.1675 0.3745]]
     """

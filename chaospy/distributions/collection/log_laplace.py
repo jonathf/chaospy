@@ -41,13 +41,13 @@ class LogLaplace(Add):
         >>> print(distribution)
         LogLaplace(scale=2, shape=2, shift=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [3.2649 3.7889 4.2361 5.1623]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.3162 0.4472 0.3578 0.1265]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [4.4028 2.9592 8.3425 3.9641]
     """
 

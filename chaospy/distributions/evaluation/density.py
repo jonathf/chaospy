@@ -13,9 +13,9 @@ Define a simple distribution and data::
 
 Normal usage::
 
-    >>> print(evaluate_density(dist, x_data).round(4))
+    >>> print(numpy.around(evaluate_density(dist, x_data), 4))
     [[1.6375 1.3406 1.0976]]
-    >>> print(evaluate_density(dist, x_data, parameters={"alpha": 1}).round(4))
+    >>> print(numpy.around(evaluate_density(dist, x_data, parameters={"alpha": 1}), 4))
     [[0.9048 0.8187 0.7408]]
 
 Cache get triggered if the same distribution is evaluated twice in the same
@@ -23,7 +23,7 @@ dependency resolution. The correct behavior for densities is to only return
 non-zero values for coordinates that matches. E.g.::
 
     >>> cache_value = numpy.array([[0.1, 0.2, 0.7]])
-    >>> print(evaluate_density(dist, x_data, cache={dist: cache_value}).round(4))
+    >>> print(numpy.around(evaluate_density(dist, x_data, cache={dist: cache_value}), 4))
     [[1.6375 1.3406 0.    ]]
 
 If a distribution is missing the definition of the density function, it is
@@ -33,7 +33,7 @@ instead estimated from cumulative distribution function and boundary function::
     ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
     ...     def _bnd(self, x_data, alpha): return 0, 100
     >>> dist = Exponential(alpha=1)
-    >>> print(evaluate_density(dist, x_data).round(4))
+    >>> print(numpy.around(evaluate_density(dist, x_data), 4))
     [[0.9048 0.8187 0.7408]]
 """
 import numpy

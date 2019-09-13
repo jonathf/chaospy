@@ -49,15 +49,15 @@ class GeneralizedExtreme(Add):
         >>> print(distribution)
         GeneralizedExtreme(loc=2, scale=2, shape=3)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [-0.1126  2.1538  2.5778  2.6593]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.0386 0.2382 1.1497 8.0333]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 2.6154 -4.0776  2.6666  2.4079]
-        >>> print(distribution.mom(1).round(4))
+        >>> print(numpy.around(distribution.mom(1), 4))
         -2.0561
     """
 

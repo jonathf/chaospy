@@ -8,46 +8,46 @@ some extra functionality by not being associated with a specific distribution.
 For example::
 
     >>> samples = generate_samples(order=4)
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[0.6536 0.115  0.9503 0.4822]]
 
 Custom domain::
 
     >>> samples = generate_samples(order=4, domain=[-1, 1])
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[ 0.7449 -0.5753 -0.9186 -0.2056]]
     >>> samples = generate_samples(order=4, domain=chaospy.Normal(0, 1))
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[-0.7286  1.0016 -0.8166  0.651 ]]
 
 Use a custom sampling scheme::
 
-    >>> print(generate_samples(order=4, rule="H").round(4))
+    >>> print(numpy.around(generate_samples(order=4, rule="H"), 4))
     [[0.75  0.125 0.625 0.375]]
 
 Multivariate case::
 
     >>> samples = generate_samples(order=4, domain=[[-1, 0], [0, 1]])
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[-0.6078 -0.8177 -0.2565 -0.9304]
      [ 0.8853  0.9526  0.9311  0.4154]]
     >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Uniform(0, 1))
     >>> samples = generate_samples(order=4, domain=distribution)
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[-1.896   2.0975 -0.4135  0.5437]
      [ 0.3619  0.0351  0.8551  0.6573]]
 
 Antithetic variates::
 
     >>> samples = generate_samples(order=8, rule="H", antithetic=True)
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[0.75  0.25  0.125 0.875 0.625 0.375 0.375 0.625]]
 
 Multivariate antithetic variates::
 
     >>> samples = generate_samples(
     ...     order=8, domain=2, rule="M", antithetic=True)
-    >>> print(samples.round(4))
+    >>> print(numpy.around(samples, 4))
     [[0.75  0.25  0.75  0.25  0.125 0.875 0.125 0.875]
      [0.25  0.25  0.75  0.75  0.5   0.5   0.5   0.5  ]]
 

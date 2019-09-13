@@ -17,15 +17,15 @@ class Arctan(Dist):
         >>> print(distribution)
         Arctan(Uniform(lower=-0.5, upper=0.5))
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(distribution.inv(q).round(4))
+        >>> print(numpy.around(distribution.inv(q), 4))
         [-0.2915 -0.0997  0.0997  0.2915]
-        >>> print(distribution.fwd(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.2 0.4 0.6 0.8]
-        >>> print(distribution.pdf(distribution.inv(q)).round(4))
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [1.09 1.01 1.01 1.09]
-        >>> print(distribution.sample(4).round(4))
+        >>> print(numpy.around(distribution.sample(4), 4))
         [ 0.1524 -0.3675  0.4231 -0.0178]
-        >>> print(distribution.mom(2).round(4))
+        >>> print(numpy.around(distribution.mom(2), 4))
         0.076
     """
 

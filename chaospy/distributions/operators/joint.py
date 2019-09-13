@@ -11,16 +11,16 @@ The created multivariate distribution behaves much like the univariate case::
     ...     numpy.linspace(0.25, 0.75, 3),
     ...     numpy.linspace(0.25, 0.75, 3),
     ... )
-    >>> print(distribution.cdf(mesh).round(4))
+    >>> print(numpy.around(distribution.cdf(mesh), 4))
     [[0.1497 0.1729 0.1933]
      [0.2994 0.3457 0.3867]
      [0.449  0.5186 0.58  ]]
-    >>> print(distribution.pdf(mesh).round(4))
+    >>> print(numpy.around(distribution.pdf(mesh), 4))
     [[0.3867 0.3521 0.3011]
      [0.3867 0.3521 0.3011]
      [0.3867 0.3521 0.3011]]
-    >>> print(distribution.sample(
-    ...     size=6, rule="H", antithetic=True).round(4))
+    >>> print(numpy.around(distribution.sample(
+    ...     size=6, rule="H", antithetic=True), 4))
     [[-1.1503  1.1503 -1.1503  1.1503  0.3186 -0.3186]
      [ 0.4444  0.4444  0.5556  0.5556  0.7778  0.7778]]
     >>> print(distribution.mom([[2, 4, 6], [1, 2, 3]]))
@@ -128,7 +128,7 @@ class J(Dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> print(dist.pdf([[-0.5, 0.5, 1.5], [-1, 0, 1]]).round(4))
+            >>> print(numpy.around(dist.pdf([[-0.5, 0.5, 1.5], [-1, 0, 1]]), 4))
             [0.     0.3989 0.    ]
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
@@ -149,12 +149,12 @@ class J(Dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> print(dist.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]).round(4))
+            >>> print(numpy.around(dist.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]), 4))
             [[ 0.1     0.2     0.3   ]
              [-0.5244 -0.5244 -0.2533]]
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(dist.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]).round(4))
+            >>> print(numpy.around(dist.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]), 4))
             [[0.1 0.2 0.3]
              [0.4 0.5 0.7]]
         """
@@ -172,11 +172,11 @@ class J(Dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> print(dist.mom([[0, 0, 1], [0, 1, 1]]).round(4))
+            >>> print(numpy.around(dist.mom([[0, 0, 1], [0, 1, 1]]), 4))
             [1. 0. 0.]
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(dist.mom([1, 1]).round(4))
+            >>> print(numpy.around(dist.mom([1, 1]), 4))
             0.5833
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
@@ -195,7 +195,7 @@ class J(Dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal(), chaospy.Exponential())
-            >>> print(dist.ttr([[1, 2, 3], [1, 2, 3], [1, 2, 3]]).round(4))
+            >>> print(numpy.around(dist.ttr([[1, 2, 3], [1, 2, 3], [1, 2, 3]]), 4))
             [[[0.5    0.5    0.5   ]
               [0.     0.     0.    ]
               [3.     5.     7.    ]]
@@ -205,7 +205,7 @@ class J(Dist):
               [1.     4.     9.    ]]]
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(dist.ttr([1, 1]).round(4)) # doctest: +IGNORE_EXCEPTION_DETAIL
+            >>> print(numpy.around(dist.ttr([1, 1]), 4)) # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                 ...
             chaospy.distributions.baseclass.StochasticallyDependentError: Joint ...
