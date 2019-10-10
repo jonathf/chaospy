@@ -22,19 +22,20 @@ class DiscreteUniform(Dist):
         DiscreteUniform(lower=2, upper=4)
         >>> q = numpy.linspace(0, 1, 9)
         >>> print(numpy.around(distribution.inv(q), 4))
-        [2. 2. 2. 3. 3. 3. 4. 4. 4.]
+        [2 2 2 3 3 3 4 4 4]
         >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
         [0.  0.  0.  0.5 0.5 0.5 1.  1.  1. ]
         >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
         [0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]
         >>> print(numpy.around(distribution.sample(4), 4))
-        [3. 2. 4. 3.]
+        [3 2 4 3]
         >>> print(numpy.around(distribution.mom(1), 4))
         3.0
         >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
         [[3.     3.     3.3333]
          [0.6667 0.3333 0.    ]]
     """
+    interpret_as_integer = True
 
     def __init__(self, lower, upper):
         Dist.__init__(self, lower=lower, upper=upper)
