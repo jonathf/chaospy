@@ -61,6 +61,10 @@ Though multivariate distributions are supported, dependencies are not::
 .. _OpenTURNS distribution wrapper: http://openturns.github.io/\
 openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
 """
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
 import numpy
 
 from ..distributions import Dist, J, DependencyError
@@ -122,7 +126,6 @@ class OpenTURNSDist(J):
     """
 
     def __init__(self, distribution):
-        from typing import Iterable
         from openturns import ComposedDistribution, ContinuousDistribution
         if isinstance(distribution, ComposedDistribution):
             if not distribution.hasIndependentCopula():
