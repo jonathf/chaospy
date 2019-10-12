@@ -19,17 +19,23 @@ def lagrange_polynomial(abscissas, sort="G"):
             Sample points where the Lagrange polynomials shall be defined.
 
     Example:
-        >>> print(chaospy.around(lagrange_polynomial([-10, 10]), 4))
+        >>> print(chaospy.around(chaospy.lagrange_polynomial([-10, 10]), 4))
         [-0.05q0+0.5, 0.05q0+0.5]
-        >>> print(chaospy.around(lagrange_polynomial([-1, 0, 1]), 4))
+        >>> print(chaospy.around(chaospy.lagrange_polynomial([-1, 0, 1]), 4))
         [0.5q0^2-0.5q0, -q0^2+1.0, 0.5q0^2+0.5q0]
-        >>> poly = lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
+        >>> poly = chaospy.lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
         >>> print(chaospy.around(poly, 4))
         [0.5q0-0.5q1+0.5, -q0+1.0, 0.5q0+0.5q1-0.5]
         >>> print(numpy.around(poly([1, 0, 1], [0, 1, 2]), 4))
         [[1. 0. 0.]
          [0. 1. 0.]
          [0. 0. 1.]]
+        >>> nodes = numpy.array([[ 0.17,  0.15,  0.17,  0.19],
+        ...                      [14.94, 16.69, 16.69, 16.69]])
+        >>> poly = chaospy.lagrange_polynomial(nodes)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        Traceback (most recent call last):
+            ...
+        LinAlgError: Lagrange abscissas resulted in invertible matrix
     """
     abscissas = numpy.asfarray(abscissas)
     if len(abscissas.shape) == 1:
@@ -40,15 +46,16 @@ def lagrange_polynomial(abscissas, sort="G"):
     while chaospy.bertran.terms(order, dim) <= size:
         order += 1
 
-    indices = numpy.array(chaospy.bertran.bindex(0, order-1, dim, sort)[:size])
+    indices = numpy.array(chaospy.bertran.bindex(0, order, dim, sort)[:size])
     idx, idy = numpy.mgrid[:size, :size]
 
     matrix = numpy.prod(abscissas.T[idx]**indices[idy], -1)
     det = numpy.linalg.det(matrix)
     if det == 0:
-        raise numpy.linalg.LinAlgError("invertible matrix required")
+        raise numpy.linalg.LinAlgError(
+            "Lagrange abscissas resulted in invertible matrix")
 
-    vec = chaospy.poly.basis(0, order-1, dim, sort)[:size]
+    vec = chaospy.poly.basis(0, order, dim, sort)[:size]
 
     coeffs = numpy.zeros((size, size))
 
