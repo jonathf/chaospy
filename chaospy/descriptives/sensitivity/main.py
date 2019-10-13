@@ -31,10 +31,7 @@ def Sens_m(poly, dist, **kws):
         [[0.         1.         0.         0.42857143]
          [0.         0.         1.         0.42857143]]
     """
-    out = numpy.concatenate([
-        Var(E_cond(poly, cond, dist, **kws), dist)[numpy.newaxis]
-        for cond in numpy.eye(len(dist), dtype=int)
-    ], axis=0)
+    out = Var(E_cond(poly, numpy.eye(len(dist), dtype=int), dist, **kws), dist)
     variance = Var(poly, dist, **kws)
-    out *= numpy.where(variance, 1./variance, 0.)
+    out *= numpy.where(variance != 0, 1./variance, 0.)
     return out
