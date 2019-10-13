@@ -38,11 +38,8 @@ installed from Github as follows::
 
     git clone git@github.com:jonathf/chaospy.git
     cd chaospy
-    python setup.py install
-
-To install tools for doing development add the extra step::
-
-    pip install -r requirements.txt
+    git checkout <tag or branch of interest>
+    pip install .
 
 Example Usage
 -------------

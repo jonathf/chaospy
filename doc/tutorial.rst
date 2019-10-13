@@ -133,7 +133,7 @@ For example, to generate 8th order absissas and weights for the Clenshaw-Curtis
 method::
 
     >>> absissas, weights = cp.generate_quadrature(
-    ...     order=8, domain=distribution, rule="C")
+    ...     order=8, dist=distribution, rule="C")
 
 These can then be used to create an polynomial approximation as follows::
 

@@ -25,16 +25,6 @@ project = 'chaospy'
 copyright = '2019, Jonathan Feinberg'
 author = 'Jonathan Feinberg'
 
-with open(os.path.join(os.pardir, "chaospy", "__init__.py")) as src:
-    regex = r"^__version__\s*=\s*['\"]([^'\"]+)['\"]"
-
-    # The full version, including alpha/beta/rc tags
-    release = re.search(regex, src.read(), flags=re.M).group(1)
-
-    # The short X.Y version
-    version = ".".join(release.split(".")[:2])
-
-
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.

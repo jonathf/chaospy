@@ -1,0 +1,34 @@
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "chaospy"
+version = "3.0.13"
+description = "Numerical tool for perfroming uncertainty quantification"
+license = "MIT"
+authors = ["Jonathan Feinberg"]
+readme = "README.rst"
+repository = "https://github.com/jonathf/chaospy"
+documentation = "https://chaospy.readthedocs.io"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English"
+]
+
+[tool.poetry.dependencies]
+numpy = "*"
+scipy = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+pylint = "*"
+sphinx = "*"
+codecov = "*"
+pytest-cov = "*"
+coverage = "*"
+openturns = "*"
+scikit-learn = "*"

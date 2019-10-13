@@ -7,37 +7,52 @@ Installation should be straight forward::
 
     pip install chaospy
 
-Alternatively, to get the most current version, the code can be installed from
-Github as follows::
+And you should be ready to go.
+
+Alternatively, to get the most current experimental version, the code can be
+installed from Github as follows::
 
     git clone git@github.com:jonathf/chaospy.git
     cd chaospy
-    pip install -r requirements.txt
-    python setupy.py install
+    git checkout <tag or branch of interest>
+    pip install .
 
-The last command might need ``sudo`` prefix, depending on your python setup.
+Development
+-----------
 
-However, if this is an issue, it is instead highly recommended to use a virtual
-environment to manage projects. For example see `<https://docs.pipenv.org>`_.
+Chaospy uses `poetry`_ to manage its development installation. Assuming
+`poetry`_ installed on your system, installing ``chaospy`` for development can
+be done from the repository root with the command::
 
-Optional Packages
------------------
+    poetry install
 
-Optionally, to support more regression methods, install the Scikit-learn
-package::
+This will install all required dependencies and chaospy into a virtual
+environment. If you are not already managing your own virtual environment, you
+can use poetry to activate and deactivate with::
 
-    pip install scikit-learn
+    poetry shell        # enter
+    exit                # exit
+
+.. _poetry: https://poetry.eustace.io/
 
 Testing
 -------
 
-To test the build locally::
+To run test::
 
-    pip install -r requirements-dev.txt
-    python setup.py test
+    poetry run pytest --doctest-modules chaospy test doc/*.rst
 
-It will run ``pytest-runner`` and execute all tests.
+Documentation
+-------------
 
+To build documentation locally on your system, use ``make`` from the ``doc/``
+folder::
+
+    cd doc/
+    make html
+
+Run ``make`` without argument to get a list of build targets. All targets
+stores output to the folder ``doc/.build/``.
 
 Questions & Troubleshooting
 ---------------------------
