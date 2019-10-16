@@ -78,7 +78,6 @@ def lagrange_polynomial(abscissas, sort="G"):
                 else:
                     coeffs[i, j] += -numpy.linalg.det(matrix[1:, 1:])
                 matrix = numpy.roll(matrix, -1, axis=0)
-                k += 1
             matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
         out = chaospy.poly.sum(vec*(coeffs.T), 1)

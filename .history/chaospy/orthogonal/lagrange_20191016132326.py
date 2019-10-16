@@ -43,7 +43,7 @@ def lagrange_polynomial(abscissas, sort="G"):
     dim, size = abscissas.shape
 
     order = 1
-    while chaospy.bertran.terms(order, dim) < size:
+    while chaospy.bertran.terms(order, dim) <= size:
         order += 1
 
     indices = numpy.array(chaospy.bertran.bindex(0, order, dim, sort)[:size])
@@ -68,17 +68,9 @@ def lagrange_polynomial(abscissas, sort="G"):
 
     else:
         for i in range(size):
-            if i%2 != 0:
-                k = 1
-            else:
-                k=0
             for j in range(size):
-                if k%2 == 0:
-                    coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
-                else:
-                    coeffs[i, j] += -numpy.linalg.det(matrix[1:, 1:])
+                coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
                 matrix = numpy.roll(matrix, -1, axis=0)
-                k += 1
             matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
         out = chaospy.poly.sum(vec*(coeffs.T), 1)
