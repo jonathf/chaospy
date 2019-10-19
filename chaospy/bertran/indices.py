@@ -59,9 +59,7 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
 
     indices = _bindex(start, stop, dim, cross_truncation)
     if "G" in sort:
-        for idx in numpy.argsort(indices, axis=0).T:
-            indices = indices[idx]
-        indices = indices[numpy.argsort(numpy.sum(indices, -1))]
+        indices = indices[numpy.lexsort([numpy.sum(indices, -1)])]
 
     if "I" in sort:
         indices = indices[::-1]
