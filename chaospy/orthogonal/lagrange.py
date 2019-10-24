@@ -69,7 +69,10 @@ def lagrange_polynomial(abscissas, sort="G"):
     else:
         
         for i in range(size):
-            k=0
+            if i%2 != 0:
+                k = 1
+            else:
+                k=0
             for j in range(size):
                 if k%2 == 0:
                     coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
