@@ -52,6 +52,12 @@ class Dist(object):
     """Numpy override variable."""
     _repr = None
 
+    interpret_as_integer = False
+    """
+    Flag indicating that return value from the methods sample, range and inv
+    should be interpreted as integers instead of floating point.
+    """
+
     def __init__(self, **prm):
         """
         Args:
@@ -93,6 +99,8 @@ class Dist(object):
 
         q_data = evaluation.evaluate_bound(self, x_data)
         q_data = q_data.reshape((2,)+shape)
+        if self.interpret_as_integer:
+            q_data = q_data.astype(int)
         return q_data
 
     def fwd(self, x_data):
@@ -184,6 +192,8 @@ class Dist(object):
         lower, upper = evaluation.evaluate_bound(self, x_data)
         x_data = numpy.clip(x_data, a_min=lower, a_max=upper)
         x_data = x_data.reshape(shape)
+        if self.interpret_as_integer:
+            x_data = x_data.astype(int)
         return x_data
 
     def pdf(self, x_data, step=1e-7):
@@ -295,6 +305,8 @@ class Dist(object):
             else:
                 out = out.reshape(dim, int(out.size/dim))
 
+        if self.interpret_as_integer:
+            out = out.astype(int)
         return out
 
     def mom(self, K, **kws):
