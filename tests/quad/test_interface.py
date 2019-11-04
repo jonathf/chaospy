@@ -11,7 +11,7 @@ def recurrence_algorithm(request):
 
 
 def test_1d_gauss_hermite_quadrature(recurrence_algorithm):
-    distribution = Normal(3, 4)
+    distribution = Normal(2, 2)
     abscissas, weights = quad_gaussian(
         10, distribution, recurrence_algorithm=recurrence_algorithm)
     assert abscissas.shape == (1, 11)
