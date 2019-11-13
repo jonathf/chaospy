@@ -35,14 +35,13 @@ jobs:
               pytest --doctest-modules chaospy
   build-cache:
     docker:
-      - image: circleci/python:3.7.3
+      - image: circleci/python:3.7.5
     working_directory: /home/circleci/project
     steps:
       - checkout
       - restore_cache:
           keys:
-              - deps-{{ checksum "poetry.lock" }}
-              - deps-
+              - deps-v1-{{ checksum "poetry.lock" }}
       - run:
           name: "Installation"
           command: |
@@ -50,7 +49,7 @@ jobs:
               source /home/circleci/venv/bin/activate
               poetry install
       - save_cache:
-          key: deps-{{ checksum "poetry.lock" }}
+          key: deps-v1-{{ checksum "poetry.lock" }}
           paths:
               - /home/circleci/venv
       - persist_to_workspace:
@@ -60,7 +59,7 @@ jobs:
           root: /home/circleci
   test:
     docker:
-        - image: circleci/python:3.7.3
+        - image: circleci/python:3.7.5
     working_directory: /home/circleci/project
     steps:
         - attach_workspace:
@@ -73,7 +72,7 @@ jobs:
                 codecov
   sphinx:
     docker:
-      - image: circleci/python:3.7.3
+      - image: circleci/python:3.7.5
     working_directory: /home/circleci/project
     steps:
       - attach_workspace:
