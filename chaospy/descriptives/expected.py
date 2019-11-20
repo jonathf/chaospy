@@ -1,7 +1,7 @@
 """Expected value."""
 import numpy
 
-from .. import distributions, poly as polynomials, quadrature
+from .. import poly as polynomials
 
 
 def E(poly, dist=None, **kws):
@@ -32,31 +32,17 @@ def E(poly, dist=None, **kws):
         >>> print(chaospy.E(poly, dist))
         [1. 1. 0. 0.]
     """
-    if isinstance(poly, distributions.Dist):
+    if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))
+    poly = polynomials.setdim(poly, len(dist))
+    if not poly.isconstant:
+        return poly.tonumpy()
 
-    if not poly.keys:
-        return numpy.zeros(poly.shape, dtype=int)
-
-    if isinstance(poly, (list, tuple, numpy.ndarray)):
-        return [E(_, dist, **kws) for _ in poly]
-
-    if poly.dim < len(dist):
-        poly = polynomials.setdim(poly, len(dist))
-
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    keys = poly.keys
-    mom = dist.mom(numpy.array(keys).T, **kws)
-    A = poly.A
-
+    moments = dist.mom(poly.exponents.T, **kws)
     if len(dist) == 1:
-        mom = mom[0]
+        moments = moments[0]
 
     out = numpy.zeros(poly.shape)
-    for i in range(len(keys)):
-        out += A[keys[i]]*mom[i]
-
-    out = numpy.reshape(out, shape)
+    for idx, key in enumerate(poly.keys):
+        out += poly[key]*moments[idx]
     return out

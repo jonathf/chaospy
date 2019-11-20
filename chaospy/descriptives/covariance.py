@@ -1,7 +1,7 @@
 """Covariance matrix."""
 import numpy
 
-from .variance import Var
+from .expected import E
 from .. import distributions, poly as polynomials
 
 
@@ -33,46 +33,11 @@ def Cov(poly, dist=None, **kws):
          [  0.    0.5   1.    0. ]
          [  0.    0.    0.  225. ]]
     """
-    if not isinstance(poly, (distributions.Dist, polynomials.Poly)):
-        poly = polynomials.Poly(poly)
-
-    if isinstance(poly, distributions.Dist):
-        x = polynomials.variable(len(poly))
-        poly, dist = x, poly
-    else:
-        poly = polynomials.Poly(poly)
-
-    if not poly.shape:
-        return Var(poly, dist).reshape(1, 1)
-
-    dim = len(dist)
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-    keys = poly.keys
-    N = len(keys)
-    A = poly.A
-    keys1 = numpy.array(keys).T
-    if dim==1:
-        keys1 = keys1[0]
-        keys2 = sum(numpy.meshgrid(keys, keys))
-    else:
-        keys2 = numpy.empty((dim, N, N))
-        for i in range(N):
-            for j in range(N):
-                keys2[:, i, j] = keys1[:, i]+keys1[:, j]
-
-    m1 = dist.mom(keys1, **kws)
-    m2 = dist.mom(keys2, **kws)
-    mom = m2-numpy.outer(m1, m1)
-
-    out = numpy.zeros((len(poly), len(poly)))
-    for i in range(len(keys)):
-        a = A[keys[i]]
-        out += numpy.outer(a, a)*mom[i, i]
-        for j in range(i+1, len(keys)):
-            b = A[keys[j]]
-            ab = numpy.outer(a, b)
-            out += (ab+ab.T)*mom[i, j]
-
-    out = numpy.reshape(out, shape+shape)
-    return out
+    if dist is None:
+        dist, poly = poly, polynomials.variable(len(poly))
+    poly = polynomials.setdim(poly, len(dist))
+    if not poly.isconstant:
+        return poly.tonumpy()**2
+    poly = poly-E(poly, dist)
+    poly = polynomials.outer(poly, poly)
+    return E(poly, dist)

@@ -1,7 +1,7 @@
 """Standard deviation."""
 import numpy
 
-from .. import distributions, poly as polynomials
+from .variance import Var
 
 
 def Std(poly, dist=None, **kws):
@@ -29,44 +29,4 @@ def Std(poly, dist=None, **kws):
         >>> print(chaospy.Std(poly, dist))
         [ 0.          1.          2.         28.28427125]
     """
-    if isinstance(poly, distributions.Dist):
-        x = polynomials.variable(len(poly))
-        poly, dist = x, poly
-    else:
-        poly = polynomials.Poly(poly)
-
-    dim = len(dist)
-    if poly.dim < dim:
-        polynomials.setdim(poly, dim)
-
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    keys = poly.keys
-    N = len(keys)
-    A = poly.A
-
-    keys1 = numpy.array(keys).T
-    if dim==1:
-        keys1 = keys1[0]
-        keys2 = sum(numpy.meshgrid(keys, keys))
-    else:
-        keys2 = numpy.empty((dim, N, N))
-        for i in range(N):
-            for j in range(N):
-                keys2[:, i, j] = keys1[:, i]+keys1[:, j]
-
-    m1 = numpy.outer(*[dist.mom(keys1, **kws)]*2)
-    m2 = dist.mom(keys2, **kws)
-    mom = m2-m1
-
-    out = numpy.zeros(poly.shape)
-    for i in range(N):
-        a = A[keys[i]]
-        out += a*a*mom[i, i]
-        for j in range(i+1, N):
-            b = A[keys[j]]
-            out += 2*a*b*mom[i, j]
-
-    out = out.reshape(shape)
-    return numpy.sqrt(out)
+    return numpy.sqrt(Var(poly, dist=dist, **kws))

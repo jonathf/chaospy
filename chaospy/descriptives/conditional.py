@@ -1,6 +1,8 @@
 """Conditional expected value."""
 from itertools import product
+
 import numpy
+import numpoly
 
 from .. import distributions, poly as polynomials, quadrature
 
@@ -40,53 +42,52 @@ def E_cond(poly, freeze, dist, **kws):
         >>> print(chaospy.E_cond(poly, [0, 0], dist))
         [1.0, 1.0, 0.0, 0.0]
     """
-    if poly.dim < len(dist):
-        poly = polynomials.setdim(poly, len(dist))
+    poly = polynomials.setdim(poly, len(dist))
+    if not poly.isconstant:
+        return poly.tonumpy()
+    assert not distributions.evaluation.get_dependencies(*dist), dist
 
     freeze = polynomials.Poly(freeze)
-    freeze = polynomials.setdim(freeze, len(dist))
-    keys = freeze.keys
-    if len(keys) == 1 and keys[0] == (0,)*len(dist):
-        freeze = list(freeze.A.values())[0]
+    if freeze.isconstant():
+        freeze = freeze.tonumpy().astype(bool)
     else:
-        freeze = numpy.array(keys)
-    freeze = freeze.reshape(int(freeze.size/len(dist)), len(dist))
+        poly, freeze = numpoly.align_exponents(poly, freeze)
+        freeze = numpy.isin(poly.keys, freeze.keys)
 
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
+    poly = polynomials.decompose(poly)
 
-    kmax = numpy.max(poly.keys, 0) + 1
-    keys = [range(k) for k in kmax]
+    cache = {}
+    if len(freeze.shape) == 1:
+        out = _E_cond(poly, freeze, dist, cache, **kws)
+    else:
+        out = polynomials.concatenate([
+            _E_cond(poly, freeze_, dist, cache, **kws)[numpy.newaxis]
+            for freeze_ in freeze
+        ])
+    if out.isconstant():
+        out = out.tonumpy()
+    return out
 
-    A = poly.A.copy()
-    keys = poly.keys
-    out = {}
-    zeros = [0]*poly.dim
 
-    for i in range(len(keys)):
+def _E_cond(poly, freeze, dist, cache, **kws):
+    """Backend for conditional expected value."""
+    assert len(poly.names) == len(freeze) == len(dist)
+    if numpy.all(freeze):
+        return poly.copy()
+    poly1 = poly(**{str(var): (var if keep else 1)
+                    for var, keep in zip(poly.indeterminants, freeze)})
+    poly2 = poly(**{str(var): (var if not keep else 1)
+                    for var, keep in zip(poly.indeterminants, freeze)})
+    assert len(poly.names) == len(poly2.names)
+    # reset non-zero coefficients to 1 so not to duplicate them:
+    for key in poly2.keys:
+        poly2[poly2 != 0] = 1
 
-        key = list(keys[i])
-        a = A[tuple(key)]
+    out = numpoly.sum([
+        distributions.evaluation.evaluate_moment(
+            dist, (exponent*~freeze), cache, **kws)*coefficient
+        for exponent, coefficient in zip(poly2.exponents, poly2.coefficients)
+    ], axis=0)*poly1
 
-        for d in range(poly.dim):
-            for j in range(len(freeze)):
-                if freeze[j, d]:
-                    key[d], zeros[d] = zeros[d], key[d]
-                    break
-
-        tmp = a*dist.mom(tuple(key))
-        if tuple(zeros) in out:
-            out[tuple(zeros)] = out[tuple(zeros)] + tmp
-        else:
-            out[tuple(zeros)] = tmp
-
-        for d in range(poly.dim):
-            for j in range(len(freeze)):
-                if freeze[j, d]:
-                    key[d], zeros[d] = zeros[d], key[d]
-                    break
-
-    out = polynomials.Poly(out, poly.dim, poly.shape, float)
-    out = polynomials.reshape(out, shape)
-
+    out, _ = numpoly.align_indeterminants(out, poly)
     return out

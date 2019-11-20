@@ -37,11 +37,9 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
         [nan  6.  0. 15.]
     """
-    if isinstance(poly, distributions.Dist):
-        x = polynomials.variable(len(poly))
-        poly, dist = x, poly
-    else:
-        poly = polynomials.Poly(poly)
+    if dist is None:
+        dist, poly = poly, polynomials.variable(len(poly))
+    poly = polynomials.setdim(poly, len(dist))
 
     if fisher:
         adjust = 3

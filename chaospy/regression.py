@@ -129,7 +129,7 @@ def fit_regression(
         >>> evals = [0,1,1,2]
         >>> print(chaospy.around(chaospy.fit_regression(
         ...     polynomials, abscissas, evals), 14))
-        0.5q0+0.5q1+1.0
+        1.0+0.5*q1+0.5*q0
     """
     abscissas = numpy.asarray(abscissas)
     if len(abscissas.shape) == 1:
@@ -161,7 +161,7 @@ def fit_regression(
     evals = evals.reshape(evals.shape[0], *shape)
 
     approx_model = chaospy.poly.sum((polynomials*uhat.T), -1)
-    approx_model = chaospy.poly.reshape(approx_model, shape)
+    approx_model = approx_model.reshape(shape)
 
     if retall == 1:
         return approx_model, uhat

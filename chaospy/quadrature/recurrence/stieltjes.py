@@ -133,7 +133,7 @@ def analytical_stieljes(order, dist, normed=False):
     coeffs = dist.ttr(mom_order)
     coeffs[1, :, 0] = 1.
 
-    var = chaospy.poly.collection.core.variable(dimensions)
+    var = chaospy.poly.variable(dimensions)
     orth = [var-var, var**0*numpy.ones(dimensions)]
     for order_ in range(order):
         orth.append(

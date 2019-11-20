@@ -12,91 +12,6 @@ import chaospy.quadrature
 from chaospy.poly.base import Poly
 
 
-def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
-    """
-    Create an N-dimensional unit polynomial basis.
-
-    Args:
-        start (int, numpy.ndarray):
-            the minimum polynomial to include. If int is provided, set as
-            lowest total order.  If array of int, set as lower order along each
-            axis.
-        stop (int, numpy.ndarray):
-            the maximum shape included. If omitted:
-            ``stop <- start; start <- 0`` If int is provided, set as largest
-            total order. If array of int, set as largest order along each axis.
-        dim (int):
-            dim of the basis. Ignored if array is provided in either start or
-            stop.
-        sort (str):
-            The polynomial ordering where the letters ``G``, ``I`` and ``R``
-            can be used to set grade, inverse and reverse to the ordering.  For
-            ``basis(start=0, stop=2, dim=2, order=order)`` we get:
-            ======  ==================
-            order   output
-            ======  ==================
-            ""      [1 y y^2 x xy x^2]
-            "G"     [1 y x y^2 xy x^2]
-            "I"     [x^2 xy x y^2 y 1]
-            "R"     [1 x x^2 y xy y^2]
-            "GIR"   [y^2 xy x^2 y x 1]
-            ======  ==================
-        cross_truncation (float):
-            Use hyperbolic cross truncation scheme to reduce the number of
-            terms in expansion.
-
-    Returns:
-        (Poly) : Polynomial array.
-
-    Examples:
-        >>> print(chaospy.basis(4, 4, 2, sort="GR"))
-        [q0^4, q0^3q1, q0^2q1^2, q0q1^3, q1^4]
-        >>> print(chaospy.basis([1, 1], [2, 2], sort="GR"))
-        [q0q1, q0^2q1, q0q1^2, q0^2q1^2]
-    """
-    if stop is None:
-        start, stop = numpy.array(0), start
-
-    start = numpy.array(start, dtype=int)
-    stop = numpy.array(stop, dtype=int)
-    dim = max(start.size, stop.size, dim)
-    indices = numpy.array(chaospy.bertran.bindex(
-        numpy.min(start), 2*numpy.max(stop), dim, sort, cross_truncation))
-
-    if start.size == 1:
-        bellow = numpy.sum(indices, -1) >= start
-
-    else:
-        start = numpy.ones(dim, dtype=int)*start
-        bellow = numpy.all(indices-start >= 0, -1)
-
-
-    if stop.size == 1:
-        above = numpy.sum(indices, -1) <= stop.item()
-    else:
-        stop = numpy.ones(dim, dtype=int)*stop
-        above = numpy.all(stop-indices >= 0, -1)
-
-    pool = list(indices[above*bellow])
-
-    arg = numpy.zeros(len(pool), dtype=int)
-    arg[0] = 1
-    poly = {}
-    for idx in pool:
-        idx = tuple(idx)
-        poly[idx] = arg
-        arg = numpy.roll(arg, 1)
-    x = numpy.zeros(len(pool), dtype=int)
-    x[0] = 1
-    A = {}
-    for I in pool:
-        I = tuple(I)
-        A[I] = x
-        x = numpy.roll(x,1)
-
-    return Poly(A, dim)
-
-
 def lagrange(X):
 
     X = numpy.array(X)
@@ -199,37 +114,6 @@ def differential(P, Q):
     return Poly(B, P.dim, P.shape, P.dtype)
 
 
-def prange(N=1, dim=1):
-    """
-    Constructor to create a range of polynomials where the exponent vary.
-
-    Args:
-        N (int):
-            Number of polynomials in the array.
-        dim (int):
-            The dimension the polynomial should span.
-
-    Returns:
-        (Poly):
-            A polynomial array of length N containing simple polynomials with
-            increasing exponent.
-
-    Examples:
-        >>> print(prange(4))
-        [1, q0, q0^2, q0^3]
-        >>> print(prange(4, dim=3))
-        [1, q2, q2^2, q2^3]
-    """
-    A = {}
-    r = numpy.arange(N, dtype=int)
-    key = numpy.zeros(dim, dtype=int)
-    for i in range(N):
-        key[-1] = i
-        A[tuple(key)] = 1*(r==i)
-
-    return Poly(A, dim, (N,), int)
-
-
 def rolldim(P, n=1):
     """
     Roll the axes.
@@ -330,30 +214,6 @@ def tricu(P, k=0):
     out = P*tri
     return out
 
-
-def variable(dims=1):
-    """
-    Simple constructor to create single variables to create polynomials.
-
-    Args:
-        dims (int):
-            Number of dimensions in the array.
-
-    Returns:
-        (Poly):
-            Polynomial array with unit components in each dimension.
-
-    Examples:
-        >>> print(variable())
-        q0
-        >>> print(variable(3))
-        [q0, q1, q2]
-    """
-    if dims == 1:
-        return Poly({(1,): 1}, dim=1, shape=())
-    return Poly({
-        tuple(indices): indices for indices in numpy.eye(dims, dtype=int)
-    }, dim=dims, shape=(dims,))
 
 def order(P):
 
