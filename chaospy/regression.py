@@ -10,35 +10,35 @@ samples and evaluations. The experiment can be done as follows:
 - Generate :ref:`orthogonality`::
 
     >>> orthogonal_expansion = chaospy.orth_ttr(2, distribution)
-    >>> print(orthogonal_expansion)
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> orthogonal_expansion
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
 
 - Generate samples using :ref:`sampling` (or alternative abscissas from
   :ref:`quadrature`)::
 
     >>> samples = distribution.sample(
     ...     2*len(orthogonal_expansion), rule="M")
-    >>> print(samples[:, :4])
-    [[ 0.67448975 -1.15034938  0.31863936 -0.31863936]
-     [-1.42607687 -1.02007623 -0.73631592 -0.50240222]]
+    >>> samples[:, :4]
+    array([[ 0.67448975, -1.15034938,  0.31863936, -0.31863936],
+           [-1.42607687, -1.02007623, -0.73631592, -0.50240222]])
 
 - A function evaluated using the nodes generated in the second step::
 
     >>> def model_solver(param):
     ...     return [param[0]*param[1], param[0]*numpy.e**-param[1]+1]
-    >>> solves = [model_solver(sample) for sample in samples.T]
-    >>> print(numpy.around(solves[:4], 8))
-    [[-0.96187423  3.80745414]
-     [ 1.17344406 -2.19038608]
-     [-0.23461924  1.66539168]
-     [ 0.16008512  0.47338898]]
+    >>> solves = numpy.array([model_solver(sample) for sample in samples.T])
+    >>> solves[:4].round(8)
+    array([[-0.96187423,  3.80745414],
+           [ 1.17344406, -2.19038608],
+           [-0.23461924,  1.66539168],
+           [ 0.16008512,  0.47338898]])
 
 - Bring it all together using `~chaospy.regression.fit_regression`::
 
     >>> approx_model = chaospy.fit_regression(
     ...      orthogonal_expansion, samples, solves)
-    >>> print(chaospy.around(approx_model, 5))
-    [q0q1, 0.0478q0^2-1.4354q0q1+0.1108q1^2+1.22377q0-0.0907q1+0.93973]
+    >>> approx_model.round(2)
+    polynomial([q0*q1, 0.94-0.09*q1+0.11*q1**2+1.22*q0-1.44*q0*q1+0.05*q0**2])
 
 In this example, the number of collocation points is selected to be twice the
 number of unknown coefficients :math:`N+1`. Changing this is obviously
