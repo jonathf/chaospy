@@ -33,9 +33,10 @@ class Uniform(Add):
     Uniform probability distribution.
 
     Args:
-        lower (float, Dist): Lower threshold of distribution. Must be smaller
-            than ``upper``.
-        upper (float, Dist): Upper threshold of distribution.
+        lower (float, Dist):
+            Lower threshold of distribution. Must be smaller than ``upper``.
+        upper (float, Dist):
+            Upper threshold of distribution.
 
     Examples:
         >>> distribution = chaospy.Uniform(2, 4)

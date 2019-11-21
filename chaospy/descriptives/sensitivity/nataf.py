@@ -11,16 +11,17 @@ def Sens_m_nataf(order, dist, samples, vals, **kws):
     """
     Variance-based decomposition through the Nataf distribution.
 
-    Generates first order sensitivity indices
+    Generates first order sensitivity indices.
 
     Args:
         order (int):
             Polynomial order used ``orth_ttr``.
-        dist (Copula):
+        dist (chaospy.distributions.copula.nataf.Nataf):
             Assumed to be Nataf with independent components
         samples (numpy.ndarray):
             Samples used for evaluation (typically generated from ``dist``.)
-        vals (numpy.ndarray): Evaluations of the model for given samples.
+        vals (numpy.ndarray):
+            Evaluations of the model for given samples.
 
     Returns:
         (numpy.ndarray):

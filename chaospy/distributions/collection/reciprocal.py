@@ -10,9 +10,10 @@ class Reciprocal(Dist):
     Reciprocal distribution.
 
     Args:
-        lower (float, Dist): Lower threshold of distribution. Must be smaller
-            than ``upper``.
-        upper (float, Dist): Upper threshold of distribution.
+        lower (float, Dist):
+            Lower threshold of distribution. Must be smaller than ``upper``.
+        upper (float, Dist):
+            Upper threshold of distribution.
 
     Examples:
         >>> distribution = chaospy.Reciprocal(2, 4)

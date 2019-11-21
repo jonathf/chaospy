@@ -41,11 +41,15 @@ class LogNormal(Add):
     Log-normal distribution
 
     Args:
-        mu (float, Dist) : Mean in the normal distribution.  Overlaps with
-                scale by mu=log(scale)
-        sigma (float, Dist) : Standard deviation of the normal distribution.
-        shift (float, Dist) : Location of the lower bound.
-        scale (float, Dist) : Scale parameter. Overlaps with mu by scale=e**mu
+        mu (float, Dist):
+            Mean in the normal distribution.  Overlaps with scale by
+            mu=log(scale)
+        sigma (float, Dist):
+            Standard deviation of the normal distribution.
+        shift (float, Dist):
+            Location of the lower bound.
+        scale (float, Dist):
+            Scale parameter. Overlaps with mu by scale=e**mu
 
     Examples:
         >>> distribution = chaospy.LogNormal(0, 1)
@@ -83,8 +87,10 @@ class Gilbrat(Add):
     Standard log-normal distribution
 
     Args:
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.Gilbrat(3, 2)

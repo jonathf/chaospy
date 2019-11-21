@@ -32,12 +32,17 @@ class PowerLogNormal(Add):
     Power log-normal distribution
 
     Args:
-        shape (float, Dist) : Shape parameter
-        mu (float, Dist) : Mean in the normal distribution.  Overlaps with
-                scale by mu=log(scale)
-        sigma (float, Dist) : Standard deviation of the normal distribution.
-        shift (float, Dist) : Location parameter
-        scale (float, Dist) : Scaling parameter. Overlap with mu in scale=e**mu
+        shape (float, Dist):
+            Shape parameter
+        mu (float, Dist):
+            Mean in the normal distribution.  Overlaps with scale by
+            mu=log(scale)
+        sigma (float, Dist):
+            Standard deviation of the normal distribution.
+        shift (float, Dist):
+            Location parameter
+        scale (float, Dist):
+            Scaling parameter. Overlap with mu in scale=e**mu
 
     Examples:
         >>> distribution = chaospy.PowerLogNormal(2, 2, 2, 2, 2)

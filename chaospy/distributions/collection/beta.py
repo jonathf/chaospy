@@ -44,10 +44,14 @@ class Beta(Add):
     Beta Probability Distribution.
 
     Args:
-        alpha (float, Dist): First shape parameter, alpha > 0
-        beta (float, Dist): Second shape parameter, b > 0
-        lower (float, Dist): Lower threshold
-        upper (float, Dist): Upper threshold
+        alpha (float, Dist):
+            First shape parameter, alpha > 0
+        beta (float, Dist):
+            Second shape parameter, b > 0
+        lower (float, Dist):
+            Lower threshold
+        upper (float, Dist):
+            Upper threshold
 
     Examples:
         >>> distribution = chaospy.Beta(2, 2, 2, 3)
@@ -80,10 +84,13 @@ class ArcSinus(Add):
     Generalized Arc-sinus distribution
 
     Args:
-        shape (float, Dist): Shape parameter where 0.5 is the default
-            non-generalized case. Defined on the interval ``[0, 1]``.
-        lower (float, Dist): Lower threshold
-        upper (float, Dist): Upper threshold
+        shape (float, Dist):
+            Shape parameter where 0.5 is the default non-generalized case.
+            Defined on the interval ``[0, 1]``.
+        lower (float, Dist):
+            Lower threshold
+        upper (float, Dist):
+            Upper threshold
 
     Examples:
         >>> distribution = chaospy.ArcSinus(0.8, 4, 6)
@@ -115,9 +122,12 @@ class PowerLaw(Add):
     Powerlaw distribution
 
     Args:
-        shape (float, Dist) : Shape parameter
-        lower (float, Dist) : Location of lower threshold
-        upper (float, Dist) : Location of upper threshold
+        shape (float, Dist):
+            Shape parameter
+        lower (float, Dist):
+            Location of lower threshold
+        upper (float, Dist):
+            Location of upper threshold
 
     Examples:
         >>> distribution = chaospy.PowerLaw(0.8, 4, 6)
@@ -149,8 +159,10 @@ class Wigner(Add):
     Wigner (semi-circle) distribution
 
     Args:
-        radius (float, Dist) : radius of the semi-circle (scale)
-        shift (float, Dist) : location of the circle origin (location)
+        radius (float, Dist):
+            Radius of the semi-circle (scale)
+        shift (float, Dist):
+            Location of the circle origin (location)
 
     Examples:
         >>> distribution = chaospy.Wigner(2, 3)

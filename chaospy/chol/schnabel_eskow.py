@@ -12,28 +12,28 @@ def schnabel_eskow(mat, eps=1e-16):
     Scnabel-Eskow algorithm for modified Cholesky factorisation algorithm.
 
     Args:
-        mat (numpy.ndarray) : Must be a non-singular and symmetric matrix If
-            sparse, the result will also be sparse.
-        eps (float) : Error tolerance used in algorithm.
+        mat (numpy.ndarray):
+            Must be a non-singular and symmetric matrix If sparse, the result
+            will also be sparse.
+        eps (float):
+            Error tolerance used in algorithm.
 
-    Returns
-    -------
-    perm : 2d array
-        Permutation matrix used for pivoting.
-    lowtri : 2d array
-        Lower triangular factor
-    err : 1d array
-        Positive diagonals of shift matrix `err`.
+    Returns:
+        perm : 2d array
+            Permutation matrix used for pivoting.
+        lowtri : 2d array
+            Lower triangular factor
+        err : 1d array
+            Positive diagonals of shift matrix `err`.
 
-    Examples
-    --------
-    >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
-    >>> perm, lowtri, err = schnabel_eskow(mat)
-    >>> perm, lowtri = numpy.matrix(perm), numpy.matrix(lowtri)
-    >>> print(numpy.around(perm*lowtri*lowtri.T*perm.T, 4))
-    [[5.504 2.    1.   ]
-     [2.    6.    3.   ]
-     [1.    3.    1.5  ]]
+    Examples:
+        >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+        >>> perm, lowtri, err = schnabel_eskow(mat)
+        >>> perm, lowtri = numpy.matrix(perm), numpy.matrix(lowtri)
+        >>> print(numpy.around(perm*lowtri*lowtri.T*perm.T, 4))
+        [[5.504 2.    1.   ]
+         [2.    6.    3.   ]
+         [1.    3.    1.5  ]]
     """
     mat = numpy.asfarray(mat)
     tau = eps**(1/3.)

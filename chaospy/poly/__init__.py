@@ -102,7 +102,7 @@ from numpoly import (
     divide, dstack, equal, floor, gradient, hessian, hstack, inner, isclose,
     isconstant, isfinite, multiply, ndpoly, negative, not_equal, outer,
     polynomial, positive, power, prod, repeat, rint, round, square, stack,
-    subtract, sum, tonumpy, vstack,
+    subtract, sum, vstack,
 )
 
 @wraps(polynomial)

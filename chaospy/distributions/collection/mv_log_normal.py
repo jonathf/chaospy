@@ -11,9 +11,10 @@ class MvLogNormal(Dist):
     Multivariate Log-Normal Distribution.
 
     Args:
-        loc (float, Dist): Mean vector
-        scale (float, Dist): Covariance matrix or variance vector if scale
-            is a 1-d vector.
+        loc (float, Dist):
+            Mean vector
+        scale (float, Dist):
+            Covariance matrix or variance vector if scale is a 1-d vector.
 
     Examples:
         >>> distribution = chaospy.MvLogNormal([1, 2], [[1, 0.6], [0.6, 1]])

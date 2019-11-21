@@ -57,4 +57,3 @@ Chaospy Polynomial Functions
 .. autofunction:: chaospy.poly.gradient
 .. autofunction:: chaospy.poly.hessian
 .. autofunction:: chaospy.poly.isconstant
-.. autofunction:: chaospy.poly.tonumpy
