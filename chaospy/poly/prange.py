@@ -13,7 +13,7 @@ def prange(N=1, dim=1):
             The dimension the polynomial should span.
 
     Returns:
-        (Poly):
+        (chaospy.poly.ndpoly):
             A polynomial array of length N containing simple polynomials with
             increasing exponent.
 

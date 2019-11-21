@@ -13,7 +13,7 @@ def Sens_m2(poly, dist, **kws):
     Second order sensitivity indices.
 
     Args:
-        poly (Poly):
+        poly (chaospy.ndpoly):
             Polynomial to find second order Sobol indices on.
         dist (Dist):
             The distributions of the input used in ``poly``.
@@ -25,7 +25,7 @@ def Sens_m2(poly, dist, **kws):
 
     Examples:
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x*y, x*x*y*y, x*y*y*y])
+        >>> poly = chaospy.polynomial([1, x*y, x*x*y*y, x*y*y*y])
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
         >>> indices = chaospy.Sens_m2(poly, dist)
         >>> print(indices)

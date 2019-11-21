@@ -14,7 +14,7 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
     Gram-Schmidt process for generating orthogonal polynomials.
 
     Args:
-        order (int, Poly):
+        order (int, chaospy.poly.ndpoly):
             The upper polynomial order. Alternative a custom polynomial basis
             can be used.
         dist (Dist):
@@ -29,7 +29,7 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
             terms in expansion.
 
     Returns:
-        (Poly):
+        (chapspy.poly.ndpoly):
             The orthogonal polynomial expansion.
 
     Examples:
@@ -42,7 +42,7 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
     if isinstance(order, int):
         if order == 0:
-            return chaospy.poly.Poly(1, indeterminants=("q0",))
+            return chaospy.poly.polynomial(1, indeterminants=("q0",))
         basis = chaospy.poly.basis(
             0, order, dim, sort, cross_truncation=cross_truncation)
     else:
@@ -89,4 +89,4 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
             polynomials.append(basis[idx])
 
-    return chaospy.poly.Poly(polynomials).reshape((len(polynomials),))
+    return chaospy.poly.polynomial(polynomials).reshape((len(polynomials),))

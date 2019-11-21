@@ -85,7 +85,7 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
     distribution space.
 
     Args:
-        orth (chaospy.poly.base.Poly):
+        orth (chaospy.poly.ndpoly):
             Orthogonal polynomial expansion. Must be orthogonal for the
             approximation to be accurate.
         nodes (numpy.ndarray):
@@ -106,10 +106,10 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
             no provided. ``norms.shape == (len(orth),)`` must hold.
 
     Returns:
-        (chaospy.poly.base.Poly):
+        (chaospy.poly.ndpoly):
             Fitted model approximation in the form of an polynomial.
     """
-    orth = chaospy.poly.Poly(orth)
+    orth = chaospy.poly.polynomial(orth)
     nodes = numpy.asfarray(nodes)
     weights = numpy.asfarray(weights)
 

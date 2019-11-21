@@ -10,7 +10,7 @@ def Cov(poly, dist=None, **kws):
     Covariance matrix, or 2rd order statistics.
 
     Args:
-        poly (Poly, Dist) :
+        poly (chaospy.poly.ndpoly, Dist) :
             Input to take covariance on. Must have `len(poly)>=2`.
         dist (Dist) :
             Defines the space the covariance is taken on.  It is ignored if
@@ -26,7 +26,7 @@ def Cov(poly, dist=None, **kws):
         [[2.  0.5]
          [0.5 1. ]]
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
         >>> print(chaospy.Cov(poly, dist))
         [[  0.    0.    0.    0. ]
          [  0.    2.    0.5   0. ]

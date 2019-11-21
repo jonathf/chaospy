@@ -93,7 +93,7 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
 
     coeffs = numpy.moveaxis(coeffs, 0, 2)
     norms = numpy.array(norms[1:]).T
-    orth = chaospy.poly.Poly(orth[1:])
+    orth = chaospy.poly.polynomial(orth[1:])
 
     return coeffs, orth, norms
 
@@ -140,7 +140,7 @@ def analytical_stieljes(order, dist, normed=False):
     for order_ in range(order):
         orth.append(
             (var-coeffs[0, :, order_])*orth[-1]-coeffs[1, :, order_]*orth[-2])
-    orth = chaospy.poly.Poly(orth[1:]).T
+    orth = chaospy.poly.polynomial(orth[1:]).T
 
     norms = numpy.cumprod(coeffs[1], 1)
     if normed:

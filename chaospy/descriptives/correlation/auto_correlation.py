@@ -9,7 +9,7 @@ def Acf(poly, dist, N=None, **kws):
     Auto-correlation function.
 
     Args:
-        poly (Poly):
+        poly (chaospy.poly.ndpoly):
             Polynomial of interest. Must have ``len(poly) > N``.
         dist (Dist):
             Defines the space the correlation is taken on.

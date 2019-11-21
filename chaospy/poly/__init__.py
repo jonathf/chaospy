@@ -9,7 +9,7 @@ example to construct a simple bivariate polynomial::
 A collection of polynomial can be manipulated using basic arithmetic operators
 and joined together into polynomial expansions::
 
-    >>> polys = chaospy.Poly([1, q0, q0*q1])
+    >>> polys = chaospy.polynomial([1, q0, q0*q1])
     >>> polys
     polynomial([1, q0, q0*q1])
 
@@ -51,7 +51,7 @@ polynomial is inserted into ``chaospy.sum``, the argument is passed to
 Any constructed polynomial is a callable. The argument can either be
 inserted positional or as keyword arguments ``q0``, ``q1``, ...::
 
-    >>> poly = chaospy.Poly([1, q0**2, q0*q1])
+    >>> poly = chaospy.polynomial([1, q0**2, q0*q1])
     >>> poly(2, 3)
     array([1, 4, 6])
     >>> poly(q1=3, q0=2)
@@ -89,35 +89,24 @@ time. For example, partial evaluation and variable substitution::
     >>> poly(q1=q1**3-1)
     polynomial([1, q0**2, -q0+q0*q1**3])
 """
-# import chaospy.poly.base
-# from chaospy.poly.base import Poly
-
-# import chaospy.poly.typing
-# import chaospy.poly.caller
-# import chaospy.poly.dimension
-# import chaospy.poly.shaping
-# import chaospy.poly.collection
-
-# from chaospy.poly.typing import *
-# from chaospy.poly.caller import (
-#     substitute, is_decomposed, decompose
-# )
-# from chaospy.poly.dimension import *
-# from chaospy.poly.shaping import *
-# from chaospy.poly.collection import *
-
-# import chaospy.poly.constructor
+from functools import wraps
 
 from .basis import basis
 from .prange import prange
 from .variable import variable
 from .setdim import setdim
 
-from numpoly import aspolynomial as Poly
 from numpoly import (
-    abs, absolute, add, any, all, allclose, around, atleast_1d, atleast_2d,
-    atleast_3d, call, ceil, concatenate, cumsum, decompose, diff, divide, dstack, equal,
-    floor, gradient, hessian, hstack, inner, isclose, isconstant, isfinite,
-    multiply, ndpoly, negative, not_equal, outer, positive, power, prod,
-    repeat, rint, round, square, stack, subtract, sum, tonumpy, vstack,
+    abs, absolute, add, any, all, allclose, around, aspolynomial, atleast_1d,
+    atleast_2d, atleast_3d, call, ceil, concatenate, cumsum, decompose, diff,
+    divide, dstack, equal, floor, gradient, hessian, hstack, inner, isclose,
+    isconstant, isfinite, multiply, ndpoly, negative, not_equal, outer,
+    polynomial, positive, power, prod, repeat, rint, round, square, stack,
+    subtract, sum, tonumpy, vstack,
 )
+
+@wraps(polynomial)
+def Poly(*args, **kwargs):
+    print("Deprecation warning: "
+          "`chaospy.Poly` replaced by `chaospy.polynomial`")
+    return polynomial(*args, **kwargs)

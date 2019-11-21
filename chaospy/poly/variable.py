@@ -11,7 +11,7 @@ def variable(dims=1):
             Number of dimensions in the array.
 
     Returns:
-        (Poly):
+        (chaospy.poly.polynomial):
             Polynomial array with unit components in each dimension.
 
     Examples:

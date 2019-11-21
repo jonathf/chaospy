@@ -6,10 +6,10 @@ def setdim(P, dim=None):
     """
     Adjust the dimensions of a polynomial.
 
-    Output the results into Poly object
+    Output the results into ndpoly object
 
     Args:
-        P (Poly) : Input polynomial
+        P (chaospy.poly.ndpoly) : Input polynomial
         dim (int) : The dimensions of the output polynomial. If omitted,
                 increase polynomial with one dimension. If the new dim is
                 smaller then P's dimensions, variables with cut components are
@@ -25,7 +25,7 @@ def setdim(P, dim=None):
         >>> print(chaospy.setdim(P, 3).names)
         ('q0', 'q1', 'q2')
     """
-    P = numpoly.aspolynomial(P)
+    P = numpoly.polynomial(P)
     indices = [int(name[1:]) for name in P.names]
     dim = max(indices)+2 if dim is None else dim
     P = P(**{("q%d" % index): 0 for index in indices if index >= dim})

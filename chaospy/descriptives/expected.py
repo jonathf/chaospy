@@ -12,7 +12,7 @@ def E(poly, dist=None, **kws):
     probability space.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take expected value on.
         dist (Dist):
             Defines the space the expected value is taken on. It is ignored if
@@ -28,7 +28,7 @@ def E(poly, dist=None, **kws):
         >>> print(chaospy.E(dist))
         [1. 0.]
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
         >>> print(chaospy.E(poly, dist))
         [1. 1. 0. 0.]
     """

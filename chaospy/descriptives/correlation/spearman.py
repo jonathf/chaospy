@@ -7,7 +7,7 @@ def Spearman(poly, dist, sample=10000, retall=False, **kws):
     Calculate Spearman's rank-order correlation coefficient.
 
     Args:
-        poly (Poly):
+        poly (chapspy.poly.ndpoly):
             Polynomial of interest.
         dist (Dist):
             Defines the space where correlation is taken.

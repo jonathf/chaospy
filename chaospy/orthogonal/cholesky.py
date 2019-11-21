@@ -82,7 +82,7 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
         out[tuple(key)] = coefs[idx+1]
 
     indeterminants = numpoly.symbols("q:%d" % dim)
-    polynomials = chaospy.poly.Poly(out, indeterminants=indeterminants)
+    polynomials = chaospy.poly.polynomial(out, indeterminants=indeterminants)
 
     return polynomials
 

@@ -102,7 +102,7 @@ def fit_regression(
     Fit a polynomial chaos expansion using linear regression.
 
     Args:
-        polynomials (chaospy.poly.base.Poly):
+        polynomials (chaospy.poly.ndpoly):
             Polynomial expansion with ``polynomials.shape=(M,)`` and
             `polynomials.dim=D`.
         abscissas (numpy.ndarray):
@@ -118,13 +118,13 @@ def fit_regression(
             automatically if negative.
 
     Returns:
-        (Poly, numpy.ndarray):
+        (chaospy.poly.ndpoly, numpy.ndarray):
             Fitted polynomial with ``R.shape=evals.shape[1:]`` and ``R.dim=D``.
             The Fourier coefficients in the estimation.
 
     Examples:
         >>> x, y = chaospy.variable(2)
-        >>> polynomials = chaospy.Poly([1, x, y])
+        >>> polynomials = chaospy.polynomial([1, x, y])
         >>> abscissas = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> evals = [0,1,1,2]
         >>> print(chaospy.around(chaospy.fit_regression(

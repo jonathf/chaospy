@@ -16,7 +16,7 @@ def E_cond(poly, freeze, dist, **kws):
     conditioned on some of the variables.
 
     Args:
-        poly (Poly):
+        poly (chaospy.poly.ndpoly):
             Polynomial to find conditional expected value on.
         freeze (numpy.ndarray):
             Boolean values defining the conditional variables. True values
@@ -26,13 +26,13 @@ def E_cond(poly, freeze, dist, **kws):
             The distributions of the input used in ``poly``.
 
     Returns:
-        (chaospy.poly.base.Poly) :
+        (chaospy.poly.ndpoly) :
             Same as ``poly``, but with the variables not tagged in ``frozen``
             integrated away.
 
     Examples:
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y-1])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y-1])
         >>> poly
         polynomial([1, q0, q1, -1+10*q0*q1])
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
@@ -50,7 +50,7 @@ def E_cond(poly, freeze, dist, **kws):
         return poly.tonumpy()
     assert not distributions.evaluation.get_dependencies(*dist), dist
 
-    freeze = polynomials.Poly(freeze)
+    freeze = polynomials.polynomial(freeze)
     if freeze.isconstant():
         freeze = freeze.tonumpy().astype(bool)
     else:

@@ -13,7 +13,7 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     Element by element 4rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take kurtosis on.
         dist (Dist):
             Defines the space the skewness is taken on. It is ignored if
@@ -34,7 +34,7 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         >>> print(numpy.around(chaospy.Kurt(dist, fisher=False), 4))
         [9. 3.]
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
         >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
         [nan  6.  0. 15.]
     """

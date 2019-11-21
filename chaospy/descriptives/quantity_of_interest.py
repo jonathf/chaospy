@@ -15,7 +15,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     with that newly generated Dists.
 
     Args:
-        poly (Poly):
+        poly (chaospy.poly.ndpoly):
             Polynomial of interest.
         dist (Dist):
             Defines the space where the samples for the KDE is taken from the
@@ -31,7 +31,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     Examples:
         >>> dist = chaospy.Normal(0, 1)
         >>> x = chaospy.variable(1)
-        >>> poly = chaospy.Poly([x])
+        >>> poly = chaospy.polynomial([x])
         >>> qoi_dist = chaospy.QoI_Dist(poly, dist)
         >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
         >>> print(numpy.around(values, 8))

@@ -40,7 +40,7 @@ class Saltelli(object):
             distribution to sample from.
         samples (int):
             The number of samples to draw for each matrix.
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         rule (str):
             Scheme for generating random samples.
@@ -86,7 +86,7 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
     First order sensitivity indices estimated using Saltelli's method.
 
     Args:
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         dist (chaopy.Dist):
             distribution to sample from.
@@ -140,7 +140,7 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
     Second order sensitivity indices estimated using Saltelli's method.
 
     Args:
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         dist (chaopy.Dist):
             distribution to sample from.
@@ -219,7 +219,7 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
     Total order sensitivity indices estimated using Saltelli's method.
 
     Args:
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         dist (chaopy.Dist):
             distribution to sample from.

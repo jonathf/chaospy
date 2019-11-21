@@ -9,7 +9,7 @@ def Std(poly, dist=None, **kws):
     Element by element 2nd order statistics.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take variance on.
         dist (Dist):
             Defines the space the variance is taken on. It is ignored if
@@ -25,7 +25,7 @@ def Std(poly, dist=None, **kws):
         >>> print(chaospy.Std(dist))
         [1. 2.]
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
         >>> print(chaospy.Std(poly, dist))
         [ 0.          1.          2.         28.28427125]
     """

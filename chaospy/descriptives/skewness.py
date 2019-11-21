@@ -12,7 +12,7 @@ def Skew(poly, dist=None, **kws):
     Element by element 3rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take skewness on.
         dist (Dist):
             Defines the space the skewness is taken on. It is ignored if
@@ -28,7 +28,7 @@ def Skew(poly, dist=None, **kws):
         >>> print(chaospy.Skew(dist))
         [2. 0.]
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
         >>> print(chaospy.Skew(poly, dist))
         [nan  2.  0.  0.]
     """

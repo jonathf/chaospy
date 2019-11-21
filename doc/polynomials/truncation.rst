@@ -88,7 +88,7 @@ Lastly, we flatten the expansion and put each term in the right order::
     [1.0, q1, q1^2-1.0, q0, q0q1,
      q0q1^2-q0, q0^2-1.0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
     >>> expansion = sorted(expansion, key=lambda q: q.exponents.sum(1).max())
-    >>> expansion = chaospy.Poly(expansion)
+    >>> expansion = chaospy.polynomial(expansion)
     >>> print(expansion) # doctest: +NORMALIZE_WHITESPACE
     [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0,
      q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]

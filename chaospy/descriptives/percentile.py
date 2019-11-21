@@ -11,7 +11,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     Carlo sampling.
 
     Args:
-        poly (Poly):
+        poly (chaospy.poly.ndpoly):
             Polynomial of interest.
         q (numpy.ndarray):
             positions where percentiles are taken. Must be a number or an
@@ -28,7 +28,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([0.05*x, 0.2*y, 0.01*x*y])
+        >>> poly = chaospy.polynomial([0.05*x, 0.2*y, 0.01*x*y])
         >>> print(numpy.around(chaospy.Perc(poly, [0, 5, 50, 95, 100], dist), 2))
         [[ 0.   -3.   -6.3 ]
          [ 0.   -0.64 -0.04]

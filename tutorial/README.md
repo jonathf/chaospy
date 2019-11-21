@@ -27,7 +27,7 @@ for v in V:
   v = v / cp.sqrt( custom_inner(v, v) )
   P.append(v)
 
-P = cp.Poly(P)
+P = cp.aspolynomial(P)
 ```
 
 Here `custom_inner` is the user provided inner product.
@@ -43,5 +43,5 @@ orth = [ cp.basis(0, 0, dim), (x-A[:,0]) / np.sqrt(B[:,1]) ]
 for n in range(1, order):
   orth.append( (orth[-1]*(x-A[:,n]) - orth[-2]*np.sqrt(B[:,n])) /
 np.sqrt(B[:,n+1]) )
-orth = cp.flatten( cp.Poly(orth) )
+orth = cp.flatten( cp.aspolynomial(orth) )
 ```

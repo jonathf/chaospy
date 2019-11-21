@@ -16,13 +16,13 @@ def test_poly_representation():
 
 def test_poly_composit():
     X, Y, Z = cp.variable(3)
-    ZYX = cp.Poly([Z, Y, X])
+    ZYX = cp.polynomial([Z, Y, X])
     assert str(ZYX) == "[q2 q1 q0]"
 
 
 def test_poly_matrix():
     XYZ = cp.variable(3)
-    XYYZ = cp.Poly([XYZ[:2], XYZ[1:]])
+    XYYZ = cp.polynomial([XYZ[:2], XYZ[1:]])
     assert str(XYYZ) == "[[q0 q1]\n [q1 q2]]"
     assert XYYZ.shape == (2, 2)
 
@@ -83,5 +83,5 @@ def test_poly_linearcomb():
 
     x, y = xy = cp.variable(2)
     mul1 = xy * np.eye(2)
-    mul2 = cp.Poly([[x, 0], [0, y]])
+    mul2 = cp.polynomial([[x, 0], [0, y]])
     assert np.all(mul1 == mul2)

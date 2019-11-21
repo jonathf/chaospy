@@ -14,7 +14,7 @@ def Sens_t(poly, dist, **kws):
     Total effect sensitivity index
 
     Args:
-        poly (Poly):
+        poly (chaospy.poly.ndpoly):
             Polynomial to find first order Sobol indices on.
         dist (Dist):
             The distributions of the input used in ``poly``.
@@ -26,7 +26,7 @@ def Sens_t(poly, dist, **kws):
 
     Examples:
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
         >>> indices = chaospy.Sens_t(poly, dist)
         >>> print(indices)

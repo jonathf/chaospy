@@ -37,7 +37,7 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
             terms in expansion.
 
     Returns:
-        (Poly) : Polynomial array.
+        (chaospy.poly.ndpoly) : Polynomial array.
 
     Examples:
         >>> print(chaospy.basis(4, 4, 2, sort="GR"))

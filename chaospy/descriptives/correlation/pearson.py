@@ -11,7 +11,7 @@ def Corr(poly, dist=None, **kws):
     Correlation matrix of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take correlation on. Must have ``len(poly)>=2``.
         dist (Dist):
             Defines the space the correlation is taken on.  It is ignored if
@@ -37,7 +37,7 @@ def Corr(poly, dist=None, **kws):
     if isinstance(poly, distributions.Dist):
         poly, dist = polynomials.variable(len(poly)), poly
     else:
-        poly = polynomials.Poly(poly)
+        poly = polynomials.polynomial(poly)
 
     if not poly.shape:
         return numpy.ones((1, 1))
