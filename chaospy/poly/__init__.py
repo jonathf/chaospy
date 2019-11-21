@@ -115,9 +115,9 @@ from .setdim import setdim
 
 from numpoly import aspolynomial as Poly
 from numpoly import (
-    abs, absolute, add, all, allclose, any, around, atleast_1d, atleast_2d,
-    atleast_3d, ceil, concatenate, decompose, diff, divide, dstack, equal,
+    abs, absolute, add, any, all, allclose, around, atleast_1d, atleast_2d,
+    atleast_3d, call, ceil, concatenate, cumsum, decompose, diff, divide, dstack, equal,
     floor, gradient, hessian, hstack, inner, isclose, isconstant, isfinite,
     multiply, ndpoly, negative, not_equal, outer, positive, power, prod,
-    repeat, rint, round, square, stack, subtract, sum, vstack,
+    repeat, rint, round, square, stack, subtract, sum, tonumpy, vstack,
 )

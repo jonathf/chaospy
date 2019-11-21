@@ -8,5 +8,5 @@ Polynomial Representation
 Baseclass
 ---------
 
-.. autoclass:: chaospy.poly.base.Poly
-    :members: copy, exponents, coefficients
+.. autoclass:: chaospy.poly.Poly
+    :members:

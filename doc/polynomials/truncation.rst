@@ -55,7 +55,7 @@ correct expansion, it is possible to use the flag ``cross_truncation=0`` to
 include all terms::
 
     >>> expansion = chaospy.orth_ttr(2, distribution, cross_truncation=0)
-    >>> print(expansion) # doctest: +NORMALIZE_WHITESPACE
+    >>> print(expansion)  # doctest: +NORMALIZE_WHITESPACE
     [1.0, q1, q0, q1^2-1.0, q0q1,
      q0^2-1.0, q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
 
