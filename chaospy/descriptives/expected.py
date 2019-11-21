@@ -34,6 +34,7 @@ def E(poly, dist=None, **kws):
     """
     if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))
+
     poly = polynomials.setdim(poly, len(dist))
     if not poly.isconstant:
         return poly.tonumpy()

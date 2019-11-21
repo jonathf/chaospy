@@ -1,6 +1,7 @@
 """Total Sobol sensitivity index."""
 import numpy
 
+from ...poly.setdim import setdim
 from ..conditional import E_cond
 from ..variance import Var
 
@@ -33,8 +34,7 @@ def Sens_t(poly, dist, **kws):
          [0.         0.         1.         0.57142857]]
     """
     dim = len(dist)
-    if poly.dim < dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
+    poly = setdim(poly, dim)
 
     zero = [1]*dim
     out = numpy.zeros((dim,) + poly.shape, dtype=float)

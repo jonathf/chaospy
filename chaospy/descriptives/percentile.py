@@ -37,7 +37,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
          [ 2.1   3.    6.3 ]]
     """
     shape = poly.shape
-    poly = polynomials.flatten(poly)
+    poly = poly.flatten()
 
     q = numpy.array(q)/100.
     dim = len(dist)

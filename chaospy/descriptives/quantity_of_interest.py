@@ -38,7 +38,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         [0.29143037 0.39931708 0.29536329]
     """
     shape = poly.shape
-    poly = polynomials.flatten(poly)
+    poly = poly.flatten()
     dim = len(dist)
 
     #sample from the inumpyut dist

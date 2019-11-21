@@ -9,17 +9,17 @@ Example usage
 
 The first few orders::
 
-    >>> distribution = chaospy.Uniform(0, 1)
-    >>> for order in [0, 1, 2, 3, 4]:
+    >>> distribution = chaospy.Beta(2, 3)
+    >>> for order in [0, 1, 2, 3, 4]:  # doctest: +NORMALIZE_WHITESPACE
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="leja")
-    ...     print(order, numpy.around(abscissas, 3),
-    ...           numpy.around(weights, 3))
-    0 [[0.5]] [1.]
-    1 [[0.5 1. ]] [1. 0.]
-    2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
-    3 [[0.    0.5   0.789 1.   ]] [0.167 0.667 0.    0.167]
-    4 [[0.    0.171 0.5   0.789 1.   ]] [0.043 0.289 0.316 0.28  0.072]
+    ...     print(order, abscissas.round(3), weights.round(3))
+    0 [[0.4]] [1.]
+    1 [[0.11 0.4 ]] [ 0.    -3.443]
+    2 [[0.11  0.4   0.787]] [ 0.203 -1.676  5.081]
+    3 [[0.11  0.4   0.6   0.787]] [  0.22   -1.431   4.7   -10.352]
+    4 [[0.027 0.11  0.4   0.6   0.787]]
+       [-4.7000e-02  2.7300e-01  2.0220e+00 -5.8250e+00  7.3986e+01]
 """
 from __future__ import print_function
 
@@ -66,11 +66,11 @@ def quad_leja(
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscisas, weights = quad_leja(3, chaospy.Normal(0, 1))
-        >>> print(numpy.around(abscisas, 4))
-        [[-2.7173 -1.4142  0.      1.7635]]
-        >>> print(numpy.around(weights, 4))
-        [0.022  0.1629 0.6506 0.1645]
+        >>> abscissas, weights = quad_leja(3, chaospy.Normal(0, 1))
+        >>> abscissas.round(4)
+        array([[-2.7173, -1.4142,  0.    ,  1.7635]])
+        >>> weights.round(4)
+        array([ 0.022 , -0.0319,  0.022 , -0.063 ])
     """
     from chaospy.distributions import evaluation
 
@@ -92,13 +92,14 @@ def quad_leja(
         return abscissas, weights
 
     lower, upper = dist.range()
-    abscissas = [lower, dist.mom(1), upper]
+    abscissas = [lower.flatten(), dist.mom(1).flatten(), upper.flatten()]
     for _ in range(int(order)):
 
         def objective(abscissas_):
             """Local objective function."""
-            return -numpy.sqrt(dist.pdf(abscissas_))*numpy.prod(
+            out = -numpy.sqrt(dist.pdf(abscissas_))*numpy.prod(
                 numpy.abs(abscissas[1:-1]-abscissas_))
+            return out
 
         opts, vals = zip(
             *[fminbound(
@@ -113,7 +114,7 @@ def quad_leja(
         abscissas, dist, rule, accuracy, recurrence_algorithm)
     abscissas = abscissas.reshape(1, abscissas.size)
 
-    return numpy.asfarray(abscissas), numpy.asfarray(weights)
+    return numpy.asfarray(abscissas), numpy.asfarray(weights).flatten()
 
 
 def create_weights(
@@ -132,7 +133,6 @@ def create_weights(
             order=accuracy, dist=dist, rule=rule,
             recurrence_algorithm=recurrence_algorithm,
         )
-        _, poly, _ = discretized_stieltjes(
-            len(nodes)-1, abscissas, weights)
+        _, poly, _ = discretized_stieltjes(len(nodes)-1, abscissas, weights)
     weights = numpy.linalg.inv(poly(nodes))
     return weights[:, 0]

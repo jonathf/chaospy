@@ -2,9 +2,10 @@
 from itertools import product
 
 import numpy
-import numpoly
+from numpoly.align import align_exponents
 
-from .. import distributions, poly as polynomials, quadrature
+from .expected import E
+from .. import distributions, poly as polynomials
 
 
 def E_cond(poly, freeze, dist, **kws):
@@ -31,16 +32,18 @@ def E_cond(poly, freeze, dist, **kws):
 
     Examples:
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
+        >>> poly = chaospy.Poly([1, x, y, 10*x*y-1])
+        >>> poly
+        polynomial([1, q0, q1, -1+10*q0*q1])
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(chaospy.E_cond(poly, [1, 0], dist))
-        [1.0, q0, 0.0, 0.0]
-        >>> print(chaospy.E_cond(poly, [0, 1], dist))
-        [1.0, 1.0, q1, 10.0q1]
-        >>> print(chaospy.E_cond(poly, [1, 1], dist))
-        [1.0, q0, q1, 10.0q0q1]
-        >>> print(chaospy.E_cond(poly, [0, 0], dist))
-        [1.0, 1.0, 0.0, 0.0]
+        >>> chaospy.E_cond(poly, [1, 0], dist)
+        polynomial([1.0, q0, 0.0, -1.0])
+        >>> chaospy.E_cond(poly, [0, 1], dist)
+        polynomial([1.0, 1.0, q1, -1.0+10.0*q1])
+        >>> chaospy.E_cond(poly, [1, 1], dist)
+        polynomial([1, q0, q1, -1+10*q0*q1])
+        >>> chaospy.E_cond(poly, [0, 0], dist)
+        polynomial([1.0, 1.0, 0.0, -1.0])
     """
     poly = polynomials.setdim(poly, len(dist))
     if not poly.isconstant:
@@ -51,43 +54,22 @@ def E_cond(poly, freeze, dist, **kws):
     if freeze.isconstant():
         freeze = freeze.tonumpy().astype(bool)
     else:
-        poly, freeze = numpoly.align_exponents(poly, freeze)
+        poly, freeze = align_exponents(poly, freeze)
         freeze = numpy.isin(poly.keys, freeze.keys)
 
+    # decompose into frozen and unfrozen part
     poly = polynomials.decompose(poly)
+    unfrozen = poly(**{
+        ("q%d" % idx): 1 for idx, keep in enumerate(freeze) if keep})
+    frozen = poly(**{
+        ("q%d" % idx): 1 for idx, keep in enumerate(freeze) if not keep})
 
-    cache = {}
-    if len(freeze.shape) == 1:
-        out = _E_cond(poly, freeze, dist, cache, **kws)
-    else:
-        out = polynomials.concatenate([
-            _E_cond(poly, freeze_, dist, cache, **kws)[numpy.newaxis]
-            for freeze_ in freeze
-        ])
-    if out.isconstant():
-        out = out.tonumpy()
-    return out
+    # if no unfrozen, poly will return numpy.ndarray instead of numpoly.ndpoly
+    if not isinstance(unfrozen, polynomials.ndpoly):
+        return polynomials.sum(frozen, 0)
 
+    # Remove frozen coefficients, such that poly == sum(frozen*unfrozen) holds
+    for key in unfrozen.keys:
+        unfrozen[key] = unfrozen[key] != 0
 
-def _E_cond(poly, freeze, dist, cache, **kws):
-    """Backend for conditional expected value."""
-    assert len(poly.names) == len(freeze) == len(dist)
-    if numpy.all(freeze):
-        return poly.copy()
-    poly1 = poly(**{str(var): (var if keep else 1)
-                    for var, keep in zip(poly.indeterminants, freeze)})
-    poly2 = poly(**{str(var): (var if not keep else 1)
-                    for var, keep in zip(poly.indeterminants, freeze)})
-    assert len(poly.names) == len(poly2.names)
-    # reset non-zero coefficients to 1 so not to duplicate them:
-    for key in poly2.keys:
-        poly2[poly2 != 0] = 1
-
-    out = numpoly.sum([
-        distributions.evaluation.evaluate_moment(
-            dist, (exponent*~freeze), cache, **kws)*coefficient
-        for exponent, coefficient in zip(poly2.exponents, poly2.coefficients)
-    ], axis=0)*poly1
-
-    out, _ = numpoly.align_indeterminants(out, poly)
-    return out
+    return polynomials.sum(frozen*E(unfrozen, dist), 0)

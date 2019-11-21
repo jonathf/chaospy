@@ -42,8 +42,9 @@ recursion scheme can be done through ``orth_ttr``. For example::
 
     >>> dist = chaospy.Iid(chaospy.Gamma(1), 2)
     >>> orths = chaospy.orth_ttr(2, dist)
-    >>> print(chaospy.around(orths, 4))
-    [1.0, q1-1.0, q0-1.0, q1^2-4.0q1+2.0, q0q1-q0-q1+1.0, q0^2-4.0q0+2.0]
+    >>> orths.round(4)
+    polynomial([1.0, -1.0+q1, -1.0+q0, 2.0-4.0*q1+q1**2, 1.0-q1-q0+q0*q1,
+                2.0-4.0*q0+q0**2])
 
 The method will use the ``ttr`` function if available, and discretized
 Stieltjes otherwise.
@@ -88,8 +89,8 @@ def orth_ttr(
 
     Examples:
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.around(chaospy.orth_ttr(4, Z), 4))
-        [1.0, q0, q0^2-1.0, q0^3-3.0q0, q0^4-6.0q0^2+3.0]
+        >>> chaospy.orth_ttr(4, Z).round(4)
+        polynomial([1.0, q0, -1.0+q0**2, -3.0*q0+q0**3, 3.0-6.0*q0**2+q0**4])
     """
     try:
         _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
@@ -100,8 +101,7 @@ def orth_ttr(
         _, polynomials, norms, = chaospy.quadrature.recurrence.discretized_stieltjes(
             numpy.max(order), abscissas, weights, normed=normed)
 
-    polynomials = chaospy.poly.reshape(
-        polynomials, (len(dist), numpy.max(order)+1))
+    polynomials = polynomials.reshape((len(dist), numpy.max(order)+1))
 
     indices = chaospy.bertran.bindex(
         start=0, stop=order, dim=len(dist), sort=sort,
@@ -113,7 +113,7 @@ def orth_ttr(
         norms = numpy.prod([
             norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)
     else:
-        polynomials = chaospy.poly.flatten(polynomials)
+        polynomials = polynomials.flatten()
 
     if retall:
         return polynomials, norms

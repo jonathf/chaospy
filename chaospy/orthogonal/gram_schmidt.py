@@ -34,15 +34,15 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
     Examples:
         >>> Z = chaospy.J(chaospy.Normal(), chaospy.Normal())
-        >>> print(chaospy.around(chaospy.orth_gs(2, Z), 4))
-        [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+        >>> chaospy.orth_gs(2, Z).round(4)
+        polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
     """
     logger = logging.getLogger(__name__)
     dim = len(dist)
 
     if isinstance(order, int):
         if order == 0:
-            return chaospy.poly.Poly(1, dim=dim)
+            return chaospy.poly.Poly(1, indeterminants=("q0",))
         basis = chaospy.poly.basis(
             0, order, dim, sort, cross_truncation=cross_truncation)
     else:
@@ -89,4 +89,4 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
 
             polynomials.append(basis[idx])
 
-    return chaospy.poly.Poly(polynomials, dim=dim, shape=(len(polynomials),))
+    return chaospy.poly.Poly(polynomials).reshape((len(polynomials),))

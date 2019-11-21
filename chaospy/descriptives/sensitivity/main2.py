@@ -1,5 +1,6 @@
 import numpy
 
+from ...poly.setdim import setdim
 from ..conditional import E_cond
 from ..expected import E
 from ..variance import Var
@@ -35,8 +36,7 @@ def Sens_m2(poly, dist, **kws):
           [0.         0.         0.         0.        ]]]
     """
     dim = len(dist)
-    if poly.dim<dim:
-        poly = chaospy.poly.setdim(poly, len(dist))
+    poly = setdim(poly, len(dist))
 
     zero = [0]*dim
     out = numpy.zeros((dim, dim) + poly.shape)
@@ -58,7 +58,7 @@ def Sens_m2(poly, dist, **kws):
 
             zero[j] = 1
             E_cond_ij = E_cond(poly, zero, dist, **kws)
-            out[i, j] = ((Var(E_cond_ij, dist, **kws)-V_E_cond_i[i] - V_E_cond_i[j]) /
+            out[i, j] = ((Var(E_cond_ij, dist, **kws)-V_E_cond_i[i]-V_E_cond_i[j]) /
                          (V_total+(V_total == 0))*(V_total != 0))
             out[j, i] = out[i, j]
             zero[j] = 0

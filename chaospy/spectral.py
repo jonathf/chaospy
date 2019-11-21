@@ -9,41 +9,41 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
 -  Create integration abscissas and weights (as described in :ref:`quadrature`)::
 
-    >>> absissas, weights = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     2, distribution, rule="G")
-    >>> print(numpy.around(absissas, 4))
-    [[-1.7321 -1.7321 -1.7321  0.      0.      0.      1.7321  1.7321  1.7321]
-     [-1.7321  0.      1.7321 -1.7321  0.      1.7321 -1.7321  0.      1.7321]]
-    >>> print(numpy.around(weights, 4))
-    [0.0278 0.1111 0.0278 0.1111 0.4444 0.1111 0.0278 0.1111 0.0278]
+    >>> abscissas.round(2)
+    array([[-1.73, -1.73, -1.73,  0.  ,  0.  ,  0.  ,  1.73,  1.73,  1.73],
+           [-1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73]])
+    >>> weights.round(3)
+    array([0.028, 0.111, 0.028, 0.111, 0.444, 0.111, 0.028, 0.111, 0.028])
 
 - An orthogonal polynomial expansion (as described in section
   :ref:`orthogonality`) where the weight function is the distribution in the
   first step::
 
     >>> expansion = chaospy.orth_ttr(2, distribution)
-    >>> print(expansion)
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> expansion
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
 
 - A function evaluated using the nodes generated in the second step.
   For example::
 
     >>> def model_solver(q):
     ...     return [q[0]*q[1], q[0]*numpy.e**-q[1]+1]
-    >>> solves = [model_solver(ab) for ab in absissas.T]
-    >>> print(numpy.around(solves[:4], 8))
-    [[ 3.         -8.7899559 ]
-     [-0.         -0.73205081]
-     [-3.          0.69356348]
-     [-0.          1.        ]]
+    >>> solves = numpy.array([model_solver(ab) for ab in abscissas.T])
+    >>> solves[:4].round(8)
+    array([[ 3.        , -8.7899559 ],
+           [-0.        , -0.73205081],
+           [-3.        ,  0.69356348],
+           [-0.        ,  1.        ]])
 
 - To bring it together, expansion, abscissas, weights and solves are used as
   arguments to create approximation::
 
     >>> approx = chaospy.fit_quadrature(
-    ...     expansion, absissas, weights, solves)
-    >>> print(chaospy.around(approx, 4))
-    [q0q1, -1.5806q0q1+1.6382q0+1.0]
+    ...     expansion, abscissas, weights, solves)
+    >>> approx.round(4)
+    polynomial([q0*q1, 1.0+1.6382*q0-1.5806*q0*q1])
 
 Note that in this case the function output is
 bivariate. The software is designed to create an approximation of any
@@ -63,15 +63,15 @@ can be added::
 
     >>> expansion, norms = chaospy.orth_ttr(2, distribution, retall=True)
     >>> approx2 = chaospy.fit_quadrature(
-    ...     expansion, absissas, weights, solves, norms=norms)
-    >>> print(chaospy.around(approx2, 4))
-    [q0q1, -1.5806q0q1+1.6382q0+1.0]
+    ...     expansion, abscissas, weights, solves, norms=norms)
+    >>> approx2.round(4)
+    polynomial([q0*q1, 1.0+1.6382*q0-1.5806*q0*q1])
 
 Note that at low polynomial order, the error is very small. For example the
 largest coefficient between the two approximation::
 
-    >>> print(numpy.max(abs(approx-approx2).coefficients, -1) < 1e-12)
-    [ True  True]
+    >>> chaospy.allclose(approx, approx2)
+    True
 
 The ``coefficients`` function returns all the polynomial coefficients.
 """
@@ -130,13 +130,8 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
 
     coefs = (numpy.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])
-    approx_model = chaospy.poly.transpose(chaospy.poly.sum(orth*coefs.T, -1))
+    approx_model = chaospy.poly.sum(orth*coefs.T, -1).T
 
     if retall:
         return approx_model, coefs
     return approx_model
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

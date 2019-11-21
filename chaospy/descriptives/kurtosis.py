@@ -3,6 +3,7 @@ import numpy
 
 from .. import distributions, poly as polynomials
 from .expected import E
+from .standard_deviation import Std
 
 
 def Kurt(poly, dist=None, fisher=True, **kws):
@@ -37,25 +38,14 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
         [nan  6.  0. 15.]
     """
+    adjust = 3 if fisher else 0
+
     if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))
     poly = polynomials.setdim(poly, len(dist))
+    if not poly.isconstant:
+        return poly.tonumpy()**4-adjust
 
-    if fisher:
-        adjust = 3
-    else:
-        adjust = 0
-
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    m1 = E(poly, dist)
-    m2 = E(poly**2, dist)
-    m3 = E(poly**3, dist)
-    m4 = E(poly**4, dist)
-
-    out = (m4-4*m3*m1 + 6*m2*m1**2 - 3*m1**4) /\
-            (m2**2-2*m2*m1**2+m1**4) - adjust
-
-    out = numpy.reshape(out, shape)
-    return out
+    poly = poly-E(poly, dist, **kws)
+    poly = poly/Std(poly, dist, **kws)
+    return E(poly**4, dist, **kws)-adjust
