@@ -21,6 +21,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 numpy = "*"
+numpoly = "*"
 scipy = "*"
 
 [tool.poetry.dev-dependencies]
