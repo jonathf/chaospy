@@ -12,20 +12,21 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-              - deps-py27-{{ checksum "poetry.lock" }}
-              - deps-py27-
+              - deps-py27-v2-{{ checksum "poetry.lock" }}
+              - deps-py27-v2-
       - run:
           name: "Installation"
           command: |
               mv poetry.lock _poetry.lock  # bug workaround
               if [[ ! -d /home/circleci/venv ]]; then
                 virtualenv /home/circleci/venv
+                source /home/circleci/venv/bin/activate
                 pip install pytest openturns scikit-learn==0.20.1
               fi
               source /home/circleci/venv/bin/activate
               pip install .
       - save_cache:
-          key: deps-py27-{{ checksum "_poetry.lock" }}
+          key: deps-py27-v2-{{ checksum "_poetry.lock" }}
           paths:
               - /home/circleci/venv
       - run:
