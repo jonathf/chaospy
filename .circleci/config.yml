@@ -33,7 +33,7 @@ jobs:
           name: "Run tests"
           command: |
               source /home/circleci/venv/bin/activate
-              pytest --doctest-modules chaospy
+              pytest tests
   build-cache:
     docker:
       - image: circleci/python:3.7.5
