@@ -1,0 +1,4 @@
+numpy
+numpoly
+scipy
+Sphinx
