@@ -19,52 +19,52 @@ For example for the tailored quadrature rules defined above:
 * Gauss-Hermit quadrature is tailored to the normal (Gaussian) distribution::
 
     >>> distribution = chaospy.Normal(0, 1)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[-3.3243 -1.8892 -0.6167  0.6167  1.8892  3.3243]]
-    >>> print(numpy.around(W, 4))
-    [0.0026 0.0886 0.4088 0.4088 0.0886 0.0026]
+    >>> abscissas.round(4)
+    array([[-3.3243, -1.8892, -0.6167,  0.6167,  1.8892,  3.3243]])
+    >>> weights.round(4)
+    array([0.0026, 0.0886, 0.4088, 0.4088, 0.0886, 0.0026])
 
 * Gauss-Legendre quadrature is tailored to the Uniform distributions::
 
     >>> distribution = chaospy.Uniform(-1, 1)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[-0.9325 -0.6612 -0.2386  0.2386  0.6612  0.9325]]
-    >>> print(numpy.around(W, 4))
-    [0.0857 0.1804 0.234  0.234  0.1804 0.0857]
+    >>> abscissas.round(4)
+    array([[-0.9325, -0.6612, -0.2386,  0.2386,  0.6612,  0.9325]])
+    >>> weights.round(4)
+    array([0.0857, 0.1804, 0.234 , 0.234 , 0.1804, 0.0857])
 
 * Gauss-Jacobi quadrature is tailored to the Beta distribution::
 
     >>> distribution = chaospy.Beta(2, 4, lower=-1, upper=1)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[-0.8969 -0.6679 -0.3448  0.0289  0.4029  0.7279]]
-    >>> print(numpy.around(W, 4))
-    [0.0749 0.272  0.355  0.2253 0.0667 0.0062]
+    >>> abscissas.round(4)
+    array([[-0.8969, -0.6679, -0.3448,  0.0289,  0.4029,  0.7279]])
+    >>> weights.round(4)
+    array([0.0749, 0.272 , 0.355 , 0.2253, 0.0667, 0.0062])
 
 * Gauss-Laguerre quadrature is tailored to the Exponential distribution::
 
     >>> distribution = chaospy.Exponential()
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[ 0.2228  1.1889  2.9927  5.7751  9.8375 15.9829]]
-    >>> print(numpy.around(W, 4))
-    [4.590e-01 4.170e-01 1.134e-01 1.040e-02 3.000e-04 0.000e+00]
+    >>> abscissas.round(4)
+    array([[ 0.2228,  1.1889,  2.9927,  5.7751,  9.8375, 15.9829]])
+    >>> weights.round(4)
+    array([4.590e-01, 4.170e-01, 1.134e-01, 1.040e-02, 3.000e-04, 0.000e+00])
 
 * Generalized Gauss-Laguerre quadrature is tailored to the Gamma distribution::
 
     >>> distribution = chaospy.Gamma(2, 4)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[ 2.1107  7.1852 15.5066 27.6753 44.9384 70.5839]]
-    >>> print(numpy.around(W, 4))
-    [0.2777 0.4939 0.203  0.0247 0.0008 0.    ]
+    >>> abscissas.round(4)
+    array([[ 2.1107,  7.1852, 15.5066, 27.6753, 44.9384, 70.5839]])
+    >>> weights.round(4)
+    array([0.2777, 0.4939, 0.203 , 0.0247, 0.0008, 0.    ])
 
 For uncommon distributions an analytical Stieltjes method can not be performed
 as the distribution does not provide three terms recursion coefficients. In
@@ -74,42 +74,42 @@ For example, to mention a few:
 * The Triangle distribution::
 
     >>> distribution = chaospy.Triangle(-1, 0, 1)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[-0.8657 -0.5766 -0.1943  0.1943  0.5766  0.8657]]
-    >>> print(numpy.around(W, 4))
-    [0.0295 0.1475 0.323  0.323  0.1475 0.0295]
+    >>> abscissas.round(4)
+    array([[-0.8657, -0.5766, -0.1943,  0.1943,  0.5766,  0.8657]])
+    >>> weights.round(4)
+    array([0.0295, 0.1475, 0.323 , 0.323 , 0.1475, 0.0295])
 
 * The Laplace distribution::
 
     >>> distribution = chaospy.Laplace(0, 1)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[-10.5577  -4.6629  -1.0424   1.0424   4.6629  10.5577]]
-    >>> print(numpy.around(W, 4))
-    [1.000e-04 2.160e-02 4.783e-01 4.783e-01 2.160e-02 1.000e-04]
+    >>> abscissas.round(4)
+    array([[-10.5577,  -4.6629,  -1.0424,   1.0424,   4.6629,  10.5577]])
+    >>> weights.round(4)
+    array([1.000e-04, 2.160e-02, 4.783e-01, 4.783e-01, 2.160e-02, 1.000e-04])
 
 * The Weibull distribution::
 
     >>> distribution = chaospy.Weibull()
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[ 0.2228  1.1886  2.9918  5.7731  9.8334 15.9737]]
-    >>> print(numpy.around(W, 4))
-    [4.589e-01 4.170e-01 1.134e-01 1.040e-02 3.000e-04 0.000e+00]
+    >>> abscissas.round(4)
+    array([[ 0.2228,  1.1886,  2.9918,  5.7731,  9.8334, 15.9737]])
+    >>> weights.round(4)
+    array([4.589e-01, 4.170e-01, 1.134e-01, 1.040e-02, 3.000e-04, 0.000e+00])
 
 * The Rayleigh distribution::
 
     >>> distribution = chaospy.Rayleigh()
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
-    >>> print(numpy.around(X, 4))
-    [[0.2473 0.7687 1.4795 2.3314 3.3228 4.5295]]
-    >>> print(numpy.around(W, 4))
-    [9.600e-02 3.591e-01 3.891e-01 1.412e-01 1.430e-02 2.000e-04]
+    >>> abscissas.round(4)
+    array([[0.2473, 0.7687, 1.4795, 2.3314, 3.3228, 4.5295]])
+    >>> weights.round(4)
+    array([9.600e-02, 3.591e-01, 3.891e-01, 1.412e-01, 1.430e-02, 2.000e-04])
 """
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
@@ -166,18 +166,18 @@ def quad_gaussian(
         >>> distribution = chaospy.Normal(0, 1)
         >>> abscissas, weights = chaospy.quad_gaussian(
         ...     5, distribution, recurrence_algorithm="stieltjes")
-        >>> print(numpy.around(abscissas, 4))
-        [[-3.3243 -1.8892 -0.6167  0.6167  1.8892  3.3243]]
-        >>> print(numpy.around(weights, 4))
-        [0.0026 0.0886 0.4088 0.4088 0.0886 0.0026]
+        >>> abscissas.round(4)
+        array([[-3.3243, -1.8892, -0.6167,  0.6167,  1.8892,  3.3243]])
+        >>> weights.round(4)
+        array([0.0026, 0.0886, 0.4088, 0.4088, 0.0886, 0.0026])
         >>> distribution = chaospy.J(chaospy.Uniform(), chaospy.Normal())
         >>> abscissas, weights = chaospy.quad_gaussian(
         ...     2, distribution, recurrence_algorithm="chebyshev")
-        >>> print(numpy.around(abscissas, 3))
-        [[ 0.113  0.113  0.113  0.5    0.5    0.5    0.887  0.887  0.887]
-         [-1.732  0.     1.732 -1.732  0.     1.732 -1.732  0.     1.732]]
-        >>> print(numpy.around(weights, 4))
-        [0.0463 0.1852 0.0463 0.0741 0.2963 0.0741 0.0463 0.1852 0.0463]
+        >>> abscissas.round(2)
+        array([[ 0.11,  0.11,  0.11,  0.5 ,  0.5 ,  0.5 ,  0.89,  0.89,  0.89],
+               [-1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73]])
+        >>> weights.round(3)
+        array([0.046, 0.185, 0.046, 0.074, 0.296, 0.074, 0.046, 0.185, 0.046])
     """
     coefficients = construct_recurrence_coefficients(
         order, dist, rule, accuracy, recurrence_algorithm)

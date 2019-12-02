@@ -40,25 +40,29 @@ class Burr(Add):
     Burr Type XII or Singh-Maddala distribution.
 
     Args:
-        alpha (float, Dist): First shape parameter
-        kappa (float, Dist): Second shape parameter
-        loc (float, Dist): Location parameter
-        scale (float, Dist): Scaling parameter
+        alpha (float, Dist):
+            First shape parameter
+        kappa (float, Dist):
+            Second shape parameter
+        loc (float, Dist):
+            Location parameter
+        scale (float, Dist):
+            Scaling parameter
 
     Examples:
         >>> distribution = chaospy.Burr(100, 1.2, 4, 2)
-        >>> print(distribution)
+        >>> distribution
         Burr(alpha=100, kappa=1.2, loc=4, scale=2)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [5.9642 5.9819 5.9951 6.0081 6.0249]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [266.5437  71.6255  21.5893   5.3229   0.643 ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [6.007  5.9558 6.0489 5.9937]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([5.9642, 5.9819, 5.9951, 6.0081, 6.0249])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([266.5437,  71.6255,  21.5893,   5.3229,   0.643 ])
+        >>> distribution.sample(4).round(4)
+        array([6.007 , 5.9558, 6.0489, 5.9937])
+        >>> distribution.mom(1).round(4)
         6.0061
     """
 

@@ -18,10 +18,9 @@ def prange(N=1, dim=1):
             increasing exponent.
 
     Examples:
-        >>> print(chaospy.prange(4))
-        [1 q0 q0**2 q0**3]
-        >>> print(chaospy.prange(4, dim=3))
-        [1 q2 q2**2 q2**3]
+        >>> chaospy.prange(4)
+        polynomial([1, q0, q0**2, q0**3])
+        >>> chaospy.prange(4, dim=3)
+        polynomial([1, q2, q2**2, q2**3])
     """
-    indeterminants = ["q%d" % (dim-1)]
-    return numpoly.monomial(N-1, indeterminants=indeterminants)
+    return numpoly.monomial(N, names=["q%d" % (dim-1)])

@@ -30,19 +30,18 @@ def bastos_ohagen(mat, eps=1e-16):
     Examples:
         >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
         >>> perm, lowtri = bastos_ohagen(mat)
-        >>> print(perm)
-        [[0 1 0]
-         [1 0 0]
-         [0 0 1]]
-        >>> print(numpy.around(lowtri, 4))
-        [[ 2.4495  0.      0.    ]
-         [ 0.8165  1.8257  0.    ]
-         [ 1.2247 -0.      0.9129]]
-        >>> comp = numpy.dot(perm, lowtri)
-        >>> print(numpy.around(numpy.dot(comp, comp.T), 4))
-        [[4.     2.     1.    ]
-         [2.     6.     3.    ]
-         [1.     3.     2.3333]]
+        >>> perm
+        array([[0, 1, 0],
+               [1, 0, 0],
+               [0, 0, 1]])
+        >>> lowtri.round(4)
+        array([[ 2.4495,  0.    ,  0.    ],
+               [ 0.8165,  1.8257,  0.    ],
+               [ 1.2247, -0.    ,  0.9129]])
+        >>> (perm @ lowtri @ lowtri.T @ perm.T).round(4)
+        array([[4.    , 2.    , 1.    ],
+               [2.    , 6.    , 3.    ],
+               [1.    , 3.    , 2.3333]])
     """
     mat_ref = numpy.asfarray(mat)
     mat = mat_ref.copy()

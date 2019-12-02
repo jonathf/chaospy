@@ -124,11 +124,11 @@ def generate_quadrature(
         >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 3)
         >>> abscissas, weights = generate_quadrature(
         ...     1, distribution, rule=("gaussian", "fejer"))
-        >>> print(abscissas)
-        [[-1.   -1.    1.    1.  ]
-         [-3.75  3.75 -3.75  3.75]]
-        >>> print(weights)
-        [0.25 0.25 0.25 0.25]
+        >>> abscissas
+        array([[-1.  , -1.  ,  1.  ,  1.  ],
+               [-3.75,  3.75, -3.75,  3.75]])
+        >>> weights
+        array([0.25, 0.25, 0.25, 0.25])
     """
     if sparse:
         from . import sparse_grid

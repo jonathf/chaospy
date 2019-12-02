@@ -25,12 +25,12 @@ def E(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(chaospy.E(dist))
-        [1. 0.]
+        >>> chaospy.E(dist)
+        array([1., 0.])
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> print(chaospy.E(poly, dist))
-        [1. 1. 0. 0.]
+        >>> chaospy.E(poly, dist)
+        array([1., 1., 0., 0.])
     """
     if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))

@@ -15,9 +15,9 @@ def variable(dims=1):
             Polynomial array with unit components in each dimension.
 
     Examples:
-        >>> print(chaospy.variable())
-        q0
-        >>> print(chaospy.variable(3))
-        [q0 q1 q2]
+        >>> chaospy.variable()
+        polynomial(q0)
+        >>> chaospy.variable(3)
+        polynomial([q0, q1, q2])
     """
     return numpoly.symbols("q:%d" % dims)

@@ -22,16 +22,16 @@ def Cov(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.MvNormal([0, 0], [[2, .5], [.5, 1]])
-        >>> print(chaospy.Cov(dist))
-        [[2.  0.5]
-         [0.5 1. ]]
+        >>> chaospy.Cov(dist)
+        array([[2. , 0.5],
+               [0.5, 1. ]])
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> print(chaospy.Cov(poly, dist))
-        [[  0.    0.    0.    0. ]
-         [  0.    2.    0.5   0. ]
-         [  0.    0.5   1.    0. ]
-         [  0.    0.    0.  225. ]]
+        >>> chaospy.Cov(poly, dist)
+        array([[  0. ,   0. ,   0. ,   0. ],
+               [  0. ,   2. ,   0.5,   0. ],
+               [  0. ,   0.5,   1. ,   0. ],
+               [  0. ,   0. ,   0. , 225. ]])
     """
     if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))

@@ -31,28 +31,31 @@ class LogGamma(Add):
     Log-gamma distribution
 
     Args:
-        shape (float, Dist) : Shape parameter
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        shape (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.LogGamma(2, 2, 1)
-        >>> print(distribution)
+        >>> distribution
         LogGamma(scale=2, shape=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [0.6138 1.639  2.4085 3.1934]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.149  0.2392 0.2706 0.2245]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 2.6074 -0.0932  4.1166  1.9675]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([0.6138, 1.639 , 2.4085, 3.1934])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.149 , 0.2392, 0.2706, 0.2245])
+        >>> distribution.sample(4).round(4)
+        array([ 2.6074, -0.0932,  4.1166,  1.9675])
+        >>> distribution.mom(1).round(4)
         1.8456
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[ 0.5924 -0.8925 -2.5379]
-         [ 2.5797  6.6525 12.5947]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[ 0.5924, -0.8925, -2.5379],
+               [ 2.5797,  6.6525, 12.5947]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

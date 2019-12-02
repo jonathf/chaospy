@@ -36,28 +36,31 @@ class HyperbolicSecant(Add):
     Hyperbolic secant distribution
 
     Args:
-        loc (float, Dist) : Location parameter
-        scale (float, Dist) : Scale parameter
+        loc (float, Dist):
+            Location parameter
+        scale (float, Dist):
+            Scale parameter
 
     Examples:
         >>> distribution = chaospy.HyperbolicSecant(2, 2)
-        >>> print(distribution)
+        >>> distribution
         HyperbolicSecant(loc=2, scale=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [0.5687 1.5933 2.4067 3.4313]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.1469 0.2378 0.2378 0.1469]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 2.6397 -0.1648  5.2439  1.9287]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([0.5687, 1.5933, 2.4067, 3.4313])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.1469, 0.2378, 0.2378, 0.1469])
+        >>> distribution.sample(4).round(4)
+        array([ 2.6397, -0.1648,  5.2439,  1.9287])
+        >>> distribution.mom(1).round(4)
         2.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[ 2.      2.      2.    ]
-         [ 4.     16.0001 35.9976]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[ 2.    ,  2.    ,  2.    ],
+               [ 4.    , 16.0001, 35.9976]])
     """
+
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}
         Add.__init__(self, left=hyperbolic_secant()*scale, right=loc)

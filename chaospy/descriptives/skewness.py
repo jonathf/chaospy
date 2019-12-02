@@ -25,12 +25,12 @@ def Skew(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(chaospy.Skew(dist))
-        [2. 0.]
+        >>> chaospy.Skew(dist)
+        array([2., 0.])
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> print(chaospy.Skew(poly, dist))
-        [nan  2.  0.  0.]
+        >>> chaospy.Skew(poly, dist)
+        array([nan,  2.,  0.,  0.])
     """
     if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))

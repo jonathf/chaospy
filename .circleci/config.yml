@@ -12,8 +12,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-              - deps-py27-v2-{{ checksum "poetry.lock" }}
-              - deps-py27-v2-
+              - deps-py27-v3-{{ checksum "poetry.lock" }}
+              - deps-py27-v3-
       - run:
           name: "Installation"
           command: |
@@ -26,7 +26,7 @@ jobs:
               source /home/circleci/venv/bin/activate
               pip install .
       - save_cache:
-          key: deps-py27-v2-{{ checksum "_poetry.lock" }}
+          key: deps-py27-v3-{{ checksum "_poetry.lock" }}
           paths:
               - /home/circleci/venv
       - run:
@@ -85,7 +85,7 @@ jobs:
               sphinx-build doc/ doc/.build -b html -n -v --color -T -W
   deploy:
     docker:
-      - image: circleci/python:2.7.16
+      - image: circleci/python:3.7.5
     working_directory: /home/circleci/project
     steps:
       - attach_workspace:

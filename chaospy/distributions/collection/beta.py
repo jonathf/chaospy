@@ -55,22 +55,22 @@ class Beta(Add):
 
     Examples:
         >>> distribution = chaospy.Beta(2, 2, 2, 3)
-        >>> print(distribution)
+        >>> distribution
         Beta(alpha=2, beta=2, lower=2, upper=3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2.2871 2.4329 2.5671 2.7129]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [1.2281 1.473  1.473  1.2281]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [2.6039 2.2112 2.8651 2.4881]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([2.2871, 2.4329, 2.5671, 2.7129])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([1.2281, 1.473 , 1.473 , 1.2281])
+        >>> distribution.sample(4).round(4)
+        array([2.6039, 2.2112, 2.8651, 2.4881])
+        >>> distribution.mom(1).round(4)
         2.5
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[2.5    2.5    2.5   ]
-         [0.05   0.0571 0.0595]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[2.5   , 2.5   , 2.5   ],
+               [0.05  , 0.0571, 0.0595]])
     """
 
     def __init__(self, alpha, beta, lower=0, upper=1):
@@ -94,19 +94,19 @@ class ArcSinus(Add):
 
     Examples:
         >>> distribution = chaospy.ArcSinus(0.8, 4, 6)
-        >>> print(distribution)
+        >>> distribution
         ArcSinus(lower=4, shape=0.8, upper=6)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [4.9875 5.6438 5.9134 5.9885 5.9996]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [ 0.1857  0.3868  1.1633  5.8145 92.8592]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [5.9861 4.6882 6.     5.897 ]
-        >>> print(distribution.mom(1))
-        5.6
+        >>> distribution.inv(q).round(4)
+        array([4.9875, 5.6438, 5.9134, 5.9885, 5.9996])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([ 0.1857,  0.3868,  1.1633,  5.8145, 92.8592])
+        >>> distribution.sample(4).round(4)
+        array([5.9861, 4.6882, 6.    , 5.897 ])
+        >>> distribution.mom(1)
+        array(5.6)
     """
 
     def __init__(self, shape=0.5, lower=0, upper=1):
@@ -131,18 +131,18 @@ class PowerLaw(Add):
 
     Examples:
         >>> distribution = chaospy.PowerLaw(0.8, 4, 6)
-        >>> print(distribution)
+        >>> distribution
         PowerLaw(lower=4, shape=0.8, upper=6)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [4.213  4.5066 4.8409 5.2048 5.5924]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.626  0.5264 0.4757 0.4427 0.4187]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [5.1753 4.1339 5.8765 4.8036]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([4.213 , 4.5066, 4.8409, 5.2048, 5.5924])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.626 , 0.5264, 0.4757, 0.4427, 0.4187])
+        >>> distribution.sample(4).round(4)
+        array([5.1753, 4.1339, 5.8765, 4.8036])
+        >>> distribution.mom(1).round(4)
         4.8889
     """
 
@@ -166,18 +166,18 @@ class Wigner(Add):
 
     Examples:
         >>> distribution = chaospy.Wigner(2, 3)
-        >>> print(distribution)
+        >>> distribution
         Wigner(radius=2, shift=3)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [1.8934 2.4701 3.     3.5299 4.1066]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.2651 0.3069 0.3183 0.3069 0.2651]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [3.4874 1.6895 4.6123 2.944 ]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([1.8934, 2.4701, 3.    , 3.5299, 4.1066])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.2651, 0.3069, 0.3183, 0.3069, 0.2651])
+        >>> distribution.sample(4).round(4)
+        array([3.4874, 1.6895, 4.6123, 2.944 ])
+        >>> distribution.mom(1).round(4)
         3.0
     """
 

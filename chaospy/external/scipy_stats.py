@@ -10,15 +10,15 @@ the ``scipy.stats`` distributions as input argument::
     >>> from scipy.stats import norm
     >>> st_distribution = norm(0, 1)
     >>> distribution = chaospy.ScipyStatsDist(st_distribution)
-    >>> print(distribution)
+    >>> distribution
     ScipyStatsDist(norm(0, 1))
 
 This distribution then behaves as a normal ``chaospy`` distribution::
 
-    >>> print(numpy.around(distribution.pdf([-1, 0, 1]), 4))
-    [0.242  0.3989 0.242 ]
-    >>> print(distribution.mom([0, 1, 2]))
-    [1. 0. 1.]
+    >>> distribution.pdf([-1, 0, 1]).round(4)
+    array([0.242 , 0.3989, 0.242 ])
+    >>> distribution.mom([0, 1, 2])
+    array([1., 0., 1.])
 
 Currently the wrapper is limited to only support univariate distributions.
 """

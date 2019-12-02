@@ -77,8 +77,8 @@ coefficients to be for example 1: ``n_nonzero_coefs=1``. In practice::
     >>> omp = OrthogonalMatchingPursuit(fit_intercept=False, n_nonzero_coefs=1)  # doctest: +SKIP
     >>> approx_model = chaospy.fit_regression(  # doctest: +SKIP
     ...     orthogonal_expansion, samples, solves, rule=omp)
-    >>> print(chaospy.around(approx_model, 8))  # doctest: +SKIP
-    [3.46375077q0q1, 11.63750715]
+    >>> approx_model.round(2)
+    polynomial([q0*q1, 0.94-0.09*q1+0.11*q1**2+1.22*q0-1.44*q0*q1+0.05*q0**2])
 
 Note that the option ``fit_intercept=False``. This is a prerequisite for
 ``scikit-learn`` to be compatible with ``chaospy``.
@@ -127,9 +127,8 @@ def fit_regression(
         >>> polynomials = chaospy.polynomial([1, x, y])
         >>> abscissas = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> evals = [0,1,1,2]
-        >>> print(chaospy.around(chaospy.fit_regression(
-        ...     polynomials, abscissas, evals), 14))
-        1.0+0.5*q1+0.5*q0
+        >>> chaospy.fit_regression(polynomials, abscissas, evals).round(14)
+        polynomial(1.0+0.5*q1+0.5*q0)
     """
     abscissas = numpy.asarray(abscissas)
     if len(abscissas.shape) == 1:

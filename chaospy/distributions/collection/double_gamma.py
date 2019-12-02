@@ -34,24 +34,27 @@ class DoubleGamma(Add):
     Double gamma distribution.
 
     Args:
-        shape (float, Dist): Shape parameter
-        scale (float, Dist): Scaling parameter
-        shift (float, Dist): Location parameter
+        shape (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.DoubleGamma(2, 4, 2)
-        >>> print(distribution)
+        >>> distribution
         DoubleGamma(scale=4, shape=2, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [-100.4566   -4.7134    2.        8.7134  104.4566]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.     0.0392 0.     0.0392 0.    ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 6.4679 -9.2251 17.5874  0.8239]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([-100.4566,   -4.7134,    2.    ,    8.7134,  104.4566])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.    , 0.0392, 0.    , 0.0392, 0.    ])
+        >>> distribution.sample(4).round(4)
+        array([ 6.4679, -9.2251, 17.5874,  0.8239])
+        >>> distribution.mom(1).round(4)
         2.0
     """
 

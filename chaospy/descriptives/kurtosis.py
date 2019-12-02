@@ -29,14 +29,14 @@ def Kurt(poly, dist=None, fisher=True, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(numpy.around(chaospy.Kurt(dist), 4))
-        [6. 0.]
-        >>> print(numpy.around(chaospy.Kurt(dist, fisher=False), 4))
-        [9. 3.]
+        >>> chaospy.Kurt(dist).round(4)
+        array([6., 0.])
+        >>> chaospy.Kurt(dist, fisher=False).round(4)
+        array([9., 3.])
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
-        [nan  6.  0. 15.]
+        >>> chaospy.Kurt(poly, dist).round(4)
+        array([nan,  6.,  0., 15.])
     """
     adjust = 3 if fisher else 0
 

@@ -18,18 +18,18 @@ class Saltelli(object):
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
         >>> generator = Saltelli(dist, 3, rule="H")
 
-        >>> print(numpy.around(generator[(False, False)], 4))
-        [[0.875  0.0625 0.5625]
-         [0.5556 0.8889 0.037 ]]
-        >>> print(numpy.around(generator[(False, True)], 4))
-        [[0.875  0.0625 0.5625]
-         [0.4444 0.7778 0.2222]]
-        >>> print(numpy.around(generator[(True, False)], 4))
-        [[0.125  0.625  0.375 ]
-         [0.5556 0.8889 0.037 ]]
-        >>> print(numpy.around(generator[(True, True)], 4))
-        [[0.125  0.625  0.375 ]
-         [0.4444 0.7778 0.2222]]
+        >>> generator[False, False].round(4)
+        array([[0.875 , 0.0625, 0.5625],
+               [0.5556, 0.8889, 0.037 ]])
+        >>> generator[False, True].round(4)
+        array([[0.875 , 0.0625, 0.5625],
+               [0.4444, 0.7778, 0.2222]])
+        >>> generator[True, False].round(4)
+        array([[0.125 , 0.625 , 0.375 ],
+               [0.5556, 0.8889, 0.037 ]])
+        >>> generator[True, True].round(4)
+        array([[0.125 , 0.625 , 0.375 ],
+               [0.4444, 0.7778, 0.2222]])
     """
 
     def __init__(self, dist, samples, poly=None, rule="R"):

@@ -23,12 +23,12 @@ def Var(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(chaospy.Var(dist))
-        [1. 4.]
+        >>> chaospy.Var(dist)
+        array([1., 4.])
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> print(chaospy.Var(poly, dist))
-        [  0.   1.   4. 800.]
+        >>> chaospy.Var(poly, dist)
+        array([  0.,   1.,   4., 800.])
     """
     if dist is None:
         dist, poly = poly, polynomials.variable(len(poly))

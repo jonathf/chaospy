@@ -22,11 +22,11 @@ def Std(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(chaospy.Std(dist))
-        [1. 2.]
+        >>> chaospy.Std(dist)
+        array([1., 2.])
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> print(chaospy.Std(poly, dist))
-        [ 0.          1.          2.         28.28427125]
+        >>> chaospy.Std(poly, dist)
+        array([ 0.        ,  1.        ,  2.        , 28.28427125])
     """
     return numpy.sqrt(Var(poly, dist=dist, **kws))

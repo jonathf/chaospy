@@ -40,23 +40,26 @@ class Wald(Add):
     Reciprocal inverse Gaussian distribution.
 
     Args:
-        mu (float, Dist) : Mean of the normal distribution
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        mu (float, Dist):
+            Mean of the normal distribution
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.Wald(2, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         Wald(mu=2, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2.7154 3.45   4.5777 6.6903]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.3242 0.2262 0.138  0.063 ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 4.9997  2.4662 11.3302  3.848 ]
+        >>> distribution.inv(q).round(4)
+        array([2.7154, 3.45  , 4.5777, 6.6903])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.3242, 0.2262, 0.138 , 0.063 ])
+        >>> distribution.sample(4).round(4)
+        array([ 4.9997,  2.4662, 11.3302,  3.848 ])
     """
 
     def __init__(self, mu=1, scale=1, shift=0):

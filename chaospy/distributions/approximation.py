@@ -40,21 +40,21 @@ def find_interior_point(
         >>> distribution = chaospy.MvNormal([1, 2, 3], numpy.eye(3)+.03)
         >>> midpoint, lower, upper = find_interior_point(
         ...     distribution, retall=True, seed=1234)
-        >>> print(lower.T)
-        [[-64. -64. -64.]]
-        >>> print(numpy.around(midpoint, 4).T)
-        [[  0.6784 -33.7687 -19.0182]]
-        >>> print(upper.T)
-        [[16. 16. 16.]]
+        >>> lower.T
+        array([[-64., -64., -64.]])
+        >>> midpoint.T.round(4)
+        array([[  0.6784, -33.7687, -19.0182]])
+        >>> upper.T
+        array([[16., 16., 16.]])
         >>> distribution = chaospy.Uniform(1000, 1010)
         >>> midpoint, lower, upper = find_interior_point(
         ...     distribution, retall=True, seed=1234)
-        >>> print(numpy.around(lower, 4))
-        [[-1.]]
-        >>> print(numpy.around(midpoint, 4))
-        [[1009.8873]]
-        >>> print(numpy.around(upper, 4))
-        [[1024.]]
+        >>> lower.round(4)
+        array([[-1.]])
+        >>> midpoint.round(4)
+        array([[1009.8873]])
+        >>> upper.round(4)
+        array([[1024.]])
     """
     random_state = numpy.random.get_state()
     numpy.random.seed(seed)
@@ -157,11 +157,10 @@ def approximate_inverse(
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> qloc = numpy.array([[0.1, 0.2, 0.9]])
-        >>> print(numpy.around(approximate_inverse(
-        ...     distribution, qloc, seed=1234), 4))
-        [[ 987.1845  991.5838 1012.8155]]
-        >>> print(numpy.around(distribution.inv(qloc), 4))
-        [[ 987.1845  991.5838 1012.8155]]
+        >>> approximate_inverse(distribution, qloc, seed=1234).round(4)
+        array([[ 987.1845,  991.5838, 1012.8155]])
+        >>> distribution.inv(qloc).round(4)
+        array([[ 987.1845,  991.5838, 1012.8155]])
     """
     logger = logging.getLogger(__name__)
     logger.debug("init approximate_inverse: %s", distribution)
@@ -335,10 +334,10 @@ def approximate_density(
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> xloc = numpy.array([[990, 1000, 1010]])
-        >>> print(numpy.around(approximate_density(distribution, xloc), 4))
-        [[0.0242 0.0399 0.0242]]
-        >>> print(numpy.around(distribution.pdf(xloc), 4))
-        [[0.0242 0.0399 0.0242]]
+        >>> approximate_density(distribution, xloc).round(4)
+        array([[0.0242, 0.0399, 0.0242]])
+        >>> distribution.pdf(xloc).round(4)
+        array([[0.0242, 0.0399, 0.0242]])
     """
     if parameters is None:
         parameters = dist.prm.copy()

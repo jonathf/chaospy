@@ -21,8 +21,6 @@ The first few orders::
     4 [[0.027 0.11  0.4   0.6   0.787]]
        [-4.7000e-02  2.7300e-01  2.0220e+00 -5.8250e+00  7.3986e+01]
 """
-from __future__ import print_function
-
 import numpy
 from scipy.optimize import fminbound
 

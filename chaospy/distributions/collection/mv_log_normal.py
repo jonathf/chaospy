@@ -18,33 +18,33 @@ class MvLogNormal(Dist):
 
     Examples:
         >>> distribution = chaospy.MvLogNormal([1, 2], [[1, 0.6], [0.6, 1]])
-        >>> print(distribution)
+        >>> distribution
         MvLogNormal(loc=[1.0, 2.0], scale=[[1.0, 0.6], [0.6, 1.0]])
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
-        [[[ 1.3847  2.7183  5.3361]
-          [ 1.3847  2.7183  5.3361]
-          [ 1.3847  2.7183  5.3361]]
+        >>> distribution.inv(mesh).round(4)
+        array([[[ 1.3847,  2.7183,  5.3361],
+                [ 1.3847,  2.7183,  5.3361],
+                [ 1.3847,  2.7183,  5.3361]],
         <BLANKLINE>
-         [[ 2.874   4.3077  6.4566]
-          [ 4.9298  7.3891 11.075 ]
-          [ 8.4562 12.6745 18.9971]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
-        [[[0.25 0.5  0.75]
-          [0.25 0.5  0.75]
-          [0.25 0.5  0.75]]
+               [[ 2.874 ,  4.3077,  6.4566],
+                [ 4.9298,  7.3891, 11.075 ],
+                [ 8.4562, 12.6745, 18.9971]]])
+        >>> distribution.fwd(distribution.inv(mesh)).round(4)
+        array([[[0.25, 0.5 , 0.75],
+                [0.25, 0.5 , 0.75],
+                [0.25, 0.5 , 0.75]],
         <BLANKLINE>
-         [[0.25 0.25 0.25]
-          [0.5  0.5  0.5 ]
-          [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
-        [[0.0317 0.0135 0.0037]
-         [0.0232 0.0099 0.0027]
-         [0.0108 0.0046 0.0012]]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [[ 4.0351  0.8185 14.1201  2.5996]
-         [23.279   1.8986  4.9261  5.8399]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
+               [[0.25, 0.25, 0.25],
+                [0.5 , 0.5 , 0.5 ],
+                [0.75, 0.75, 0.75]]])
+        >>> distribution.pdf(distribution.inv(mesh)).round(4)
+        array([[0.0317, 0.0135, 0.0037],
+               [0.0232, 0.0099, 0.0027],
+               [0.0108, 0.0046, 0.0012]])
+        >>> distribution.sample(4).round(4)
+        array([[ 4.0351,  0.8185, 14.1201,  2.5996],
+               [23.279 ,  1.8986,  4.9261,  5.8399]])
+        >>> distribution.mom((1, 2)).round(4)
         6002.9122
     """
 

@@ -41,24 +41,27 @@ class DoubleWeibull(Add):
     Double Weibull distribution.
 
     Args:
-        shape (float, Dist): Shape parameter
-        scale (float, Dist): Scaling parameter
-        shift (float, Dist): Location parameter
+        shape (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.DoubleWeibull(2, 4, 2)
-        >>> print(distribution)
+        >>> distribution
         DoubleWeibull(scale=4, shape=2, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [-16.903   -1.3302   2.       5.3302  20.903 ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.     0.1041 0.     0.1041 0.    ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 4.4232 -2.8491  8.0772  1.2382]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([-16.903 ,  -1.3302,   2.    ,   5.3302,  20.903 ])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.    , 0.1041, 0.    , 0.1041, 0.    ])
+        >>> distribution.sample(4).round(4)
+        array([ 4.4232, -2.8491,  8.0772,  1.2382])
+        >>> distribution.mom(1).round(4)
         2.0
     """
 

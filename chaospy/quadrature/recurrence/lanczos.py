@@ -11,11 +11,9 @@ Basic usage::
     >>> dist = chaospy.Beta(3, 6)
     >>> abscissas, weights = chaospy.generate_quadrature(
     ...     10, dist, rule="clenshaw_curtis")
-    >>> alpha, beta = lanczos(3, abscissas, weights)
-    >>> print(alpha)
-    [0.33333333 0.39393939 0.42680399 0.44727847]
-    >>> print(beta)
-    [1.         0.02222222 0.03471074 0.04207915]
+    >>> lanczos(3, abscissas, weights)
+    array([[0.33333333, 0.39393939, 0.42680399, 0.44727847],
+           [1.        , 0.02222222, 0.03471074, 0.04207915]])
 """
 import numpy
 

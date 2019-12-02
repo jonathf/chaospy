@@ -27,19 +27,18 @@ def gill_murray_wright(mat, eps=1e-16):
     Examples:
         >>> mat = numpy.matrix([[4, 2, 1], [2, 6, 3], [1, 3, -.004]])
         >>> perm, lowtri = gill_murray_wright(mat)
-        >>> perm, lowtri = numpy.matrix(perm), numpy.matrix(lowtri)
-        >>> print(perm)
-        [[0 1 0]
-         [1 0 0]
-         [0 0 1]]
-        >>> print(numpy.around(lowtri, 4))
-        [[ 2.4495  0.      0.    ]
-         [ 0.8165  1.8257  0.    ]
-         [ 1.2247 -0.      1.2264]]
-        >>> print(numpy.around(perm*lowtri*lowtri.T*perm.T, 4))
-        [[4.    2.    1.   ]
-         [2.    6.    3.   ]
-         [1.    3.    3.004]]
+        >>> perm
+        array([[0, 1, 0],
+               [1, 0, 0],
+               [0, 0, 1]])
+        >>> lowtri.round(4)
+        array([[ 2.4495,  0.    ,  0.    ],
+               [ 0.8165,  1.8257,  0.    ],
+               [ 1.2247, -0.    ,  1.2264]])
+        >>> (perm @ lowtri @ lowtri.T @ perm.T).round(4)
+        array([[4.   , 2.   , 1.   ],
+               [2.   , 6.   , 3.   ],
+               [1.   , 3.   , 3.004]])
     """
     mat = numpy.asfarray(mat)
     size = mat.shape[0]

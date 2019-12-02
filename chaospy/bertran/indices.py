@@ -30,25 +30,34 @@ def bindex(start, stop=None, dim=1, sort="G", cross_truncation=1.):
             Order list of indices.
 
     Examples:
-        >>> print(bindex(2, 3, 2).tolist())
-        [[0, 2], [1, 1], [2, 0], [0, 3], [1, 2], [2, 1], [3, 0]]
-        >>> print(bindex(2, [1, 3], 2, cross_truncation=0).tolist())
-        [[0, 2], [1, 1], [0, 3], [1, 2], [1, 3]]
-        >>> print(bindex([1, 2], [2, 3], 2, cross_truncation=0).tolist())
-        [[1, 2], [1, 3], [2, 2], [2, 3]]
-        >>> print(bindex(1, 3, 2, cross_truncation=0).tolist())  # doctest: +NORMALIZE_WHITESPACE
-        [[0, 1], [1, 0], [0, 2], [1, 1], [2, 0], [0, 3], [1, 2], [2, 1], [3, 0],
-            [1, 3], [2, 2], [3, 1], [2, 3], [3, 2], [3, 3]]
-        >>> print(bindex(1, 3, 2, cross_truncation=1).tolist())
-        [[0, 1], [1, 0], [0, 2], [1, 1], [2, 0], [0, 3], [1, 2], [2, 1], [3, 0]]
-        >>> print(bindex(1, 3, 2, cross_truncation=1.5).tolist())
-        [[0, 1], [1, 0], [0, 2], [1, 1], [2, 0], [0, 3], [3, 0]]
-        >>> print(bindex(1, 3, 2, cross_truncation=2).tolist())
-        [[0, 1], [1, 0], [0, 2], [2, 0], [0, 3], [3, 0]]
-        >>> print(bindex(0, 1, 3).tolist())
-        [[0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]]
-        >>> print(bindex([1, 1], 3, 2, cross_truncation=0).tolist())
-        [[1, 1], [1, 2], [2, 1], [1, 3], [2, 2], [3, 1], [2, 3], [3, 2], [3, 3]]
+        >>> bindex(start=2, stop=3, dim=2).T
+        array([[0, 1, 2, 0, 1, 2, 3],
+               [2, 1, 0, 3, 2, 1, 0]])
+        >>> bindex(start=2, stop=[1, 3], dim=2, cross_truncation=0).T
+        array([[0, 1, 0, 1, 1],
+               [2, 1, 3, 2, 3]])
+        >>> bindex(start=[1, 2], stop=[2, 3], dim=2, cross_truncation=0).T
+        array([[1, 1, 2, 2],
+               [2, 3, 2, 3]])
+        >>> bindex(start=1, stop=3, dim=2, cross_truncation=0).T
+        array([[0, 1, 0, 1, 2, 0, 1, 2, 3, 1, 2, 3, 2, 3, 3],
+               [1, 0, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 3, 2, 3]])
+        >>> bindex(start=1, stop=3, dim=2, cross_truncation=1).T
+        array([[0, 1, 0, 1, 2, 0, 1, 2, 3],
+               [1, 0, 2, 1, 0, 3, 2, 1, 0]])
+        >>> bindex(start=1, stop=3, dim=2, cross_truncation=1.5).T
+        array([[0, 1, 0, 1, 2, 0, 3],
+               [1, 0, 2, 1, 0, 3, 0]])
+        >>> bindex(start=1, stop=3, dim=2, cross_truncation=2).T
+        array([[0, 1, 0, 2, 0, 3],
+               [1, 0, 2, 0, 3, 0]])
+        >>> bindex(start=0, stop=1, dim=3).T
+        array([[0, 0, 0, 1],
+               [0, 0, 1, 0],
+               [0, 1, 0, 0]])
+        >>> bindex(start=[1, 1], stop=3, dim=2, cross_truncation=0).T
+        array([[1, 1, 2, 1, 2, 3, 2, 3, 3],
+               [1, 2, 1, 3, 2, 1, 3, 2, 3]])
     """
     if stop is None:
         start, stop = 0, start

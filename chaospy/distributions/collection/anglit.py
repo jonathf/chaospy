@@ -29,24 +29,26 @@ class Anglit(Add):
     Anglit distribution.
 
     Args:
-        loc (float, Dist) : Location parameter
-        scale (float, Dist) : Scaling parameter
+        loc (float, Dist):
+            Location parameter
+        scale (float, Dist):
+            Scaling parameter
 
     Examples:
         >>> distribution = chaospy.Anglit(2, 4)
-        >>> print(distribution)
+        >>> distribution
         Anglit(loc=2, scale=4)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [-1.1416  0.9528  2.      3.0472  5.1416]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.     0.2165 0.25   0.2165 0.    ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [2.6245 0.2424 4.2421 1.9288]
-        >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
-        [ 2.      5.8696 19.2176]
+        >>> distribution.inv(q).round(4)
+        array([-1.1416,  0.9528,  2.    ,  3.0472,  5.1416])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.    , 0.2165, 0.25  , 0.2165, 0.    ])
+        >>> distribution.sample(4).round(4)
+        array([2.6245, 0.2424, 4.2421, 1.9288])
+        >>> distribution.mom([1, 2, 3]).round(4)
+        array([ 2.    ,  5.8696, 19.2176])
     """
 
     def __init__(self, loc=0, scale=1):

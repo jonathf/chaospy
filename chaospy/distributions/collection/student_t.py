@@ -42,25 +42,28 @@ class StudentT(Add):
     (Non-central) Student-t distribution.
 
     Args:
-        df (float, Dist) : Degrees of freedom
-        loc (float, Dist) : Location parameter
-        scale (float, Dist) : Scale parameter
+        df (float, Dist):
+            Degrees of freedom
+        loc (float, Dist):
+            Location parameter
+        scale (float, Dist):
+            Scale parameter
 
     Examples:
         >>> distribution = chaospy.StudentT(2, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         StudentT(df=2, loc=2, scale=2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [-0.1213  1.4226  2.5774  4.1213]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.0905 0.1663 0.1663 0.0905]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 2.913  -1.4132  7.8594  1.8992]
-        >>> print(distribution.mom(1))
-        2.0
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
+        >>> distribution.inv(q).round(4)
+        array([-0.1213,  1.4226,  2.5774,  4.1213])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.0905, 0.1663, 0.1663, 0.0905])
+        >>> distribution.sample(4).round(4)
+        array([ 2.913 , -1.4132,  7.8594,  1.8992])
+        >>> distribution.mom(1)
+        array(2.)
     """
 
     def __init__(self, df=1, loc=0, scale=1):

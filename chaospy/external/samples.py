@@ -107,18 +107,18 @@ def SampleDist(samples, lo=None, up=None):
 
     Example:
         >>> distribution = chaospy.SampleDist([0, 1, 1, 1, 2])
-        >>> print(distribution)
+        >>> distribution
         sample_dist(lo=0, up=2)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [0.     0.6016 1.     1.3984 2.    ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.2254 0.4272 0.5135 0.4272 0.2254]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 1.5877  1.1645 -0.0131  1.3302]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([0.    , 0.6016, 1.    , 1.3984, 2.    ])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.2254, 0.4272, 0.5135, 0.4272, 0.2254])
+        >>> distribution.sample(4).round(4)
+        array([ 1.5877,  1.1645, -0.0131,  1.3302])
+        >>> distribution.mom(1).round(4)
         1.0
     """
     samples = numpy.asarray(samples)

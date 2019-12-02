@@ -29,11 +29,10 @@ def schnabel_eskow(mat, eps=1e-16):
     Examples:
         >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
         >>> perm, lowtri, err = schnabel_eskow(mat)
-        >>> perm, lowtri = numpy.matrix(perm), numpy.matrix(lowtri)
-        >>> print(numpy.around(perm*lowtri*lowtri.T*perm.T, 4))
-        [[5.504 2.    1.   ]
-         [2.    6.    3.   ]
-         [1.    3.    1.5  ]]
+        >>> (perm @ lowtri @ lowtri.T @ perm.T).round(4)
+        array([[5.504, 2.   , 1.   ],
+               [2.   , 6.   , 3.   ],
+               [1.   , 3.   , 1.5  ]])
     """
     mat = numpy.asfarray(mat)
     tau = eps**(1/3.)

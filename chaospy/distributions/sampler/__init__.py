@@ -14,9 +14,9 @@ from the Korobov lattice::
 
     >>> distribution = chaospy.Iid(chaospy.Beta(2, 2), 2)
     >>> samples = distribution.sample(4, rule="K")
-    >>> print(numpy.around(samples, 4))
-    [[0.2871 0.4329 0.5671 0.7129]
-     [0.4329 0.7129 0.2871 0.5671]]
+    >>> samples.round(4)
+    array([[0.2871, 0.4329, 0.5671, 0.7129],
+           [0.4329, 0.7129, 0.2871, 0.5671]])
 
 .. _handbook of Monte Carlo methods: https://onlinelibrary.wiley.com/doi/book/10.1002/9781118014967
 """

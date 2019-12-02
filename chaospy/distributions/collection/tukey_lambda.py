@@ -49,28 +49,31 @@ class TukeyLambda(Add):
     Tukey-lambda distribution.
 
     Args:
-        lam (float, Dist) : Shape parameter
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        lam (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.TukeyLambda(0, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         TukeyLambda(scale=2, shape=0, shift=2)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [-1.2189  0.6137  2.      3.3863  5.2189]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.1667 0.3333 0.5    0.6667 0.8333]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.0694 0.1111 0.125  0.1111 0.0694]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 3.2697 -2.0812  7.9008  1.8575]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([-1.2189,  0.6137,  2.    ,  3.3863,  5.2189])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.0694, 0.1111, 0.125 , 0.1111, 0.0694])
+        >>> distribution.sample(4).round(4)
+        array([ 3.2697, -2.0812,  7.9008,  1.8575])
+        >>> distribution.mom(1).round(4)
         2.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[ 2.      2.      2.    ]
-         [13.1595 42.1102 91.3601]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[ 2.    ,  2.    ,  2.    ],
+               [13.1595, 42.1102, 91.3601]])
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

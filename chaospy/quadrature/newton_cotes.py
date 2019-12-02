@@ -9,9 +9,9 @@ Generate Newton-Cotes quadrature rules::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> for order in range(5):
-    ...     X, W = chaospy.generate_quadrature(
+    ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="newton_cotes")
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print(order, abscissas.round(3), weights.round(3))
     0 [[0.5]] [1.]
     1 [[0. 1.]] [0.5 0.5]
     2 [[0.  0.5 1. ]] [0.167 0.667 0.167]
@@ -21,9 +21,9 @@ Generate Newton-Cotes quadrature rules::
 The first few orders with exponential growth rule::
 
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
-    ...     X, W = chaospy.generate_quadrature(
+    ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="newton_cotes", growth=True)
-    ...     print(order, numpy.around(X, 3), numpy.around(W, 3))
+    ...     print(order, abscissas.round(3), weights.round(3))
     0 [[0.5]] [1.]
     1 [[0.  0.5 1. ]] [0.167 0.667 0.167]
     2 [[0.   0.25 0.5  0.75 1.  ]] [0.078 0.356 0.133 0.356 0.078]
@@ -33,18 +33,18 @@ The first few orders with exponential growth rule::
 Applying Smolyak sparse grid on Newton-Cotes::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     2, distribution, rule="newton_cotes",
     ...     growth=True, sparse=True)
-    >>> print(numpy.around(X, 2))
-    [[0.   0.   0.   0.25 0.5  0.5  0.5  0.5  0.5  0.75 1.   1.   1.  ]
-     [0.   0.5  1.   0.5  0.   0.25 0.5  0.75 1.   0.5  0.   0.5  1.  ]]
-    >>> print(numpy.around(W, 3))  # doctest: +NORMALIZE_WHITESPACE
-    [ 0.028  0.022  0.028  0.356  0.022  0.356 -0.622
-      0.356  0.022  0.356  0.028  0.022  0.028]
+    >>> abscissas.round(3)
+    array([[0.  , 0.  , 0.  , 0.25, 0.5 , 0.5 , 0.5 , 0.5 , 0.5 , 0.75, 1.  ,
+            1.  , 1.  ],
+           [0.  , 0.5 , 1.  , 0.5 , 0.  , 0.25, 0.5 , 0.75, 1.  , 0.5 , 0.  ,
+            0.5 , 1.  ]])
+    >>> weights.round(3)
+    array([ 0.028,  0.022,  0.028,  0.356,  0.022,  0.356, -0.622,  0.356,
+            0.022,  0.356,  0.028,  0.022,  0.028])
 """
-from __future__ import print_function
-
 import numpy
 from scipy.integrate import newton_cotes
 
@@ -75,10 +75,10 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False):
 
     Examples:
         >>> abscissas, weights = quad_newton_cotes(3)
-        >>> print(numpy.around(abscissas, 4))
-        [[0.     0.3333 0.6667 1.    ]]
-        >>> print(numpy.around(weights, 4))
-        [0.375 1.125 1.125 0.375]
+        >>> abscissas.round(4)
+        array([[0.    , 0.3333, 0.6667, 1.    ]])
+        >>> weights.round(4)
+        array([0.375, 1.125, 1.125, 0.375])
     """
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):

@@ -8,8 +8,8 @@ directly as follows::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> expected = chaospy.E(distribution)
-    >>> print(expected)
-    0.5
+    >>> expected
+    array(0.5)
 
 For multivariate distributions::
 
@@ -18,8 +18,8 @@ For multivariate distributions::
     ...     chaospy.Normal(0, 1)
     ... )
     >>> expected = chaospy.E(distribution)
-    >>> print(expected)
-    [0.5 0. ]
+    >>> expected
+    array([0.5, 0. ])
 
 
 For simple polynomials, distribution goes as the second argument. In other
@@ -32,8 +32,8 @@ distribution. For example::
     ... )
     >>> q0, q1 = chaospy.variable(2)
     >>> expected = chaospy.E(q1, distribution)
-    >>> print(expected)
-    0.0
+    >>> expected
+    array(0.)
 """
 from .expected import E
 from .conditional import E_cond

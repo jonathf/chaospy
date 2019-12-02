@@ -29,12 +29,12 @@ def Perc(poly, q, dist, sample=10000, **kws):
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([0.05*x, 0.2*y, 0.01*x*y])
-        >>> print(numpy.around(chaospy.Perc(poly, [0, 5, 50, 95, 100], dist), 2))
-        [[ 0.   -3.   -6.3 ]
-         [ 0.   -0.64 -0.04]
-         [ 0.03 -0.01 -0.  ]
-         [ 0.15  0.66  0.04]
-         [ 2.1   3.    6.3 ]]
+        >>> chaospy.Perc(poly, [0, 5, 50, 95, 100], dist).round(2)
+        array([[ 0.  , -3.  , -6.3 ],
+               [ 0.  , -0.64, -0.04],
+               [ 0.03, -0.01, -0.  ],
+               [ 0.15,  0.66,  0.04],
+               [ 2.1 ,  3.  ,  6.3 ]])
     """
     shape = poly.shape
     poly = poly.flatten()

@@ -34,8 +34,8 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         >>> poly = chaospy.polynomial([x])
         >>> qoi_dist = chaospy.QoI_Dist(poly, dist)
         >>> values = qoi_dist[0].pdf([-0.75, 0., 0.75])
-        >>> print(numpy.around(values, 8))
-        [0.29143037 0.39931708 0.29536329]
+        >>> values.round(8)
+        array([0.29143037, 0.39931708, 0.29536329])
     """
     shape = poly.shape
     poly = poly.flatten()

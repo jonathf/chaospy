@@ -22,8 +22,8 @@ distribution :class:`~chaospy.distributions.baseclass.Dist`::
 Usage is then straight forward::
 
     >>> dist = Uniform(-3, 3)
-    >>> print(dist.fwd([-3, 0, 3])) # Forward Rosenblatt transformation
-    [0.  0.5 1. ]
+    >>> dist.fwd([-3, 0, 3])  # Forward Rosenblatt transformation
+    array([0. , 0.5, 1. ])
 
 Here the two methods ``_cdf`` and ``_bnd`` are absolute requirements, while all
 the others are nice to have. In addition to the once listed, it is also
