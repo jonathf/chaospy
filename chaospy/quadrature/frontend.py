@@ -161,4 +161,7 @@ def generate_quadrature(
     assert len(weights) == abscissas.shape[1]
     assert len(abscissas.shape) == 2
 
+    if getattr(dist, "interpret_as_integer", False):
+        abscissas = abscissas.astype(int)
+
     return abscissas, weights
