@@ -65,9 +65,9 @@ Inverse transformations::
 Raw moments::
 
     >>> print(numpy.around(joint1.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.      2.5    15.0833]
+    [ 6.   2.5 15. ]
     >>> print(numpy.around(joint2.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.      3.5    21.0833]
+    [ 6.   3.5 21. ]
 """
 from __future__ import division
 from scipy.special import comb
