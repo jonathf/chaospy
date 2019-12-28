@@ -45,8 +45,9 @@ class J(Dist):
         args = [dist for arg in args
                 for dist in (arg if isinstance(arg, J) else [arg])]
         assert all(isinstance(dist, Dist) for dist in args)
-        self.inverse_map = {dist: idx for idx, dist in enumerate(args)}
-        prm = {"_%03d" % idx: dist for idx, dist in enumerate(args)}
+        self.indices = [0] + numpy.cumsum([len(dist) for dist in args[:-1]]).tolist()
+        self.inverse_map = {dist: idx for idx, dist in zip(self.indices, args)}
+        prm = {"_%03d" % idx: dist for idx, dist in zip(self.indices, args)}
         Dist.__init__(self, **prm)
 
     def _cdf(self, xloc, cache, **kwargs):
@@ -67,9 +68,8 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            xloc_ = xloc[idx].reshape(1, -1)
-            uloc[idx] = evaluation.evaluate_forward(
-                dist, xloc_, cache=cache)[0]
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_forward(
+                dist, xloc[idx:idx+len(dist)], cache=cache)[0]
         assert uloc.shape == xloc.shape
         return uloc
 
@@ -89,9 +89,9 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            xloc_ = xloc[idx].reshape(1, -1)
-            uloc[:, idx] = evaluation.evaluate_bound(
-                dist, xloc_, cache=cache).flatten()
+            (uloc[0, idx:idx+len(dist)],
+             uloc[1, idx:idx+len(dist)]) = evaluation.evaluate_bound(
+                 dist, xloc[idx:idx+len(dist)], cache=cache)
         return uloc
 
     def _bnd(self, xloc, cache, **kwargs):
@@ -107,21 +107,19 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(dist.range([[-0.5, 0.5, 1.5], [0, 1, 2]]))
-            [[[ 0.   0.   0. ]
-              [-0.5  0.5  1.5]]
+            [[[0. 0. 0.]
+              [0. 0. 0.]]
             <BLANKLINE>
-             [[ 1.   1.   1. ]
-              [ 0.5  1.5  2.5]]]
+             [[1. 1. 1.]
+              [2. 2. 2.]]]
         """
         uloc = numpy.zeros((2,)+xloc.shape)
         for dist in evaluation.sorted_dependencies(self, reverse=True):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            xloc_ = xloc[idx].reshape(1, -1)
-            uloc[:, idx] = evaluation.evaluate_bound(
-                dist, xloc_, cache=cache)[:, 0]
-            cache[dist] = xloc_
+            uloc[:, idx:idx+len(dist)] = evaluation.evaluate_bound(
+                dist, xloc[idx:idx+len(dist)], cache=cache)
         return uloc
 
     def _pdf(self, xloc, cache, **kwargs):
@@ -140,9 +138,8 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            xloc_ = xloc[idx].reshape(1, -1)
-            floc[idx] = evaluation.evaluate_density(
-                dist, xloc_, cache=cache)[0]
+            floc[idx:idx+len(dist)] = evaluation.evaluate_density(
+                dist, xloc[idx:idx+len(dist)], cache=cache)[0]
         return floc
 
     def _ppf(self, qloc, cache, **kwargs):
@@ -163,9 +160,8 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            qloc_ = qloc[idx].reshape(1, -1)
-            xloc[idx] = evaluation.evaluate_inverse(
-                dist, qloc_, cache=cache)[0]
+            xloc[idx:idx+len(dist)] = evaluation.evaluate_inverse(
+                dist, qloc[idx:idx+len(dist)], cache=cache)[0]
         return xloc
 
     def _mom(self, kloc, cache, **kwargs):
@@ -177,7 +173,7 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(numpy.around(dist.mom([1, 1]), 4))
-            0.5833
+            0.5
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
             raise StochasticallyDependentError(
@@ -187,8 +183,8 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            kloc_ = kloc[idx].reshape(1)
-            output *= evaluation.evaluate_moment(dist, kloc_, cache=cache)
+            output *= evaluation.evaluate_moment(
+                dist, kloc[idx:idx+len(dist)], cache=cache)
         return output
 
     def _ttr(self, kloc, cache, **kwargs):
@@ -218,15 +214,14 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            kloc_ = kloc[idx].reshape(1)
             values = evaluation.evaluate_recurrence_coefficients(
-                dist, kloc_, cache=cache)
+                dist, kloc[idx:idx+len(dist)], cache=cache)
             output.T[idx] = values.T
         return output
 
 
     def __len__(self):
-        return len(self.inverse_map)
+        return sum(len(dist) for dist in self.inverse_map)
 
     def __str__(self):
         """
