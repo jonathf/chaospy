@@ -31,22 +31,24 @@ class Levy(Add):
     Levy distribution
 
     Args:
-        loc (float, Dist): Location parameter
-        scale (float, Dist): Scaling parameter
+        loc (float, Dist):
+            Location parameter
+        scale (float, Dist):
+            Scaling parameter
 
     Examples:
         >>> distribution = chaospy.Levy(2, 2)
-        >>> print(distribution)
+        >>> distribution
         Levy(loc=2, scale=2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [ 3.2177  4.8236  9.2728 33.16  ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.1847 0.0834 0.0251 0.0031]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 11.9303   2.8051 516.4406   6.0494]
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
+        >>> distribution.inv(q).round(4)
+        array([ 3.2177,  4.8236,  9.2728, 33.16  ])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.1847, 0.0834, 0.0251, 0.0031])
+        >>> distribution.sample(4).round(4)
+        array([ 11.9303,   2.8051, 516.4406,   6.0494])
     """
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}

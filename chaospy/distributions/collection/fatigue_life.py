@@ -35,24 +35,27 @@ class FatigueLife(Add):
     Fatigue-Life or Birmbaum-Sanders distribution
 
     Args:
-        shape (float, Dist): Shape parameter
-        scale (float, Dist): Scaling parameter
-        shift (float, Dist): Location parameter
+        shape (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.FatigueLife(2, 2, 1)
-        >>> print(distribution)
+        >>> distribution
         FatigueLife(scale=2, shape=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [ 1.4332  2.2113  4.3021 10.2334]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.4223 0.1645 0.0603 0.0198]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 5.3231  1.2621 26.5603  2.8292]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([ 1.4332,  2.2113,  4.3021, 10.2334])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.4223, 0.1645, 0.0603, 0.0198])
+        >>> distribution.sample(4).round(4)
+        array([ 5.3231,  1.2621, 26.5603,  2.8292])
+        >>> distribution.mom(1).round(4)
         7.0
     """
     def __init__(self, shape=1, scale=1, shift=0):

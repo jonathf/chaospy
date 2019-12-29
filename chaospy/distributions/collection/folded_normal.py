@@ -28,28 +28,31 @@ class FoldedNormal(Add):
     Folded normal distribution.
 
     Args:
-        mu (float, Dist): Location parameter in normal distribution
-        sigma (float, Dist): Scaling parameter (in both normal and fold)
-        loc (float, Dist): Location of fold
+        mu (float, Dist):
+            Location parameter in normal distribution
+        sigma (float, Dist):
+            Scaling parameter (in both normal and fold)
+        loc (float, Dist):
+            Location of fold
 
     Examples:
         >>> distribution = chaospy.FoldedNormal(3, 2, 1)
-        >>> print(distribution)
+        >>> distribution
         FoldedNormal(loc=1, mu=3, sigma=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [3.3224 4.4938 5.5067 6.6832]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.1417 0.1934 0.1932 0.14  ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [5.7901 2.6245 8.2952 4.9109]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([3.3224, 4.4938, 5.5067, 6.6832])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.1417, 0.1934, 0.1932, 0.14  ])
+        >>> distribution.sample(4).round(4)
+        array([5.7901, 2.6245, 8.2952, 4.9109])
+        >>> distribution.mom(1).round(4)
         5.034
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[5.3928 6.0914 6.7954]
-         [3.7271 6.2602 7.926 ]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[5.3928, 6.0914, 6.7954],
+               [3.7271, 6.2602, 7.926 ]])
     """
 
     def __init__(self, mu=0, sigma=1, loc=0):

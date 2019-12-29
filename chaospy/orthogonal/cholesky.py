@@ -25,6 +25,7 @@ available in ``chaospy``.
 """
 import numpy
 import chaospy
+import numpoly
 
 
 def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
@@ -47,8 +48,8 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
 
     Examples:
         >>> Z = chaospy.Normal()
-        >>> print(chaospy.around(chaospy.orth_chol(3, Z), 4))
-        [1.0, q0, 0.7071q0^2-0.7071, 0.4082q0^3-1.2247q0]
+        >>> chaospy.orth_chol(3, Z).round(4)
+        polynomial([1.0, q0, -0.7071+0.7071*q0**2, -1.2247*q0+0.4082*q0**3])
     """
     dim = len(dist)
     basis = chaospy.poly.basis(
@@ -77,11 +78,11 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
 
     out = {}
     out[(0,)*dim] = coefs[0]
-    for idx in range(length):
-        index = basis[idx].keys[0]
-        out[index] = coefs[idx+1]
+    for idx, key in enumerate(basis.exponents):
+        out[tuple(key)] = coefs[idx+1]
 
-    polynomials = chaospy.poly.Poly(out, dim, coefs.shape[1:], float)
+    names = numpoly.symbols("q:%d" % dim)
+    polynomials = chaospy.poly.polynomial(out, names=names)
 
     return polynomials
 

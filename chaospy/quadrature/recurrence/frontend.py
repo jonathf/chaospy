@@ -68,18 +68,18 @@ def construct_recurrence_coefficients(
         >>> distribution = chaospy.Normal(0, 1)
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     4, distribution, recurrence_algorithm="stieltjes")
-        >>> print(numpy.around(coefficients, 4))
-        [[[-0.  0. -0.  0. -0.]
-          [ 1.  1.  2.  3.  4.]]]
+        >>> coefficients[0].round(4)
+        array([[-0.,  0., -0.,  0., -0.],
+               [ 1.,  1.,  2.,  3.,  4.]])
         >>> distribution = chaospy.J(chaospy.Exponential(), chaospy.Uniform())
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     [2, 4], distribution, recurrence_algorithm="chebyshev")
-        >>> print(numpy.around(coefficients[0], 4))
-        [[1. 3. 5.]
-         [1. 1. 4.]]
-        >>> print(numpy.around(coefficients[1], 4))
-        [[0.5    0.5    0.5    0.5    0.5   ]
-         [1.     0.0833 0.0667 0.0643 0.0635]]
+        >>> coefficients[0].round(4)
+        array([[1., 3., 5.],
+               [1., 1., 4.]])
+        >>> coefficients[1].round(4)
+        array([[0.5   , 0.5   , 0.5   , 0.5   , 0.5   ],
+               [1.    , 0.0833, 0.0667, 0.0643, 0.0635]])
     """
     if not recurrence_algorithm:
         try:

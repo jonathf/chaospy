@@ -46,22 +46,22 @@ class Gamma(Add):
 
     Examples:
         >>> distribution = chaospy.Gamma(1, 1, 1)
-        >>> print(distribution)
+        >>> distribution
         Gamma(scale=1, shape=1, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [1.2231 1.5108 1.9163 2.6094]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.8 0.6 0.4 0.2]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [2.0601 1.1222 4.0014 1.6581]
-        >>> print(distribution.mom(1))
-        2.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[4. 6. 8.]
-         [1. 4. 9.]]
+        >>> distribution.inv(q).round(4)
+        array([1.2231, 1.5108, 1.9163, 2.6094])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.8, 0.6, 0.4, 0.2])
+        >>> distribution.sample(4).round(4)
+        array([2.0601, 1.1222, 4.0014, 1.6581])
+        >>> distribution.mom(1)
+        array(2.)
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[4., 6., 8.],
+               [1., 4., 9.]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
@@ -74,25 +74,27 @@ class Exponential(Add):
     Exponential Probability Distribution
 
     Args:
-        scale (float, Dist) : Scale parameter. scale!=0
-        shift (float, Dist) : Location of the lower bound.
+        scale (float, Dist):
+            Scale parameter. scale!=0
+        shift (float, Dist):
+            Location of the lower bound.
 
     Examples;:
         >>> distribution = chaospy.Exponential(2, 3)
-        >>> print(distribution)
+        >>> distribution
         Exponential(scale=2, shift=3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [3.4463 4.0217 4.8326 6.2189]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [5.1203 3.2444 9.0028 4.3163]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([3.4463, 4.0217, 4.8326, 6.2189])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.sample(4).round(4)
+        array([5.1203, 3.2444, 9.0028, 4.3163])
+        >>> distribution.mom(1).round(4)
         5.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[ 9. 13. 17.]
-         [ 4. 16. 36.]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[ 9., 13., 17.],
+               [ 4., 16., 36.]])
     """
 
     def __init__(self, scale=1, shift=0):

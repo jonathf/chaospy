@@ -20,11 +20,11 @@ def combine(args):
 
     Examples:
         >>> A, B = [1,2], [[4,4],[5,6]]
-        >>> print(chaospy.quadrature.combine([A, B]))
-        [[1 4 4]
-         [1 5 6]
-         [2 4 4]
-         [2 5 6]]
+        >>> chaospy.quadrature.combine([A, B])
+        array([[1, 4, 4],
+               [1, 5, 6],
+               [2, 4, 4],
+               [2, 5, 6]])
     """
     args = [numpy.asarray(arg).reshape(len(arg), -1) for arg in args]
     shapes = [arg.shape for arg in args]

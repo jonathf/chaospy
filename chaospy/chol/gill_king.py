@@ -28,14 +28,14 @@ def gill_king(mat, eps=1e-16):
     Examples:
         >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
         >>> lowtri = gill_king(mat)
-        >>> print(numpy.around(lowtri, 4))
-        [[2.     0.     0.    ]
-         [1.     2.2361 0.    ]
-         [0.5    1.118  1.2264]]
-        >>> print(numpy.around(numpy.dot(lowtri, lowtri.T), 4))
-        [[4.    2.    1.   ]
-         [2.    6.    3.   ]
-         [1.    3.    3.004]]
+        >>> lowtri.round(4)
+        array([[2.    , 0.    , 0.    ],
+               [1.    , 2.2361, 0.    ],
+               [0.5   , 1.118 , 1.2264]])
+        >>> (lowtri @ lowtri.T).round(4)
+        array([[4.   , 2.   , 1.   ],
+               [2.   , 6.   , 3.   ],
+               [1.   , 3.   , 3.004]])
     """
     if not scipy.sparse.issparse(mat):
         mat = numpy.asfarray(mat)

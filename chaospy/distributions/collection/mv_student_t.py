@@ -12,38 +12,41 @@ class MvStudentT(Dist):
     Multivariate Student-T Distribution.
 
     Args:
-        df (float, Dist) : Degree of freedom
-        loc (numpy.ndarray, Dist) : Location parameter
-        scale (numpy.ndarray) : Covariance matrix
+        df (float, Dist):
+            Degree of freedom
+        loc (numpy.ndarray, Dist):
+            Location parameter
+        scale (numpy.ndarray):
+            Covariance matrix
 
     Examples:
         >>> distribution = chaospy.MvStudentT(40, [1, 2], [[1, 0.6], [0.6, 1]])
-        >>> print(distribution)
+        >>> distribution
         MvStudentT(df=40, loc=[1.0, 2.0], scale=[[1.0, 0.6], [0.6, 1.0]])
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
-        [[[0.3193 1.     1.6807]
-          [0.3193 1.     1.6807]
-          [0.3193 1.     1.6807]]
+        >>> distribution.inv(mesh).round(4)
+        array([[[0.3193, 1.    , 1.6807],
+                [0.3193, 1.    , 1.6807],
+                [0.3193, 1.    , 1.6807]],
         <BLANKLINE>
-         [[1.0471 1.4555 1.8639]
-          [1.5916 2.     2.4084]
-          [2.1361 2.5445 2.9529]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
-        [[[0.25 0.5  0.75]
-          [0.25 0.5  0.75]
-          [0.25 0.5  0.75]]
+               [[1.0471, 1.4555, 1.8639],
+                [1.5916, 2.    , 2.4084],
+                [2.1361, 2.5445, 2.9529]]])
+        >>> distribution.fwd(distribution.inv(mesh)).round(4)
+        array([[[0.25, 0.5 , 0.75],
+                [0.25, 0.5 , 0.75],
+                [0.25, 0.5 , 0.75]],
         <BLANKLINE>
-         [[0.25 0.25 0.25]
-          [0.5  0.5  0.5 ]
-          [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
-        [[0.1921 0.1959 0.1958]
-         [0.197  0.1989 0.197 ]
-         [0.1958 0.1959 0.1921]]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [[ 1.3979 -0.2189  2.6868  0.9551]
-         [ 3.1625  0.6234  1.582   1.7631]]
+               [[0.25, 0.25, 0.25],
+                [0.5 , 0.5 , 0.5 ],
+                [0.75, 0.75, 0.75]]])
+        >>> distribution.pdf(distribution.inv(mesh)).round(4)
+        array([[0.1921, 0.1959, 0.1958],
+               [0.197 , 0.1989, 0.197 ],
+               [0.1958, 0.1959, 0.1921]])
+        >>> distribution.sample(4).round(4)
+        array([[ 1.3979, -0.2189,  2.6868,  0.9551],
+               [ 3.1625,  0.6234,  1.582 ,  1.7631]])
     """
 
     def __init__(self, df=1, loc=[0, 0], scale=[[1, .5], [.5, 1]]):

@@ -14,8 +14,8 @@ Construct distribution from scratch::
 Evaluate distribution::
 
     >>> uniform = MyUniform(lo=-1, up=1)
-    >>> print(uniform.pdf(numpy.linspace(-2, 2, 16)))
-    [0.  0.  0.  0.  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.  0.  0.  0. ]
+    >>> uniform.pdf(numpy.linspace(-2, 2, 12))
+    array([0. , 0. , 0. , 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0. , 0. , 0. ])
 """
 import types
 from .baseclass import Dist

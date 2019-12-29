@@ -38,24 +38,27 @@ class GeneralizedHalfLogistic(Add):
     Generalized half-logistic distribution
 
     Args:
-        shape (float, Dist) : Shape parameter
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        shape (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.GeneralizedHalfLogistic(1, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         GeneralizedHalfLogistic(scale=2, shape=1, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2.6667 3.1429 3.5    3.7778]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.36 0.49 0.64 0.81]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [3.581  2.4126 3.949  3.3013]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([2.6667, 3.1429, 3.5   , 3.7778])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.36, 0.49, 0.64, 0.81])
+        >>> distribution.sample(4).round(4)
+        array([3.581 , 2.4126, 3.949 , 3.3013])
+        >>> distribution.mom(1).round(4)
         3.2274
     """
 

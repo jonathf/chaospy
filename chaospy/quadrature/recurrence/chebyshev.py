@@ -16,17 +16,13 @@ def modified_chebyshev(moments):
 
     Examples:
         >>> dist = chaospy.Normal()
-        >>> alpha, beta = modified_chebyshev(dist.mom(numpy.arange(8)))
-        >>> print(alpha)
-        [0. 0. 0. 0.]
-        >>> print(beta)
-        [1. 1. 2. 3.]
+        >>> modified_chebyshev(dist.mom(numpy.arange(8)))
+        array([[0., 0., 0., 0.],
+               [1., 1., 2., 3.]])
         >>> dist = chaospy.Uniform(-1, 1)
-        >>> alpha, beta = modified_chebyshev(dist.mom(numpy.arange(8)))
-        >>> print(alpha)
-        [0. 0. 0. 0.]
-        >>> print(beta)
-        [1.         0.33333333 0.26666667 0.25714286]
+        >>> modified_chebyshev(dist.mom(numpy.arange(8)))
+        array([[0.        , 0.        , 0.        , 0.        ],
+               [1.        , 0.33333333, 0.26666667, 0.25714286]])
     """
     moments = numpy.asfarray(moments).flatten()
     order = len(moments)

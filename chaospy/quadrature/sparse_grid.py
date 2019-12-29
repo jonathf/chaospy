@@ -12,35 +12,36 @@ to the ``generate_quadrature`` function. For example::
 
     >>> distribution = chaospy.J(
     ...     chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
-    >>> X, W = chaospy.generate_quadrature(3, distribution, sparse=True)
-    >>> print(numpy.around(X, 4))
-    [[0. 0. 0. 1. 2. 2. 2. 2. 2. 3. 4. 4. 4.]
-     [0. 2. 4. 2. 0. 1. 2. 3. 4. 2. 0. 2. 4.]]
-    >>> print(numpy.around(W, 4))  # doctest: +NORMALIZE_WHITESPACE
-    [-0.0833  0.2222 -0.0833  0.4444  0.2222  0.4444 -1.3333
-      0.4444  0.2222  0.4444 -0.0833  0.2222 -0.0833]
+    >>> abscissas, weights = chaospy.generate_quadrature(
+    ...     3, distribution, sparse=True)
+    >>> abscissas.round(4)
+    array([[0., 0., 0., 1., 2., 2., 2., 2., 2., 3., 4., 4., 4.],
+           [0., 2., 4., 2., 0., 1., 2., 3., 4., 2., 0., 2., 4.]])
+    >>> weights.round(4)
+    array([-0.0833,  0.2222, -0.0833,  0.4444,  0.2222,  0.4444, -1.3333,
+            0.4444,  0.2222,  0.4444, -0.0833,  0.2222, -0.0833])
 
 This compared to the full tensor-product grid::
 
-    >>> X, W = chaospy.generate_quadrature(3, distribution, sparse=False)
-    >>> print(numpy.around(X, 4))
-    [[0. 0. 0. 0. 1. 1. 1. 1. 3. 3. 3. 3. 4. 4. 4. 4.]
-     [0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4. 0. 1. 3. 4.]]
-    >>> print(numpy.around(W, 4))  # doctest: +NORMALIZE_WHITESPACE
-    [0.0031 0.0247 0.0247 0.0031 0.0247 0.1975 0.1975 0.0247
-     0.0247 0.1975 0.1975 0.0247 0.0031 0.0247 0.0247 0.0031]
+    >>> abscissas, weights = chaospy.generate_quadrature(3, distribution, sparse=False)
+    >>> abscissas.round(4)
+    array([[0., 0., 0., 0., 1., 1., 1., 1., 3., 3., 3., 3., 4., 4., 4., 4.],
+           [0., 1., 3., 4., 0., 1., 3., 4., 0., 1., 3., 4., 0., 1., 3., 4.]])
+    >>> weights.round(4)
+    array([0.0031, 0.0247, 0.0247, 0.0031, 0.0247, 0.1975, 0.1975, 0.0247,
+           0.0247, 0.1975, 0.1975, 0.0247, 0.0031, 0.0247, 0.0247, 0.0031])
 
 The method works with all quadrature rules, but is known to be quite
 inefficient when applied to rules that can not be nested. For example using
 Gauss-Legendre samples::
 
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     6, distribution, rule="gauss_legendre", sparse=True)
-    >>> print(len(W))
+    >>> len(weights)
     140
-    >>> X, W = chaospy.generate_quadrature(
+    >>> abscissas, weights = chaospy.generate_quadrature(
     ...     6, distribution, rule="gauss_legendre", sparse=False)
-    >>> print(len(W))
+    >>> len(weights)
     49
 
 .. note:
@@ -102,18 +103,18 @@ def construct_sparse_grid(
     Example:
         >>> distribution = chaospy.J(
         ...     chaospy.Normal(0, 1), chaospy.Uniform(-1, 1))
-        >>> X, W = construct_sparse_grid(1, distribution)
-        >>> print(numpy.around(X, 4))
-        [[-1.      0.      0.      0.      1.    ]
-         [ 0.     -0.5774  0.      0.5774  0.    ]]
-        >>> print(numpy.around(W, 4))
-        [ 0.5  0.5 -1.   0.5  0.5]
-        >>> X, W = construct_sparse_grid([2, 1], distribution)
-        >>> print(numpy.around(X, 3))
-        [[-1.732 -1.    -1.    -1.     0.     1.     1.     1.     1.732]
-         [ 0.    -0.577  0.     0.577  0.    -0.577  0.     0.577  0.   ]]
-        >>> print(numpy.around(W, 3))
-        [ 0.167  0.25  -0.5    0.25   0.667  0.25  -0.5    0.25   0.167]
+        >>> abscissas, weights = construct_sparse_grid(1, distribution)
+        >>> abscissas.round(4)
+        array([[-1.    ,  0.    ,  0.    ,  0.    ,  1.    ],
+               [ 0.    , -0.5774,  0.    ,  0.5774,  0.    ]])
+        >>> weights.round(4)
+        array([ 0.5,  0.5, -1. ,  0.5,  0.5])
+        >>> abscissas, weights = construct_sparse_grid([2, 1], distribution)
+        >>> abscissas.round(2)
+        array([[-1.73, -1.  , -1.  , -1.  ,  0.  ,  1.  ,  1.  ,  1.  ,  1.73],
+               [ 0.  , -0.58,  0.  ,  0.58,  0.  , -0.58,  0.  ,  0.58,  0.  ]])
+        >>> weights.round(2)
+        array([ 0.17,  0.25, -0.5 ,  0.25,  0.67,  0.25, -0.5 ,  0.25,  0.17])
     """
     orders = order*numpy.ones(len(dist), dtype=int)
 

@@ -33,28 +33,31 @@ class Weibull(Add):
     Weibull Distribution
 
     Args:
-        shape (float, Dist) : Shape parameter.
-        scale (float, Dist) : Scale parameter.
-        shift (float, Dist) : Location of lower bound.
+        shape (float, Dist):
+            Shape parameter.
+        scale (float, Dist):
+            Scale parameter.
+        shift (float, Dist):
+            Location of lower bound.
 
     Examples:
         >>> distribution = chaospy.Weibull(2)
-        >>> print(distribution)
+        >>> distribution
         Weibull(scale=1, shape=2, shift=0)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [0.4724 0.7147 0.9572 1.2686]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.7558 0.8577 0.7658 0.5075]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [1.0296 0.3495 1.7325 0.8113]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
+        >>> distribution.inv(q).round(4)
+        array([0.4724, 0.7147, 0.9572, 1.2686])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.7558, 0.8577, 0.7658, 0.5075])
+        >>> distribution.sample(4).round(4)
+        array([1.0296, 0.3495, 1.7325, 0.8113])
+        >>> distribution.mom(1).round(4)
         0.8862
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[1.1786 1.4264 1.6407]
-         [0.2146 0.3963 0.5691]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[1.1786, 1.4264, 1.6407],
+               [0.2146, 0.3963, 0.5691]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

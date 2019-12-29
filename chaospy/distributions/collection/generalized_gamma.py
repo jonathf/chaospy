@@ -40,29 +40,33 @@ class GeneralizedGamma(Add):
     Generalized gamma distribution
 
     Args:
-        shape1 (float, Dist) : Shape parameter 1
-        shape2 (float, Dist) : Shape parameter 2
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        shape1 (float, Dist):
+            Shape parameter 1
+        shape2 (float, Dist):
+            Shape parameter 2
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.GeneralizedGamma(3, 2, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         GeneralizedGamma(scale=2, shape1=3, shape2=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [4.4779 5.0233 5.5244 6.1372]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.3145 0.4016 0.3807 0.2624]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [5.6691 4.1674 7.0214 5.2264]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([4.4779, 5.0233, 5.5244, 6.1372])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.3145, 0.4016, 0.3807, 0.2624])
+        >>> distribution.sample(4).round(4)
+        array([5.6691, 4.1674, 7.0214, 5.2264])
+        >>> distribution.mom(1).round(4)
         3.477
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[5.6341 5.9361 6.2271]
-         [0.9553 1.8381 2.6689]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[5.6341, 5.9361, 6.2271],
+               [0.9553, 1.8381, 2.6689]])
     """
 
     def __init__(self, shape1, shape2, scale, shift):

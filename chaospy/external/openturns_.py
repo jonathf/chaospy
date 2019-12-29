@@ -15,34 +15,34 @@ a simple univariate Gaussian random variable::
 
     >>> import openturns
     >>> distribution = chaospy.OpenTURNSDist(openturns.Normal(0, 1))
-    >>> print(distribution)
+    >>> distribution
     OpenTURNSDist([Normal(mu = 0, sigma = 1)])
 
 This distribution then behaves as a normal ``chaospy`` distribution::
 
-    >>> print(numpy.around(distribution.pdf([-1, 0, 1]), 4))
-    [0.242  0.3989 0.242 ]
-    >>> print(distribution.mom([0, 1, 2]))
-    [1. 0. 1.]
+    >>> distribution.pdf([-1, 0, 1]).round(4)
+    array([0.242 , 0.3989, 0.242 ])
+    >>> distribution.mom([0, 1, 2])
+    array([1., 0., 1.])
 
 The wrapper also supports multivariate distributions::
 
     >>> composed_distribution = openturns.ComposedDistribution([
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
     >>> mv_distribution = chaospy.OpenTURNSDist(composed_distribution)
-    >>> print(mv_distribution)  # doctest: +NORMALIZE_WHITESPACE
+    >>> mv_distribution  # doctest: +NORMALIZE_WHITESPACE
     OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
                    Uniform(a = -1, b = 1)])
-    >>> print(numpy.around(mv_distribution.sample(4), 4))
-    [[ 0.1676 -0.5204  0.6847 -0.018 ]
-     [ 0.7449 -0.5753 -0.9186 -0.2056]]
+    >>> mv_distribution.sample(4).round(4)
+    array([[ 0.1676, -0.5204,  0.6847, -0.018 ],
+           [ 0.7449, -0.5753, -0.9186, -0.2056]])
 
 As a shorthand, it is also possible to construct multivariate distributions
 form lists::
 
     >>> mv_distribution = chaospy.OpenTURNSDist([
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
-    >>> print(mv_distribution)  # doctest: +NORMALIZE_WHITESPACE
+    >>> mv_distribution  # doctest: +NORMALIZE_WHITESPACE
     OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
                    Uniform(a = -1, b = 1)])
 
@@ -120,7 +120,7 @@ class OpenTURNSDist(J):
         >>> from openturns import ComposedDistribution, Normal
         >>> ot_distribution = ComposedDistribution([Normal(), Normal()])
         >>> distribution = chaospy.OpenTURNSDist(ot_distribution)
-        >>> print(distribution)  # doctest: +NORMALIZE_WHITESPACE
+        >>> distribution  # doctest: +NORMALIZE_WHITESPACE
         OpenTURNSDist([Normal(mu = 0, sigma = 1),
                        Normal(mu = 0, sigma = 1)])
     """

@@ -1,8 +1,8 @@
 """Skewness operator."""
-import numpy
+from .. import poly as polynomials
 
-from .. import distributions, poly as polynomials
 from .expected import E
+from .standard_deviation import Std
 
 
 def Skew(poly, dist=None, **kws):
@@ -12,7 +12,7 @@ def Skew(poly, dist=None, **kws):
     Element by element 3rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take skewness on.
         dist (Dist):
             Defines the space the skewness is taken on. It is ignored if
@@ -25,29 +25,19 @@ def Skew(poly, dist=None, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(chaospy.Skew(dist))
-        [2. 0.]
+        >>> chaospy.Skew(dist)
+        array([2., 0.])
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
-        >>> print(chaospy.Skew(poly, dist))
-        [nan  2.  0.  0.]
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
+        >>> chaospy.Skew(poly, dist)
+        array([nan,  2.,  0.,  0.])
     """
-    if isinstance(poly, distributions.Dist):
-        x = polynomials.variable(len(poly))
-        poly, dist = x, poly
-    else:
-        poly = polynomials.Poly(poly)
+    if dist is None:
+        dist, poly = poly, polynomials.variable(len(poly))
+    poly = polynomials.setdim(poly, len(dist))
+    if not poly.isconstant:
+        return poly.tonumpy()**3
 
-    if poly.dim < len(dist):
-        polynomials.setdim(poly, len(dist))
-
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    m1 = E(poly, dist)
-    m2 = E(poly**2, dist)
-    m3 = E(poly**3, dist)
-    out = (m3-3*m2*m1+2*m1**3)/(m2-m1**2)**1.5
-
-    out = numpy.reshape(out, shape)
-    return out
+    poly = poly-E(poly, dist, **kws)
+    poly = poly/Std(poly, dist, **kws)
+    return E(poly**3, dist, **kws)

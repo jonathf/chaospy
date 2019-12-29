@@ -38,26 +38,31 @@ class F(Add):
     (Non-central) F or Fisher-Snedecor distribution.
 
     Args:
-        n (float, Dist) : Degres of freedom for numerator
-        m (float, Dist) : Degres of freedom for denominator
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
-        nc (float, Dist) : Non-centrality parameter
+        n (float, Dist):
+            Degres of freedom for numerator
+        m (float, Dist):
+            Degres of freedom for denominator
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
+        nc (float, Dist):
+            Non-centrality parameter
 
     Examples:
         >>> distribution = chaospy.F(3, 3, 2, 1, 1)
-        >>> print(distribution)
+        >>> distribution
         F(m=3, n=3, nc=1, scale=2, shift=1)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [1.9336 2.9751 4.7028 8.8521]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.2277 0.1572 0.0837 0.027 ]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 5.4212  1.5739 25.7656  3.5586]
-        >>> print(distribution.mom(1) > 10**8) # undefined
+        >>> distribution.inv(q).round(4)
+        array([1.9336, 2.9751, 4.7028, 8.8521])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.2277, 0.1572, 0.0837, 0.027 ])
+        >>> distribution.sample(4).round(4)
+        array([ 5.4212,  1.5739, 25.7656,  3.5586])
+        >>> distribution.mom(1) > 10**8  # undefined
         True
     """
 

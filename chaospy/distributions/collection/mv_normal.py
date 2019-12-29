@@ -13,41 +13,43 @@ class MvNormal(Dist):
     Multivariate Normal Distribution.
 
     Args:
-        loc (float, Dist): Mean vector
-        scale (float, Dist): Covariance matrix or variance vector if scale is a 1-d vector.
+        loc (float, Dist):
+            Mean vector
+        scale (float, Dist):
+            Covariance matrix or variance vector if scale is a 1-d vector.
 
     Examples:
         >>> distribution = chaospy.MvNormal([1, 2], [[1, 0.6], [0.6, 1]])
-        >>> print(distribution)
+        >>> distribution
         MvNormal(loc=[1.0, 2.0], scale=[[1.0, 0.6], [0.6, 1.0]])
-        >>> print(chaospy.Cov(distribution))
-        [[1.  0.6]
-         [0.6 1. ]]
+        >>> chaospy.Cov(distribution)
+        array([[1. , 0.6],
+               [0.6, 1. ]])
         >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
-        [[[0.3255 1.     1.6745]
-          [0.3255 1.     1.6745]
-          [0.3255 1.     1.6745]]
+        >>> distribution.inv(mesh).round(4)
+        array([[[0.3255, 1.    , 1.6745],
+                [0.3255, 1.    , 1.6745],
+                [0.3255, 1.    , 1.6745]],
         <BLANKLINE>
-         [[1.0557 1.4604 1.8651]
-          [1.5953 2.     2.4047]
-          [2.1349 2.5396 2.9443]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
-        [[[0.25 0.5  0.75]
-          [0.25 0.5  0.75]
-          [0.25 0.5  0.75]]
+               [[1.0557, 1.4604, 1.8651],
+                [1.5953, 2.    , 2.4047],
+                [2.1349, 2.5396, 2.9443]]])
+        >>> distribution.fwd(distribution.inv(mesh)).round(4)
+        array([[[0.25, 0.5 , 0.75],
+                [0.25, 0.5 , 0.75],
+                [0.25, 0.5 , 0.75]],
         <BLANKLINE>
-         [[0.25 0.25 0.25]
-          [0.5  0.5  0.5 ]
-          [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
-        [[0.0991 0.146  0.1452]
-         [0.1634 0.1989 0.1634]
-         [0.1452 0.146  0.0991]]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [[ 1.395  -0.2003  2.6476  0.9553]
-         [ 3.1476  0.6411  1.5946  1.7647]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
+               [[0.25, 0.25, 0.25],
+                [0.5 , 0.5 , 0.5 ],
+                [0.75, 0.75, 0.75]]])
+        >>> distribution.pdf(distribution.inv(mesh)).round(4)
+        array([[0.0991, 0.146 , 0.1452],
+               [0.1634, 0.1989, 0.1634],
+               [0.1452, 0.146 , 0.0991]])
+        >>> distribution.sample(4).round(4)
+        array([[ 1.395 , -0.2003,  2.6476,  0.9553],
+               [ 3.1476,  0.6411,  1.5946,  1.7647]])
+        >>> distribution.mom((1, 2)).round(4)
         7.4
     """
 

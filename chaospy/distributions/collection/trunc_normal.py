@@ -11,24 +11,28 @@ class TruncNormal(Dist):
     Truncated normal distribution
 
     Args:
-        lower (float, Dist): Location of lower threshold
-        upper (float, Dist): Location of upper threshold
-        mu (float, Dist): Mean of normal distribution
-        sigma (float, Dist): Standard deviation of normal distribution
+        lower (float, Dist):
+            Location of lower threshold
+        upper (float, Dist):
+            Location of upper threshold
+        mu (float, Dist):
+            Mean of normal distribution
+        sigma (float, Dist):
+            Standard deviation of normal distribution
 
     Examples:
         >>> distribution = chaospy.TruncNormal(2, 4, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         TruncNormal(lower=2, mu=2, sigma=2, upper=4)
         >>> q = numpy.linspace(0, 1, 5)
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2.     2.4311 2.8835 3.387  4.    ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.   0.25 0.5  0.75 1.  ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [1.1687 1.1419 1.0601 0.9189 0.7089]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [3.1841 2.1971 3.8643 2.8501]
+        >>> distribution.inv(q).round(4)
+        array([2.    , 2.4311, 2.8835, 3.387 , 4.    ])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([1.1687, 1.1419, 1.0601, 0.9189, 0.7089])
+        >>> distribution.sample(4).round(4)
+        array([3.1841, 2.1971, 3.8643, 2.8501])
     """
 
     def __init__(self, lower=-1, upper=1, mu=0, sigma=1):

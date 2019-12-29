@@ -31,28 +31,31 @@ class Gompertz(Add):
     Gompertz distribution
 
     Args:
-        shape (float, Dist) : Shape parameter
-        scale (float, Dist) : Scaling parameter
-        shift (float, Dist) : Location parameter
+        shape (float, Dist):
+            Shape parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.Gompertz(3, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         Gompertz(scale=2, shape=3, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2.1435 2.3145 2.5331 2.859 ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [1.2893 1.0532 0.7833 0.4609]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [2.6052 2.0798 3.3868 2.3967]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([2.1435, 2.3145, 2.5331, 2.859 ])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([1.2893, 1.0532, 0.7833, 0.4609])
+        >>> distribution.sample(4).round(4)
+        array([2.6052, 2.0798, 3.3868, 2.3967])
+        >>> distribution.mom(1).round(4)
         2.5242
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[3.034  3.3243 3.5329]
-         [0.1878 0.3655 0.5218]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[3.034 , 3.3243, 3.5329],
+               [0.1878, 0.3655, 0.5218]])
     """
 
     def __init__(self, shape, scale, shift):

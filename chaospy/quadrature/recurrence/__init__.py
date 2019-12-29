@@ -25,12 +25,13 @@ to multiply the weights :math:`W_i` with some adjustment scalar. For example::
     >>> distribution = chaospy.Uniform(-1, 1)
     >>> N = 3
     >>> adjust_scalar = 2
-    >>> X, W = chaospy.generate_quadrature(N, distribution, rule="gaussian")
-    >>> W *= adjust_scalar
-    >>> print(X)
-    [[-0.86113631 -0.33998104  0.33998104  0.86113631]]
-    >>> print(W)
-    [0.34785485 0.65214515 0.65214515 0.34785485]
+    >>> abscissas, weights = chaospy.generate_quadrature(
+    ...     N, distribution, rule="gaussian")
+    >>> weights *= adjust_scalar
+    >>> abscissas
+    array([[-0.86113631, -0.33998104,  0.33998104,  0.86113631]])
+    >>> weights
+    array([0.34785485, 0.65214515, 0.65214515, 0.34785485])
 
 Here ``rule="gaussian"`` is the flag that indicate that Gaussian quadrature
 should be used.

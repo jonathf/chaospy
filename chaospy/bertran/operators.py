@@ -27,9 +27,9 @@ def add(idxi, idxj, dim):
             The number of dimensions of the expansion.
 
     Examples:
-        >>> print(chaospy.bertran.add(3, 3, 1))
+        >>> chaospy.bertran.add(3, 3, 1)
         6
-        >>> print(chaospy.bertran.add(3, 3, 2))
+        >>> chaospy.bertran.add(3, 3, 2)
         10
     """
     key = idxi, idxj, dim
@@ -214,9 +214,9 @@ def child(idx, dim, axis):
 
     Examples
     --------
-    >>> print(chaospy.bertran.child(4, 1, 0))
+    >>> chaospy.bertran.child(4, 1, 0)
     5
-    >>> print(chaospy.bertran.child(4, 2, 1))
+    >>> chaospy.bertran.child(4, 2, 1)
     8
     """
     idxm = multi_index(idx, dim)

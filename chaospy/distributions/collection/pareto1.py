@@ -32,23 +32,26 @@ class Pareto1(Add):
     Lower threshold at scale+loc and survival: x^-shape
 
     Args:
-        shape (float, Dist): Tail index parameter
-        scale (float, Dist): Scaling parameter
-        shift (float, Dist): Location parameter
+        shape (float, Dist):
+            Tail index parameter
+        scale (float, Dist):
+            Scaling parameter
+        shift (float, Dist):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.Pareto1(2, 2, 2)
-        >>> print(distribution)
+        >>> distribution
         Pareto1(loc=2, scale=2, shape=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [4.2361 4.582  5.1623 6.4721]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.7155 0.4648 0.253  0.0894]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [ 5.3981  4.126  10.9697  4.7794]
+        >>> distribution.inv(q).round(4)
+        array([4.2361, 4.582 , 5.1623, 6.4721])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.7155, 0.4648, 0.253 , 0.0894])
+        >>> distribution.sample(4).round(4)
+        array([ 5.3981,  4.126 , 10.9697,  4.7794])
     """
 
     def __init__(self, shape=1, scale=1, loc=0):

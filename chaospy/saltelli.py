@@ -3,6 +3,7 @@ The Saltelli method
 
 Code is built upon the code provided by Vinzenze Eck.
 """
+from .poly import ndpoly
 import numpy
 
 
@@ -17,18 +18,18 @@ class Saltelli(object):
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
         >>> generator = Saltelli(dist, 3, rule="H")
 
-        >>> print(numpy.around(generator[(False, False)], 4))
-        [[0.875  0.0625 0.5625]
-         [0.5556 0.8889 0.037 ]]
-        >>> print(numpy.around(generator[(False, True)], 4))
-        [[0.875  0.0625 0.5625]
-         [0.4444 0.7778 0.2222]]
-        >>> print(numpy.around(generator[(True, False)], 4))
-        [[0.125  0.625  0.375 ]
-         [0.5556 0.8889 0.037 ]]
-        >>> print(numpy.around(generator[(True, True)], 4))
-        [[0.125  0.625  0.375 ]
-         [0.4444 0.7778 0.2222]]
+        >>> generator[False, False].round(4)
+        array([[0.875 , 0.0625, 0.5625],
+               [0.5556, 0.8889, 0.037 ]])
+        >>> generator[False, True].round(4)
+        array([[0.875 , 0.0625, 0.5625],
+               [0.4444, 0.7778, 0.2222]])
+        >>> generator[True, False].round(4)
+        array([[0.125 , 0.625 , 0.375 ],
+               [0.5556, 0.8889, 0.037 ]])
+        >>> generator[True, True].round(4)
+        array([[0.125 , 0.625 , 0.375 ],
+               [0.4444, 0.7778, 0.2222]])
     """
 
     def __init__(self, dist, samples, poly=None, rule="R"):
@@ -39,7 +40,7 @@ class Saltelli(object):
             distribution to sample from.
         samples (int):
             The number of samples to draw for each matrix.
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         rule (str):
             Scheme for generating random samples.
@@ -60,7 +61,7 @@ class Saltelli(object):
             else:
                 new[idx] = self.samples2[idx]
 
-        if self.poly:
+        if isinstance(self.poly, ndpoly) and self.poly.size:
             new = self.poly(*new)
         return new
 
@@ -85,7 +86,7 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
     First order sensitivity indices estimated using Saltelli's method.
 
     Args:
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         dist (chaopy.Dist):
             distribution to sample from.
@@ -103,11 +104,11 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
         >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
-        >>> print(poly)
-        [q0^2, q0q1, q1^2]
-        >>> print(numpy.around(Sens_m_sample(poly, dist, 10000, rule="M"), 4))
-        [[0.008  0.0026 0.    ]
-         [0.     0.6464 2.1321]]
+        >>> poly
+        polynomial([q0**2, q0*q1, q1**2])
+        >>> Sens_m_sample(poly, dist, 10000, rule="M").round(4)
+        array([[0.008 , 0.0026, 0.    ],
+               [0.    , 0.6464, 2.1321]])
     """
     dim = len(dist)
 
@@ -139,7 +140,7 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
     Second order sensitivity indices estimated using Saltelli's method.
 
     Args:
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         dist (chaopy.Dist):
             distribution to sample from.
@@ -157,14 +158,14 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
         >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
-        >>> print(poly)
-        [q0^2, q0q1, q1^2]
-        >>> print(numpy.around(Sens_m2_sample(poly, dist, 10000, rule="H"), 4))
-        [[[ 0.008   0.0026  0.    ]
-          [-0.0871  1.1516  1.2851]]
+        >>> poly
+        polynomial([q0**2, q0*q1, q1**2])
+        >>> Sens_m2_sample(poly, dist, 10000, rule="H").round(4)
+        array([[[ 0.008 ,  0.0026,  0.    ],
+                [-0.0871,  1.1516,  1.2851]],
         <BLANKLINE>
-         [[-0.0871  1.1516  1.2851]
-          [ 0.      0.7981  1.38  ]]]
+               [[-0.0871,  1.1516,  1.2851],
+                [ 0.    ,  0.7981,  1.38  ]]])
     """
     dim = len(dist)
 
@@ -218,7 +219,7 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
     Total order sensitivity indices estimated using Saltelli's method.
 
     Args:
-        poly (chaospy.Poly):
+        poly (chaospy.poly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
         dist (chaopy.Dist):
             distribution to sample from.
@@ -236,11 +237,11 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
         >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
-        >>> print(poly)
-        [q0^2, q0q1, q1^2]
-        >>> print(numpy.around(Sens_t_sample(poly, dist, 10000, rule="H"), 4))
-        [[ 1.      0.2    -0.3807]
-         [ 0.9916  0.9962  1.    ]]
+        >>> poly
+        polynomial([q0**2, q0*q1, q1**2])
+        >>> Sens_t_sample(poly, dist, 10000, rule="H").round(4)
+        array([[ 1.    ,  0.2   , -0.3807],
+               [ 0.9916,  0.9962,  1.    ]])
     """
     generator = Saltelli(dist, samples, poly, rule=rule)
 

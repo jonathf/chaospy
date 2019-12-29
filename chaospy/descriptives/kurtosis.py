@@ -3,6 +3,7 @@ import numpy
 
 from .. import distributions, poly as polynomials
 from .expected import E
+from .standard_deviation import Std
 
 
 def Kurt(poly, dist=None, fisher=True, **kws):
@@ -12,7 +13,7 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     Element by element 4rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (Poly, Dist):
+        poly (chaospy.poly.ndpoly, Dist):
             Input to take kurtosis on.
         dist (Dist):
             Defines the space the skewness is taken on. It is ignored if
@@ -28,36 +29,23 @@ def Kurt(poly, dist=None, fisher=True, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> print(numpy.around(chaospy.Kurt(dist), 4))
-        [6. 0.]
-        >>> print(numpy.around(chaospy.Kurt(dist, fisher=False), 4))
-        [9. 3.]
+        >>> chaospy.Kurt(dist).round(4)
+        array([6., 0.])
+        >>> chaospy.Kurt(dist, fisher=False).round(4)
+        array([9., 3.])
         >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.Poly([1, x, y, 10*x*y])
-        >>> print(numpy.around(chaospy.Kurt(poly, dist), 4))
-        [nan  6.  0. 15.]
+        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
+        >>> chaospy.Kurt(poly, dist).round(4)
+        array([nan,  6.,  0., 15.])
     """
-    if isinstance(poly, distributions.Dist):
-        x = polynomials.variable(len(poly))
-        poly, dist = x, poly
-    else:
-        poly = polynomials.Poly(poly)
+    adjust = 3 if fisher else 0
 
-    if fisher:
-        adjust = 3
-    else:
-        adjust = 0
+    if dist is None:
+        dist, poly = poly, polynomials.variable(len(poly))
+    poly = polynomials.setdim(poly, len(dist))
+    if not poly.isconstant:
+        return poly.tonumpy()**4-adjust
 
-    shape = poly.shape
-    poly = polynomials.flatten(poly)
-
-    m1 = E(poly, dist)
-    m2 = E(poly**2, dist)
-    m3 = E(poly**3, dist)
-    m4 = E(poly**4, dist)
-
-    out = (m4-4*m3*m1 + 6*m2*m1**2 - 3*m1**4) /\
-            (m2**2-2*m2*m1**2+m1**4) - adjust
-
-    out = numpy.reshape(out, shape)
-    return out
+    poly = poly-E(poly, dist, **kws)
+    poly = poly/Std(poly, dist, **kws)
+    return E(poly**4, dist, **kws)-adjust

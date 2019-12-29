@@ -19,17 +19,17 @@ def lagrange_polynomial(abscissas, sort="G"):
             Sample points where the Lagrange polynomials shall be defined.
 
     Example:
-        >>> print(chaospy.around(chaospy.lagrange_polynomial([-10, 10]), 4))
-        [-0.05q0+0.5, 0.05q0+0.5]
-        >>> print(chaospy.around(chaospy.lagrange_polynomial([-1, 0, 1]), 4))
-        [0.5q0^2-0.5q0, -q0^2+1.0, 0.5q0^2+0.5q0]
+        >>> chaospy.lagrange_polynomial([-10, 10]).round(4)
+        polynomial([0.5-0.05*q0, 0.5+0.05*q0])
+        >>> chaospy.lagrange_polynomial([-1, 0, 1]).round(4)
+        polynomial([-0.5*q0+0.5*q0**2, 1.0-q0**2, 0.5*q0+0.5*q0**2])
         >>> poly = chaospy.lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
-        >>> print(chaospy.around(poly, 4))
-        [0.5q0-0.5q1+0.5, -q0+1.0, 0.5q0+0.5q1-0.5]
-        >>> print(numpy.around(poly([1, 0, 1], [0, 1, 2]), 4))
-        [[1. 0. 0.]
-         [0. 1. 0.]
-         [0. 0. 1.]]
+        >>> poly.round(4)
+        polynomial([0.5-0.5*q1+0.5*q0, 1.0-q0, -0.5+0.5*q1+0.5*q0])
+        >>> poly([1, 0, 1], [0, 1, 2]).round(4)
+        array([[1., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 1.]])
         >>> nodes = numpy.array([[ 0.17,  0.15,  0.17,  0.19],
         ...                      [14.94, 16.69, 16.69, 16.69]])
         >>> poly = chaospy.lagrange_polynomial(nodes)  # doctest: +IGNORE_EXCEPTION_DETAIL

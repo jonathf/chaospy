@@ -55,26 +55,29 @@ class Triangle(Add):
     Must have lower <= midpoint <= upper.
 
     Args:
-        lower (float, Dist) : Lower bound
-        midpoint (float, Dist) : Location of the top
-        upper (float, Dist) : Upper bound
+        lower (float, Dist):
+            Lower bound
+        midpoint (float, Dist):
+            Location of the top
+        upper (float, Dist):
+            Upper bound
 
     Examples:
         >>> distribution = chaospy.Triangle(2, 3, 4)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2.6325 2.8944 3.1056 3.3675]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.6325 0.8944 0.8944 0.6325]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [3.1676 2.4796 3.6847 2.982 ]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([2.6325, 2.8944, 3.1056, 3.3675])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.6325, 0.8944, 0.8944, 0.6325])
+        >>> distribution.sample(4).round(4)
+        array([3.1676, 2.4796, 3.6847, 2.982 ])
+        >>> distribution.mom(1).round(4)
         3.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[3.     3.     3.    ]
-         [0.1667 0.2333 0.2327]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[3.    , 3.    , 3.    ],
+               [0.1667, 0.2333, 0.2327]])
     """
 
     def __init__(self, lower=-1, midpoint=0, upper=1):

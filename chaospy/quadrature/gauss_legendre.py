@@ -18,8 +18,7 @@ The first few orders::
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_legendre")
-    ...     print(order, numpy.around(abscissas, 3),
-    ...           numpy.around(weights, 3))
+    ...     print(order, abscissas.round(3), weights.round(3))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.5 0.5]
     2 [[0.113 0.5   0.887]] [0.278 0.444 0.278]
@@ -31,8 +30,7 @@ Using an alternative distribution::
     >>> for order in [0, 1, 2, 3]:
     ...     abscissas, weights = chaospy.generate_quadrature(
     ...         order, distribution, rule="gauss_legendre")
-    ...     print(order, numpy.around(abscissas, 3),
-    ...           numpy.around(weights, 3))
+    ...     print(order, abscissas.round(3), weights.round(3))
     0 [[0.5]] [1.]
     1 [[0.211 0.789]] [0.933 0.067]
     2 [[0.113 0.5   0.887]] [0.437 0.556 0.007]
@@ -41,8 +39,6 @@ Using an alternative distribution::
 The abscissas stays the same, but the weights are re-adjusted for the new
 weight function.
 """
-from __future__ import print_function
-
 import numpy
 
 from .recurrence import (
@@ -101,10 +97,10 @@ def quad_gauss_legendre(
 
     Example:
         >>> abscissas, weights = quad_gauss_legendre(3)
-        >>> print(numpy.around(abscissas, 4))
-        [[0.0694 0.33   0.67   0.9306]]
-        >>> print(numpy.around(weights, 4))
-        [0.1739 0.3261 0.3261 0.1739]
+        >>> abscissas.round(4)
+        array([[0.0694, 0.33  , 0.67  , 0.9306]])
+        >>> weights.round(4)
+        array([0.1739, 0.3261, 0.3261, 0.1739])
     """
     from ..distributions.baseclass import Dist
     from ..distributions.collection import Uniform

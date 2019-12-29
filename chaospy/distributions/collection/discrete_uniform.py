@@ -18,22 +18,22 @@ class DiscreteUniform(Dist):
 
     Examples:
         >>> distribution = chaospy.DiscreteUniform(2, 4)
-        >>> print(distribution)
+        >>> distribution
         DiscreteUniform(lower=2, upper=4)
         >>> q = numpy.linspace(0, 1, 9)
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [2 2 2 3 3 3 4 4 4]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.  0.  0.  0.5 0.5 0.5 1.  1.  1. ]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [3 2 4 3]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q)
+        array([2, 2, 2, 3, 3, 3, 4, 4, 4])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0. , 0. , 0. , 0.5, 0.5, 0.5, 1. , 1. , 1. ])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+        >>> distribution.sample(4)
+        array([3, 2, 4, 3])
+        >>> distribution.mom(1).round(4)
         3.0
-        >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-        [[3.     3.     3.3333]
-         [0.6667 0.3333 0.    ]]
+        >>> distribution.ttr([1, 2, 3]).round(4)
+        array([[3.    , 3.    , 3.3333],
+               [0.6667, 0.3333, 0.    ]])
     """
     interpret_as_integer = True
 
