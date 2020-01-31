@@ -75,3 +75,148 @@ class Clayton(Copula):
         self._repr = {"theta": theta}
         trans = clayton(len(dist), theta=theta, eps=eps)
         return Copula.__init__(self, dist=dist, trans=trans)
+
+
+class Clayton_(Dist):
+    """
+    Examples:
+        >>> distribution = Clayton_(2, theta=2)
+        >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)]*2)
+        >>> print(numpy.array(mesh))
+        [[[0.   0.25 0.5  0.75 1.  ]
+          [0.   0.25 0.5  0.75 1.  ]
+          [0.   0.25 0.5  0.75 1.  ]
+          [0.   0.25 0.5  0.75 1.  ]
+          [0.   0.25 0.5  0.75 1.  ]]
+        <BLANKLINE>
+         [[0.   0.   0.   0.   0.  ]
+          [0.25 0.25 0.25 0.25 0.25]
+          [0.5  0.5  0.5  0.5  0.5 ]
+          [0.75 0.75 0.75 0.75 0.75]
+          [1.   1.   1.   1.   1.  ]]]
+        >>> print(numpy.around(distribution.fwd(mesh), 4))
+        [[[0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]]
+        <BLANKLINE>
+         [[0.     0.     0.     0.     0.    ]
+          [0.25   0.3708 0.0966 0.0345 0.0156]
+          [0.5    0.7728 0.432  0.227  0.125 ]
+          [0.75   0.9313 0.766  0.5802 0.4219]
+          [1.     1.     1.     1.     1.    ]]]
+        >>> print(numpy.around(distribution.inv(mesh), 4))
+        [[[0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]]
+        <BLANKLINE>
+         [[0.     0.     0.     0.     0.    ]
+          [0.25   0.1987 0.3758 0.5    0.5   ]
+          [0.5    0.5    0.5464 0.6994 0.75  ]
+          [0.75   0.5    0.7361 0.8525 0.9062]
+          [1.     1.     1.     1.     1.    ]]]
+        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
+        [[[0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]
+          [0.     0.25   0.5    0.75   1.    ]]
+        <BLANKLINE>
+         [[0.     0.     0.     0.     0.    ]
+          [0.25   0.25   0.25   0.227  0.125 ]
+          [0.5    0.7728 0.5    0.5    0.4219]
+          [0.75   0.7728 0.75   0.75   0.7443]
+          [1.     1.     1.     1.     1.    ]]]
+    """
+
+    def __init__(self, length, theta=1.):
+        self.length = length
+        Dist.__init__(self, theta=float(theta))
+
+    def __len__(self):
+        return self.length
+
+    def _bnd(self, x, theta):
+        return 0, 1
+
+    def _cdf(self, x, theta):
+        return cdf(x, theta)
+
+    def _pdf(self, x, theta):
+        return pdf(x, theta)
+
+
+def phi(t_loc, theta):  # confirmed
+    out = (t_loc**-theta-1)/theta
+    return out
+
+def dphi(t_loc, theta):
+    out = -t_loc**(-theta-1)
+    return out
+
+
+def S(u_loc, theta, order):
+    out = 1.
+    for dim in range(order):
+        out *= (-1/theta-dim)
+    assert numpy.all(u_loc > 0), u_loc
+    out = out*u_loc**(-1/theta-order)
+    return out
+
+def iphi(u_loc, theta, order):  # confirmed order 0
+    out = theta**order*S(1+theta*u_loc, theta, order)
+    if not order:
+        out = numpy.clip(out, 0, 1)
+    return out
+
+def C(x_loc, theta, order=0):  # confirmed order 0
+    assert numpy.all(x_loc <= 1)
+    assert numpy.all(x_loc > 0)
+    out = iphi(numpy.sum(phi(x_loc, theta), 0), theta, order)
+    if order:
+        out *= numpy.where(out, numpy.prod(dphi(x_loc[:order], theta), 0), 0)
+    return out
+
+
+def pdf_(x_loc, theta, order=0):
+    loc = numpy.ones(x_loc.shape)
+    loc[:order] = x_loc[:order]
+    out = C(loc, theta, order=order)
+    loc[order] = x_loc[order]
+    index = out != 0
+    out[index] = C(loc, theta, order=order+1)[index]/out[index]
+    out[~index] = 0
+    return out
+
+
+def pdf(x_loc, theta):
+    return numpy.vstack([
+        pdf_(x_loc, theta, order)
+        for order in range(len(x_loc))
+    ])
+
+
+def cdf_(x_loc, theta, order=0):
+    assert numpy.all(x_loc <= 1)
+    assert numpy.all(x_loc >= 0)
+    loc = numpy.ones(x_loc.shape)
+    loc[:order] = x_loc[:order]
+    out = C(loc, theta, order=order)
+    loc[order] = x_loc[order]
+    index = out != 0
+    out[index] = C(loc, theta, order=order)[index]/out[index]
+    out[~index] = 1
+    return out
+
+
+def cdf(x_loc, theta):
+    assert numpy.all(x_loc <= 1)
+    assert numpy.all(x_loc >= 0)
+    out = numpy.vstack([
+        cdf_(x_loc, theta, order)
+        for order in range(len(x_loc))
+    ])
+    return out
