@@ -96,7 +96,8 @@ quantification components ``chaospy`` provides.
 | `STARFiSh`_     | Shell-based, scientific simulation program                |
 |                 | for blood flow in mammals.                                |
 +-----------------+-----------------------------------------------------------+
-| `SurUQ`_        | Surrogate modeling with nested uncertainty quantification.|
+| `Profit`_       | Probabilistic response model fitting via interactive      |
+|                 | tools.                                                    |
 +-----------------+-----------------------------------------------------------+
 | `UncertainPy`_  | Uncertainty quantification and sensitivity analysis,      |
 |                 | tailored towards computational neuroscience.              |
@@ -104,7 +105,7 @@ quantification components ``chaospy`` provides.
 
 .. _easyVVUQ: https://github.com/UCL-CCS/EasyVVUQ
 .. _STARFiSh: https://www.ntnu.no/starfish
-.. _SurUQ: https://github.com/redmod-team/suruq
+.. _Profit: https://github.com/redmod-team/profit
 .. _UncertainPy: https://github.com/simetenn/uncertainpy
 
 Also a few shout-outs:
