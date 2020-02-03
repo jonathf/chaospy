@@ -25,9 +25,6 @@ class double_gamma(Dist):
         fac = special.gammainccinv(a,1-abs(2*q-1))
         return numpy.where(q>0.5, fac, -fac)
 
-    def _bnd(self, x, a):
-        return self._ppf(1e-10, a), self._ppf(1-1e-10, a)
-
 
 class DoubleGamma(Add):
     """

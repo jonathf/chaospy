@@ -23,9 +23,6 @@ class power_normal(Dist):
     def _ppf(self, q, c):
         return -special.ndtri(pow(1-q, 1./c))
 
-    def _bnd(self, x, c):
-        return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
-
 
 class PowerNormal(Add):
     """

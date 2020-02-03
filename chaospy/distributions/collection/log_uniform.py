@@ -21,8 +21,11 @@ class log_uniform(Dist):
     def _ppf(self, q, lo, up):
         return numpy.e**(q*(up-lo) + lo)
 
-    def _bnd(self, x, lo, up):
-        return numpy.e**lo, numpy.e**up
+    def _lower(self, lo, up):
+        return numpy.e**lo
+
+    def _upper(self, lo, up):
+        return numpy.e**up
 
     def _mom(self, k, lo, up):
         return ((numpy.e**(up*k)-numpy.e**(lo*k))/((up-lo)*(k+(k==0))))**(k!=0)

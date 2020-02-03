@@ -26,10 +26,9 @@ The use of cache::
 Approximate with the use of density, forward, inverse and bound function if recurrence function is missing::
 
     >>> class Exponential(chaospy.Dist):
-    ...     def _pdf(self, x_data, alpha): return alpha*numpy.e**(-alpha*x_data)
-    ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
-    ...     def _ppf(self, u_data, alpha): return -numpy.log(1-u_data)/alpha
-    ...     def _bnd(self, x_data, alpha): return 0, 20
+    ...     _pdf = lambda self, x_data, alpha: alpha*numpy.e**(-alpha*x_data)
+    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
+    ...     _ppf = lambda self, u_data, alpha: -numpy.log(1-u_data)/alpha
     >>> dist = Exponential(alpha=2)
     >>> print(evaluate_recurrence_coefficients(dist, k_data))
     [2.5 1. ]

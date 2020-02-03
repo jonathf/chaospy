@@ -46,9 +46,11 @@ class Arcsin(Dist):
     def _ppf(self, q, dist, cache):
         return numpy.arcsin(evaluation.evaluate_inverse(dist, q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        return numpy.arcsin(evaluation.evaluate_bound(
-            dist, numpy.sin(x), cache=cache))
+    def _lower(self, dist, cache):
+        return -numpy.pi/2
+
+    def _upper(self, dist, cache):
+        return numpy.pi/2
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

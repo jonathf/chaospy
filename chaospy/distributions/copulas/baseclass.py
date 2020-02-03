@@ -67,8 +67,11 @@ class Copula(Dist):
         output = evaluation.evaluate_forward(trans, output, cache=cache)
         return output
 
-    def _bnd(self, x, dist, trans, cache):
-        return evaluation.evaluate_bound(dist, x, cache=cache)
+    def _lower(self, dist, trans, cache):
+        return evaluation.evaluate_lower(dist, cache=cache)
+
+    def _upper(self, dist, trans, cache):
+        return evaluation.evaluate_upper(dist, cache=cache)
 
     def _ppf(self, qloc, dist, trans, cache):
         qloc = evaluation.evaluate_inverse(trans, qloc, cache=cache)
@@ -187,5 +190,8 @@ class Archimedean(Dist):
         return out
 
 
-    def _bnd(self, **prm):
-        return 0, 1
+    def _lower(self, **prm):
+        return 0.
+
+    def _upper(Self, **prm):
+        return 1.

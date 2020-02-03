@@ -32,8 +32,8 @@ class log_normal(Dist):
     (numpy.e**(n*a*a)*(numpy.e**(a*a)+1)-1)*numpy.e**(.5*(2*n-1)*a*a), \
                 (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
 
-    def _bnd(self, x, a):
-        return 0, self._ppf(1-1e-10, a)
+    def _lower(self, a):
+        return 0.
 
 
 class LogNormal(Add):

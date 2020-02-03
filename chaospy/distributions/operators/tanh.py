@@ -46,9 +46,11 @@ class Tanh(Dist):
     def _ppf(self, q, dist, cache):
         return numpy.tanh(evaluation.evaluate_inverse(dist, q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        return numpy.tanh(evaluation.evaluate_bound(
-            dist, numpy.arctanh(x), cache=cache))
+    def _lower(self, dist, cache):
+        return -1.
+
+    def _upper(self, dist, cache):
+        return 1.
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

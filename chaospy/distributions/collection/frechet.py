@@ -24,8 +24,8 @@ class frechet(Dist):
     def _mom(self, k, c):
         return special.gamma(1-k*1./c)
 
-    def _bnd(self, x, c):
-        return 0, self._ppf(1-1e-10, c)
+    def _lower(self, c):
+        return 0.
 
 
 class Frechet(Add):

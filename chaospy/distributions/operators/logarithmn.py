@@ -53,10 +53,13 @@ class Logn(Dist):
         return numpy.log(evaluation.evaluate_inverse(
             dist, q, cache=cache))/numpy.log(base)
 
-    def _bnd(self, xloc, dist, base, cache):
+    def _lower(self, dist, base, cache):
         """Distribution bounds."""
-        return numpy.log(evaluation.evaluate_bound(
-            dist, base**xloc, cache=cache)) / numpy.log(base)
+        return numpy.log(evaluation.evaluate_lower(dist, cache=cache))/numpy.log(base)
+
+    def _upper(self, dist, base, cache):
+        """Distribution bounds."""
+        return numpy.log(evaluation.evaluate_upper(dist, cache=cache))/numpy.log(base)
 
     def _mom(self, x, dist, base, cache):
         return approximation.approximate_moment(self, x)

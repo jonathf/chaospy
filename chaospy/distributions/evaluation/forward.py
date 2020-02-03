@@ -26,7 +26,9 @@ Use non-default parameters::
     [[0.0952 0.1813 0.2592]]
 """
 import numpy
+
 from .parameters import load_parameters
+from .bound import evaluate_lower, evaluate_upper
 
 
 def evaluate_forward(
@@ -61,6 +63,11 @@ def evaluate_forward(
 
     cache = cache if cache is not None else {}
 
+    lower = evaluate_lower(distribution, cache=cache.copy())
+    upper = evaluate_upper(distribution, cache=cache.copy())
+    out = numpy.zeros(x_data.shape)
+    out[(x_data.T > upper.T).T] = 1
+
     parameters = load_parameters(
         distribution, "_cdf", parameters=parameters, cache=cache)
 
@@ -68,7 +75,9 @@ def evaluate_forward(
     cache[distribution] = x_data
 
     # Evaluate forward function.
-    out = numpy.zeros(x_data.shape)
-    out[:] = distribution._cdf(x_data, **parameters)
+    ret_val = distribution._cdf(x_data, **parameters)
+    ret_val = numpy.array(ret_val).reshape(len(distribution), -1)
+    index = numpy.all((x_data.T >= lower) & (x_data.T <= upper), axis=1)
+    out[:, index] = ret_val[:, index]
 
     return out

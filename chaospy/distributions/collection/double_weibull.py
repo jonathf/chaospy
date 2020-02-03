@@ -32,9 +32,6 @@ class double_weibull(Dist):
         Cq1[indices] = (-numpy.log(2*q_[indices]))**(1./c[indices])
         return numpy.where(q>.5, Cq1, -Cq1)
 
-    def _bnd(self, x, c):
-        return self._ppf(1e-10, c), self._ppf(1-1e-10, c)
-
 
 class DoubleWeibull(Add):
     """

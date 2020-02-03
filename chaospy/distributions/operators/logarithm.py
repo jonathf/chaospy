@@ -34,7 +34,7 @@ class Log(Dist):
 
     def __init__(self, dist):
         assert isinstance(dist, Dist)
-        assert numpy.all(dist.range() > 0)
+        assert numpy.all(dist.lower > 0)
         Dist.__init__(self, dist=dist)
 
     def _pdf(self, xloc, dist, cache):
@@ -50,10 +50,13 @@ class Log(Dist):
         """Point percentile function."""
         return numpy.log(evaluation.evaluate_inverse(dist, q, cache=cache))
 
-    def _bnd(self, xloc, dist, cache):
+    def _lower(self, dist, cache):
         """Distribution bounds."""
-        return numpy.log(evaluation.evaluate_bound(
-            dist, numpy.e**xloc, cache=cache))
+        return numpy.log(evaluation.evaluate_lower(dist, cache=cache))
+
+    def _upper(self, dist, cache):
+        """Distribution bounds."""
+        return numpy.log(evaluation.evaluate_upper(dist, cache=cache))
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

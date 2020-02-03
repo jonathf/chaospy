@@ -68,7 +68,7 @@ def quad_gauss_patterson(order, domain):
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
         abscissas, weights = quad_gauss_patterson(
-            order, domain.range())
+            order, (domain.lower, domain.upper))
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights

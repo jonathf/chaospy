@@ -21,8 +21,11 @@ class generalized_exponential(Dist):
         output = numpy.where(x > 0, output, 0)
         return output
 
-    def _bnd(self, x, a, b, c):
-        return 0, 10**10
+    def _lower(self, a, b, c):
+        return 0.
+
+    def _upper(self, a, b, c):
+        return 10**10
 
 
 class GeneralizedExponential(Add):

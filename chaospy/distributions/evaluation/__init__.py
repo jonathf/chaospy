@@ -12,7 +12,7 @@ from .dependencies import sorted_dependencies, get_dependencies
 from .density import evaluate_density
 from .forward import evaluate_forward
 from .inverse import evaluate_inverse
-from .bound import evaluate_bound
+from .bound import evaluate_lower, evaluate_upper
 from .moment import evaluate_moment
 from .recurrence_coefficients import evaluate_recurrence_coefficients
 

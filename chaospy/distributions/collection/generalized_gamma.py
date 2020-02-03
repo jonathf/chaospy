@@ -31,8 +31,8 @@ class generalized_gamma(Dist):
     def _mom(self, k, a, c):
         return special.gamma((c+k)*1./a)/special.gamma(c*1./a)
 
-    def _bnd(self, x, a, c):
-        return 0., self._ppf(1-1e-10, a, c)
+    def _lower(self, a, c):
+        return 0.
 
 
 class GeneralizedGamma(Add):

@@ -106,7 +106,8 @@ def quad_gauss_legendre(
     from ..distributions.collection import Uniform
     if isinstance(domain, Dist):
         abscissas, weights = quad_gauss_legendre(
-            order, domain.range(), rule, accuracy, recurrence_algorithm)
+            order, (domain.lower, domain.upper),
+            rule, accuracy, recurrence_algorithm)
 
         pdf = domain.pdf(abscissas)
         if len(domain) > 1:

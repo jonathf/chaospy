@@ -29,8 +29,8 @@ class f(Dist):
     def _ppf(self, q, dfn, dfd, nc):
         return special.ncfdtri(dfn, dfd, nc, q)
 
-    def _bnd(self, x, dfn, dfd, nc):
-        return 0.0, self._ppf(1-1e-10, dfn, dfd, nc)
+    def _lower(self, dfn, dfd, nc):
+        return 0.
 
 
 class F(Add):

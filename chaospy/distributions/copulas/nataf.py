@@ -31,8 +31,12 @@ class nataf(Dist):
         out = special.ndtr(numpy.dot(C, special.ndtri(q)))
         return out
 
-    def _bnd(self, C, Ci):
-        return 0., 1.
+    def _lower(self, C, Ci):
+        return 0.
+
+    def _upper(self, C, Ci):
+        return 1.
+
 
 class Nataf(Copula):
     """

@@ -56,38 +56,24 @@ class Trunc(Dist):
         assert isinstance(left, Dist) or isinstance(right, Dist)
         Dist.__init__(self, left=left, right=right)
 
-    def _bnd(self, xloc, left, right, cache):
-        """
-        Distribution bounds.
 
-        Example:
-            >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [1. 1. 1. 1.]]
-            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).range([-2, 0, 2, 4]))
-            [[0.  0.  0.  0. ]
-             [0.6 0.6 0.6 0.6]]
-            >>> print(chaospy.Trunc(0.4, chaospy.Uniform()).range([-2, 0, 2, 4]))
-            [[0.4 0.4 0.4 0.4]
-             [1.  1.  1.  1. ]]
-        """
+    def _lower(self, left, right, cache):
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
         if isinstance(left, Dist):
-            if left in cache:
-                left = cache[left]
-            else:
-                left = evaluation.evaluate_bound(left, xloc, cache=cache)
-        else:
-            left = (numpy.array(left).T * numpy.ones((2,)+xloc.shape).T).T
-
+            left = evaluation.evaluate_lower(left, cache=cache)
         if isinstance(right, Dist):
-            if right in cache:
-                right = cache[right]
-            else:
-                right = evaluation.evaluate_bound(right, xloc, cache=cache)
-        else:
-            right = (numpy.array(right).T * numpy.ones((2,)+xloc.shape).T).T
+            right = evaluation.evaluate_lower(right, cache=cache)
+        return numpy.max([left, right], axis=0)
 
-        return left[0], right[1]
+    def _upper(self, left, right, cache):
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
+        if isinstance(left, Dist):
+            left = evaluation.evaluate_upper(left, cache=cache)
+        if isinstance(right, Dist):
+            right = evaluation.evaluate_upper(right, cache=cache)
+        return numpy.min([left, right], axis=0)
 
     def _cdf(self, xloc, left, right, cache):
         """

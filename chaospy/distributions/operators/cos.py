@@ -45,10 +45,11 @@ class Cos(Dist):
     def _ppf(self, q, dist, cache):
         return numpy.cos(evaluation.evaluate_inverse(dist, 1-q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        out = numpy.cos(evaluation.evaluate_bound(
-            dist, numpy.arccos(x), cache=cache))
-        return out[::-1]
+    def _lower(self, dist, cache):
+        return -1
+
+    def _upper(self, dist, cache):
+        return 1
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

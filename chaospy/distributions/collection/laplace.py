@@ -25,8 +25,11 @@ class laplace(Dist):
     def _ppf(self, x):
         return numpy.where(x>.5, -numpy.log(2*(1-x)), numpy.log(2*x))
 
-    def _bnd(self, x):
-        return -32., 32.
+    def _lower(self):
+        return -32.
+
+    def _upper(self):
+        return 32.
 
     def _ttr(self, k):
         from ...quadrature import quad_fejer, discretized_stieltjes

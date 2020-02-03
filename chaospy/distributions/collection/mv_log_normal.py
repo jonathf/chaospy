@@ -72,9 +72,11 @@ class MvLogNormal(Dist):
         output =  numpy.e**(output)
         return output
 
-    def _bnd(self, x, loc, C, Ci, scale):
-        up = (7.1*numpy.sqrt(numpy.diag(scale))*x.T**0 + loc.T).T
-        return 0*up, numpy.e**up
+    def _lower(self, loc, C, Ci, scale):
+        return 0.
+
+    def _upper(self, loc, C, Ci, scale):
+        return numpy.e**(7.1*numpy.sqrt(numpy.diag(scale))*x.T**0 + loc.T).T
 
     def __len__(self):
         return len(self.prm["C"])

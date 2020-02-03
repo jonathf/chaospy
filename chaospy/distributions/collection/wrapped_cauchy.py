@@ -44,8 +44,11 @@ class wrapped_cauchy(Dist):
         rcmq = 2*numpy.pi-2*numpy.arctan(val*numpy.tan(numpy.pi*(1-q)))
         return numpy.where(q < 1.0/2, rcq, rcmq)
 
-    def _bnd(self, x, c):
-        return 0.0, 2*numpy.pi
+    def _lower(self, c):
+        return 0.
+
+    def _upper(self, c):
+        return 2*numpy.pi
 
 
 class WrappedCauchy(Add):

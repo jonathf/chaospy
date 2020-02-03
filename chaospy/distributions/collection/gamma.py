@@ -26,8 +26,11 @@ class gamma(Dist):
     def _ttr(self, n, a):
         return 2.*n+a, n*n+n*(a-1)
 
-    def _bnd(self, x, a):
-        return 0, 40+2*a
+    def _lower(self, a):
+        return 0.
+
+    def _upper(self, a):
+        return 40+2*a
 
 
 class Gamma(Add):

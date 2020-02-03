@@ -37,12 +37,6 @@ class tukey_lambda(Dist):
         output[~indices] = numpy.log(q_/(1-q_))
         return output
 
-    def _bnd(self, x, lam):
-        return (
-            self._ppf(numpy.array(1e-10), lam),
-            self._ppf(numpy.array(1-1e-10), lam),
-        )
-
 
 class TukeyLambda(Add):
     """

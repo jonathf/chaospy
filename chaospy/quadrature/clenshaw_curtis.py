@@ -88,7 +88,7 @@ def quad_clenshaw_curtis(order, domain, growth=False):
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
         abscissas, weights = quad_clenshaw_curtis(
-            order, domain.range(), growth)
+            order, (domain.lower, domain.upper), growth)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights

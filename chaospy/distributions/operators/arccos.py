@@ -48,9 +48,11 @@ class Arccos(Dist):
     def _ppf(self, q, dist, cache):
         return numpy.arccos(evaluation.evaluate_inverse(dist, 1-q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        return numpy.arccos(evaluation.evaluate_bound(
-            dist, numpy.cos(x), cache=cache))[::-1]
+    def _lower(self, dist, cache):
+        return 0.
+
+    def _upper(self, dist, cache):
+        return numpy.pi
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

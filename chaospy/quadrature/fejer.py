@@ -86,7 +86,7 @@ def quad_fejer(order, domain=(0, 1), growth=False):
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
         abscissas, weights = quad_fejer(
-            order, domain.range(), growth)
+            order, (domain.lower, domain.upper), growth)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights

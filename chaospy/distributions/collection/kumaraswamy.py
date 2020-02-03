@@ -26,8 +26,11 @@ class kumaraswamy(Dist):
         return b*special.gamma(1+k*1./a)*special.gamma(b)/\
                 special.gamma(1+b+k*1./a)
 
-    def _bnd(self, x, a, b):
-        return 0,1
+    def _lower(self, a, b):
+        return 0.
+
+    def _upper(self, a, b):
+        return 1.
 
 
 class Kumaraswamy(Add):

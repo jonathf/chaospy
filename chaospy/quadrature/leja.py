@@ -89,8 +89,7 @@ def quad_leja(
 
         return abscissas, weights
 
-    lower, upper = dist.range()
-    abscissas = [lower.flatten(), dist.mom(1).flatten(), upper.flatten()]
+    abscissas = [dist.lower, dist.mom(1).flatten(), dist.upper]
     for _ in range(int(order)):
 
         def objective(abscissas_):

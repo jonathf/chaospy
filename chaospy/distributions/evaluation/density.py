@@ -30,14 +30,17 @@ If a distribution is missing the definition of the density function, it is
 instead estimated from cumulative distribution function and boundary function::
 
     >>> class Exponential(chaospy.Dist):
-    ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
-    ...     def _bnd(self, x_data, alpha): return 0, 100
+    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
+    ...     _lower = lambda self, alpha: 0.
+    ...     _upper = lambda self, alpha: 100.
     >>> dist = Exponential(alpha=1)
     >>> print(numpy.around(evaluate_density(dist, x_data), 4))
     [[0.9048 0.8187 0.7408]]
 """
 import numpy
+
 from .parameters import load_parameters
+from .bound import evaluate_lower, evaluate_upper
 
 
 def evaluate_density(
@@ -71,19 +74,25 @@ def evaluate_density(
     cache = cache if cache is not None else {}
     out = numpy.zeros(x_data.shape)
 
+    lower = evaluate_lower(distribution, cache=cache.copy())
+    upper = evaluate_upper(distribution, cache=cache.copy())
+    index = numpy.all((x_data.T >= lower) & (x_data.T <= upper), axis=1)
+
     # Distribution self know how to handle density evaluation.
     if hasattr(distribution, "_pdf"):
         parameters = load_parameters(
             distribution, "_pdf", parameters=parameters, cache=cache)
-        out[:] = distribution._pdf(x_data, **parameters)
+        ret_val = distribution._pdf(x_data, **parameters)
+        ret_val = numpy.array(ret_val).reshape(len(distribution), -1)
+        out[:, index] = ret_val[:, index]
 
     # Approximate density evaluation based on cumulative distribution function.
     else:
         from .. import approximation
         parameters = load_parameters(
             distribution, "_cdf", parameters=parameters, cache=cache)
-        out[:] = approximation.approximate_density(
-            distribution, x_data, parameters=parameters, cache=cache)
+        out[:, index] = approximation.approximate_density(
+            distribution, x_data, parameters=parameters, cache=cache)[:, index]
 
     # dependency handling.
     if distribution in cache:

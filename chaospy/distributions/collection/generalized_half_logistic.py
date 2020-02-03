@@ -29,8 +29,10 @@ class generalized_half_logistic(Dist):
     def _ppf(self, q, c):
         return 1.0/c*(1-((1.0-q)/(1.0+q))**c)
 
-    def _bnd(self, x, c):
-        return 0.0, 1/numpy.where(c<10**-10, 10**-10, c)
+    def _lower(self, c):
+        return 0.0
+    def _upper(self, c):
+        return 1/numpy.where(c < 10**-10, 10**-10, c)
 
 
 class GeneralizedHalfLogistic(Add):

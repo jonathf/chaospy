@@ -48,10 +48,6 @@ class Tan(Dist):
         return numpy.tan(evaluation.evaluate_inverse(
             dist, q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        return numpy.tan(evaluation.evaluate_bound(
-            dist, numpy.arctan(x), cache=cache))
-
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)
 

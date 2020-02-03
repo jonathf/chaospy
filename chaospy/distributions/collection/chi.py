@@ -20,10 +20,10 @@ class chi(Dist):
         return special.gammainc(df*0.5,0.5*x*x)
 
     def _ppf(self, q, df):
-        return numpy.sqrt(2*special.gammaincinv(df*0.5,q))
+        return numpy.sqrt(2*special.gammaincinv(df*0.5, q))
 
-    def _bnd(self, x, df):
-        return 0, self._ppf(1-1e-10, df)
+    def _lower(self, df):
+        return 0.
 
     def _mom(self, k, df):
         return 2**(.5*k)*special.gamma(.5*(df+k))\

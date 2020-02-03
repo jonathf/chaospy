@@ -19,8 +19,11 @@ class folded_normal(Dist):
     def _cdf(self, x, c):
         return special.ndtr(x-c) + special.ndtr(x+c) - 1.0
 
-    def _bnd(self, x, c):
-        return 0, 7.5+c
+    def _lower(self, c):
+        return 0.
+
+    def _upper(self, c):
+        return 7.5+c
 
 
 class FoldedNormal(Add):

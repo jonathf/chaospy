@@ -122,7 +122,7 @@ def quad_gauss_radau(
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if fixed_point is None:
-        fixed_point, _ = dist.range()
+        fixed_point = dist.lower
     else:
         fixed_point = numpy.ones(len(dist))*fixed_point
 

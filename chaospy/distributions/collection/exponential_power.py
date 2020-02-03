@@ -24,8 +24,8 @@ class exponential_power(Dist):
     def _ppf(self, q, b):
         return pow(numpy.log1p(-numpy.log1p(-q)), 1.0/b)
 
-    def _bnd(self, x, b):
-        return 0, self._ppf(1-1e-10, b)
+    def _lower(self, b):
+        return 0.
 
 
 class ExponentialPower(Add):

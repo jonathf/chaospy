@@ -23,9 +23,6 @@ class student_t(Dist):
     def _ppf(self, q, a):
         return special.stdtrit(a, q)
 
-    def _bnd(self, x, a):
-        return self._ppf(1e-10, a), self._ppf(1-1e-10, a)
-
     def _mom(self, k, a):
         if numpy.any(a < k):
             raise ValueError("too high mom for student-t")

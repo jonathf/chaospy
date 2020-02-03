@@ -97,14 +97,13 @@ def quad_gauss_lobatto(
         array([0.018, 0.105, 0.171, 0.206, 0.206, 0.171, 0.105, 0.018])
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
-    lower, upper = dist.range()
     if order == 0:
-        return lower.reshape(1, -1), numpy.array([1.])
+        return dist.lower.reshape(1, -1), numpy.array([1.])
 
     coefficients = construct_recurrence_coefficients(
         2*order-1, dist, rule, accuracy, recurrence_algorithm)
     coefficients = [_lobatto(coeffs, (lo, up))
-                    for coeffs, lo, up in zip(coefficients, lower, upper)]
+                    for coeffs, lo, up in zip(coefficients, dist.lower, dist.upper)]
     abscissas, weights = coefficients_to_quadrature(coefficients)
 
     return combine_quadrature(abscissas, weights)

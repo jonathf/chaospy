@@ -56,10 +56,13 @@ class Log10(Dist):
         """Point percentile function."""
         return numpy.log10(evaluation.evaluate_inverse(dist, q, cache=cache))
 
-    def _bnd(self, xloc, dist, cache):
+    def _lower(self, dist, cache):
         """Distribution bounds."""
-        return numpy.log10(evaluation.evaluate_bound(
-            dist, 10**xloc, cache=cache))
+        return numpy.log10(evaluation.evaluate_lower(dist, cache=cache))
+
+    def _upper(self, dist, cache):
+        """Distribution bounds."""
+        return numpy.log10(evaluation.evaluate_upper(dist, cache=cache))
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

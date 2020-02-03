@@ -43,9 +43,11 @@ class Arcsinh(Dist):
     def _ppf(self, q, dist, cache):
         return numpy.arcsinh(evaluation.evaluate_inverse(dist, q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        return numpy.arcsinh(evaluation.evaluate_bound(
-            dist, numpy.sinh(x), cache=cache))
+    def _lower(self, dist, cache):
+        return numpy.arcsinh(evaluation.evaluate_lower(dist, cache=cache))
+
+    def _upper(self, dist, cache):
+        return numpy.arcsinh(evaluation.evaluate_upper(dist, cache=cache))
 
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)

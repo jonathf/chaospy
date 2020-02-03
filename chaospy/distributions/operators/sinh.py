@@ -46,10 +46,6 @@ class Sinh(Dist):
     def _ppf(self, q, dist, cache):
         return numpy.sinh(evaluation.evaluate_inverse(dist, q, cache=cache))
 
-    def _bnd(self, x, dist, cache):
-        return numpy.sinh(evaluation.evaluate_bound(
-            dist, numpy.arcsinh(x), cache=cache))
-
     def _mom(self, x, dist, cache):
         return approximation.approximate_moment(self, x)
 

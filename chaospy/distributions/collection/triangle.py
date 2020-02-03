@@ -29,8 +29,11 @@ class triangle(Dist):
         out = 2*(1.-a_**(k+1))/((k+1)*(k+2)*(1-a_))
         return numpy.where(a==1, 2./(k+2), out)
 
-    def _bnd(self, x, a):
-        return 0., 1.
+    def _lower(self, a):
+        return 0.
+
+    def _upper(self, a):
+        return 1.
 
     def _ttr(self, k, a):
         if a == 0:

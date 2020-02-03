@@ -9,9 +9,12 @@ distribution :class:`~chaospy.distributions.baseclass.Dist`::
     ...     def _cdf(self, x_data, lo, up):
     ...         '''Cumulative distribution function.'''
     ...         return (x_data-lo)/(up-lo)
-    ...     def _bnd(self, x_data, lo, up):
-    ...         '''Lower and upper bounds.'''
-    ...         return lo, up
+    ...     def _lower(self, lo, up):
+    ...         '''Lower bound.'''
+    ...         return lo
+    ...     def _upper(self, lo, up):
+    ...         '''Upper bound.'''
+    ...         return up
     ...     def _pdf(self, x_data, lo, up):
     ...         '''Probability density function.'''
     ...         return 1./(up-lo)
@@ -25,8 +28,10 @@ Usage is then straight forward::
     >>> dist.fwd([-3, 0, 3])  # Forward Rosenblatt transformation
     array([0. , 0.5, 1. ])
 
-Here the two methods ``_cdf`` and ``_bnd`` are absolute requirements, while all
-the others are nice to have. In addition to the once listed, it is also
+Here the method ``_cdf`` is an absolute requirement. In addition, either
+``_ppf``, or the couple ``_lower`` and ``_upper`` should be provided. The
+others are not required, but may increase speed and or accuracy of
+calculations. In addition to the once listed, it is also
 possible to define the following methods:
 
 ``_mom``
@@ -54,9 +59,27 @@ class Dist(object):
 
     interpret_as_integer = False
     """
-    Flag indicating that return value from the methods sample, range and inv
+    Flag indicating that return value from the methods sample, and inv
     should be interpreted as integers instead of floating point.
     """
+
+    def _lower(self, **prm):
+        """Backend lower bound."""
+        return self._ppf(numpy.array([1e-10]*len(self)), **prm)
+
+    @property
+    def lower(self):
+        """Lower bound for the distribution."""
+        return evaluation.evaluate_lower(self)
+
+    def _upper(self, **prm):
+        """Backend upper bound."""
+        return self._ppf(numpy.array([1-1e-10]*len(self)), **prm)
+
+    @property
+    def upper(self):
+        """Upper bound for the distribution."""
+        return evaluation.evaluate_upper(self)
 
     def __init__(self, **prm):
         """
@@ -67,41 +90,11 @@ class Dist(object):
         """
         self.prm = prm
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        assert "_bnd" not in cls.__dict__, (
+            "Dist._bnd is deprecated. Use Dist._lower and Dist._upper instead.")
 
-    def range(self, x_data=None):
-        """
-        Generate the upper and lower bounds of a distribution.
-
-        Args:
-            x_data (numpy.ndarray) :
-                The bounds might vary over the sample space. By providing
-                x_data you can specify where in the space the bound should be
-                taken.  If omitted, a (pseudo-)random sample is used.
-
-        Returns:
-            (numpy.ndarray):
-                The lower (out[0]) and upper (out[1]) bound where
-                out.shape=(2,)+x_data.shape
-        """
-        if x_data is None:
-            try:
-                x_data = evaluation.evaluate_inverse(
-                    self, numpy.array([[0.5]]*len(self)))
-            except StochasticallyDependentError:
-                x_data = approximation.find_interior_point(self)
-            shape = (len(self),)
-            if hasattr(self, "_range"):
-                return self._range(x_data, {})
-        else:
-            x_data = numpy.asfarray(x_data)
-            shape = x_data.shape
-            x_data = x_data.reshape(len(self), -1)
-
-        q_data = evaluation.evaluate_bound(self, x_data)
-        q_data = q_data.reshape((2,)+shape)
-        if self.interpret_as_integer:
-            q_data = q_data.astype(int)
-        return q_data
 
     def fwd(self, x_data):
         """
@@ -121,11 +114,10 @@ class Dist(object):
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
 
-        lower, upper = evaluation.evaluate_bound(self, x_data)
         q_data = numpy.zeros(x_data.shape)
-        indices = x_data > upper
+        indices = (x_data.T > self.upper).T
         q_data[indices] = 1
-        indices = ~indices & (x_data >= lower)
+        indices = ~indices & (x_data.T >= self.lower).T
 
         q_data[indices] = numpy.clip(evaluation.evaluate_forward(
             self, x_data), a_min=0, a_max=1)[indices]
@@ -189,9 +181,8 @@ class Dist(object):
         shape = q_data.shape
         q_data = q_data.reshape(len(self), -1)
         x_data = evaluation.evaluate_inverse(self, q_data)
-        lower, upper = evaluation.evaluate_bound(self, x_data)
-        x_data = numpy.clip(x_data, a_min=lower, a_max=upper)
         x_data = x_data.reshape(shape)
+        x_data = numpy.clip(x_data.T, self.lower, self.upper)
         if self.interpret_as_integer:
             x_data = x_data.astype(int)
         return x_data
@@ -224,9 +215,8 @@ class Dist(object):
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
 
-        lower, upper = evaluation.evaluate_bound(self, x_data)
         f_data = numpy.zeros(x_data.shape)
-        indices = (x_data <= upper) & (x_data >= lower)
+        indices = (x_data.T <= self.upper).T & (x_data.T >= self.lower).T
         f_data[indices] = evaluation.evaluate_density(self, x_data)[indices]
         f_data = f_data.reshape(shape)
         if len(self) > 1:
@@ -342,9 +332,7 @@ class Dist(object):
 
         size = int(K.size/dim)
         K = K.reshape(dim, size)
-
-        cache = {}
-        out = [evaluation.evaluate_moment(self, kdata, cache) for kdata in K.T]
+        out = [evaluation.evaluate_moment(self, kdata, {}) for kdata in K.T]
         out = numpy.array(out)
         return out.reshape(shape)
 
@@ -371,9 +359,7 @@ class Dist(object):
         kloc = numpy.asarray(kloc, dtype=int)
         shape = kloc.shape
         kloc = kloc.reshape(len(self), -1)
-        cache = {}
-        out = [evaluation.evaluate_recurrence_coefficients(self, k)
-               for k in kloc.T]
+        out = [evaluation.evaluate_recurrence_coefficients(self, k) for k in kloc.T]
         alpha, beta = numpy.asfarray(list(zip(*out)))
         out = numpy.array([alpha.T, beta.T])
         return out.reshape((2,)+shape)
