@@ -65,9 +65,9 @@ Inverse transformations::
 Raw moments::
 
     >>> print(numpy.around(joint1.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.   2.5 15. ]
+    [ 6.      2.5    15.0833]
     >>> print(numpy.around(joint2.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.   3.5 21. ]
+    [ 6.      3.5    21.0833]
 """
 from __future__ import division
 from scipy.special import comb
@@ -102,21 +102,32 @@ class Add(Dist):
             >>> chaospy.Add(1, 1).lower
             array([2.])
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
+        del cache  # not used
         if isinstance(left, Dist):
-            left = evaluation.evaluate_lower(left, cache=cache)
+            left = evaluation.evaluate_lower(left)
         if isinstance(right, Dist):
-            right = evaluation.evaluate_lower(right, cache=cache)
+            right = evaluation.evaluate_lower(right)
         return left+right
 
     def _upper(self, left, right, cache):
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
+        """
+        Distribution bounds.
+
+        Example:
+            >>> chaospy.Uniform().upper
+            array([1.])
+            >>> chaospy.Add(chaospy.Uniform(), 2).upper
+            array([3.])
+            >>> chaospy.Add(2, chaospy.Uniform()).upper
+            array([3.])
+            >>> chaospy.Add(1, 1).upper
+            array([2.])
+        """
+        del cache  # not used
         if isinstance(left, Dist):
-            left = evaluation.evaluate_upper(left, cache=cache)
+            left = evaluation.evaluate_upper(left)
         if isinstance(right, Dist):
-            right = evaluation.evaluate_upper(right, cache=cache)
+            right = evaluation.evaluate_upper(right)
         return left+right
 
     def _cdf(self, xloc, left, right, cache):

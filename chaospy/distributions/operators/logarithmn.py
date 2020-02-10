@@ -35,7 +35,7 @@ class Logn(Dist):
 
     def __init__(self, dist, base=2):
         assert isinstance(dist, Dist)
-        assert numpy.all(dist.range() > 0)
+        assert numpy.all(dist.lower > 0)
         assert base > 0 and base != 1
         Dist.__init__(self, dist=dist, base=base)
 

@@ -41,6 +41,11 @@ class J(Dist):
             Distribution to join together.
     """
 
+    @property
+    def interpret_as_integer(self):
+        """Determine if joint consist of only integers."""
+        return all(dist.interpret_as_integer for dist in self.prm.values())
+
     def __init__(self, *args):
         args = [dist for arg in args
                 for dist in (arg if isinstance(arg, J) else [arg])]
@@ -110,7 +115,7 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            uloc[idx:idx+len(dist)] = evaluation.evaluate_lower(dist, cache=cache)
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_lower(dist)
         return numpy.array(uloc)
 
     def _upper(self, cache, **kwargs):
@@ -129,7 +134,7 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            uloc[idx:idx+len(dist)] = evaluation.evaluate_upper(dist, cache=cache)
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_upper(dist)
         return numpy.array(uloc)
 
     def _pdf(self, xloc, cache, **kwargs):
@@ -183,7 +188,7 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(numpy.around(dist.mom([1, 1]), 4))
-            0.5
+            0.5833
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
             raise StochasticallyDependentError(

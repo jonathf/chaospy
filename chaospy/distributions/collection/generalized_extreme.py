@@ -58,7 +58,7 @@ class GeneralizedExtreme(Add):
         >>> distribution.sample(4).round(4)
         array([ 2.6154, -4.0776,  2.6666,  2.4079])
         >>> distribution.mom(1).round(4)
-        -2.0561
+        -2.2584
     """
 
     def __init__(self, shape=0, scale=1, loc=0):

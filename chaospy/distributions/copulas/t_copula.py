@@ -25,10 +25,10 @@ class t_copula(Dist):
         out = special.stdtr(df, numpy.dot(C, special.stdtrit(df, q)))
         return out
 
-    def _lower(self):
+    def _lower(self, df, C, Ci):
         return 0.
 
-    def _upper(self):
+    def _upper(self, df, C, Ci):
         return 1.
 
 

@@ -76,7 +76,7 @@ class MvLogNormal(Dist):
         return 0.
 
     def _upper(self, loc, C, Ci, scale):
-        return numpy.e**(7.1*numpy.sqrt(numpy.diag(scale))*x.T**0 + loc.T).T
+        return numpy.e**(7.1*numpy.sqrt(numpy.diag(scale)) + loc.T).T
 
     def __len__(self):
         return len(self.prm["C"])

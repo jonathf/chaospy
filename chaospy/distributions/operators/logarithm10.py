@@ -40,7 +40,7 @@ class Log10(Dist):
             dist (Dist) : distribution (>=0).
         """
         assert isinstance(dist, Dist)
-        assert numpy.all(dist.range() > 0)
+        assert numpy.all(dist.lower > 0)
         Dist.__init__(self, dist=dist)
 
     def _pdf(self, xloc, dist, cache):

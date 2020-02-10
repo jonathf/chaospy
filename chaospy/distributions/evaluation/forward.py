@@ -10,7 +10,9 @@ Example usage
 Define a simple distribution and data::
 
     >>> class Exponential(chaospy.Dist):
-    ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
+    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
+    ...     _lower = lambda self, alpha: 0.
+    ...     _upper = lambda self, alpha: 100.
     >>> dist = Exponential(alpha=2)
     >>> x_data = numpy.array([[0.1, 0.2, 0.3]])
 
@@ -65,8 +67,6 @@ def evaluate_forward(
 
     lower = evaluate_lower(distribution, cache=cache.copy())
     upper = evaluate_upper(distribution, cache=cache.copy())
-    out = numpy.zeros(x_data.shape)
-    out[(x_data.T > upper.T).T] = 1
 
     parameters = load_parameters(
         distribution, "_cdf", parameters=parameters, cache=cache)
@@ -75,9 +75,9 @@ def evaluate_forward(
     cache[distribution] = x_data
 
     # Evaluate forward function.
-    ret_val = distribution._cdf(x_data, **parameters)
-    ret_val = numpy.array(ret_val).reshape(len(distribution), -1)
-    index = numpy.all((x_data.T >= lower) & (x_data.T <= upper), axis=1)
-    out[:, index] = ret_val[:, index]
+    out = numpy.zeros(x_data.shape)
+    out[:] = distribution._cdf(x_data, **parameters)
+    out[(x_data.T < lower.T).T] = 0
+    out[(x_data.T > upper.T).T] = 1
 
     return out

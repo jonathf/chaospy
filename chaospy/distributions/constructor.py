@@ -7,8 +7,9 @@ Example usage
 Construct distribution from scratch::
 
     >>> MyUniform = chaospy.construct(
-    ...     cdf=lambda self, x, lo, up: (x - lo) / (up - lo),
-    ...     bnd=lambda self, x, lo, up: (lo, up)
+    ...     cdf=lambda self, x, lo, up: (x-lo)/(up-lo),
+    ...     lower=lambda self, lo, up: lo,
+    ...     upper=lambda self, lo, up: up,
     ... )
 
 Evaluate distribution::

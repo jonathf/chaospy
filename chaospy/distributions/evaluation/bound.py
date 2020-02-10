@@ -15,11 +15,11 @@ Define a simple distribution and data::
 Normal usage::
 
     >>> evaluate_lower(dist)
-    1.
+    array([1.])
     >>> evaluate_upper(dist)
-    3.
+    array([3.])
     >>> evaluate_lower(dist, parameters={"lo": -1.})
-    -1.
+    array([-1.])
 """
 import numpy
 from .parameters import load_parameters
@@ -52,8 +52,10 @@ def evaluate_lower(
     parameters = load_parameters(
         distribution, "_lower", parameters=parameters, cache=cache)
 
+    dtype = int if distribution.interpret_as_integer else float
     lower = distribution._lower(**parameters)
-    lower = lower + numpy.zeros(len(distribution))
+    lower = numpy.asarray(lower, dtype=dtype)+numpy.zeros(len(distribution), dtype=dtype)
+
     cache[distribution] = lower
     return lower
 
@@ -85,7 +87,8 @@ def evaluate_upper(
     parameters = load_parameters(
         distribution, "_upper", parameters=parameters, cache=cache)
 
+    dtype = int if distribution.interpret_as_integer else float
     upper = distribution._upper(**parameters)
-    upper = upper + numpy.zeros(len(distribution))
+    upper = numpy.asarray(upper, dtype=dtype)+numpy.zeros(len(distribution), dtype=dtype)
     cache[distribution] = upper
     return upper

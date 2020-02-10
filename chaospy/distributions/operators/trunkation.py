@@ -58,22 +58,27 @@ class Trunc(Dist):
 
 
     def _lower(self, left, right, cache):
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
+        """
+        Distribution lower bound.
+
+        Examples:
+            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).lower)
+            [0.]
+            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).lower)
+            [0.6]
+        """
+        del cache # not in use
+        del right
         if isinstance(left, Dist):
-            left = evaluation.evaluate_lower(left, cache=cache)
-        if isinstance(right, Dist):
-            right = evaluation.evaluate_lower(right, cache=cache)
-        return numpy.max([left, right], axis=0)
+            left = evaluation.evaluate_lower(left)
+        return left
 
     def _upper(self, left, right, cache):
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-        if isinstance(left, Dist):
-            left = evaluation.evaluate_upper(left, cache=cache)
+        del cache # not in use
+        del left
         if isinstance(right, Dist):
-            right = evaluation.evaluate_upper(right, cache=cache)
-        return numpy.min([left, right], axis=0)
+            right = evaluation.evaluate_upper(right)
+        return right
 
     def _cdf(self, xloc, left, right, cache):
         """
@@ -167,17 +172,19 @@ class Trunc(Dist):
             if isinstance(right, Dist):
                 raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
+
+            right = (numpy.array(right).T*numpy.ones(q.shape).T).T
+            uloc = evaluation.evaluate_forward(left, right, cache=cache.copy())
+            out = evaluation.evaluate_inverse(left, q*uloc, cache=cache)
+
         elif not isinstance(right, Dist):
             raise StochasticallyDependentError(
                 "truncated variable indirectly depends on underlying variable")
         else:
             left = (numpy.array(left).T*numpy.ones(q.shape).T).T
             uloc = evaluation.evaluate_forward(right, left)
-            return evaluation.evaluate_inverse(right, q*(1-uloc)+uloc, cache=cache)
-
-        right = (numpy.array(right).T*numpy.ones(q.shape).T).T
-        uloc = evaluation.evaluate_forward(left, right, cache=cache.copy())
-        return evaluation.evaluate_inverse(left, q*uloc, cache=cache)
+            out = evaluation.evaluate_inverse(right, q*(1-uloc)+uloc, cache=cache)
+        return out
 
     def __str__(self):
         return (self.__class__.__name__ + "(" + str(self.prm["left"]) +

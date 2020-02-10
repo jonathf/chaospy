@@ -115,7 +115,7 @@ class Dist(object):
         x_data = x_data.reshape(len(self), -1)
 
         q_data = numpy.zeros(x_data.shape)
-        indices = (x_data.T > self.upper).T
+        indices = (x_data.T > self.upper.T).T
         q_data[indices] = 1
         indices = ~indices & (x_data.T >= self.lower).T
 
@@ -181,10 +181,8 @@ class Dist(object):
         shape = q_data.shape
         q_data = q_data.reshape(len(self), -1)
         x_data = evaluation.evaluate_inverse(self, q_data)
+        x_data = numpy.clip(x_data.T, self.lower, self.upper).T
         x_data = x_data.reshape(shape)
-        x_data = numpy.clip(x_data.T, self.lower, self.upper)
-        if self.interpret_as_integer:
-            x_data = x_data.astype(int)
         return x_data
 
     def pdf(self, x_data, step=1e-7):

@@ -65,8 +65,8 @@ class ChiSquared(Add):
         >>> distribution.mom(1).round(4)
         13.0001
         >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 33.    ,  51.6666,  69.8034],
-               [128.    , 432.    , 895.9962]])
+        array([[ 33.    ,  51.6667,  69.8042],
+               [128.    , 432.    , 895.9999]])
     """
 
     def __init__(self, df=1, scale=1, shift=0, nc=0):
