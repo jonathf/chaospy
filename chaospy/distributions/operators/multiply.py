@@ -145,7 +145,8 @@ class Mul(Dist):
                 ), axis=0)
 
             elif self.matrix:
-                out = numpy.min([left_lower@right, left_upper@right], axis=0)
+                out = numpy.min([numpy.dot(left_lower, right),
+                                 numpy.dot(left_upper, right)], axis=0)
             else:
                 out = numpy.min([left_lower*right, left_upper*right], axis=0)
 
@@ -156,7 +157,8 @@ class Mul(Dist):
             right_upper = evaluation.evaluate_upper(right)
             right_lower = evaluation.evaluate_lower(right)
             if self.matrix:
-                out = numpy.min([left@right_lower, left@right_upper], axis=0)
+                out = numpy.min([numpy.dot(left, right_lower),
+                                 numpy.dot(left, right_upper)], axis=0)
             else:
                 out = numpy.min([left*right_lower, left*right_upper], axis=0)
 
@@ -198,7 +200,8 @@ class Mul(Dist):
                 ), axis=0)
 
             elif self.matrix:
-                out = numpy.max([left_lower@right, left_upper@right], axis=0)
+                out = numpy.max([numpy.dot(left_lower, right),
+                                 numpy.dot(left_upper, right)], axis=0)
             else:
                 out = numpy.max([left_lower*right, left_upper*right], axis=0)
 
@@ -209,7 +212,8 @@ class Mul(Dist):
             right_lower = evaluation.evaluate_lower(right)
             right_upper = evaluation.evaluate_upper(right)
             if self.matrix:
-                out = numpy.max([left@right_lower, left@right_upper], axis=0)
+                out = numpy.max([numpy.dot(left, right_lower),
+                                 numpy.dot(left, right_upper)], axis=0)
             else:
                 out = numpy.max([left*right_lower, left*right_upper], axis=0)
 
