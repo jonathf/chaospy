@@ -81,12 +81,11 @@ class MvStudentT(Dist):
                 (1+numpy.sum(x_*x_,0)/a))
         return out
 
-    def _bnd(self, x, a, C, Ci, loc):
-        output = numpy.zeros((2,)+x.shape)
-        scale = numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))
-        output.T[:, :, 0] = -10**3*scale + loc
-        output.T[:, :, 1] = 10**3*scale + loc
-        return output
+    def _lower(self, a, C, Ci, loc):
+        return -10**3*numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))+loc
+
+    def _upper(self, a, C, Ci, loc):
+        return 10**3*numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))+loc
 
     def __len__(self):
         return self.length

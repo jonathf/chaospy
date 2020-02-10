@@ -54,8 +54,11 @@ class ScipyStatsDist(Dist):
     def _ppf(self, q_loc):
         return self.distribution.ppf(q_loc)
 
-    def _bnd(self, x_loc):
-        return self.distribution.interval(1-1e-14)
+    def _lower(self):
+        return self.distribution.interval(1-1e-14)[0]
+
+    def _upper(self):
+        return self.distribution.interval(1-1e-14)[1]
 
     def _mom(self, k_loc):
         return self.distribution.moment(int(k_loc))

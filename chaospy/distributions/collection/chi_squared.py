@@ -25,11 +25,14 @@ class chi_squared(Dist):
     def _ppf(self, q, df, nc):
         return special.chndtrix(q, df, nc)
 
-    def _bnd(self, x, df, nc):
-        for expon in range(12, -1, -1):
+    def _lower(self, df, nc):
+        return 0.
+
+    def _upper(self, df, nc):
+        for expon in range(20, -1, -1):
             upper = self._ppf(1-10**-expon, df, nc)
             if not numpy.isnan(upper).item():
-                return 0., upper
+                return upper.item()
 
 
 class ChiSquared(Add):
@@ -62,8 +65,8 @@ class ChiSquared(Add):
         >>> distribution.mom(1).round(4)
         13.0001
         >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 33.    ,  51.6666,  69.8034],
-               [128.    , 432.    , 895.9962]])
+        array([[ 33.    ,  51.6667,  69.8042],
+               [128.    , 432.    , 895.9999]])
     """
 
     def __init__(self, df=1, scale=1, shift=0, nc=0):

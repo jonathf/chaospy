@@ -18,84 +18,93 @@ class Pow(Dist):
         """
         Dist.__init__(self, left=left, right=right)
 
-    def _bnd(self, xloc, left, right, cache):
+    def _lower(self, left, right, cache):
+        """
+        Distribution lower bounds.
+
+        Example:
+            >>> print(chaospy.Uniform().lower)
+            [0.]
+            >>> print(chaospy.Pow(chaospy.Uniform(), 2).lower)
+            [0.]
+            >>> print(chaospy.Pow(chaospy.Uniform(1, 2), -1).lower)
+            [0.5]
+            >>> print(chaospy.Pow(2, chaospy.Uniform()).lower)
+            [1.]
+            >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).lower)
+            [0.5]
+            >>> print(chaospy.Pow(2, 3).lower)
+            [8.]
+        """
+        del cache  # not used
+        if isinstance(left, Dist):
+            left_lower = evaluation.evaluate_lower(left)
+            left_upper = evaluation.evaluate_upper(left)
+            assert left_lower >= 0, "root of negative number"
+
+            if isinstance(right, Dist):
+                right_lower = evaluation.evaluate_lower(right)
+                right_upper = evaluation.evaluate_upper(right)
+
+                return numpy.min(numpy.broadcast_arrays(
+                    left_lower**right_lower,
+                    left_lower**right_upper,
+                    left_upper**right_lower,
+                    left_upper**right_upper,
+                ), axis=0)
+
+            return numpy.min([left_lower**right, left_upper**right], axis=0)
+
+        elif not isinstance(right, Dist):
+            return left**right
+
+        right_lower = evaluation.evaluate_lower(right)
+        right_upper = evaluation.evaluate_upper(right)
+        return numpy.min([left**right_lower, left**right_upper], axis=0)
+
+    def _upper(self, left, right, cache):
         """
         Distribution bounds.
 
         Example:
-            >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [1. 1. 1. 1.]]
-            >>> print(chaospy.Pow(chaospy.Uniform(), 2).range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [1. 1. 1. 1.]]
-            >>> print(chaospy.Pow(chaospy.Uniform(1, 2), -1).range([-2, 0, 2, 4]))
-            [[0.5 0.5 0.5 0.5]
-             [1.  1.  1.  1. ]]
-            >>> print(chaospy.Pow(2, chaospy.Uniform()).range([-2, 0, 2, 4]))
-            [[1. 1. 1. 1.]
-             [2. 2. 2. 2.]]
-            >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).range([-2, 0, 2, 4]))
-            [[0.5 0.5 0.5 0.5]
-             [1.  1.  1.  1. ]]
-            >>> print(chaospy.Pow(2, 3).range([-2, 0, 2, 4]))
-            [[8. 8. 8. 8.]
-             [8. 8. 8. 8.]]
+            >>> print(chaospy.Uniform().upper)
+            [1.]
+            >>> print(chaospy.Pow(chaospy.Uniform(), 2).upper)
+            [1.]
+            >>> print(chaospy.Pow(chaospy.Uniform(1, 2), -1).upper)
+            [1.]
+            >>> print(chaospy.Pow(2, chaospy.Uniform()).upper)
+            [2.]
+            >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).upper)
+            [1.]
+            >>> print(chaospy.Pow(2, 3).upper)
+            [8.]
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-
+        del cache  # not used
         if isinstance(left, Dist):
+            left_lower = evaluation.evaluate_lower(left)
+            left_upper = evaluation.evaluate_upper(left)
+            assert left_lower >= 0, "root of negative number"
+
             if isinstance(right, Dist):
-                raise StochasticallyDependentError(
-                    "under-defined distribution {} or {}".format(left, right))
+                right_lower = evaluation.evaluate_lower(right)
+                right_upper = evaluation.evaluate_upper(right)
+
+                return numpy.max(numpy.broadcast_arrays(
+                    left_lower**right_lower,
+                    left_lower**right_upper,
+                    left_upper**right_lower,
+                    left_upper**right_upper,
+                ), axis=0)
+
+            return numpy.max([left_lower**right, left_upper**right], axis=0)
+
         elif not isinstance(right, Dist):
-            return left**right, left**right
-        else:
-            output = numpy.ones(xloc.shape)
-            left = left * output
-            assert numpy.all(left >= 0), "root of negative number"
+            return left**right
 
-            indices = xloc > 0
-            output[indices] = numpy.log(xloc[indices])
-            output[~indices] = -numpy.inf
-
-            indices = left != 1
-            output[indices] /= numpy.log(left[indices])
-
-            output = evaluation.evaluate_bound(right, output, cache=cache)
-            output = left**output
-            output[:] = (
-                numpy.where(output[0] < output[1], output[0], output[1]),
-                numpy.where(output[0] < output[1], output[1], output[0]),
-            )
-            return output
-
-        output = numpy.zeros(xloc.shape)
-        right = right + output
-
-        indices = right > 0
-        output[indices] = numpy.abs(xloc[indices])**(1/right[indices])
-        output[indices] *= numpy.sign(xloc[indices])
-        output[right == 0] = 1
-        output[(xloc == 0) & (right < 0)] = numpy.inf
-
-        output = evaluation.evaluate_bound(left, output, cache=cache)
-
-        pair = right % 2 == 0
-        bnd_ = numpy.empty(output.shape)
-        bnd_[0] = numpy.where(pair*(output[0]*output[1] < 0), 0, output[0])
-        bnd_[0] = numpy.where(pair*(output[0]*output[1] > 0), \
-                numpy.min(numpy.abs(output), 0), bnd_[0])**right
-        bnd_[1] = numpy.where(pair, numpy.max(numpy.abs(output), 0),
-                output[1])**right
-
-        bnd_[0], bnd_[1] = (
-            numpy.where(bnd_[0] < bnd_[1], bnd_[0], bnd_[1]),
-            numpy.where(bnd_[0] < bnd_[1], bnd_[1], bnd_[0]),
-        )
-        return bnd_
-
+        right_lower = evaluation.evaluate_lower(right)
+        right_upper = evaluation.evaluate_upper(right)
+        return numpy.max([left**right_lower, left**right_upper], axis=0)
 
     def _cdf(self, xloc, left, right, cache):
         """

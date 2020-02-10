@@ -30,9 +30,6 @@ class generalized_extreme(Dist):
         x = -numpy.log(-numpy.log(q))
         return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
 
-    def _bnd(self, x, c):
-        return self._ppf(1e-8, c), self._ppf(1-1e-8, c)
-
 
 class GeneralizedExtreme(Add):
     """
@@ -61,7 +58,7 @@ class GeneralizedExtreme(Add):
         >>> distribution.sample(4).round(4)
         array([ 2.6154, -4.0776,  2.6666,  2.4079])
         >>> distribution.mom(1).round(4)
-        -2.0561
+        -2.2584
     """
 
     def __init__(self, shape=0, scale=1, loc=0):

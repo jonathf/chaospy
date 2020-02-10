@@ -65,9 +65,9 @@ Inverse transformations::
 Raw moments::
 
     >>> print(numpy.around(joint1.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.   2.5 15. ]
+    [ 6.      2.5    15.0833]
     >>> print(numpy.around(joint2.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.   3.5 21. ]
+    [ 6.      3.5    21.0833]
 """
 from __future__ import division
 from scipy.special import comb
@@ -88,57 +88,47 @@ class Add(Dist):
         """
         Dist.__init__(self, left=left, right=right)
 
-    def _bnd(self, xloc, left, right, cache):
+    def _lower(self, left, right, cache):
         """
         Distribution bounds.
 
         Example:
-            >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [1. 1. 1. 1.]]
-            >>> print(chaospy.Add(chaospy.Uniform(), 2).range([-2, 0, 2, 4]))
-            [[2. 2. 2. 2.]
-             [3. 3. 3. 3.]]
-            >>> print(chaospy.Add(2, chaospy.Uniform()).range([-2, 0, 2, 4]))
-            [[2. 2. 2. 2.]
-             [3. 3. 3. 3.]]
-            >>> print(chaospy.Add(1, 1).range([-2, 0, 2, 4]))
-            [[2. 2. 2. 2.]
-             [2. 2. 2. 2.]]
+            >>> chaospy.Uniform().lower
+            array([0.])
+            >>> chaospy.Add(chaospy.Uniform(), 2).lower
+            array([2.])
+            >>> chaospy.Add(2, chaospy.Uniform()).lower
+            array([2.])
+            >>> chaospy.Add(1, 1).lower
+            array([2.])
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-
+        del cache  # not used
         if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
-        elif not isinstance(right, Dist):
-            return left+right, left+right
-        else:
-            left, right = right, left
+            left = evaluation.evaluate_lower(left)
+        if isinstance(right, Dist):
+            right = evaluation.evaluate_lower(right)
+        return left+right
 
-        right = numpy.asfarray(right)
-        if len(right.shape) == 3:
-            xloc_ = (xloc.T-right[0].T).T
-            lower, upper = evaluation.evaluate_bound(left, xloc_, cache=cache.copy())
-            lower0, upper0 = (lower.T+right[0].T).T, (upper.T+right[0].T).T
+    def _upper(self, left, right, cache):
+        """
+        Distribution bounds.
 
-            xloc_ = (xloc.T-right[1].T).T
-            lower, upper = evaluation.evaluate_bound(left, xloc_, cache=cache)
-            lower1, upper1 = (lower.T+right[1].T).T, (upper.T+right[1].T).T
-
-            lower = numpy.min([lower0, lower1], 0)
-            upper = numpy.max([upper0, upper1], 0)
-
-        else:
-            xloc_ = (xloc.T-right.T).T
-            lower, upper = evaluation.evaluate_bound(left, xloc_, cache=cache.copy())
-            lower, upper = (lower.T+right.T).T, (upper.T+right.T).T
-
-        assert lower.shape == xloc.shape
-        assert upper.shape == xloc.shape
-        return lower, upper
+        Example:
+            >>> chaospy.Uniform().upper
+            array([1.])
+            >>> chaospy.Add(chaospy.Uniform(), 2).upper
+            array([3.])
+            >>> chaospy.Add(2, chaospy.Uniform()).upper
+            array([3.])
+            >>> chaospy.Add(1, 1).upper
+            array([2.])
+        """
+        del cache  # not used
+        if isinstance(left, Dist):
+            left = evaluation.evaluate_upper(left)
+        if isinstance(right, Dist):
+            right = evaluation.evaluate_upper(right)
+        return left+right
 
     def _cdf(self, xloc, left, right, cache):
         """

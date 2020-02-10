@@ -22,8 +22,8 @@ class gompertz(Dist):
     def _ppf(self, q, c):
         return numpy.log(1-1.0/c*numpy.log(1-q))
 
-    def _bnd(self, x, c):
-        return 0., self._ppf(1-1e-10, c)
+    def _lower(self, c):
+        return 0.
 
 
 class Gompertz(Add):

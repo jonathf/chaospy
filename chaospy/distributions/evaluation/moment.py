@@ -31,9 +31,10 @@ The use of cache::
 Approximate with the use of density function if moment is missing::
 
     >>> class Exponential(chaospy.Dist):
-    ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
-    ...     def _bnd(self, x_data, alpha): return 0, 50
-    ...     def _pdf(self, x_data, alpha): return alpha*numpy.e**(-alpha*x_data)
+    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
+    ...     _lower = lambda self, alpha: 0
+    ...     _upper = lambda self, alpha: 50
+    ...     _pdf = lambda self, x_data, alpha: alpha*numpy.e**(-alpha*x_data)
     >>> dist = Exponential(alpha=2)
     >>> print(numpy.around(evaluate_moment(dist, k_data), 4))
     0.5

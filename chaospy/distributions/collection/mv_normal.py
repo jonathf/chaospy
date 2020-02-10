@@ -76,12 +76,11 @@ class MvNormal(Dist):
         out[0] =  numpy.e**(-.5*numpy.sum(x_*x_, 0))/numpy.sqrt((2*numpy.pi)**len(Ci)*det)
         return out
 
-    def _bnd(self, x, C, Ci, loc):
-        scale = numpy.sqrt(numpy.diag(numpy.dot(C,C.T)))
-        lo,up = numpy.zeros((2,)+x.shape)
-        lo.T[:] = (-7.5*scale+loc)
-        up.T[:] = (7.5*scale+loc)
-        return lo, up
+    def _lower(self, C, Ci, loc):
+        return -7.5*numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))+loc
+
+    def _upper(self, C, Ci, loc):
+        return 7.5*numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))+loc
 
     def _mom(self, k, C, Ci, loc):
         scale = numpy.dot(C, C.T)

@@ -45,9 +45,13 @@ class DiscreteUniform(Dist):
         return ((numpy.floor(x_data)-numpy.ceil(lower))/
                 (numpy.floor(upper)-numpy.ceil(lower)))
 
-    def _bnd(self, x_data, lower, upper):
-        """Lower and upper bounds."""
-        return numpy.ceil(lower), numpy.floor(upper)
+    def _lower(self, lower, upper):
+        """Lower bounds."""
+        return numpy.ceil(lower)
+
+    def _upper(self, lower, upper):
+        """Upper bounds."""
+        return numpy.floor(upper)
 
     def _pdf(self, x_data, lower, upper):
         """Probability density function."""

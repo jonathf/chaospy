@@ -6,122 +6,6 @@ from . import evaluation
 from .. import quadrature
 
 
-def find_interior_point(
-        distribution,
-        parameters=None,
-        cache=None,
-        iterations=1000,
-        retall=False,
-        seed=None,
-):
-    """
-    Find interior point of the distribution where forward evaluation is
-    guarantied to be both ``distribution.fwd(xloc) > 0`` and
-    ``distribution.fwd(xloc) < 1``.
-
-    Args:
-        distribution (Dist): Distribution to find interior on.
-        parameters (Optional[Dict[Dist, numpy.ndarray]]): Parameters for the
-            distribution.
-        cache (Optional[Dict[Dist, numpy.ndarray]]): Memory cache for the
-            location in the evaluation so far.
-        iterations (int): The number of iterations allowed to be performed
-        retall (bool): If provided, lower and upper bound which guaranties that
-            ``distribution.fwd(lower) == 0`` and
-            ``distribution.fwd(upper) == 1`` is returned as well.
-        seed (Optional[int]): Fix random seed.
-
-    Returns:
-        numpy.ndarray: An input array with shape ``(len(distribution),)`` which
-        is guarantied to be on the interior of the probability distribution.
-
-
-    Example:
-        >>> distribution = chaospy.MvNormal([1, 2, 3], numpy.eye(3)+.03)
-        >>> midpoint, lower, upper = find_interior_point(
-        ...     distribution, retall=True, seed=1234)
-        >>> lower.T
-        array([[-64., -64., -64.]])
-        >>> midpoint.T.round(4)
-        array([[  0.6784, -33.7687, -19.0182]])
-        >>> upper.T
-        array([[16., 16., 16.]])
-        >>> distribution = chaospy.Uniform(1000, 1010)
-        >>> midpoint, lower, upper = find_interior_point(
-        ...     distribution, retall=True, seed=1234)
-        >>> lower.round(4)
-        array([[-1.]])
-        >>> midpoint.round(4)
-        array([[1009.8873]])
-        >>> upper.round(4)
-        array([[1024.]])
-    """
-    random_state = numpy.random.get_state()
-    numpy.random.seed(seed)
-
-    forward = partial(evaluation.evaluate_forward, cache=cache,
-                      distribution=distribution, parameters=parameters)
-
-    dim = len(distribution)
-    upper = numpy.ones((dim, 1))
-    for _ in range(100):
-        indices = forward(x_data=upper) < 1
-        if not numpy.any(indices):
-            break
-        upper[indices] *= 2
-
-    lower = -numpy.ones((dim, 1))
-    for _ in range(100):
-        indices = forward(x_data=lower) > 0
-        if not numpy.any(indices):
-            break
-        lower[indices] *= 2
-
-    for _ in range(iterations):
-
-        rand = numpy.random.random(dim)
-        proposal = (rand*lower.T + (1-rand)*upper.T).T
-        evals = forward(x_data=proposal)
-
-        indices0 = evals > 0
-        indices1 = evals < 1
-
-        range_ = numpy.random.choice(dim, size=dim, replace=False)
-
-        upper_ = numpy.where(indices1, upper, evals)
-        for idx in range_:
-            if upper.flatten()[idx] == upper_.flatten()[idx]:
-                continue
-            if numpy.all(forward(x_data=upper_) == 1):
-                upper = upper_
-                break
-            upper_[idx] = upper[idx]
-
-        lower_ = numpy.where(indices0, lower, evals)
-        for idx in range_:
-            if lower.flatten()[idx] == lower_.flatten()[idx]:
-                continue
-            if numpy.all(forward(x_data=lower_) == 0):
-                lower = lower_
-                break
-            lower_[idx] = lower[idx]
-
-        if numpy.all(indices0 & indices1):
-            break
-
-    else:
-        if retall:
-            return proposal, lower, upper
-        return proposal
-        raise evaluation.DependencyError(
-            "Too many iterations required to find interior point.")
-
-    numpy.random.set_state(random_state)
-    if retall:
-        return proposal, lower, upper
-    return proposal
-
-
 def approximate_inverse(
         distribution,
         qloc,
@@ -166,8 +50,9 @@ def approximate_inverse(
     logger.debug("init approximate_inverse: %s", distribution)
 
     # lots of initial values:
-    xloc, xlower, xupper = find_interior_point(
-        distribution, cache=cache, parameters=parameters, retall=True, seed=seed)
+    xlower = distribution.lower
+    xupper = distribution.upper
+    xloc = 0.5*(xlower+xupper)
     xloc = (xloc.T * numpy.zeros(qloc.shape).T).T
     xlower = (xlower.T + numpy.zeros(qloc.shape).T).T
     xupper = (xupper.T + numpy.zeros(qloc.shape).T).T

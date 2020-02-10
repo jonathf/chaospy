@@ -23,8 +23,8 @@ class exponential_weibull(Dist):
     def _ppf(self, q, a, c):
         return (-numpy.log1p(-q**(1.0/a)))**(1.0/c)
 
-    def _bnd(self, x, a, c):
-        return 0, self._ppf(1-1e-10, a, c)
+    def _lower(self, a, c):
+        return 0.
 
 
 class ExponentialWeibull(Add):

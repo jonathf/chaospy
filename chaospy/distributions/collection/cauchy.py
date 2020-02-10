@@ -20,9 +20,6 @@ class cauchy(Dist):
     def _ppf(self, q):
         return numpy.tan(numpy.pi*q-numpy.pi/2.0)
 
-    def _bnd(self, x):
-        return self._ppf(1e-10), self._ppf(1-1e-10)
-
 
 class Cauchy(Add):
     """

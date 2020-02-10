@@ -7,11 +7,14 @@ Example usage
 Define a simple distribution and data::
 
     >>> class Exponential(chaospy.Dist):
-    ...     def _pdf(self, x_data, alpha): return alpha*numpy.e**(-alpha*x_data)
+    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
+    ...     _pdf = lambda self, x_data, alpha: alpha*numpy.e**(-alpha*x_data)
+    ...     _lower = lambda self, alpha: 0.
+    ...     _upper = lambda self, alpha: 100.
     >>> dist = Exponential(alpha=2)
     >>> x_data = numpy.array([[0.1, 0.2, 0.3]])
 
-Normal usage::
+Normal usage for calculating density::
 
     >>> print(numpy.around(evaluate_density(dist, x_data), 4))
     [[1.6375 1.3406 1.0976]]
@@ -29,15 +32,14 @@ non-zero values for coordinates that matches. E.g.::
 If a distribution is missing the definition of the density function, it is
 instead estimated from cumulative distribution function and boundary function::
 
-    >>> class Exponential(chaospy.Dist):
-    ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
-    ...     def _bnd(self, x_data, alpha): return 0, 100
     >>> dist = Exponential(alpha=1)
     >>> print(numpy.around(evaluate_density(dist, x_data), 4))
     [[0.9048 0.8187 0.7408]]
 """
 import numpy
+
 from .parameters import load_parameters
+from .bound import evaluate_lower, evaluate_upper
 
 
 def evaluate_density(
@@ -71,19 +73,30 @@ def evaluate_density(
     cache = cache if cache is not None else {}
     out = numpy.zeros(x_data.shape)
 
+    lower = evaluate_lower(distribution, cache=cache.copy())
+    upper = evaluate_upper(distribution, cache=cache.copy())
+    index = numpy.all((x_data.T >= lower.T) & (x_data.T <= upper.T), axis=1)
+
     # Distribution self know how to handle density evaluation.
     if hasattr(distribution, "_pdf"):
         parameters = load_parameters(
             distribution, "_pdf", parameters=parameters, cache=cache)
-        out[:] = distribution._pdf(x_data, **parameters)
+        ret_val = distribution._pdf(x_data, **parameters)
+        ret_val = numpy.array(ret_val).reshape(len(distribution), -1)
+        assert ret_val.shape[-1] in [1, len(index)], (
+            "%s._pdf is returning something funky" % distribution)
+        if ret_val.shape[-1] == 1:
+            out[:, index] = ret_val
+        else:
+            out[:, index] = ret_val[:, index]
 
     # Approximate density evaluation based on cumulative distribution function.
     else:
         from .. import approximation
         parameters = load_parameters(
             distribution, "_cdf", parameters=parameters, cache=cache)
-        out[:] = approximation.approximate_density(
-            distribution, x_data, parameters=parameters, cache=cache)
+        out[:, index] = approximation.approximate_density(
+            distribution, x_data, parameters=parameters, cache=cache)[:, index]
 
     # dependency handling.
     if distribution in cache:

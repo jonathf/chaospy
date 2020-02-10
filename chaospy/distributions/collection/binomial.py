@@ -46,8 +46,11 @@ class Binomial(Dist):
     def _pdf(self, x_data, size, prob):
         return special.comb(size, x_data)*prob**x_data*(1-prob)**(size-x_data)
 
-    def _bnd(self, x_data, size, prob):
-        return 0, numpy.floor(size)+1
+    def _lower(self, size, prob):
+        return 0
+
+    def _upper(self, size, prob):
+        return numpy.floor(size)+1
 
     def _mom(self, k_data, size, prob):
         x_data = numpy.arange(int(size)+1, dtype=int)

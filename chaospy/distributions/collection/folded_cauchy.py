@@ -18,8 +18,11 @@ class folded_cauchy(Dist):
     def _cdf(self, x, c):
         return (numpy.arctan(x-c) + numpy.arctan(x+c))/numpy.pi
 
-    def _bnd(self, x, c):
-        return 0, 10**10
+    def _lower(self, c):
+        return 0.
+
+    def _upper(self, c):
+        return 10.**10  # actually infinity
 
 
 class FoldedCauchy(Add):

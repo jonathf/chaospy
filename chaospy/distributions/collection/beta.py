@@ -35,8 +35,11 @@ class beta_(Dist):
         B = numpy.where((n==0)+(n==1), B1, B2)
         return A, B
 
-    def _bnd(self, x, a, b):
-        return 0., 1.
+    def _lower(self, a, b):
+        return 0.
+
+    def _upper(self, a, b):
+        return 1.
 
 
 class Beta(Add):

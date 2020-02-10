@@ -7,8 +7,9 @@ Example usage
 Construct distribution from scratch::
 
     >>> MyUniform = chaospy.construct(
-    ...     cdf=lambda self, x, lo, up: (x - lo) / (up - lo),
-    ...     bnd=lambda self, x, lo, up: (lo, up)
+    ...     cdf=lambda self, x, lo, up: (x-lo)/(up-lo),
+    ...     lower=lambda self, lo, up: lo,
+    ...     upper=lambda self, lo, up: up,
     ... )
 
 Evaluate distribution::
@@ -21,7 +22,7 @@ import types
 from .baseclass import Dist
 
 LEGAL_ATTRS = {
-    "cdf": "_cdf", "bnd": "_bnd",
+    "cdf": "_cdf", "lower": "_lower", "upper": "_upper",
     "pdf": "_pdf", "ppf": "_ppf", "mom": "_mom",
     "ttr": "_ttr", "fwd_cache": "_fwd_cache", "inv_cache": "_inv_cache",
     "doc": "__doc__",
@@ -35,12 +36,14 @@ def construct(parent=None, defaults=None, **kwargs):
     Args:
         cdf:
             Cumulative distribution function. Optional if ``parent`` is used.
-        bnd:
-            Boundary interval. Optional if ``parent`` is used.
+        lower:
+            Lower boundary. Optional if ``parent`` or ``ppf`` is present.
+        upper:
+            Upper boundary. Optional if ``parent`` or ``ppf`` is present.
         parent (Dist):
             Distribution used as basis for new distribution. Any other argument
             that is omitted will instead take is function from ``parent``.
-        doc (str]):
+        doc (str):
             Documentation for the distribution.
         str (str, :py:data:typing.Callable):
             Pretty print of the variable.
@@ -70,7 +73,9 @@ def construct(parent=None, defaults=None, **kwargs):
                     kwargs[key] = getattr(parent, value)
 
     assert "cdf" in kwargs, "cdf function must be defined"
-    assert "bnd" in kwargs, "bnd function must be defined"
+    if "ppf" not in kwargs:
+        assert "lower" in kwargs, "lower function must be defined"
+        assert "upper" in kwargs, "upper function must be defined"
     if "str" in kwargs and isinstance(kwargs["str"], str):
         string = kwargs.pop("str")
         kwargs["str"] = lambda *args, **kwargs: string

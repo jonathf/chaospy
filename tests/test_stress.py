@@ -12,8 +12,10 @@ class normal(cp.Dist):
     """stripped down normal distribution."""
     def _cdf(self, x):
         return special.ndtr(x)
-    def _bnd(self, x):
-        return -7.5, 7.5
+    def _lower(self):
+        return -7.5
+    def _upper(self):
+        return 7.5
 
 
 def test_dist():

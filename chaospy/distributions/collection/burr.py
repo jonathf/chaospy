@@ -31,8 +31,8 @@ class burr(Dist):
     def _mom(self, k, alpha, kappa):
         return kappa*special.beta(1-k*1./alpha, kappa+k*1./alpha)
 
-    def _bnd(self, x, alpha, kappa):
-        return 0, self._ppf(1-1e-10, alpha, kappa)
+    def _lower(self, alpha, kappa):
+        return 0.
 
 
 class Burr(Add):

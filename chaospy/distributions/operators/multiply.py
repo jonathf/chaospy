@@ -31,21 +31,25 @@ Construct joint multiplication distribution::
     >>> print(multiplication)
     Mul(Uniform(lower=-1, upper=0), Uniform(lower=-3, upper=-2))
     >>> joint1 = chaospy.J(lhs, multiplication)
-    >>> print(joint1.range())
-    [[-1.  0.]
-     [ 0.  3.]]
+    >>> print(joint1.lower)
+    [-1.  0.]
+    >>> print(joint1.upper)
+    [0. 3.]
     >>> joint2 = chaospy.J(rhs, multiplication)
-    >>> print(joint2.range())
-    [[-3. -0.]
-     [-2.  3.]]
+    >>> print(joint2.lower)
+    [-3.  0.]
+    >>> print(joint2.upper)
+    [-2.  3.]
     >>> joint3 = chaospy.J(multiplication, lhs)
-    >>> print(joint3.range())
-    [[ 0. -1.]
-     [ 3.  0.]]
+    >>> print(joint3.lower)
+    [ 0. -1.]
+    >>> print(joint3.upper)
+    [3. 0.]
     >>> joint4 = chaospy.J(multiplication, rhs)
-    >>> print(joint4.range())
-    [[-0. -3.]
-     [ 3. -2.]]
+    >>> print(joint4.lower)
+    [ 0. -3.]
+    >>> print(joint4.upper)
+    [ 3. -2.]
 
 Generate random samples::
 
@@ -106,140 +110,116 @@ class Mul(Dist):
 
         Dist.__init__(self, left=left, right=right)
 
-
-    def _bnd(self, xloc, left, right, cache):
+    def _lower(self, left, right, cache):
         """
-        Distribution bounds.
+        Distribution lower bounds.
 
         Example:
-            >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [1. 1. 1. 1.]]
-            >>> print(Mul(chaospy.Uniform(), 2).range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [2. 2. 2. 2.]]
-            >>> print(Mul(2, chaospy.Uniform()).range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [2. 2. 2. 2.]]
-            >>> print(Mul(2, 2).range([-2, 0, 2, 4]))
-            [[4. 4. 4. 4.]
-             [4. 4. 4. 4.]]
-            >>> dist = chaospy.Mul(chaospy.Iid(chaospy.Uniform(), 2), [1, 2])
-            >>> print(dist.range([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [[[0. 0. 0.]
-              [0. 0. 0.]]
-            <BLANKLINE>
-             [[1. 1. 1.]
-              [2. 2. 2.]]]
-            >>> dist = chaospy.Mul([2, 1], chaospy.Iid(chaospy.Uniform(), 2))
-            >>> print(dist.range([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [[[0. 0. 0.]
-              [0. 0. 0.]]
-            <BLANKLINE>
-             [[2. 2. 2.]
-              [1. 1. 1.]]]
-            >>> dist = chaospy.Mul(chaospy.Iid(chaospy.Uniform(), 2), [1, 2])
-            >>> print(dist.range([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [[[0. 0. 0.]
-              [0. 0. 0.]]
-            <BLANKLINE>
-             [[1. 1. 1.]
-              [2. 2. 2.]]]
+            >>> print(chaospy.Uniform().lower)
+            [0.]
+            >>> print(chaospy.Mul(chaospy.Uniform(), 2).lower)
+            [0.]
+            >>> print(chaospy.Mul(chaospy.Uniform(1, 2), -1).lower)
+            [-2.]
+            >>> print(chaospy.Mul(2, chaospy.Uniform()).lower)
+            [0.]
+            >>> print(chaospy.Mul(2, chaospy.Uniform(-1, 0)).lower)
+            [-2.]
+            >>> print(chaospy.Mul(2, 3).lower)
+            [6.]
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-
+        del cache  # not used
         if isinstance(left, Dist):
+            left_upper = evaluation.evaluate_upper(left)
+            left_lower = evaluation.evaluate_lower(left)
+
             if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
+                right_upper = evaluation.evaluate_upper(right)
+                right_lower = evaluation.evaluate_lower(right)
+
+                out = numpy.min(numpy.broadcast_arrays(
+                    left_lower*right_lower,
+                    left_lower*right_upper,
+                    left_upper*right_lower,
+                    left_upper*right_upper,
+                ), axis=0)
+
+            elif self.matrix:
+                out = numpy.min([numpy.dot(left_lower, right),
+                                 numpy.dot(left_upper, right)], axis=0)
+            else:
+                out = numpy.min([left_lower*right, left_upper*right], axis=0)
+
         elif not isinstance(right, Dist):
-            return numpy.dot(left, right), numpy.dot(left, right)
+            out = left*right
+
         else:
-            left = numpy.asfarray(left)
+            right_upper = evaluation.evaluate_upper(right)
+            right_lower = evaluation.evaluate_lower(right)
             if self.matrix:
-                Ci = numpy.linalg.inv(left)
-                xloc = numpy.dot(Ci, xloc)
-                assert len(xloc) == len(right)
-
-            elif len(left.shape) == 3:
-                left_ = numpy.mean(left, 0)
-                valids = left_ != 0
-                xloc.T[valids.T] = xloc.T[valids.T]/left_.T[valids.T]
-
+                out = numpy.min([numpy.dot(left, right_lower),
+                                 numpy.dot(left, right_upper)], axis=0)
             else:
-                left = (left.T+numpy.zeros(xloc.shape).T).T
-                valids = left != 0
-                xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
+                out = numpy.min([left*right_lower, left*right_upper], axis=0)
 
-            assert len(xloc) == len(right)
-            lower, upper = evaluation.evaluate_bound(right, xloc, cache=cache)
+        assert numpy.array(out).shape[:1] in [(), (len(self),)], out
+        return out
+
+    def _upper(self, left, right, cache):
+        """
+        Distribution upper bounds.
+
+        Example:
+            >>> print(chaospy.Uniform().upper)
+            [1.]
+            >>> print(chaospy.Mul(chaospy.Uniform(), 2).upper)
+            [2.]
+            >>> print(chaospy.Mul(chaospy.Uniform(1, 2), -1).upper)
+            [-1.]
+            >>> print(chaospy.Mul(2, chaospy.Uniform()).upper)
+            [2.]
+            >>> print(chaospy.Mul(2, chaospy.Uniform(-1, 0)).upper)
+            [0.]
+            >>> print(chaospy.Mul(2, 3).upper)
+            [6.]
+        """
+        del cache  # not used
+        if isinstance(left, Dist):
+            left_lower = evaluation.evaluate_lower(left)
+            left_upper = evaluation.evaluate_upper(left)
+
+            if isinstance(right, Dist):
+                right_lower = evaluation.evaluate_lower(right)
+                right_upper = evaluation.evaluate_upper(right)
+
+                out = numpy.max(numpy.broadcast_arrays(
+                    (left_lower.T*right_lower.T).T,
+                    (left_lower.T*right_upper.T).T,
+                    (left_upper.T*right_lower.T).T,
+                    (left_upper.T*right_upper.T).T,
+                ), axis=0)
+
+            elif self.matrix:
+                out = numpy.max([numpy.dot(left_lower, right),
+                                 numpy.dot(left_upper, right)], axis=0)
+            else:
+                out = numpy.max([left_lower*right, left_upper*right], axis=0)
+
+        elif not isinstance(right, Dist):
+            out = left*right
+
+        else:
+            right_lower = evaluation.evaluate_lower(right)
+            right_upper = evaluation.evaluate_upper(right)
             if self.matrix:
-                lower = numpy.dot(lower.T, left.T).T
-                upper = numpy.dot(upper.T, left.T).T
-
-            elif len(left.shape) == 3:
-                lower = numpy.where(left[0]*lower > 0, left[0]*lower, left[1]*lower)
-                upper = numpy.where(left[1]*upper > 0, left[1]*upper, left[0]*upper)
-                lower, upper = (
-                    numpy.where(lower < upper, lower, upper),
-                    numpy.where(lower < upper, upper, lower),
-                )
-                lower[(left[0] < 0) & (lower > 0)] = 0.
-                assert len(lower) == len(right)
-
+                out = numpy.max([numpy.dot(left, right_lower),
+                                 numpy.dot(left, right_upper)], axis=0)
             else:
-                lower *= left
-                upper *= left
-            lower, upper = (
-                numpy.where(lower < upper, lower, upper),
-                numpy.where(lower < upper, upper, lower),
-            )
-            return lower, upper
+                out = numpy.max([left*right_lower, left*right_upper], axis=0)
 
+        assert numpy.array(out).shape[:1] in [(), (len(self),)]
+        return out
 
-        right = numpy.asfarray(right)
-        if self.matrix:
-            Ci = numpy.linalg.inv(right)
-            xloc = numpy.dot(xloc.T, Ci.T).T
-            assert len(left) == len(xloc)
-
-        elif len(right.shape) == 3:
-            right_ = numpy.mean(right, 0)
-            valids = right_ != 0
-            xloc.T[valids.T] = xloc.T[valids.T]/right_.T[valids.T]
-
-        else:
-            right = (right.T+numpy.zeros(xloc.shape).T).T
-            valids = right != 0
-            xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
-
-        assert len(left) == len(xloc)
-        lower, upper = evaluation.evaluate_bound(left, xloc, cache=cache)
-        if self.matrix:
-            lower = numpy.dot(lower.T, right.T).T
-            upper = numpy.dot(upper.T, right.T).T
-
-        elif len(right.shape) == 3:
-            lower = numpy.where(right[0]*lower > 0, right[0]*lower, right[1]*lower)
-            upper = numpy.where(right[1]*upper > 0, right[1]*upper, right[0]*upper)
-
-            lower, upper = (
-                numpy.where(lower < upper, lower, upper),
-                numpy.where(lower < upper, upper, lower),
-            )
-            lower[(right[0] < 0) & (lower > 0)] = 0.
-
-        else:
-            lower *= right
-            upper *= right
-        lower, upper = (
-            numpy.where(lower < upper, lower, upper),
-            numpy.where(lower < upper, upper, lower),
-        )
-        assert lower.shape == xloc.shape
-        assert upper.shape == xloc.shape
-        return lower, upper
 
     def _cdf(self, xloc, left, right, cache):
         """
@@ -283,6 +263,7 @@ class Mul(Dist):
             else:
                 left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
                 valids = left != 0
+                xloc = xloc.copy()
                 xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
             uloc = evaluation.evaluate_forward(right, xloc, cache=cache)
@@ -297,6 +278,7 @@ class Mul(Dist):
         else:
             right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
             valids = right != 0
+            xloc = xloc.copy()
             xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
 
         assert len(left) == len(xloc)

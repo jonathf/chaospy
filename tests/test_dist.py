@@ -59,6 +59,13 @@ def test_dist_mul(distribution):
     np.testing.assert_allclose(dist2_e, base_e, rtol=1e-05, atol=1e-08)
 
 
+def test_dist_map(distribution):
+    distribution = distribution()
+    assert distribution.lower < distribution.inv(0.001)
+    assert distribution.inv(0.001) < distribution.inv(0.999)
+    assert distribution.inv(0.999) < distribution.upper
+
+
 # def test_weibull_rayleigh():
 
 #     lambda_ = 11

@@ -41,9 +41,11 @@ class Neg(Dist):
         """
         Dist.__init__(self, dist=dist)
 
-    def _bnd(self, xloc, dist, cache):
-        """Distribution bounds."""
-        return -evaluation.evaluate_bound(dist, -xloc)[::-1]
+    def _lower(self, dist, cache):
+        return -evaluation.evaluate_upper(dist, cache=cache)
+
+    def _upper(self, dist, cache):
+        return -evaluation.evaluate_lower(dist, cache=cache)
 
     def _pdf(self, xloc, dist, cache):
         """Probability density function."""

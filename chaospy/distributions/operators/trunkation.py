@@ -56,38 +56,29 @@ class Trunc(Dist):
         assert isinstance(left, Dist) or isinstance(right, Dist)
         Dist.__init__(self, left=left, right=right)
 
-    def _bnd(self, xloc, left, right, cache):
-        """
-        Distribution bounds.
 
-        Example:
-            >>> print(chaospy.Uniform().range([-2, 0, 2, 4]))
-            [[0. 0. 0. 0.]
-             [1. 1. 1. 1.]]
-            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).range([-2, 0, 2, 4]))
-            [[0.  0.  0.  0. ]
-             [0.6 0.6 0.6 0.6]]
-            >>> print(chaospy.Trunc(0.4, chaospy.Uniform()).range([-2, 0, 2, 4]))
-            [[0.4 0.4 0.4 0.4]
-             [1.  1.  1.  1. ]]
+    def _lower(self, left, right, cache):
         """
+        Distribution lower bound.
+
+        Examples:
+            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).lower)
+            [0.]
+            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).lower)
+            [0.6]
+        """
+        del cache # not in use
+        del right
         if isinstance(left, Dist):
-            if left in cache:
-                left = cache[left]
-            else:
-                left = evaluation.evaluate_bound(left, xloc, cache=cache)
-        else:
-            left = (numpy.array(left).T * numpy.ones((2,)+xloc.shape).T).T
+            left = evaluation.evaluate_lower(left)
+        return left
 
+    def _upper(self, left, right, cache):
+        del cache # not in use
+        del left
         if isinstance(right, Dist):
-            if right in cache:
-                right = cache[right]
-            else:
-                right = evaluation.evaluate_bound(right, xloc, cache=cache)
-        else:
-            right = (numpy.array(right).T * numpy.ones((2,)+xloc.shape).T).T
-
-        return left[0], right[1]
+            right = evaluation.evaluate_upper(right)
+        return right
 
     def _cdf(self, xloc, left, right, cache):
         """
@@ -181,17 +172,19 @@ class Trunc(Dist):
             if isinstance(right, Dist):
                 raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
+
+            right = (numpy.array(right).T*numpy.ones(q.shape).T).T
+            uloc = evaluation.evaluate_forward(left, right, cache=cache.copy())
+            out = evaluation.evaluate_inverse(left, q*uloc, cache=cache)
+
         elif not isinstance(right, Dist):
             raise StochasticallyDependentError(
                 "truncated variable indirectly depends on underlying variable")
         else:
             left = (numpy.array(left).T*numpy.ones(q.shape).T).T
             uloc = evaluation.evaluate_forward(right, left)
-            return evaluation.evaluate_inverse(right, q*(1-uloc)+uloc, cache=cache)
-
-        right = (numpy.array(right).T*numpy.ones(q.shape).T).T
-        uloc = evaluation.evaluate_forward(left, right, cache=cache.copy())
-        return evaluation.evaluate_inverse(left, q*uloc, cache=cache)
+            out = evaluation.evaluate_inverse(right, q*(1-uloc)+uloc, cache=cache)
+        return out
 
     def __str__(self):
         return (self.__class__.__name__ + "(" + str(self.prm["left"]) +

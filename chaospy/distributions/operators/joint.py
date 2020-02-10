@@ -41,6 +41,11 @@ class J(Dist):
             Distribution to join together.
     """
 
+    @property
+    def interpret_as_integer(self):
+        """Determine if joint consist of only integers."""
+        return all(dist.interpret_as_integer for dist in self.prm.values())
+
     def __init__(self, *args):
         args = [dist for arg in args
                 for dist in (arg if isinstance(arg, J) else [arg])]
@@ -73,54 +78,64 @@ class J(Dist):
         assert uloc.shape == xloc.shape
         return uloc
 
-    def _range(self, xloc, cache):
-        """
-        Special handle for finding bounds on constrained dists.
+    # def _range(self, xloc, cache):
+    #     """
+    #     Special handle for finding bounds on constrained dists.
 
-        Example:
-            >>> d0 = chaospy.Uniform()
-            >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(dist.range())
-            [[0. 0.]
-             [1. 2.]]
-        """
-        uloc = numpy.zeros((2, len(self)))
-        for dist in evaluation.sorted_dependencies(self, reverse=True):
-            if dist not in self.inverse_map:
-                continue
-            idx = self.inverse_map[dist]
-            (uloc[0, idx:idx+len(dist)],
-             uloc[1, idx:idx+len(dist)]) = evaluation.evaluate_bound(
-                 dist, xloc[idx:idx+len(dist)], cache=cache)
-        return uloc
+    #     Example:
+    #         >>> d0 = chaospy.Uniform()
+    #         >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
+    #         >>> print(dist.range())
+    #         [[0. 0.]
+    #          [1. 2.]]
+    #     """
+    #     uloc = numpy.zeros((2, len(self)))
+    #     for dist in evaluation.sorted_dependencies(self, reverse=True):
+    #         if dist not in self.inverse_map:
+    #             continue
+    #         idx = self.inverse_map[dist]
+    #         (uloc[0, idx:idx+len(dist)],
+    #          uloc[1, idx:idx+len(dist)]) = evaluation.evaluate_bound(
+    #              dist, xloc[idx:idx+len(dist)], cache=cache)
+    #     return uloc
 
-    def _bnd(self, xloc, cache, **kwargs):
+    def _lower(self, cache, **kwargs):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> print(dist.range([[-0.5, 0.5, 1.5], [-1, 0, 1]]))
-            [[[ 0.   0.   0. ]
-              [-7.5 -7.5 -7.5]]
-            <BLANKLINE>
-             [[ 1.   1.   1. ]
-              [ 7.5  7.5  7.5]]]
+            >>> dist.lower
+            array([ 0. , -7.5])
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(dist.range([[-0.5, 0.5, 1.5], [0, 1, 2]]))
-            [[[0. 0. 0.]
-              [0. 0. 0.]]
-            <BLANKLINE>
-             [[1. 1. 1.]
-              [2. 2. 2.]]]
+            >>> dist.lower
+            array([0., 0.])
         """
-        uloc = numpy.zeros((2,)+xloc.shape)
+        uloc = [None]*len(self)
         for dist in evaluation.sorted_dependencies(self, reverse=True):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            uloc[:, idx:idx+len(dist)] = evaluation.evaluate_bound(
-                dist, xloc[idx:idx+len(dist)], cache=cache)
-        return uloc
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_lower(dist)
+        return numpy.array(uloc)
+
+    def _upper(self, cache, **kwargs):
+        """
+        Example:
+            >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
+            >>> dist.upper
+            array([1. , 7.5])
+            >>> d0 = chaospy.Uniform()
+            >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
+            >>> dist.upper
+            array([1., 2.])
+        """
+        uloc = [None]*len(self)
+        for dist in evaluation.sorted_dependencies(self, reverse=True):
+            if dist not in self.inverse_map:
+                continue
+            idx = self.inverse_map[dist]
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_upper(dist)
+        return numpy.array(uloc)
 
     def _pdf(self, xloc, cache, **kwargs):
         """
@@ -139,7 +154,7 @@ class J(Dist):
                 continue
             idx = self.inverse_map[dist]
             floc[idx:idx+len(dist)] = evaluation.evaluate_density(
-                dist, xloc[idx:idx+len(dist)], cache=cache)[0]
+                dist, xloc[idx:idx+len(dist)], cache=cache)
         return floc
 
     def _ppf(self, qloc, cache, **kwargs):
@@ -173,7 +188,7 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(numpy.around(dist.mom([1, 1]), 4))
-            0.5
+            0.5833
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
             raise StochasticallyDependentError(

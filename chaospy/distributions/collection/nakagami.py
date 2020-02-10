@@ -21,8 +21,8 @@ class nakagami(Dist):
     def _ppf(self, q, nu):
         return numpy.sqrt(1.0/nu*special.gammaincinv(nu, q))
 
-    def _bnd(self, x, nu):
-        return 0.0, self._ppf(1-1e-10, nu)
+    def _lower(self, nu):
+        return 0.
 
 
 class Nakagami(Add):

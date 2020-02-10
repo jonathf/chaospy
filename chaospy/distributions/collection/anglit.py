@@ -20,8 +20,11 @@ class anglit(Dist):
     def _ppf(self, q):
         return (numpy.arcsin(numpy.sqrt(q))-numpy.pi/4)
 
-    def _bnd(self, x):
-        return -numpy.pi/4, numpy.pi/4
+    def _lower(self):
+        return -numpy.pi/4
+
+    def _upper(self):
+        return numpy.pi/4
 
 
 class Anglit(Add):

@@ -22,8 +22,11 @@ class truncexpon(Dist):
     def _ppf(self, q, b):
         return -numpy.log(1-q+q*numpy.exp(-b))
 
-    def _bnd(self, x, b):
-        return 0.0, b
+    def _lower(self, b):
+        return 0.
+
+    def _upper(self, b):
+        return b
 
 
 class TruncExponential(Add):

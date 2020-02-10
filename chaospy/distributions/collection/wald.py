@@ -29,8 +29,11 @@ class wald(Dist):
         out -= numpy.exp(2.0/mu)*special.ndtr(-isqx*trm2)
         return out
 
-    def _bnd(self, x, mu):
-        return 0.0, 10**10
+    def _lower(self, mu):
+        return 0.
+
+    def _upper(self, mu):
+        return 1e10
 
 
 class Wald(Add):

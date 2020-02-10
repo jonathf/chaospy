@@ -18,8 +18,11 @@ class uniform(Dist):
     def _ppf(self, q):
         return 2*q-1
 
-    def _bnd(self, x):
-        return -1.,1.
+    def _lower(self):
+        return -1.
+
+    def _upper(self):
+        return 1.
 
     def _mom(self, k):
         return 1./(k + 1)* (k % 2 == 0)

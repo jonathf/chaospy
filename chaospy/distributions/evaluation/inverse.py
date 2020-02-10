@@ -29,8 +29,9 @@ If a distribution is missing the definition of the density function, it is
 instead estimated from cumulative distribution function and boundary function::
 
     >>> class Exponential(chaospy.Dist):
-    ...     def _cdf(self, x_data, alpha): return 1-numpy.e**(-alpha*x_data)
-    ...     def _bnd(self, x_data, alpha): return 0, 100
+    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
+    ...     _lower = lambda self, alpha: 0.
+    ...     _upper = lambda self, alpha: 100.
     >>> dist = Exponential(alpha=1)
     >>> print(numpy.around(evaluate_inverse(dist, u_data), 4))
     [[0.1054 0.2231 0.3567]]
@@ -64,9 +65,9 @@ def evaluate_inverse(
         The cumulative distribution values of ``distribution`` at location
         ``u_data`` using parameters ``parameters``.
     """
-    if cache is None:
-        cache = {}
-    out = numpy.zeros(u_data.shape)
+    cache = cache if cache is not None else {}
+    dtype = int if distribution.interpret_as_integer else float
+    out = numpy.zeros(u_data.shape, dtype=dtype)
 
     # Distribution self know how to handle inverse Rosenblatt.
     if hasattr(distribution, "_ppf"):

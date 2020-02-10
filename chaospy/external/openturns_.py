@@ -96,10 +96,11 @@ class openturns_dist(Dist):
         return numpy.array(self.distribution.computeQuantile(
             q_loc[0]).asPoint())
 
-    def _bnd(self, x_loc):
-        del x_loc
-        rng = self.distribution.getRange()
-        return rng.getLowerBound()[0], rng.getUpperBound()[0]
+    def _lower(self):
+        return self.distribution.getRange().getLowerBound()[0]
+
+    def _upper(self):
+        return self.distribution.getRange().getUpperBound()[0]
 
     def _mom(self, k_loc):
         return self.distribution.getMoment(int(k_loc))[0]

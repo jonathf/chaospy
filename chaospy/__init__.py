@@ -6,6 +6,7 @@ This module contains tools for performing uncertainty quantification of models.
 """
 import logging
 import os
+import pkg_resources
 
 import chaospy.bertran
 import chaospy.chol
@@ -34,3 +35,8 @@ streamer = logging.StreamHandler()
 streamer.setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 logger.addHandler(streamer)
+
+try:
+    __version__ = pkg_resources.get_distribution("chaospy").version
+except pkg_resources.DistributionNotFound:
+    pass
