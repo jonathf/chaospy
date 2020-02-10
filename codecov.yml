@@ -1,11 +1,14 @@
 codecov:
-  branch: development
+  notify:
+    require_ci_to_pass: no
+  branch: master
   archive:
     uploads: no
 
 coverage:
-  precision: 0
+  precision: 2
   range: 80...100
 
 comment:
   layout: "header, diff, changes"
+  require_changes: false

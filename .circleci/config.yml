@@ -70,7 +70,7 @@ jobs:
             command: |
                 source /home/circleci/venv/bin/activate
                 pytest --doctest-modules --cov=chaospy chaospy tests doc/*.rst
-                codecov
+                codecov --token $CODECOV_TOKEN
   sphinx:
     docker:
       - image: circleci/python:3.7.5
