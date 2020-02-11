@@ -161,7 +161,15 @@ def generate_quadrature(
     assert len(weights) == abscissas.shape[1]
     assert len(abscissas.shape) == 2
 
-    if getattr(dist, "interpret_as_integer", False):
+    from ..distributions.operators.joint import J
+    from ..distributions.evaluation import sorted_dependencies
+    if dist.interpret_as_integer:
         abscissas = abscissas.astype(int)
+    elif isinstance(dist, J):
+        for dist_ in sorted_dependencies(dist):
+            if dist_ in dist.inverse_map and dist_.interpret_as_integer:
+                idx = dist.inverse_map[dist_]
+                abscissas[idx:idx+len(dist_)] = numpy.around(
+                    abscissas[idx:idx+len(dist_)])
 
     return abscissas, weights

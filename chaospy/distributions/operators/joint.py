@@ -78,27 +78,6 @@ class J(Dist):
         assert uloc.shape == xloc.shape
         return uloc
 
-    # def _range(self, xloc, cache):
-    #     """
-    #     Special handle for finding bounds on constrained dists.
-
-    #     Example:
-    #         >>> d0 = chaospy.Uniform()
-    #         >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-    #         >>> print(dist.range())
-    #         [[0. 0.]
-    #          [1. 2.]]
-    #     """
-    #     uloc = numpy.zeros((2, len(self)))
-    #     for dist in evaluation.sorted_dependencies(self, reverse=True):
-    #         if dist not in self.inverse_map:
-    #             continue
-    #         idx = self.inverse_map[dist]
-    #         (uloc[0, idx:idx+len(dist)],
-    #          uloc[1, idx:idx+len(dist)]) = evaluation.evaluate_bound(
-    #              dist, xloc[idx:idx+len(dist)], cache=cache)
-    #     return uloc
-
     def _lower(self, cache, **kwargs):
         """
         Example:
@@ -115,7 +94,7 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            uloc[idx:idx+len(dist)] = evaluation.evaluate_lower(dist)
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_lower(dist, cache=cache)
         return numpy.array(uloc)
 
     def _upper(self, cache, **kwargs):
@@ -134,7 +113,7 @@ class J(Dist):
             if dist not in self.inverse_map:
                 continue
             idx = self.inverse_map[dist]
-            uloc[idx:idx+len(dist)] = evaluation.evaluate_upper(dist)
+            uloc[idx:idx+len(dist)] = evaluation.evaluate_upper(dist, cache=cache)
         return numpy.array(uloc)
 
     def _pdf(self, xloc, cache, **kwargs):

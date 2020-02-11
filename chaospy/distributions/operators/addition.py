@@ -102,11 +102,12 @@ class Add(Dist):
             >>> chaospy.Add(1, 1).lower
             array([2.])
         """
-        del cache  # not used
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
         if isinstance(left, Dist):
-            left = evaluation.evaluate_lower(left)
+            left = evaluation.evaluate_lower(left, cache=cache)
         if isinstance(right, Dist):
-            right = evaluation.evaluate_lower(right)
+            right = evaluation.evaluate_lower(right, cache=cache)
         return left+right
 
     def _upper(self, left, right, cache):
@@ -123,11 +124,12 @@ class Add(Dist):
             >>> chaospy.Add(1, 1).upper
             array([2.])
         """
-        del cache  # not used
+        left = evaluation.get_forward_cache(left, cache)
+        right = evaluation.get_forward_cache(right, cache)
         if isinstance(left, Dist):
-            left = evaluation.evaluate_upper(left)
+            left = evaluation.evaluate_upper(left, cache=cache)
         if isinstance(right, Dist):
-            right = evaluation.evaluate_upper(right)
+            right = evaluation.evaluate_upper(right, cache=cache)
         return left+right
 
     def _cdf(self, xloc, left, right, cache):

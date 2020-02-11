@@ -67,17 +67,24 @@ class Trunc(Dist):
             >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).lower)
             [0.6]
         """
-        del cache # not in use
         del right
         if isinstance(left, Dist):
-            left = evaluation.evaluate_lower(left)
+            left = evaluation.evaluate_lower(left, cache=cache)
         return left
 
     def _upper(self, left, right, cache):
-        del cache # not in use
+        """
+        Distribution lower bound.
+
+        Examples:
+            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).upper)
+            [0.6]
+            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).upper)
+            [1.]
+        """
         del left
         if isinstance(right, Dist):
-            right = evaluation.evaluate_upper(right)
+            right = evaluation.evaluate_upper(right, cache=cache)
         return right
 
     def _cdf(self, xloc, left, right, cache):
