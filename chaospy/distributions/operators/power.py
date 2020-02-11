@@ -36,15 +36,14 @@ class Pow(Dist):
             >>> print(chaospy.Pow(2, 3).lower)
             [8.]
         """
-        del cache  # not used
         if isinstance(left, Dist):
-            left_lower = evaluation.evaluate_lower(left)
-            left_upper = evaluation.evaluate_upper(left)
+            left_lower = evaluation.evaluate_lower(left, cache=cache)
+            left_upper = evaluation.evaluate_upper(left, cache=cache)
             assert left_lower >= 0, "root of negative number"
 
             if isinstance(right, Dist):
-                right_lower = evaluation.evaluate_lower(right)
-                right_upper = evaluation.evaluate_upper(right)
+                right_lower = evaluation.evaluate_lower(right, cache=cache)
+                right_upper = evaluation.evaluate_upper(right, cache=cache)
 
                 return numpy.min(numpy.broadcast_arrays(
                     left_lower**right_lower,
@@ -58,8 +57,8 @@ class Pow(Dist):
         elif not isinstance(right, Dist):
             return left**right
 
-        right_lower = evaluation.evaluate_lower(right)
-        right_upper = evaluation.evaluate_upper(right)
+        right_lower = evaluation.evaluate_lower(right, cache=cache)
+        right_upper = evaluation.evaluate_upper(right, cache=cache)
         return numpy.min([left**right_lower, left**right_upper], axis=0)
 
     def _upper(self, left, right, cache):
@@ -80,15 +79,14 @@ class Pow(Dist):
             >>> print(chaospy.Pow(2, 3).upper)
             [8.]
         """
-        del cache  # not used
         if isinstance(left, Dist):
-            left_lower = evaluation.evaluate_lower(left)
-            left_upper = evaluation.evaluate_upper(left)
+            left_lower = evaluation.evaluate_lower(left, cache=cache)
+            left_upper = evaluation.evaluate_upper(left, cache=cache)
             assert left_lower >= 0, "root of negative number"
 
             if isinstance(right, Dist):
-                right_lower = evaluation.evaluate_lower(right)
-                right_upper = evaluation.evaluate_upper(right)
+                right_lower = evaluation.evaluate_lower(right, cache=cache)
+                right_upper = evaluation.evaluate_upper(right, cache=cache)
 
                 return numpy.max(numpy.broadcast_arrays(
                     left_lower**right_lower,
@@ -102,8 +100,8 @@ class Pow(Dist):
         elif not isinstance(right, Dist):
             return left**right
 
-        right_lower = evaluation.evaluate_lower(right)
-        right_upper = evaluation.evaluate_upper(right)
+        right_lower = evaluation.evaluate_lower(right, cache=cache)
+        right_upper = evaluation.evaluate_upper(right, cache=cache)
         return numpy.max([left**right_lower, left**right_upper], axis=0)
 
     def _cdf(self, xloc, left, right, cache):
@@ -141,7 +139,7 @@ class Pow(Dist):
             y = (numpy.log(numpy.abs(xloc) + 1.*(xloc <= 0)) /
                  numpy.log(numpy.abs(left)+1.*(left == 1)))
 
-            out = evaluation.evaluate_forward(right, y)
+            out = evaluation.evaluate_forward(right, y, cache=cache.copy())
             out = numpy.where(xloc <= 0, 0., out)
             return out
 

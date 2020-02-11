@@ -50,7 +50,7 @@ def evaluate_lower(
     cache = cache if cache is not None else {}
 
     parameters = load_parameters(
-        distribution, "_lower", parameters=parameters, cache=cache)
+        distribution, "_lower", parameters=parameters)
 
     dtype = int if distribution.interpret_as_integer else float
     lower = distribution._lower(**parameters)
@@ -85,7 +85,7 @@ def evaluate_upper(
     cache = cache if cache is not None else {}
 
     parameters = load_parameters(
-        distribution, "_upper", parameters=parameters, cache=cache)
+        distribution, "_upper", parameters=parameters)
 
     dtype = int if distribution.interpret_as_integer else float
     upper = distribution._upper(**parameters)

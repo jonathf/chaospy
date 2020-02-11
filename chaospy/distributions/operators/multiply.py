@@ -128,14 +128,13 @@ class Mul(Dist):
             >>> print(chaospy.Mul(2, 3).lower)
             [6.]
         """
-        del cache  # not used
         if isinstance(left, Dist):
-            left_upper = evaluation.evaluate_upper(left)
-            left_lower = evaluation.evaluate_lower(left)
+            left_upper = evaluation.evaluate_upper(left, cache=cache)
+            left_lower = evaluation.evaluate_lower(left, cache=cache)
 
             if isinstance(right, Dist):
-                right_upper = evaluation.evaluate_upper(right)
-                right_lower = evaluation.evaluate_lower(right)
+                right_upper = evaluation.evaluate_upper(right, cache=cache)
+                right_lower = evaluation.evaluate_lower(right, cache=cache)
 
                 out = numpy.min(numpy.broadcast_arrays(
                     left_lower*right_lower,
@@ -154,8 +153,8 @@ class Mul(Dist):
             out = left*right
 
         else:
-            right_upper = evaluation.evaluate_upper(right)
-            right_lower = evaluation.evaluate_lower(right)
+            right_upper = evaluation.evaluate_upper(right, cache=cache)
+            right_lower = evaluation.evaluate_lower(right, cache=cache)
             if self.matrix:
                 out = numpy.min([numpy.dot(left, right_lower),
                                  numpy.dot(left, right_upper)], axis=0)
@@ -183,14 +182,13 @@ class Mul(Dist):
             >>> print(chaospy.Mul(2, 3).upper)
             [6.]
         """
-        del cache  # not used
         if isinstance(left, Dist):
-            left_lower = evaluation.evaluate_lower(left)
-            left_upper = evaluation.evaluate_upper(left)
+            left_lower = evaluation.evaluate_lower(left, cache=cache)
+            left_upper = evaluation.evaluate_upper(left, cache=cache)
 
             if isinstance(right, Dist):
-                right_lower = evaluation.evaluate_lower(right)
-                right_upper = evaluation.evaluate_upper(right)
+                right_lower = evaluation.evaluate_lower(right, cache=cache)
+                right_upper = evaluation.evaluate_upper(right, cache=cache)
 
                 out = numpy.max(numpy.broadcast_arrays(
                     (left_lower.T*right_lower.T).T,
@@ -209,8 +207,8 @@ class Mul(Dist):
             out = left*right
 
         else:
-            right_lower = evaluation.evaluate_lower(right)
-            right_upper = evaluation.evaluate_upper(right)
+            right_lower = evaluation.evaluate_lower(right, cache=cache)
+            right_upper = evaluation.evaluate_upper(right, cache=cache)
             if self.matrix:
                 out = numpy.max([numpy.dot(left, right_lower),
                                  numpy.dot(left, right_upper)], axis=0)
