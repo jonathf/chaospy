@@ -113,11 +113,10 @@ class Clayton_(Dist):
           [0.     0.25   0.5    0.75   1.    ]
           [0.     0.25   0.5    0.75   1.    ]]
         <BLANKLINE>
-         [[0.     0.     0.     0.     0.    ]
-          [0.25   0.1987 0.3758 0.5    0.5   ]
-          [0.5    0.5    0.5464 0.6994 0.75  ]
-          [0.75   0.5    0.7361 0.8525 0.9062]
-          [1.     1.     1.     1.     1.    ]]]
+         [[1.     0.     0.     0.     0.    ]
+          [1.     0.3708 0.0966 0.0345 0.0156]
+          [1.     0.7728 0.432  0.227  0.125 ]
+          [1.     0.9313 0.766  0.5802 0.4219]
         >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
         [[[0.     0.25   0.5    0.75   1.    ]
           [0.     0.25   0.5    0.75   1.    ]
@@ -139,8 +138,11 @@ class Clayton_(Dist):
     def __len__(self):
         return self.length
 
-    def _bnd(self, x, theta):
-        return 0, 1
+    def _lower(self, theta):
+        return 0.
+
+    def _upper(self, theta):
+        return 1.
 
     def _cdf(self, x, theta):
         return cdf(x, theta)
@@ -174,7 +176,7 @@ def iphi(u_loc, theta, order):  # confirmed order 0
 
 def C(x_loc, theta, order=0):  # confirmed order 0
     assert numpy.all(x_loc <= 1)
-    assert numpy.all(x_loc > 0)
+    assert numpy.all(x_loc >= 0)
     out = iphi(numpy.sum(phi(x_loc, theta), 0), theta, order)
     if order:
         out *= numpy.where(out, numpy.prod(dphi(x_loc[:order], theta), 0), 0)

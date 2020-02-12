@@ -32,7 +32,7 @@ from chaospy.external import *
 LOGPATH = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
 logging.basicConfig(level=logging.DEBUG, filename=LOGPATH, filemode="w")
 streamer = logging.StreamHandler()
-streamer.setLevel(logging.WARNING)
+streamer.setLevel(logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.addHandler(streamer)
 
