@@ -16,7 +16,7 @@
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
-Python 2 and 3.
+Python.
 
 If you are using this software in work that will be published, please cite the
 journal article: `Chaospy: An open source tool for designing methods of
@@ -36,9 +36,9 @@ And you should be ready to go.
 Alternatively, to get the most current experimental version, the code can be
 installed from Github as follows::
 
-    git clone git@github.com:jonathf/chaospy.git
-    cd chaospy
-    git checkout <tag or branch of interest>
+    git clone git@github.com:jonathf/chaospy.git    # first time only
+    cd chaospy/
+    git pull                                        # after the first time
     pip install .
 
 Example Usage
@@ -102,11 +102,15 @@ quantification components ``chaospy`` provides.
 | `UncertainPy`_  | Uncertainty quantification and sensitivity analysis,      |
 |                 | tailored towards computational neuroscience.              |
 +-----------------+-----------------------------------------------------------+
+| `SparseSpACE`_  | Spatially adaptive combination technique targeted to      |
+|                 | solve high dimensional numerical integration.             |
++-----------------+-----------------------------------------------------------+
 
 .. _easyVVUQ: https://github.com/UCL-CCS/EasyVVUQ
 .. _STARFiSh: https://www.ntnu.no/starfish
 .. _Profit: https://github.com/redmod-team/profit
 .. _UncertainPy: https://github.com/simetenn/uncertainpy
+.. _SparseSpACE: https://github.com/obersteiner/sparseSpACE
 
 Also a few shout-outs:
 
