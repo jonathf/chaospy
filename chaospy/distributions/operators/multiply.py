@@ -84,16 +84,19 @@ import numpy
 
 from ..baseclass import Dist
 from .. import evaluation
+from .binary import BinaryOperator
 
 
-class Mul(Dist):
+class Mul(BinaryOperator):
     """Multiplication."""
 
     def __init__(self, left, right):
         """
         Args:
-            left (Dist, numpy.ndarray) : Left hand side.
-            right (Dist, numpy.ndarray) : Right hand side.
+            left (Dist, numpy.ndarray):
+                Left hand side.
+            right (Dist, numpy.ndarray):
+                Right hand side.
         """
         self.matrix = False
         if (isinstance(left, Dist) and
@@ -218,73 +221,37 @@ class Mul(Dist):
         assert numpy.array(out).shape[:1] in [(), (len(self),)]
         return out
 
-
-    def _cdf(self, xloc, left, right, cache):
-        """
-        Cumulative distribution function.
-
-        Example:
-            >>> print(chaospy.Uniform().fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.5 1.  1. ]
-            >>> print(Mul(chaospy.Uniform(), 2).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.   0.25 0.75 1.  ]
-            >>> print(Mul(2, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.   0.25 0.75 1.  ]
-            >>> print(Mul(1, 1.5).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.  0.5 1. ]
-            >>> dist = chaospy.Mul([2, 1], chaospy.Iid(chaospy.Uniform(), 2))
-            >>> print(dist.fwd([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [[0.25 0.3  0.75]
-             [0.5  0.6  1.  ]]
-            >>> dist = chaospy.Mul(chaospy.Iid(chaospy.Uniform(), 2), [1, 2])
-            >>> print(dist.fwd([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [[0.5  0.6  1.  ]
-             [0.25 0.3  0.75]]
-        """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
-        elif not isinstance(right, Dist):
-            if self.matrix:
-                return 0.5*(numpy.dot(left, right) == xloc)
-            return 0.5*(left*right == xloc)
-        else:
-            if self.matrix:
-                Ci = numpy.linalg.inv(left)
-                xloc = numpy.dot(Ci, xloc)
-                assert len(xloc) == len(numpy.dot(Ci, xloc))
-
-            else:
-                left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
-                valids = left != 0
-                xloc = xloc.copy()
-                xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
-
-            uloc = evaluation.evaluate_forward(right, xloc, cache=cache)
-            if not self.matrix:
-                uloc = numpy.where(left.T >= 0, uloc.T, 1-uloc.T).T
-            assert uloc.shape == xloc.shape
-            return uloc
-
+    def _pre_fwd_left(self, xloc, other):
         if self.matrix:
-            Ci = numpy.linalg.inv(right)
-            xloc = numpy.dot(xloc.T, Ci).T
+            Ci = numpy.linalg.inv(other)
+            out = numpy.dot(Ci, xloc)
         else:
-            right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
-            valids = right != 0
-            xloc = xloc.copy()
-            xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
+            valids = other != 0
+            out = xloc.copy()
+            out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
+        return out
 
-        assert len(left) == len(xloc)
-        uloc = evaluation.evaluate_forward(left, xloc, cache=cache)
+    def _pre_fwd_right(self, xloc, other):
+        if self.matrix:
+            Ci = numpy.linalg.inv(other)
+            out = numpy.dot(xloc.T, Ci).T
+        else:
+            valids = other != 0
+            out = xloc.copy()
+            out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
+        return out
+
+    def _post_fwd(self, uloc, other):
         if not self.matrix:
-            uloc = numpy.where(right.T >= 0, uloc.T, 1-uloc.T).T
-        assert uloc.shape == xloc.shape
+            uloc = numpy.where(other.T >= 0, uloc.T, 1-uloc.T).T
         return uloc
+
+    def _alt_fwd(self, xloc, left, right):
+        if self.matrix:
+            out = 0.5*(numpy.dot(left, right) == xloc)
+        else:
+            out = 0.5*(left*right == xloc)
+        return out
 
     def _ppf(self, uloc, left, right, cache):
         """
@@ -315,10 +282,21 @@ class Mul(Dist):
             if isinstance(right, Dist):
                 raise evaluation.DependencyError(
                     "under-defined distribution {} or {}".format(left, right))
+
+            if not self.matrix:
+                uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
+            xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
+            if self.matrix:
+                xloc = numpy.dot(xloc.T, right).T
+            else:
+                xloc *= right
+            assert uloc.shape == xloc.shape
+
         elif not isinstance(right, Dist):
             if self.matrix:
-                return numpy.dot(left, right)
-            return left*right
+                xloc = numpy.dot(left, right)
+            else:
+                xloc = left*right
 
         else:
             if not self.matrix:
@@ -328,16 +306,7 @@ class Mul(Dist):
                 xloc = numpy.dot(left, xloc)
             else:
                 xloc *= left
-            return xloc
 
-        if not self.matrix:
-            uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
-        xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
-        if self.matrix:
-            xloc = numpy.dot(xloc.T, right).T
-        else:
-            xloc *= right
-        assert uloc.shape == xloc.shape
         return xloc
 
     def _pdf(self, xloc, left, right, cache):
@@ -367,8 +336,25 @@ class Mul(Dist):
             if isinstance(right, Dist):
                 raise evaluation.DependencyError(
                     "under-defined distribution {} or {}".format(left, right))
+
+            if self.matrix:
+                Ci = numpy.linalg.inv(right)
+                xloc = numpy.dot(xloc.T, Ci).T
+            else:
+                right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
+                valids = right != 0
+                xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
+                xloc.T[~valids.T] = numpy.inf
+
+            pdf = evaluation.evaluate_density(left, xloc, cache=cache)
+            if self.matrix:
+                pdf = numpy.dot(pdf.T, Ci).T
+            else:
+                pdf.T[valids.T] /= right.T[valids.T]
+            assert pdf.shape == xloc.shape
+
         elif not isinstance(right, Dist):
-            return numpy.inf
+            pdf = numpy.inf
 
         else:
             if self.matrix:
@@ -385,23 +371,7 @@ class Mul(Dist):
                 pdf = numpy.dot(Ci, pdf)
             else:
                 pdf.T[valids.T] /= left.T[valids.T]
-            return pdf
 
-        if self.matrix:
-            Ci = numpy.linalg.inv(right)
-            xloc = numpy.dot(xloc.T, Ci).T
-        else:
-            right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
-            valids = right != 0
-            xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
-            xloc.T[~valids.T] = numpy.inf
-
-        pdf = evaluation.evaluate_density(left, xloc, cache=cache)
-        if self.matrix:
-            pdf = numpy.dot(pdf.T, Ci).T
-        else:
-            pdf.T[valids.T] /= right.T[valids.T]
-        assert pdf.shape == xloc.shape
         return pdf
 
     def _mom(self, key, left, right, cache):
@@ -422,7 +392,7 @@ class Mul(Dist):
         """
         if evaluation.get_dependencies(left, right):
             raise evaluation.DependencyError(
-                "sum of dependent distributions not feasible: "
+                "product of dependent distributions not feasible: "
                 "{} and {}".format(left, right)
             )
 

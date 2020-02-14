@@ -66,6 +66,11 @@ def test_dist_map(distribution):
     assert distribution.inv(0.999) < distribution.upper
 
 
+def test_dist_precedence_order(distribution):
+    distribution = distribution()
+    assert distribution._precedence_order() == list(range(len(distribution)))
+
+
 # def test_weibull_rayleigh():
 
 #     lambda_ = 11

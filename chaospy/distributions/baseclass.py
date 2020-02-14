@@ -63,6 +63,10 @@ class Dist(object):
     should be interpreted as integers instead of floating point.
     """
 
+    def _precedence_order(self):
+        """Precedence order of the various dimensions."""
+        return list(range(len(self)))
+
     def _lower(self, **prm):
         """Backend lower bound."""
         return self._ppf(numpy.array([1e-10]*len(self)), **prm)
@@ -373,7 +377,8 @@ class Dist(object):
             kwargs = self._repr
         else:
             kwargs = self.prm
-        args = [key + "=" + str(kwargs[key]) for key in sorted(kwargs)]
+        args = [str(arg) for arg in kwargs.pop("_", [])]
+        args += [key + "=" + str(kwargs[key]) for key in sorted(kwargs)]
         return self.__class__.__name__ + "(" + ", ".join(args) + ")"
 
     def __repr__(self):
