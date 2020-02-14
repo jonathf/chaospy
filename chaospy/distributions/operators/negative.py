@@ -27,9 +27,10 @@ Invert sign of a distribution::
 import numpy
 from ..baseclass import Dist
 from .. import evaluation
+from .unary import UnaryOperator
 
 
-class Neg(Dist):
+class Neg(UnaryOperator):
     """Negative of a distribution."""
 
     def __init__(self, dist):
@@ -40,24 +41,30 @@ class Neg(Dist):
             dist (Dist) : distribution.
         """
         Dist.__init__(self, dist=dist)
+        self._repr = {"_": [dist]}
 
-    def _lower(self, dist, cache):
-        return -evaluation.evaluate_upper(dist, cache=cache)
+    def _post_pdf(self, xloc):
+        return 1.
 
-    def _upper(self, dist, cache):
-        return -evaluation.evaluate_lower(dist, cache=cache)
+    def _pre_fwd(self, xloc):
+        return -xloc
 
-    def _pdf(self, xloc, dist, cache):
-        """Probability density function."""
-        return evaluation.evaluate_density(dist, -xloc, cache=cache)
+    def _post_fwd(self, uloc):
+        return 1-uloc
 
-    def _cdf(self, xloc, dist, cache):
-        """Cumulative distribution function."""
-        return 1-evaluation.evaluate_forward(dist, -xloc, cache=cache)
+    def _pre_inv(self, qloc):
+        return 1-qloc
 
-    def _ppf(self, q, dist, cache):
-        """Point percentile function."""
-        return -evaluation.evaluate_inverse(dist, 1-q, cache=cache)
+    def _post_inv(self, uloc):
+        return -uloc
+
+    def _lower(self, dist, cache, **kwargs):
+        uloc = evaluation.evaluate_upper(dist, cache=cache)
+        return self._post_inv(uloc, **kwargs)
+
+    def _upper(self, dist, cache, **kwargs):
+        uloc = evaluation.evaluate_lower(dist, cache=cache)
+        return self._post_inv(uloc, **kwargs)
 
     def _mom(self, k, dist, cache):
         """Statistical moments."""
@@ -68,22 +75,6 @@ class Neg(Dist):
         """Three terms recursion coefficients."""
         a,b = evaluation.evaluate_recurrence_coefficients(dist, k)
         return -a, b
-
-    def __str__(self):
-        """String representation."""
-        return self.__class__.__name__ + "(" + str(self.prm["dist"]) + ")"
-
-    def _fwd_cache(self, cache):
-        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
-        if not isinstance(dist, Dist):
-            return -dist
-        return self
-
-    def _inv_cache(self, cache):
-        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
-        if not isinstance(dist, Dist):
-            return -dist
-        return self
 
 
 def neg(left):

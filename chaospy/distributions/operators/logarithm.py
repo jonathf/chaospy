@@ -1,80 +1,95 @@
-"""Logarithm with base Euler's constant."""
+"""Logarithm of another distribution."""
 import numpy
 
 from ..baseclass import Dist
-from .. import evaluation, approximation
+from .unary import UnaryOperator
 
 
-class Log(Dist):
+class Logn(UnaryOperator):
+    """
+    Logarithm with base N.
+
+    Args:
+        dist (Dist):
+            Distribution to perform transformation on.
+        base (int, float):
+            the logarithm base.
+
+    Example:
+        >>> distribution = chaospy.Logn(chaospy.Uniform(1, 2), 3)
+        >>> print(distribution)
+        Logn(Uniform(lower=1, upper=2), 3)
+        >>> q = numpy.linspace(0,1,6)[1:-1]
+        >>> print(numpy.around(distribution.inv(q), 4))
+        [0.166  0.3063 0.4278 0.535 ]
+        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
+        [0.2 0.4 0.6 0.8]
+        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
+        [1.3183 1.5381 1.7578 1.9775]
+        >>> print(numpy.around(distribution.sample(4), 4))
+        [0.4578 0.0991 0.608  0.3582]
+        >>> print(numpy.around(distribution.mom(1), 4))
+        0.3516
+        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
+        [[0.3516 0.3085 0.3144]
+         [1.     0.0324 0.0266]]
+    """
+
+    def __init__(self, dist, base=2):
+        assert isinstance(dist, Dist)
+        assert numpy.all(dist.lower > 0)
+        assert base > 0 and base != 1
+        Dist.__init__(self, dist=dist, base=base)
+        self._repr = {"_": [dist, base]}
+
+    def _post_pdf(self, xloc, base):
+        return base**xloc*numpy.log(base)
+
+    def _pre_fwd(self, xloc, base):
+        return base**xloc
+
+    def _post_fwd(self, uloc, base):
+        return uloc
+
+    def _pre_inv(self, qloc, base):
+        return qloc
+
+    def _post_inv(self, uloc, base):
+        return numpy.log(uloc)/numpy.log(base)
+
+
+class Log(Logn):
     """
     Logarithm with base Euler's constant.
 
     Args:
-        dist (Dist): Distribution to perform transformation on.
+        dist (Dist):
+            Distribution to perform transformation on.
 
     Example:
         >>> distribution = chaospy.Log(chaospy.Uniform(1, 2))
         >>> print(distribution)
         Log(Uniform(lower=1, upper=2))
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [0.1823 0.3365 0.47   0.5878]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [1.2 1.4 1.6 1.8]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [0.5029 0.1089 0.668  0.3935]
-        >>> print(numpy.around(distribution.mom(1), 4))
-        0.3863
-        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
-        [[0.3863 0.3389 0.3454]
-         [1.     0.0391 0.0321]]
     """
 
     def __init__(self, dist):
-        assert isinstance(dist, Dist)
-        assert numpy.all(dist.lower > 0)
-        Dist.__init__(self, dist=dist)
+        super(Log, self).__init__(dist=dist, base=numpy.e)
+        self._repr = {"_": [dist]}
 
-    def _pdf(self, xloc, dist, cache):
-        """Probability density function."""
-        return evaluation.evaluate_density(
-            dist, numpy.e**xloc, cache=cache)*numpy.e**xloc
 
-    def _cdf(self, xloc, dist, cache):
-        """Cumulative distribution function."""
-        return evaluation.evaluate_forward(dist, numpy.e**xloc, cache=cache)
+class Log10(Logn):
+    """
+    Logarithm with base 10.
 
-    def _ppf(self, q, dist, cache):
-        """Point percentile function."""
-        return numpy.log(evaluation.evaluate_inverse(dist, q, cache=cache))
+    Args:
+        dist (Dist): Distribution to perform transformation on.
 
-    def _lower(self, dist, cache):
-        """Distribution bounds."""
-        return numpy.log(evaluation.evaluate_lower(dist, cache=cache))
+    Example:
+        >>> distribution = chaospy.Log10(chaospy.Uniform(1, 2))
+        >>> print(distribution)
+        Log10(Uniform(lower=1, upper=2))
+    """
 
-    def _upper(self, dist, cache):
-        """Distribution bounds."""
-        return numpy.log(evaluation.evaluate_upper(dist, cache=cache))
-
-    def _mom(self, x, dist, cache):
-        return approximation.approximate_moment(self, x)
-
-    def __len__(self):
-        return len(self.prm["dist"])
-
-    def __str__(self):
-        return self.__class__.__name__ + "(" + str(self.prm["dist"]) + ")"
-
-    def _fwd_cache(self, cache):
-        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
-        if not isinstance(dist, Dist):
-            return numpy.log(dist)
-        return self
-
-    def _inv_cache(self, cache):
-        dist = evaluation.get_forward_cache(self.prm["dist"], cache)
-        if not isinstance(dist, Dist):
-            return numpy.e**dist
-        return self
+    def __init__(self, dist):
+        super(Log10, self).__init__(dist=dist, base=10)
+        self._repr = {"_": [dist]}

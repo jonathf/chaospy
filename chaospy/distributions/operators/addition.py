@@ -75,18 +75,11 @@ import numpy
 
 from ..baseclass import Dist, StochasticallyDependentError
 from .. import evaluation
+from .binary import BinaryOperator
 
 
-class Add(Dist):
+class Add(BinaryOperator):
     """Addition."""
-
-    def __init__(self, left, right):
-        """
-        Args:
-            left (Dist, numpy.ndarray) : Left hand side.
-            right (Dist, numpy.ndarray) : Right hand side.
-        """
-        Dist.__init__(self, left=left, right=right)
 
     def _lower(self, left, right, cache):
         """
@@ -132,35 +125,19 @@ class Add(Dist):
             right = evaluation.evaluate_upper(right, cache=cache)
         return left+right
 
-    def _cdf(self, xloc, left, right, cache):
-        """
-        Cumulative distribution function.
+    def _pre_fwd_left(self, xloc, other):
+        xloc = (xloc.T-numpy.asfarray(other).T).T
+        return xloc
 
-        Example:
-            >>> print(chaospy.Uniform().fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.5 1.  1. ]
-            >>> print(chaospy.Add(chaospy.Uniform(), 1).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.  0.5 1. ]
-            >>> print(chaospy.Add(1, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.  0.5 1. ]
-            >>> print(chaospy.Add(1, 1).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0. 0. 0. 1.]
-        """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
+    def _pre_fwd_right(self, xloc, other):
+        xloc = (xloc.T-numpy.asfarray(other).T).T
+        return xloc
 
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
-        elif not isinstance(right, Dist):
-            return numpy.asfarray(left+right <= xloc)
-        else:
-            left, right = right, left
-        xloc = (xloc.T-numpy.asfarray(right).T).T
-        output = evaluation.evaluate_forward(left, xloc, cache=cache)
-        assert output.shape == xloc.shape
-        return output
+    def _post_fwd(self, uloc, other):
+        return uloc
+
+    def _alt_fwd(self, xloc, left, right):
+        return numpy.asfarray(left+right <= xloc)
 
     def _pdf(self, xloc, left, right, cache):
         """

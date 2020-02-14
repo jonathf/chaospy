@@ -1,4 +1,11 @@
 """
+There are three ways to create a multivariate probability distribution in
+``chaospy``: Using the joint constructor
+:class:`~chaospy.distributions.operators.joint.J`, the identical independent
+distribution constructor: :class:`~chaospy.distributions.operators.joint.Iid`,
+and to one of the pre-constructed multivariate distribution defined in
+:ref:`listdistributions`.
+
 Constructing a multivariate probability distribution can be done using the
 :func:`~chaospy.distributions.operators.joint.J` constructor. E.g.::
 
@@ -25,7 +32,18 @@ The created multivariate distribution behaves much like the univariate case::
      [ 0.4444  0.4444  0.5556  0.5556  0.7778  0.7778]]
     >>> print(distribution.mom([[2, 4, 6], [1, 2, 3]]))
     [0.5  1.   3.75]
+
+Constructing a multivariate probability distribution consisting of identical
+independent distributed marginals can be done using the
+:func:`~chaospy.distributions.operators.joint.Iid`. E.g.::
+
+    >>> X = chaospy.Normal()
+    >>> Y = chaospy.Iid(X, 4)
+    >>> print(Y.sample())
+    [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
 """
+from copy import deepcopy
+
 import numpy
 
 from ..baseclass import Dist, StochasticallyDependentError
@@ -259,3 +277,22 @@ class J(Dist):
                 out.append(prm["_%03d" % i])
             return J(*out)
         raise IndexError("index not recognised.")
+
+
+class Iid(J):
+    """
+    Opaque method for creating independent identical distributed random
+    variables from an univariate variable.
+
+    Args:
+        dist (Dist):
+            Distribution to make into i.i.d. vector.
+    """
+
+    def __init__(self, dist, length):
+        assert len(dist) == 1 and length >= 1
+        J.__init__(self, *[deepcopy(dist) for _ in range(length)])
+
+    def __str__(self):
+        return (self.__class__.__name__ + "(" + str(self.prm["_000"]) +
+                ", " + str(len(self)) + ")")

@@ -104,6 +104,19 @@ class Pow(Dist):
         right_upper = evaluation.evaluate_upper(right, cache=cache)
         return numpy.max([left**right_lower, left**right_upper], axis=0)
 
+    def _pre_fwd_left(self, xloc, other):
+        pass
+
+    def _pre_fwd_right(self, xloc, other):
+        pass
+
+    def _post_fwd(self, uloc, other):
+        pass
+
+    def _alt_fwd(self, xloc, left, right):
+        return numpy.inf
+
+
     def _cdf(self, xloc, left, right, cache):
         """
         Cumulative distribution function.
