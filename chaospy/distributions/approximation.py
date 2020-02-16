@@ -22,27 +22,33 @@ def approximate_inverse(
     boundary function to apply hybrid Newton-Raphson and binary search method.
 
     Args:
-        distribution (Dist): Distribution to estimate inverse Rosenblatt.
-        qloc (numpy.ndarray): Input values. All values must be on [0,1] and
+        distribution (Dist):
+            Distribution to estimate inverse Rosenblatt.
+        qloc (numpy.ndarray):
+            Input values. All values must be on [0,1] and
             ``qloc.shape == (dim,size)`` where dim is the number of dimensions
             in distribution and size is the number of values to calculate
             simultaneously.
-        parameters (Optional[Dict[Dist, numpy.ndarray]]): Parameters for the
-            distribution.
-        cache (Optional[Dict[Dist, numpy.ndarray]]): Memory cache for the
-            location in the evaluation so far.
-        iterations (int): The number of iterations allowed to be performed
-        tol (float): Tolerance parameter determining convergence.
-        seed (Optional[int]): Fix random seed.
+        parameters (Optional[Dict[Dist, numpy.ndarray]]):
+            Parameters for the distribution.
+        cache (Optional[Dict[Dist, numpy.ndarray]]):
+            Memory cache for the location in the evaluation so far.
+        iterations (int):
+            The number of iterations allowed to be performed
+        tol (float):
+            Tolerance parameter determining convergence.
+        seed (Optional[int]):
+            Fix random seed.
 
     Returns:
-        numpy.ndarray: Approximation of inverse Rosenblatt transformation.
+        (numpy.ndarray):
+            Approximation of inverse Rosenblatt transformation.
 
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> qloc = numpy.array([[0.1, 0.2, 0.9]])
         >>> approximate_inverse(distribution, qloc, seed=1234).round(4)
-        array([[ 987.1845,  991.5838, 1012.8155]])
+        array([[ 987.1846,  991.5839, 1012.8152]])
         >>> distribution.inv(qloc).round(4)
         array([[ 987.1845,  991.5838, 1012.8155]])
     """
@@ -61,9 +67,9 @@ def approximate_inverse(
     uloc = numpy.zeros(qloc.shape)
     ulower = -qloc
     uupper = 1-qloc
-    indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
     for dim in distribution._precedence_order():
+        indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
         for idx in range(2*iterations):
 

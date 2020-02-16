@@ -62,6 +62,15 @@ class Copula(Dist):
         """
         Dist.__init__(self, dist=dist, trans=trans)
 
+    def _precedence_order(self):
+        """Precedence order of the various dimensions."""
+        dist = self.prm["dist"]
+        if isinstance(dist, Dist):
+            indices = dist._precedence_order()
+        else:
+            indices = list(range(len(self)))
+        return indices
+
     def _cdf(self, x, dist, trans, cache):
         output = evaluation.evaluate_forward(dist, x, cache=cache)
         output = evaluation.evaluate_forward(trans, output, cache=cache)
