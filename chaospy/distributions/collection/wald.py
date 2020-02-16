@@ -56,13 +56,13 @@ class Wald(Add):
         Wald(mu=2, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
-        array([2.7154, 3.45  , 4.5777, 6.6903])
+        array([2.7154, 3.4499, 4.5777, 6.6903])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.2, 0.4, 0.6, 0.8])
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.3242, 0.2262, 0.138 , 0.063 ])
         >>> distribution.sample(4).round(4)
-        array([ 4.9997,  2.4662, 11.3302,  3.848 ])
+        array([ 9.7718,  2.3482, 10.1276,  5.6088])
     """
 
     def __init__(self, mu=1, scale=1, shift=0):

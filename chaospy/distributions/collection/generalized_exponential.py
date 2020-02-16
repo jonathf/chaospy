@@ -63,7 +63,7 @@ class GeneralizedExponential(Add):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([1.3061, 1.0605, 0.7649, 0.4168])
         >>> distribution.sample(4).round(4)
-        array([2.6058, 2.0794, 3.5124, 2.3933])
+        array([3.3106, 2.0498, 3.3575, 2.7079])
     """
 
     def __init__(self, a=1, b=1, c=1, scale=1, shift=0):

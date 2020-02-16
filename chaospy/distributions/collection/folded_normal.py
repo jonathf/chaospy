@@ -50,7 +50,7 @@ class FoldedNormal(Add):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.1417, 0.1934, 0.1932, 0.14  ])
         >>> distribution.sample(4).round(4)
-        array([5.7901, 2.6245, 8.2952, 4.9109])
+        array([2.1633, 1.7827, 4.6911, 5.5156])
         >>> distribution.mom(1).round(4)
         5.034
         >>> distribution.ttr([1, 2, 3]).round(4)
