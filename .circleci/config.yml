@@ -19,9 +19,9 @@ jobs:
           command: |
             if [[ ! -d /home/circleci/venv ]]; then
               virtualenv /home/circleci/venv
-              source /home/circleci/venv/bin/activate
-              pip install pytest openturns scikit-learn==0.20.1
             fi
+            source /home/circleci/venv/bin/activate
+            pip install pytest openturns scikit-learn==0.20.1
             source /home/circleci/venv/bin/activate
       - save_cache:
           key: deps-py27-{{ checksum "pyproject.toml" }}
@@ -54,6 +54,7 @@ jobs:
           key: deps-py37-{{ checksum "pyproject.toml" }}
           paths:
               - /home/circleci/venv
+              - /home/circleci/poetry.lock
       - persist_to_workspace:
           paths:
               - project
