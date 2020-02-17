@@ -10,7 +10,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 -  Create integration abscissas and weights (as described in :ref:`quadrature`)::
 
     >>> abscissas, weights = chaospy.generate_quadrature(
-    ...     2, distribution, rule="G")
+    ...     2, distribution, rule="gaussian")
     >>> abscissas.round(2)
     array([[-1.73, -1.73, -1.73,  0.  ,  0.  ,  0.  ,  1.73,  1.73,  1.73],
            [-1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73]])

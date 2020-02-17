@@ -10,11 +10,11 @@ Example usage
 Standard usage::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
-    >>> samples = distribution.sample(3, rule="M")
+    >>> samples = distribution.sample(3, rule="hammersley")
     >>> print(numpy.around(samples, 4))
     [[0.75  0.125 0.625]
      [0.25  0.5   0.75 ]]
-    >>> samples = distribution.sample(4, rule="M")
+    >>> samples = distribution.sample(4, rule="hammersley")
     >>> print(numpy.around(samples, 4))
     [[0.75  0.125 0.625 0.375]
      [0.2   0.4   0.6   0.8  ]]

@@ -97,7 +97,7 @@ def orth_ttr(
             numpy.max(order), dist, normed=normed)
     except NotImplementedError:
         abscissas, weights = chaospy.quadrature.generate_quadrature(
-            int(10000**(1/len(dist))), dist, rule="F")
+            int(10000**(1/len(dist))), dist, rule="fejer")
         _, polynomials, norms, = chaospy.quadrature.recurrence.discretized_stieltjes(
             numpy.max(order), abscissas, weights, normed=normed)
 

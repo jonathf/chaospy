@@ -65,7 +65,7 @@ class sample_dist(Dist):
     def _upper(self, lo, up):
         return up
 
-    def sample(self, size=(), rule="R", antithetic=None, verbose=False, **kws):
+    def sample(self, size=(), rule="random", antithetic=None, verbose=False, **kws):
         """
         Overwrite sample() function, because the constructed Dist that is
         based on the KDE is only working with the random sampling that is

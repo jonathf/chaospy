@@ -3,9 +3,9 @@
 Tutorial
 --------
 
-The software library ``chaospy`` is ment to be used together with the standard
+The software library ``chaospy`` is meant to be used together with the standard
 library ``numpy``. To distinguish between the two, both are imported into the
-name space and for simplicity is abbrivated as follows::
+name space and for simplicity is abbreviated as follows::
 
     >>> import chaospy as cp
     >>> import numpy as np
@@ -44,7 +44,8 @@ distribution which we then use to evaluate the model::
     conditions and rate.
 
 Our goal is therefore to describe the bahavior of ``foo`` with only having
-a blackbox evaluation function of ``foo`` available. For this tutorial, let us
+a blackbox evaluation function of ``foo`` available.
+For this tutorial, let us
 only focus on expected value :func:`~chaospy.descriptives.expected.E` and
 standard deviation :func:`~chaospy.descriptives.standard_deviation.Std`.  In
 ``chaospy`` there are three classes of methods available for performing this
@@ -59,7 +60,7 @@ Monte Carlo simulation
 
 Performing Monte Carlo requires that one can create samples, from the input
 distribution. In ``chaospy`` such samples can be generated each distributions
-``sample`` methods, as noted above. To generate samples from psaudo-random
+``sample`` methods, as noted above. To generate samples from pseudo-random
 samples like e.g. ``Hammersley``, a flag in ``sample`` can be issued to indicate
 the type of sample. For example::
 
@@ -133,7 +134,7 @@ For example, to generate 8th order absissas and weights for the Clenshaw-Curtis
 method::
 
     >>> absissas, weights = cp.generate_quadrature(
-    ...     order=8, dist=distribution, rule="C")
+    ...     order=8, dist=distribution, rule="clenshaw_curtis")
 
 These can then be used to create an polynomial approximation as follows::
 

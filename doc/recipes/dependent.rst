@@ -133,7 +133,7 @@ Point Collocation Method
 In the case of point collocation method, the map can be used directly between
 random samples (or pseudo-random sequences)::
 
-    >>> samples_r = dist_r.sample(2*len(polynomial), rule="M")
+    >>> samples_r = dist_r.sample(2*len(polynomial), rule="hammersley")
     >>> samples_q = dist_Q.inv(dist_R.fwd(nodes_r))
 
 As these samples are linked, they can be used as follows to solve the dependent
@@ -195,7 +195,7 @@ In practice, the decorrelation method using Cholesky decomposition can be done
 as follows::
 
     >>> polynomial = chaopy.orth_chol(3, dist_q)
-    >>> samples_q = dist_q.sample(2*len(polynomial), rule="M")
+    >>> samples_q = dist_q.sample(2*len(polynomial), rule="hammersley")
     >>> samples_u = [u(*sample) for sample in samples_q.T]
     >>> u_hat = chaospy.fit_regression(polynomial, samples_q, samples_u)
 
@@ -213,7 +213,7 @@ numerically unstable. However, it also does not violate any assumption about
 stochastic independence when being used. As such, it can be used as follows::
 
     >>> polynomial = chaopy.orth_gs(3, dist_q)
-    >>> samples_q = dist_q.sample(2*len(polynomial), rule="M")
+    >>> samples_q = dist_q.sample(2*len(polynomial), rule="hammersley")
     >>> samples_u = [u(*sample) for sample in samples_q.T]
     >>> u_hat = chaospy.fit_regression(polynomial, samples_q, samples_u)
 

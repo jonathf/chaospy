@@ -115,7 +115,7 @@ def approximate_moment(
         K,
         retall=False,
         control_var=None,
-        rule="F",
+        rule="fejer",
         order=1000,
         **kws
 ):
@@ -136,25 +136,7 @@ def approximate_moment(
             If True used Smolyak's sparse grid instead of normal tensor
             product grid in numerical integration.
         rule : str
-            Quadrature rule
-            Key     Description
-            ----    -----------
-            "G"     Optimal Gaussian quadrature from Golub-Welsch. Slow for
-                    high order.
-            "E"     Gauss-Legendre quadrature
-            "C"     Clenshaw-Curtis quadrature. Exponential growth rule is
-                    used when sparse is True to make the rule nested.
-
-            Monte Carlo Integration
-            Key     Description
-            ----    -----------
-            "H"     Halton sequence
-            "K"     Korobov set
-            "L"     Latin hypercube sampling
-            "M"     Hammersley sequence
-            "R"     (Pseudo-)Random sampling
-            "S"     Sobol sequence
-
+            Quadrature rule.
         antithetic (:py:data:typing.Optional[numpy.ndarray]):
             List of bool. Represents the axes to mirror using antithetic
             variable during MCI.

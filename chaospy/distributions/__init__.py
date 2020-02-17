@@ -28,7 +28,7 @@ To be able to perform any Monte Carlo method, each distribution contains
 The sample scheme also has a few advanced options. For example, to create
 low-discrepancy Hammersley sequences samples combined with antithetic variates::
 
-    >>> distribution.sample(size=6, rule="H", antithetic=True).round(4)
+    >>> distribution.sample(size=6, rule="halton", antithetic=True).round(4)
     array([ 3.349 ,  0.651 , -0.3007,  4.3007,  2.6373,  1.3627])
 
 For a full overview of these options, see :ref:`sampling`

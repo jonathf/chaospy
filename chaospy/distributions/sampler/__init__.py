@@ -13,7 +13,7 @@ Generating random samples can be done from the distribution instance method
 from the Korobov lattice::
 
     >>> distribution = chaospy.Iid(chaospy.Beta(2, 2), 2)
-    >>> samples = distribution.sample(4, rule="K")
+    >>> samples = distribution.sample(4, rule="korobov")
     >>> samples.round(4)
     array([[0.2871, 0.4329, 0.5671, 0.7129],
            [0.4329, 0.7129, 0.2871, 0.5671]])

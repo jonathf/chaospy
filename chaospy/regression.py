@@ -17,7 +17,7 @@ samples and evaluations. The experiment can be done as follows:
   :ref:`quadrature`)::
 
     >>> samples = distribution.sample(
-    ...     2*len(orthogonal_expansion), rule="M")
+    ...     2*len(orthogonal_expansion), rule="hammersley")
     >>> samples[:, :4]
     array([[ 0.67448975, -1.15034938,  0.31863936, -0.31863936],
            [-1.42607687, -1.02007623, -0.73631592, -0.50240222]])

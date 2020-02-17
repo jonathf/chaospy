@@ -16,7 +16,7 @@ class Saltelli(object):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
-        >>> generator = Saltelli(dist, 3, rule="H")
+        >>> generator = Saltelli(dist, 3, rule="halton")
 
         >>> generator[False, False].round(4)
         array([[0.875 , 0.0625, 0.5625],
@@ -32,7 +32,7 @@ class Saltelli(object):
                [0.4444, 0.7778, 0.2222]])
     """
 
-    def __init__(self, dist, samples, poly=None, rule="R"):
+    def __init__(self, dist, samples, poly=None, rule="random"):
         """
         Initialize the matrix generator.
 
@@ -81,7 +81,7 @@ class Saltelli(object):
         return matrix
 
 
-def Sens_m_sample(poly, dist, samples, rule="R"):
+def Sens_m_sample(poly, dist, samples, rule="random"):
     """
     First order sensitivity indices estimated using Saltelli's method.
 
@@ -106,7 +106,7 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
         >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
         >>> poly
         polynomial([q0**2, q0*q1, q1**2])
-        >>> Sens_m_sample(poly, dist, 10000, rule="M").round(4)
+        >>> Sens_m_sample(poly, dist, 10000, rule="hammersley").round(4)
         array([[0.008 , 0.0026, 0.    ],
                [0.    , 0.6464, 2.1321]])
     """
@@ -135,7 +135,7 @@ def Sens_m_sample(poly, dist, samples, rule="R"):
     return numpy.array(out)
 
 
-def Sens_m2_sample(poly, dist, samples, rule="R"):
+def Sens_m2_sample(poly, dist, samples, rule="random"):
     """
     Second order sensitivity indices estimated using Saltelli's method.
 
@@ -160,7 +160,7 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
         >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
         >>> poly
         polynomial([q0**2, q0*q1, q1**2])
-        >>> Sens_m2_sample(poly, dist, 10000, rule="H").round(4)
+        >>> Sens_m2_sample(poly, dist, 10000, rule="halton").round(4)
         array([[[ 0.008 ,  0.0026,  0.    ],
                 [-0.0871,  1.1516,  1.2851]],
         <BLANKLINE>
@@ -214,7 +214,7 @@ def Sens_m2_sample(poly, dist, samples, rule="R"):
     return out
 
 
-def Sens_t_sample(poly, dist, samples, rule="R"):
+def Sens_t_sample(poly, dist, samples, rule="random"):
     """
     Total order sensitivity indices estimated using Saltelli's method.
 
@@ -239,7 +239,7 @@ def Sens_t_sample(poly, dist, samples, rule="R"):
         >>> poly = chaospy.basis(2, 2, dim=2, sort="GR")
         >>> poly
         polynomial([q0**2, q0*q1, q1**2])
-        >>> Sens_t_sample(poly, dist, 10000, rule="H").round(4)
+        >>> Sens_t_sample(poly, dist, 10000, rule="halton").round(4)
         array([[ 1.    ,  0.2   , -0.3807],
                [ 0.9916,  0.9962,  1.    ]])
     """

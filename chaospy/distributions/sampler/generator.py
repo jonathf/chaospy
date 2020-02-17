@@ -22,7 +22,7 @@ Custom domain::
 
 Use a custom sampling scheme::
 
-    >>> generate_samples(order=4, rule="H").round(4)
+    >>> generate_samples(order=4, rule="halton").round(4)
     array([[0.75 , 0.125, 0.625, 0.375]])
 
 Multivariate case::
@@ -39,41 +39,53 @@ Multivariate case::
 
 Antithetic variates::
 
-    >>> samples = generate_samples(order=8, rule="H", antithetic=True)
+    >>> samples = generate_samples(order=8, rule="halton", antithetic=True)
     >>> samples.round(4)
     array([[0.75 , 0.25 , 0.125, 0.875, 0.625, 0.375, 0.375, 0.625]])
 
 Multivariate antithetic variates::
 
     >>> samples = generate_samples(
-    ...     order=8, domain=2, rule="M", antithetic=True)
+    ...     order=8, domain=2, rule="hammersley", antithetic=True)
     >>> samples.round(4)
     array([[0.75 , 0.25 , 0.75 , 0.25 , 0.125, 0.875, 0.125, 0.875],
            [0.25 , 0.25 , 0.75 , 0.75 , 0.5  , 0.5  , 0.5  , 0.5  ]])
 
 Here as with the ``sample`` method, the flag ``rule`` is used to determine
-sampling scheme. The default ``rule="R"`` uses classical psuedo-random samples
-created using ``numpy.random``.
+sampling scheme. The default ``rule="random"`` uses classical psuedo-random
+samples created using ``numpy.random``.
 """
 import logging
 import numpy
 from . import sequences, latin_hypercube
 
-SAMPLERS = {
-    "C": sequences.create_chebyshev_samples,
-    "NC": sequences.create_nested_chebyshev_samples,
-    "K": sequences.create_korobov_samples,
-    "G": sequences.create_grid_samples,
-    "NG": sequences.create_nested_grid_samples,
-    "S": sequences.create_sobol_samples,
-    "H": sequences.create_halton_samples,
-    "M": sequences.create_hammersley_samples,
-    "L": latin_hypercube.create_latin_hypercube_samples,
-    "R": lambda order, dim: numpy.random.random((dim, order)),
+SAMPLER_NAMES = {
+    "c": "chebyshev", "chebyshev": "chebyshev",
+    "nc": "nested_chebyshev", "nested_chebyshev": "nested_chebyshev",
+    "k": "korobov", "korobov": "korobov",
+    "g": "grid", "grid": "grid",
+    "ng": "nested_grid", "nested_grid": "nested_grid",
+    "s": "sobol", "sobol": "sobol",
+    "h": "halton", "halton": "halton",
+    "m": "hammersley", "hammersley": "hammersley",
+    "l": "latin_hypercube", "latin_hypercube": "latin_hypercube",
+    "r": "random", "random": "random",
+}
+SAMPLER_FUNCTIONS = {
+    "chebyshev": sequences.create_chebyshev_samples,
+    "nested_chebyshev": sequences.create_nested_chebyshev_samples,
+    "korobov": sequences.create_korobov_samples,
+    "grid": sequences.create_grid_samples,
+    "nested_grid": sequences.create_nested_grid_samples,
+    "sobol": sequences.create_sobol_samples,
+    "halton": sequences.create_halton_samples,
+    "hammersley": sequences.create_hammersley_samples,
+    "latin_hypercube": latin_hypercube.create_latin_hypercube_samples,
+    "random": lambda order, dim: numpy.random.random((dim, order)),
 }
 
 
-def generate_samples(order, domain=1, rule="R", antithetic=None):
+def generate_samples(order, domain=1, rule="random", antithetic=None):
     """
     Sample generator.
 
@@ -93,9 +105,6 @@ def generate_samples(order, domain=1, rule="R", antithetic=None):
             antithetic variable.
     """
     logger = logging.getLogger(__name__)
-    logger.debug("generating random samples using rule %s", rule)
-
-    rule = rule.upper()
 
     if isinstance(domain, int):
         dim = domain
@@ -131,8 +140,9 @@ def generate_samples(order, domain=1, rule="R", antithetic=None):
         trans = lambda x_data: trans_(
             create_antithetic_variates(x_data, antithetic)[:, :order_saved])
 
-    assert rule in SAMPLERS, "rule not recognised"
-    sampler = SAMPLERS[rule]
+    rule = SAMPLER_NAMES[rule.lower()]
+    logger.debug("generating random samples using %s rule", rule)
+    sampler = SAMPLER_FUNCTIONS[rule]
     x_data = trans(sampler(order=order, dim=dim))
 
     logger.debug("order: %d, dim: %d -> shape: %s", order, dim, x_data.shape)

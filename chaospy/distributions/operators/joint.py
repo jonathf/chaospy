@@ -20,7 +20,7 @@ The created multivariate distribution behaves much like the univariate case::
      [0.3867 0.3521 0.3011]
      [0.3867 0.3521 0.3011]]
     >>> print(numpy.around(distribution.sample(
-    ...     size=6, rule="H", antithetic=True), 4))
+    ...     size=6, rule="halton", antithetic=True), 4))
     [[-1.1503  1.1503 -1.1503  1.1503  0.3186 -0.3186]
      [ 0.4444  0.4444  0.5556  0.5556  0.7778  0.7778]]
     >>> print(distribution.mom([[2, 4, 6], [1, 2, 3]]))

@@ -221,7 +221,7 @@ class Dist(object):
             f_data = numpy.prod(f_data, 0)
         return f_data
 
-    def sample(self, size=(), rule="R", antithetic=None):
+    def sample(self, size=(), rule="random", antithetic=None):
         """
         Create pseudo-random generated samples.
 
@@ -231,29 +231,29 @@ class Dist(object):
 
         Changing the sampling scheme, use the following ``rule`` flag:
 
-        +-------+-------------------------------------------------+
-        | key   | Description                                     |
-        +=======+=================================================+
-        | ``C`` | Roots of the first order Chebyshev polynomials. |
-        +-------+-------------------------------------------------+
-        | ``NC``| Chebyshev nodes adjusted to ensure nested.      |
-        +-------+-------------------------------------------------+
-        | ``K`` | Korobov lattice.                                |
-        +-------+-------------------------------------------------+
-        | ``R`` | Classical (Pseudo-)Random samples.              |
-        +-------+-------------------------------------------------+
-        | ``RG``| Regular spaced grid.                            |
-        +-------+-------------------------------------------------+
-        | ``NG``| Nested regular spaced grid.                     |
-        +-------+-------------------------------------------------+
-        | ``L`` | Latin hypercube samples.                        |
-        +-------+-------------------------------------------------+
-        | ``S`` | Sobol low-discrepancy sequence.                 |
-        +-------+-------------------------------------------------+
-        | ``H`` | Halton low-discrepancy sequence.                |
-        +-------+-------------------------------------------------+
-        | ``M`` | Hammersley low-discrepancy sequence.            |
-        +-------+-------------------------------------------------+
+        +----------------------+-----------------------------------------------+
+        | key                  | Description                                   |
+        +======================+===============================================+
+        | ``chebyshev``        | Roots of first order Chebyshev polynomials.   |
+        +----------------------+-----------------------------------------------+
+        | ``nested_chebyshev`` | Chebyshev nodes adjusted to ensure nested.    |
+        +----------------------+-----------------------------------------------+
+        | ``korobov``          | Korobov lattice.                              |
+        +----------------------+-----------------------------------------------+
+        | ``random``           | Classical (Pseudo-)Random samples.            |
+        +----------------------+-----------------------------------------------+
+        | ``grid``             | Regular spaced grid.                          |
+        +----------------------+-----------------------------------------------+
+        | ``nested_grid``      | Nested regular spaced grid.                   |
+        +----------------------+-----------------------------------------------+
+        | ``latin_hypercube``  | Latin hypercube samples.                      |
+        +----------------------+-----------------------------------------------+
+        | ``sobol``            | Sobol low-discrepancy sequence.               |
+        +----------------------+-----------------------------------------------+
+        | ``halton``           | Halton low-discrepancy sequence.              |
+        +----------------------+-----------------------------------------------+
+        | ``hammersley``       | Hammersley low-discrepancy sequence.          |
+        +----------------------+-----------------------------------------------+
 
         All samples are created on the ``[0, 1]``-hypercube, which then is
         mapped into the domain of the distribution using the inverse Rosenblatt
