@@ -12,21 +12,19 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-              - deps-py27-v3-{{ checksum "poetry.lock" }}
-              - deps-py27-v3-
+              - deps-py27-{{ checksum "pyproject.toml" }}
+              - deps-py27-
       - run:
           name: "Installation"
           command: |
-              mv poetry.lock _poetry.lock  # bug workaround
-              if [[ ! -d /home/circleci/venv ]]; then
-                virtualenv /home/circleci/venv
-                source /home/circleci/venv/bin/activate
-                pip install pytest openturns scikit-learn==0.20.1
-              fi
+            if [[ ! -d /home/circleci/venv ]]; then
+              virtualenv /home/circleci/venv
               source /home/circleci/venv/bin/activate
-              pip install .
+              pip install pytest openturns scikit-learn==0.20.1
+            fi
+            source /home/circleci/venv/bin/activate
       - save_cache:
-          key: deps-py27-v3-{{ checksum "_poetry.lock" }}
+          key: deps-py27-{{ checksum "pyproject.toml" }}
           paths:
               - /home/circleci/venv
       - run:
@@ -42,15 +40,18 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-              - deps-v1-{{ checksum "poetry.lock" }}
+              - deps-py37-{{ checksum "pyproject.toml" }}
+              - deps-py37-
       - run:
           name: "Installation"
           command: |
+            if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
               source /home/circleci/venv/bin/activate
-              poetry install
+            fi
+            poetry install
       - save_cache:
-          key: deps-v1-{{ checksum "poetry.lock" }}
+          key: deps-py37-{{ checksum "pyproject.toml" }}
           paths:
               - /home/circleci/venv
       - persist_to_workspace:
