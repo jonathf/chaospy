@@ -23,15 +23,6 @@ Standard usage::
     [[0.5   0.75  0.25  0.375]
      [0.5   0.25  0.75  0.375]]
 
-Licence
--------
-
-This code is distributed under the GNU LGPL license.
-
-The routine adapts the ideas of Antonov and Saleev. Original FORTRAN77 version
-by Bennett Fox. MATLAB version by John Burkardt. PYTHON version by Corrado
-Chisari.
-
 Papers::
 
     Antonov, Saleev,

@@ -58,7 +58,7 @@ inserted positional or as keyword arguments ``q0``, ``q1``, ...::
     array([1, 4, 6])
 
 The input can be a mix of scalars and arrays, as long as the shapes together
-can be joined to gether in a common compatible shape::
+can be joined together in a common compatible shape::
 
     >>> poly(2, [1, 2, 3, 4])
     array([[1, 1, 1, 1],
