@@ -1,6 +1,6 @@
 .. image:: doc/.static/chaospy_logo.svg
-   :height: 300 px
-   :width: 300 px
+   :height: 200 px
+   :width: 200 px
    :align: center
 
 |circleci| |codecov| |pypi| |readthedocs|
@@ -135,8 +135,37 @@ Also a few shout-outs:
 .. _Florian Künzner: https://github.com/flo2k
 .. _sample distribution: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.samples
 
-Questions & Troubleshooting
+Development
+-----------
+
+Development is done using `Poetry <https://poetry.eustace.io/>`_ manager.
+Inside the repository directory, install and create a virtual environment with:
+
+.. code-block:: bash
+
+   poetry install
+
+To run tests:
+
+.. code-block:: bash
+
+   poetry run pytest chaospy/ tests/ doc/ --doctest-modules
+
+To build documentation, run:
+
+.. code-block:: bash
+
+   cd doc/
+   make html
+
+The documentation will be generated into the folder ``doc/.build/html``.
+
+Questions and Contributions
 ---------------------------
 
-For any problems and questions you might have related to ``chaospy``, please
-feel free to file an `issue <https://github.com/jonathf/chaospy/issues>`_.
+Please feel free to `file an issue <https://github.com/jonathf/chaospy/issues>`_ for:
+
+* bug reporting
+* asking questions related to usage
+* requesting new features
+* wanting to contribute with code
