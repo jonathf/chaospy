@@ -11,7 +11,7 @@ def approximate_inverse(
         qloc,
         parameters=None,
         cache=None,
-        iterations=100,
+        iterations=300,
         tol=1e-5,
         seed=None,
 ):

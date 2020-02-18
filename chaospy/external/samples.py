@@ -120,7 +120,7 @@ def SampleDist(samples, lo=None, up=None):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.2254, 0.4272, 0.5135, 0.4272, 0.2254])
         >>> distribution.sample(4).round(4)
-        array([ 1.5877,  1.1645, -0.0131,  1.3302])
+        array([2.3836, 0.411 , 0.4378, 0.9087])
         >>> distribution.mom(1).round(4)
         1.0
     """
