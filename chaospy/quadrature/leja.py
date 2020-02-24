@@ -97,11 +97,16 @@ def quad_leja(
                 numpy.abs(abscissas[1:-1]-abscissas_))
             return out
 
-        opts, vals = zip(
-            *[fminbound(
-                objective, abscissas[idx], abscissas[idx+1], full_output=1)[:2]
-              for idx in range(len(abscissas)-1)]
-        )
+        def fmin(idx):
+            """Bound minimization."""
+            try:
+                x, fx = fminbound(objective, abscissas[idx], abscissas[idx+1], full_output=1)[:2]
+            except UnboundLocalError:
+                x = abscissas[idx] + 0.5*(3-5**0.5) * (abscissas[idx+1]-abscissas[idx])
+                fx = objective(x)
+            return x, fx
+
+        opts, vals = zip(*[fmin(idx) for idx in range(len(abscissas)-1)])
         index = numpy.argmin(vals)
         abscissas.insert(index+1, opts[index])
 
