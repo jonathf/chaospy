@@ -68,7 +68,7 @@ def quad_leja(
         >>> abscissas.round(4)
         array([[-2.7173, -1.4142,  0.    ,  1.7635]])
         >>> weights.round(4)
-        array([ 0.022 , -0.0319,  0.022 , -0.063 ])
+        array([0.022 , 0.1629, 0.6506, 0.1645])
     """
     from chaospy.distributions import evaluation
 
@@ -131,5 +131,6 @@ def create_weights(
             recurrence_algorithm=recurrence_algorithm,
         )
         _, poly, _ = discretized_stieltjes(len(nodes)-1, abscissas, weights)
+    poly = poly.flatten()
     weights = numpy.linalg.inv(poly(nodes))
     return weights[:, 0]
