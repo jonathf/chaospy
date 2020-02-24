@@ -40,7 +40,6 @@ jobs:
       - restore_cache:
           keys:
               - deps-py37-{{ checksum "poetry.lock" }}
-              - deps-py37-
       - run:
           name: "Installation"
           command: |
@@ -70,7 +69,7 @@ jobs:
             name: "Run tests"
             command: |
                 source /home/circleci/venv/bin/activate
-                pytest --doctest-modules --cov=chaospy chaospy tests doc/*.rst
+                pytest --nbval --doctest-modules --cov=chaospy chaospy tests tutorial/*ipynb doc/*.rst
                 codecov --token $CODECOV_TOKEN
   sphinx:
     docker:
