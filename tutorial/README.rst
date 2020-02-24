@@ -48,7 +48,7 @@ Advanced Topics
    easily be manipulated and transformed.
 
 .. _Example Introduction: ./example_introduction.ipynb
-.. _Low-discrepancy Monte Carlo: ./low_discrepency_monte_carlo.ipynb
+.. _Low-discrepancy Monte Carlo: ./low_discrepancy_monte_carlo.ipynb
 .. _Point Collocation: ./point_collocation.ipynb
 .. _Pseudo-Spectral Projection: ./pseudo_spectral_projection.ipynb
 .. _Intrusive Galerkin: ./intrusive_galerkin.ipynb
