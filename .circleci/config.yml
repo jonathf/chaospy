@@ -39,7 +39,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-              - deps-py37-{{ checksum "pyproject.toml" }}
+              - deps-py37-{{ checksum "poetry.lock" }}
               - deps-py37-
       - run:
           name: "Installation"
@@ -47,12 +47,12 @@ jobs:
             if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
             fi
+            source /home/circleci/venv/bin/activate
             poetry install
       - save_cache:
-          key: deps-py37-{{ checksum "pyproject.toml" }}
+          key: deps-py37-{{ checksum "poetry.lock" }}
           paths:
               - /home/circleci/venv
-              - /home/circleci/poetry.lock
       - persist_to_workspace:
           paths:
               - project
