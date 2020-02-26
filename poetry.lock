@@ -445,7 +445,7 @@ description = "Polynomials as a numpy datatype"
 name = "numpoly"
 optional = false
 python-versions = "*"
-version = "0.1.8"
+version = "0.1.11"
 
 [package.dependencies]
 numpy = ">=1.16,<2.0"
@@ -1360,8 +1360,8 @@ more-itertools = [
     {file = "more_itertools-8.2.0-py3-none-any.whl", hash = "sha256:5dd8bcf33e5f9513ffa06d5ad33d78f31e1931ac9a18f33d37e77a180d393a7c"},
 ]
 numpoly = [
-    {file = "numpoly-0.1.8-py2.py3-none-any.whl", hash = "sha256:d1ab70c10465a5087ccbeff6f0e22925cc8e715e1f31596445ba052704835424"},
-    {file = "numpoly-0.1.8.tar.gz", hash = "sha256:600d2ae84379da93959ab8cb022ea963295dd7130fa08222364905501bff8ecc"},
+    {file = "numpoly-0.1.11-py2.py3-none-any.whl", hash = "sha256:ae61cdd8c21867c5efe345b5b1aa3f54c6a917c306dbaaa67d79d5321c632395"},
+    {file = "numpoly-0.1.11.tar.gz", hash = "sha256:f1510027ad3291754fe7660af1f80d984fa476477a6bf7bc139588bb3428b7c7"},
 ]
 numpy = [
     {file = "numpy-1.16.6-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:08bf4f66f190822f4642e036accde8da810b87fffc0b9409e7a00d9e54760099"},

@@ -1,0 +1,11 @@
+codecov:
+  branch: master
+  archive:
+    uploads: no
+
+coverage:
+  precision: 1
+  range: 80...100
+
+comment:
+  layout: "header, diff, changes"
