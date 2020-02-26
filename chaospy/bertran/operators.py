@@ -8,7 +8,6 @@ import numpy
 from scipy.special import comb
 
 import chaospy.bertran
-from .indices import bindex
 
 _ADD_CACHE = {}
 _MULTI_INDEX_CACHE = {}

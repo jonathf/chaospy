@@ -40,10 +40,12 @@ def basis(start, stop=None, dim=1, sort="G", cross_truncation=1.):
         (chaospy.poly.ndpoly) : Polynomial array.
 
     Examples:
-        >>> chaospy.basis(4, 4, 2, sort="GR")
-        polynomial([q0**4, q0**3*q1, q0**2*q1**2, q0*q1**3, q1**4])
-        >>> chaospy.basis([1, 1], [2, 2], sort="GR")
-        polynomial([q0*q1, q0**2*q1, q0*q1**2, q0**2*q1**2])
+        >>> chaospy.basis(2, dim=2, sort="GR")
+        polynomial([1, q0, q1, q0**2, q0*q1, q1**2])
+        >>> chaospy.basis(2, dim=4, sort="GR", cross_truncation=0)
+        polynomial([1, q0, q1, q2, q3, q0**2, q1**2, q2**2, q3**2])
+        >>> chaospy.basis(2, 2, dim=2, sort="GR", cross_truncation=numpy.inf)
+        polynomial([q0**2, q1**2, q0**2*q1, q0*q1**2, q0**2*q1**2])
     """
     if stop is None:
         start, stop = 0, start

@@ -93,7 +93,7 @@ def norm(order, dist, orth=None):
     try:
         if dim>1:
             norms = numpy.array([norm(order+1, D) for D in dist])
-            Is = chaospy.bertran.bindex(order, dim)
+            Is = numpoly.bindex(order+1, dimensions=dim)
             out = numpy.ones(len(Is))
 
             for i in range(len(Is)):
