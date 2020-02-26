@@ -82,7 +82,6 @@ class MvNormal(Dist):
         return 7.5*numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))+loc
 
     def _mom(self, k, C, Ci, loc):
-        from chaospy.bertran.indices import bindex
         scale = numpy.dot(C, C.T)
         out = 0.
         for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
