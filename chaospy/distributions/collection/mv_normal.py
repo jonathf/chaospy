@@ -2,7 +2,6 @@
 import numpy
 from scipy import special
 
-from chaospy.bertran import bindex
 from .normal import normal
 
 from ..baseclass import Dist
@@ -83,9 +82,10 @@ class MvNormal(Dist):
         return 7.5*numpy.sqrt(numpy.diag(numpy.dot(C, C.T)))+loc
 
     def _mom(self, k, C, Ci, loc):
+        from chaospy.bertran.indices import bindex
         scale = numpy.dot(C, C.T)
         out = 0.
-        for idx, kdx in enumerate(bindex(k, dim=len(C), sort="G")):
+        for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)
             diff = k.T - kdx
             pos = diff >= 0

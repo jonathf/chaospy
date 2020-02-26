@@ -4,7 +4,7 @@ Multi-indexing tools after Bertran's notation
 Polynomials can either be indexed with single index or multi-index
 Bertran is a notation for switching between the two.
 """
-
+from numpoly import bindex
 import chaospy.bertran.operators
 import chaospy.bertran.fourier
 import chaospy.bertran.sparse

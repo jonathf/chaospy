@@ -53,6 +53,7 @@ Stieltjes otherwise.
 .. _paper by Golub and Welsch: https://web.stanford.edu/class/cme335/spr11/S0025-5718-69-99647-1.pdf
 """
 import numpy
+import numpoly
 import chaospy
 
 
@@ -103,10 +104,9 @@ def orth_ttr(
 
     polynomials = polynomials.reshape((len(dist), numpy.max(order)+1))
 
-    indices = chaospy.bertran.bindex(
-        start=0, stop=order, dim=len(dist), sort=sort,
-        cross_truncation=cross_truncation,
-    )
+    order = numpy.array(order)
+    indices = numpoly.bindex(start=0, stop=order+1, dimensions=len(dist),
+                             ordering=sort, cross_truncation=cross_truncation)
     if len(dist) > 1:
         polynomials = chaospy.poly.prod(chaospy.polynomial([
             poly[idx] for poly, idx in zip(polynomials, indices.T)]), 0)

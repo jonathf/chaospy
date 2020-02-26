@@ -33,8 +33,8 @@ polynomial order::
 
 There is also the possibility to create anisotropic expansions::
 
-    >>> chaospy.basis(start=1, stop=[1, 2])
-    polynomial([q1, q0, q1**2, q0*q1, q0*q1**2])
+    >>> chaospy.basis(start=1, stop=[2, 3])
+    polynomial([q1, q0, q1**2, q0*q1, q0**2, q1**3])
 
 and the possibility to fine tune the sorting of the polynomials::
 

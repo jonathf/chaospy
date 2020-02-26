@@ -8,7 +8,9 @@ For more details, see this `article on Lagrange polynomials`_.
 .. _article on Lagrange polynomials: https://en.wikipedia.org/wiki/Lagrange_polynomial
 """
 import numpy
+import numpoly
 import chaospy
+
 
 def lagrange_polynomial(abscissas, sort="G"):
     """
@@ -46,7 +48,7 @@ def lagrange_polynomial(abscissas, sort="G"):
     while chaospy.bertran.terms(order, dim) < size:
         order += 1
 
-    indices = numpy.array(chaospy.bertran.bindex(0, order, dim, sort)[:size])
+    indices = numpoly.bindex(0, order+1, dimensions=dim, ordering=sort)[:size]
     idx, idy = numpy.mgrid[:size, :size]
 
     matrix = numpy.prod(abscissas.T[idx]**indices[idy], -1)
@@ -67,7 +69,6 @@ def lagrange_polynomial(abscissas, sort="G"):
         out = chaospy.poly.sum(vec*(coeffs.T), 1)
 
     else:
-        
         for i in range(size):
             if i%2 != 0:
                 k = 1

@@ -58,8 +58,7 @@ from itertools import product
 
 import numpy
 from scipy.special import comb
-
-from ..bertran import bindex
+import numpoly
 
 
 def construct_sparse_grid(
@@ -143,7 +142,7 @@ def _construct_collection(
     skew = orders-order
 
     # Indices and coefficients used in the calculations
-    indices = bindex(order-len(dist)+1, order, dim=len(dist))
+    indices = numpoly.bindex(order-len(dist)+1, order+1, dimensions=len(dist))
     coeffs = numpy.sum(indices, -1)
     coeffs = (2*((order-coeffs+1) % 2)-1)*comb(len(dist)-1, order-coeffs)
 
