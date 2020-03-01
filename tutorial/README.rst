@@ -4,8 +4,8 @@ Tutorial
 Here is a collection of `Jupyter notebooks <https://jupyter.org/>`_ that
 explore different ways to use ``chaospy``.
 
-Pre-cursor
-----------
+Precursor
+---------
 
 `Example Introduction <./example_introduction.ipynb>`_
    The notebooks are all self contained, however many of the examples addressed
@@ -38,6 +38,18 @@ Core Topics
 .. _Point Collocation: ./point_collocation.ipynb
 .. _Pseudo-Spectral Projection: ./pseudo_spectral_projection.ipynb
 
+Advanced Topics
+---------------
+
+`Intrusive Galerkin`_
+   Intrusive Galerkin method is the classical approach for applying polynomial
+   chaos expansion on a set of governing equations. An intrusive method, unlike
+   the non-intrusive method described in `Point Collocation`_ and
+   `Pseudo-Spectral Projection`_. It requires a bit more use of the mathematical
+   hand holding to apply properly.
+
+.. _Intrusive Galerkin: ./intrusive_galerkin.ipynb
+
 Polynomials and Polynomial Expansions
 -------------------------------------
 
@@ -67,15 +79,3 @@ Polynomials and Polynomial Expansions
 .. _Lagrange Polynomials: ./polynomial/lagrange.ipynb
 .. _Truncation of Polynomial Expansion: ./polynomial/truncation.ipynb
 .. _The Wiener-Askey Polynomial Expansions: ./polynomial/wiener_askey.ipynb
-
-Advanced Topics
----------------
-
-`Intrusive Galerkin`_
-   Intrusive Galerkin method is the classical approach for applying polynomial
-   chaos expansion on a set of governing equations. An intrusive method, unlike
-   the non-intrusive method described in `Point Collocation`_ and
-   `Pseudo-Spectral Projection`_. It requires a bit more use of the mathematical
-   hand holding to apply properly.
-
-.. _Intrusive Galerkin: ./intrusive_galerkin.ipynb
