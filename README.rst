@@ -78,11 +78,8 @@ point collocation method will look as follows:
     expected = chaospy.E(foo_approx, distribution)
     deviation = chaospy.Std(foo_approx, distribution)
 
-For a more extensive description of what going on, see the `tutorial
-<https://chaospy.readthedocs.io/en/master/tutorial.html>`_.
-
-For a collection of recipes, see the `cookbook
-<https://chaospy.readthedocs.io/en/master/cookbook.html>`_.
+For a more extensive description of what going on, see the
+`collection of tutorials <https://github.com/tutoral>`_.
 
 Related Projects
 ----------------
