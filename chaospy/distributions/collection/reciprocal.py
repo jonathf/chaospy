@@ -30,9 +30,6 @@ class Reciprocal(Dist):
         array([3.1462, 2.166 , 3.8645, 2.7937])
         >>> distribution.mom(1).round(4)
         7.8433
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.023 , 3.0033, 3.0011],
-               [0.3307, 0.2664, 0.257 ]])
     """
 
     def __init__(self, lower=1, upper=2):

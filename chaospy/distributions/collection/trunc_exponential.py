@@ -56,9 +56,6 @@ class TruncExponential(Add):
         array([1.1891, 0.1852, 1.873 , 0.8415])
         >>> distribution.mom(1).round(4)
         0.917
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[1.0163, 1.0024, 1.0008],
-               [0.3292, 0.2671, 0.2572]])
     """
 
     def __init__(self, upper=1, scale=1, shift=0):

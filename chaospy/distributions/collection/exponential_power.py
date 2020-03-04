@@ -58,9 +58,6 @@ class ExponentialPower(Add):
         array([2.7003, 1.679 , 3.3551, 2.4223])
         >>> distribution.mom(1).round(4)
         2.4314
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[2.3851, 2.4491, 2.5043],
-               [0.3363, 0.4539, 0.5185]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

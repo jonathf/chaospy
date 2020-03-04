@@ -60,9 +60,6 @@ class LogUniform(Add):
         array([31.4099, 19.5793, 41.2227, 26.9349])
         >>> distribution.mom(1).round(4)
         28.393
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[30.8948, 30.5352, 30.4949],
-               [52.8588, 42.8862, 41.419 ]])
     """
 
     def __init__(self, lower=0, upper=1, scale=1, shift=0):

@@ -64,9 +64,6 @@ class GeneralizedGamma(Add):
         array([5.6691, 4.1674, 7.0214, 5.2264])
         >>> distribution.mom(1).round(4)
         3.477
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[5.6341, 5.9361, 6.2271],
-               [0.9553, 1.8381, 2.6689]])
     """
 
     def __init__(self, shape1, shape2, scale, shift):

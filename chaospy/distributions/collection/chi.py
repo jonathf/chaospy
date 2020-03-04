@@ -57,9 +57,6 @@ class Chi(Add):
         array([ 6.8244,  2.9773, 10.8003,  5.5892])
         >>> distribution.mom(1).round(4)
         6.0133
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 7.6671,  9.0688, 10.2809],
-               [ 6.8673, 12.6824, 18.2126]])
     """
 
     def __init__(self, df=1, scale=1, shift=0):
@@ -93,9 +90,6 @@ class Maxwell(Add):
         array([6.6381, 4.6119, 8.5955, 6.015 ])
         >>> distribution.mom(1).round(4)
         6.1915
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[6.8457, 7.4421, 7.9834],
-               [1.8141, 3.3964, 4.8716]])
     """
 
     def __init__(self, scale=1, shift=0):
@@ -128,9 +122,6 @@ class Rayleigh(Add):
         array([5.9122, 3.9886, 7.9001, 5.2946])
         >>> distribution.mom(1).round(4)
         5.5066
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[6.3336, 7.0344, 7.6405],
-               [1.7168, 3.1706, 4.5532]])
     """
     def __init__(self, scale=1, shift=0):
         self._repr = {"scale": scale, "shift": shift}

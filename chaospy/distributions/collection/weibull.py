@@ -58,9 +58,6 @@ class Weibull(Add):
         array([1.0296, 0.3495, 1.7325, 0.8113])
         >>> distribution.mom(1).round(4)
         0.8862
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[1.1786, 1.4264, 1.6407],
-               [0.2146, 0.3963, 0.5691]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

@@ -48,9 +48,6 @@ class LogWeibull(Add):
         array([3.71  , 0.4572, 7.952 , 2.631 ])
         >>> distribution.mom(1).round(4)
         3.1544
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 6.0775,  9.5552, 13.213 ],
-               [ 6.5797, 20.4065, 42.3767]])
     """
     def __init__(self, scale=1, loc=0):
         self._repr = {"scale": scale, "loc": loc}

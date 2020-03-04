@@ -13,7 +13,7 @@ def construct_recurrence_coefficients(
         order,
         dist,
         rule="fejer",
-        accuracy=100,
+        accuracy=200,
         recurrence_algorithm="",
 ):
     """
@@ -109,12 +109,14 @@ def construct_recurrence_coefficients(
 
     elif recurrence_algorithm == "lanczos":
         from ..frontend import generate_quadrature
-        abscissas, weights = generate_quadrature(accuracy, dist, rule=rule)
+        abscissas, weights = generate_quadrature(
+            accuracy, dist, rule=rule, segments=0)
         coeffs = lanczos(order, abscissas, weights)
 
     elif recurrence_algorithm == "stieltjes":
         from ..frontend import generate_quadrature
-        abscissas, weights = generate_quadrature(accuracy, dist, rule=rule)
+        abscissas, weights = generate_quadrature(
+            accuracy, dist, rule=rule, segments=0)
         coeffs, _, _ = discretized_stieltjes(order, abscissas, weights)
 
     return [coeffs.reshape(2, int(order)+1)]

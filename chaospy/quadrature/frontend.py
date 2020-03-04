@@ -86,6 +86,7 @@ def generate_quadrature(
         sparse=False,
         accuracy=100,
         growth=None,
+        segments=1,
         recurrence_algorithm="",
 ):
     """
@@ -110,6 +111,11 @@ def generate_quadrature(
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples. Defaults to the same
             value as ``sparse`` if omitted.
+        segments (int):
+            Split intervals into N subintervals and create a patched
+            quadrature based on the segmented quadrature. Can not be lower than
+            `order`. If 0 is provided, default to square root of `order`.
+            Nested samples only exist when the number of segments are fixed.
         recurrence_algorithm (str):
             Name of the algorithm used to generate abscissas and weights in
             case of Gaussian quadrature scheme. If omitted, ``analytical`` will
@@ -149,7 +155,7 @@ def generate_quadrature(
     kwargs = {}
 
     if rule in ("clenshaw_curtis", "fejer", "newton_cotes"):
-        kwargs.update(growth=growth)
+        kwargs.update(growth=growth, segments=segments)
 
     if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
         kwargs.update(accuracy=accuracy,
