@@ -30,9 +30,6 @@ class Logn(UnaryOperator):
         [0.4578 0.0991 0.608  0.3582]
         >>> print(numpy.around(distribution.mom(1), 4))
         0.3516
-        >>> print(numpy.around(distribution.ttr([0, 1, 2]), 4))
-        [[0.3516 0.3085 0.3144]
-         [1.     0.0324 0.0266]]
     """
 
     def __init__(self, dist, base=2):

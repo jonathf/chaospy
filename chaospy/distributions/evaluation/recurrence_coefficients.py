@@ -22,16 +22,6 @@ The use of cache::
 
     >>> evaluate_recurrence_coefficients(dist, k_data, cache={((2,), dist): (3., 4.)})
     (3.0, 4.0)
-
-Approximate with the use of density, forward, inverse and bound function if recurrence function is missing::
-
-    >>> class Exponential(chaospy.Dist):
-    ...     _pdf = lambda self, x_data, alpha: alpha*numpy.e**(-alpha*x_data)
-    ...     _cdf = lambda self, x_data, alpha: 1-numpy.e**(-alpha*x_data)
-    ...     _ppf = lambda self, u_data, alpha: -numpy.log(1-u_data)/alpha
-    >>> dist = Exponential(alpha=2)
-    >>> evaluate_recurrence_coefficients(dist, k_data).round(3)
-    array([2.5, 1. ])
 """
 import logging
 
