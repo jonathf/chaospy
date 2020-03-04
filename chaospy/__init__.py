@@ -29,14 +29,21 @@ from chaospy.descriptives import *
 from chaospy.regression import *
 from chaospy.external import *
 
-LOGPATH = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
-logging.basicConfig(level=logging.DEBUG, filename=LOGPATH, filemode="w")
-streamer = logging.StreamHandler()
-streamer.setLevel(logging.DEBUG)
-logger = logging.getLogger(__name__)
-logger.addHandler(streamer)
-
 try:
     __version__ = pkg_resources.get_distribution("chaospy").version
 except pkg_resources.DistributionNotFound:
-    pass
+    __version__ = None
+
+
+def configure_logging():
+    """Configure logging for Chaospy."""
+    logpath = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
+    logging.basicConfig(level=logging.DEBUG, filename=logpath, filemode="w")
+    streamer = logging.StreamHandler()
+    loglevel = logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") else logging.WARNING
+    streamer.setLevel(loglevel)
+
+    logger = logging.getLogger(__name__)
+    logger.addHandler(streamer)
+
+configure_logging()
