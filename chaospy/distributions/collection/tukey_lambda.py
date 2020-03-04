@@ -65,9 +65,6 @@ class TukeyLambda(Add):
         array([ 3.2697, -2.0812,  7.9008,  1.8575])
         >>> distribution.mom(1).round(4)
         2.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 2.    ,  2.    ,  2.    ],
-               [13.1595, 42.1102, 91.3601]])
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

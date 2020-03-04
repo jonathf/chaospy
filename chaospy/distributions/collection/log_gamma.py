@@ -50,9 +50,6 @@ class LogGamma(Add):
         array([ 2.6074, -0.0932,  4.1166,  1.9675])
         >>> distribution.mom(1).round(4)
         1.8456
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 0.5924, -0.8925, -2.5379],
-               [ 2.5797,  6.6525, 12.5947]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

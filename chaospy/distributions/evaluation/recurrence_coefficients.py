@@ -77,21 +77,9 @@ def evaluate_recurrence_coefficients(
         if cache_key(distribution) in cache:
             return cache[cache_key(distribution)]
 
-    try:
-        parameters = load_parameters(
-            distribution, "_ttr", parameters, cache, cache_key)
-        coeff1, coeff2 = distribution._ttr(k_data, **parameters)
-
-    except NotImplementedError:
-        from ...quadrature import generate_quadrature
-        from ...quadrature.recurrence.stieltjes import discretized_stieltjes
-        abscissas, weights = generate_quadrature(
-            100, distribution, rule="clenshaw_curtis")
-        (coeff1, coeff2), _, _ = discretized_stieltjes(
-            numpy.max(k_data), abscissas, weights, normed=False)
-        range_ = numpy.arange(len(distribution), dtype=int)
-        coeff1 = coeff1[range_, k_data]
-        coeff2 = coeff2[range_, k_data]
+    parameters = load_parameters(
+        distribution, "_ttr", parameters, cache, cache_key)
+    coeff1, coeff2 = distribution._ttr(k_data, **parameters)
 
     out = numpy.zeros((2,) + k_data.shape)
     out.T[:, 0] = numpy.asarray(coeff1).T

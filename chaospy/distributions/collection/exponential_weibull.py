@@ -56,9 +56,6 @@ class ExponentialWeibull(Add):
         array([3.5711, 2.2872, 4.8376, 3.1776])
         >>> distribution.mom(1).round(4)
         3.2916
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.731 , 4.1391, 4.5115],
-               [0.7486, 1.4897, 2.2135]])
     """
     def __init__(self, alpha=1, kappa=1, scale=1, shift=0):
         self._repr = {

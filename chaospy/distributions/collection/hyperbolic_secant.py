@@ -53,9 +53,6 @@ class HyperbolicSecant(Add):
         array([ 2.6397, -0.1648,  5.2439,  1.9287])
         >>> distribution.mom(1).round(4)
         2.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 2.    ,  2.    ,  2.    ],
-               [ 4.    , 16.0001, 35.9976]])
     """
 
     def __init__(self, loc=0, scale=1):

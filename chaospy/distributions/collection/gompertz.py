@@ -53,9 +53,6 @@ class Gompertz(Add):
         array([2.6052, 2.0798, 3.3868, 2.3967])
         >>> distribution.mom(1).round(4)
         2.5242
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.034 , 3.3243, 3.5329],
-               [0.1878, 0.3655, 0.5218]])
     """
 
     def __init__(self, shape, scale, shift):

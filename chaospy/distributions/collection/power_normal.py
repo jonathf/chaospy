@@ -51,9 +51,6 @@ class PowerNormal(Add):
         array([ 1.5523, -1.122 ,  3.5244,  0.8368])
         >>> distribution.mom(1).round(4)
         0.8716
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[0.6455, 0.4421, 0.2628],
-               [2.7268, 5.5707, 8.4597]])
     """
 
     def __init__(self, shape=1, mu=0, scale=1):

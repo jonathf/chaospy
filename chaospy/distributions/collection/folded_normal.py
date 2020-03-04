@@ -53,9 +53,6 @@ class FoldedNormal(Add):
         array([2.1633, 1.7827, 4.6911, 5.5156])
         >>> distribution.mom(1).round(4)
         5.034
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[5.3928, 6.0914, 6.7954],
-               [3.7271, 6.2602, 7.926 ]])
     """
 
     def __init__(self, mu=0, sigma=1, loc=0):

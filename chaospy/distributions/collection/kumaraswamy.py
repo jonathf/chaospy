@@ -62,9 +62,6 @@ class Kumaraswamy(Add):
         array([2.6414, 2.2434, 2.8815, 2.5295])
         >>> distribution.mom(1).round(4)
         2.5333
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[2.5056, 2.5018, 2.5008],
-               [0.0489, 0.0569, 0.0595]])
     """
 
     def __init__(self, alpha, beta, lower=0, upper=1):

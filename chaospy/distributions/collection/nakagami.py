@@ -52,9 +52,6 @@ class Nakagami(Add):
         array([4.1137, 3.076 , 5.0824, 3.8012])
         >>> distribution.mom(1).round(4)
         3.88
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[4.1568, 4.4181, 4.6622],
-               [0.4657, 0.8824, 1.2706]])
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

@@ -50,13 +50,17 @@ Applying the rule using Smolyak sparse grid::
            -0.022,  0.267,  0.028, -0.022,  0.028])
 """
 from __future__ import division
+try:
+    from functools import lru_cache
+except ImportError:
+    from functools32 import lru_cache
 
 import numpy
 
 from .combine import combine_quadrature
 
 
-def quad_clenshaw_curtis(order, domain, growth=False):
+def quad_clenshaw_curtis(order, domain, growth=False, segments=1):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
@@ -68,6 +72,11 @@ def quad_clenshaw_curtis(order, domain, growth=False):
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples.
+        segments (int):
+            Split intervals into N subintervals and create a patched
+            quadrature based on the segmented quadrature. Can not be lower than
+            `order`. If 0 is provided, default to square root of `order`.
+            Nested samples only exist when the number of segments are fixed.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -79,16 +88,21 @@ def quad_clenshaw_curtis(order, domain, growth=False):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_clenshaw_curtis(3, (0, 1))
+        >>> abscissas, weights = quad_clenshaw_curtis(4, (0, 1))
         >>> abscissas.round(4)
-        array([[0.  , 0.25, 0.75, 1.  ]])
+        array([[0.    , 0.1464, 0.5   , 0.8536, 1.    ]])
         >>> weights.round(4)
-        array([0.0556, 0.4444, 0.4444, 0.0556])
+        array([0.0333, 0.2667, 0.4   , 0.2667, 0.0333])
+        >>> abscissas, weights = quad_clenshaw_curtis(4, (0, 1), segments=0)
+        >>> abscissas.round(4)
+        array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
+        >>> weights.round(4)
+        array([0.0833, 0.3333, 0.1667, 0.3333, 0.0833])
     """
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
         abscissas, weights = quad_clenshaw_curtis(
-            order, (domain.lower, domain.upper), growth)
+            order, (domain.lower, domain.upper), growth, segments)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights
@@ -100,54 +114,84 @@ def quad_clenshaw_curtis(order, domain, growth=False):
 
     dim = max(lower.size, upper.size, order.size)
 
-    order = numpy.ones(dim, dtype=int)*order
-    lower = numpy.ones(dim)*lower
-    upper = numpy.ones(dim)*upper
+    order = order*numpy.ones(dim, dtype=int)
+    lower = lower*numpy.ones(dim)
+    upper = upper*numpy.ones(dim)
+    segments = segments*numpy.ones(dim, dtype=int)
 
     if growth:
         order = numpy.where(order > 0, 2**order, 0)
 
-    abscissas, weights = zip(*[_clenshaw_curtis(order_) for order_ in order])
+    abscissas, weights = zip(*[_clenshaw_curtis(order_, segment)
+                               for order_, segment in zip(order, segments)])
 
     return combine_quadrature(abscissas, weights, (lower, upper))
 
 
-def _clenshaw_curtis(order):
+@lru_cache(None)
+def _clenshaw_curtis(order, segments=1):
     r"""
     Backend method.
 
     Examples:
-        >>> abscissas, weights = _clenshaw_curtis(0)
+        >>> abscissas, weights = _clenshaw_curtis(0, 0)
         >>> abscissas
         array([0.5])
         >>> weights
         array([1.])
-        >>> abscissas, weights = _clenshaw_curtis(1)
-        >>> abscissas
-        array([0., 1.])
-        >>> weights
-        array([0.5, 0.5])
-        >>> abscissas, weights = _clenshaw_curtis(2)
+        >>> abscissas, weights = _clenshaw_curtis(2, 0)
         >>> abscissas
         array([0. , 0.5, 1. ])
         >>> weights
         array([0.16666667, 0.66666667, 0.16666667])
-        >>> abscissas, weights = _clenshaw_curtis(3)
+        >>> abscissas, weights = _clenshaw_curtis(4, 0)
         >>> abscissas
-        array([0.  , 0.25, 0.75, 1.  ])
+        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> weights
-        array([0.05555556, 0.44444444, 0.44444444, 0.05555556])
-        >>> abscissas, weights = _clenshaw_curtis(4)
-        >>> abscissas
-        array([0.        , 0.14644661, 0.5       , 0.85355339, 1.        ])
-        >>> weights
-        array([0.03333333, 0.26666667, 0.4       , 0.26666667, 0.03333333])
+        array([0.08333333, 0.33333333, 0.16666667, 0.33333333, 0.08333333])
+        >>> abscissas, weights = _clenshaw_curtis(8, 0)
+        >>> abscissas.round(3)
+        array([0.   , 0.073, 0.25 , 0.427, 0.5  , 0.573, 0.75 , 0.927, 1.   ])
+        >>> weights.round(3)
+        array([0.017, 0.133, 0.2  , 0.133, 0.033, 0.133, 0.2  , 0.133, 0.017])
+        >>> abscissas, weights = _clenshaw_curtis(16, 0)
+        >>> abscissas.round(3)
+        array([0.   , 0.037, 0.125, 0.213, 0.25 , 0.287, 0.375, 0.463, 0.5  ,
+               0.537, 0.625, 0.713, 0.75 , 0.787, 0.875, 0.963, 1.   ])
+        >>> weights.round(3)
+        array([0.008, 0.067, 0.1  , 0.067, 0.017, 0.067, 0.1  , 0.067, 0.017,
+               0.067, 0.1  , 0.067, 0.017, 0.067, 0.1  , 0.067, 0.008])
     """
+    if segments != 1 and order > 2:
+        if not segments:
+            segments = int(numpy.sqrt(order))
+        assert segments < order, "few samples to distribute than intervals"
+        abscissas = []
+        weights = []
+
+        nodes = numpy.linspace(0, 1, segments+1)
+        for idx, (lower, upper) in enumerate(zip(nodes[:-1], nodes[1:])):
+
+            order_ = order//segments + (idx < (order%segments))
+            abscissa, weight = _clenshaw_curtis(order_, segments=1)
+            abscissa = abscissa*(upper-lower) + lower
+            weight = weight*(upper-lower)
+            if abscissas:
+                weights[-1] += weight[0]
+                abscissa = abscissa[1:]
+                weight = weight[1:]
+            abscissas.extend(abscissa)
+            weights.extend(weight)
+
+        assert len(abscissas) == order+1, (len(abscissas), order+1)
+        assert len(weights) == order+1
+        return numpy.array(abscissas), numpy.array(weights)
+
     if order == 0:
         return numpy.array([.5]), numpy.array([1.])
 
     theta = (order-numpy.arange(order+1))*numpy.pi/order
-    abscisas = 0.5*numpy.cos(theta) + 0.5
+    abscissas = 0.5*numpy.cos(theta) + 0.5
 
     idx, idy = numpy.mgrid[:order+1, :order//2]
     weights = 2*numpy.cos(2*(idy+1)*theta[idx])/(4*idy*(idy+2)+3)
@@ -158,4 +202,5 @@ def _clenshaw_curtis(order):
     weights[0] /= 2
     weights[-1] /= 2
 
-    return abscisas, weights
+    assert len(abscissas) == order+1
+    return abscissas, weights

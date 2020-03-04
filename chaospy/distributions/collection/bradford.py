@@ -54,9 +54,6 @@ class Bradford(Add):
         array([5.171 , 4.1748, 5.8704, 4.8192])
         >>> distribution.mom(1).round(4)
         4.9026
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[5.0195, 5.0028, 5.0009],
-               [0.3314, 0.2664, 0.2571]])
     """
     def __init__(self, shape=1, lower=0, upper=1):
         self._repr = {"shape": shape, "lower": lower, "upper": upper}

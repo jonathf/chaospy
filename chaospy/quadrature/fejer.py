@@ -48,13 +48,17 @@ Applying the rule using Smolyak sparse grid::
             0.074])
 """
 from __future__ import division
+try:
+    from functools import lru_cache
+except ImportError:
+    from functools32 import lru_cache
 
 import numpy
 
 from .combine import combine_quadrature
 
 
-def quad_fejer(order, domain=(0, 1), growth=False):
+def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate the quadrature abscissas and weights in Fejer quadrature.
 
@@ -66,6 +70,11 @@ def quad_fejer(order, domain=(0, 1), growth=False):
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples.
+        segments (int):
+            Split intervals into N subintervals and create a patched
+            quadrature based on the segmented quadrature. Can not be lower than
+            `order`. If 0 is provided, default to square root of `order`.
+            Nested samples only exist when the number of segments are fixed.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -82,6 +91,11 @@ def quad_fejer(order, domain=(0, 1), growth=False):
         array([[0.0955, 0.3455, 0.6545, 0.9045]])
         >>> weights.round(4)
         array([0.1804, 0.2996, 0.2996, 0.1804])
+        >>> abscissas, weights = quad_fejer(3, (0, 1), segments=2)
+        >>> abscissas.round(4)
+        array([[0.125, 0.375, 0.625, 0.875]])
+        >>> weights.round(4)
+        array([0.2222, 0.2222, 0.2222, 0.2222])
     """
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
@@ -98,28 +112,48 @@ def quad_fejer(order, domain=(0, 1), growth=False):
 
     dim = max(lower.size, upper.size, order.size)
 
-    order = numpy.ones(dim, dtype=int)*order
-    lower = numpy.ones(dim)*lower
-    upper = numpy.ones(dim)*upper
+    order = order*numpy.ones(dim, dtype=int)
+    lower = lower*numpy.ones(dim)
+    upper = upper*numpy.ones(dim)
+    segments = segments*numpy.ones(dim, dtype=int)
 
     if growth:
         order = numpy.where(order > 0, 2**(order+1)-2, 0)
 
-    abscissas, weights = zip(*[_fejer(order_) for order_ in order])
+    abscissas, weights = zip(*[_fejer(order_, segment)
+                               for order_, segment in zip(order, segments)])
 
     return combine_quadrature(abscissas, weights, (lower, upper))
 
 
-def _fejer(order):
+@lru_cache(None)
+def _fejer(order, segments=1):
     """Backend method."""
+    if segments != 1 and order > 2:
+        if not segments:
+            segments = int(numpy.sqrt(order))
+        assert segments < order, "few samples to distribute than intervals"
+        abscissas = []
+        weights = []
+
+        nodes = numpy.linspace(0, 1, segments+1)
+        for idx, (lower, upper) in enumerate(zip(nodes[:-1], nodes[1:])):
+            order_ = order//segments + (idx+1 < (order%segments))
+            abscissa, weight = _fejer(order_, segments=1)
+            abscissas.extend(abscissa*(upper-lower) + lower)
+            weights.extend(weight*(upper-lower))
+
+        assert len(abscissas) == order+1, (len(abscissas), order+1)
+        assert len(weights) == order+1
+        return numpy.array(abscissas), numpy.array(weights)
+
     order = int(order)
     if order == 0:
         return numpy.array([.5]), numpy.array([1.])
-
     order += 2
 
     theta = (order-numpy.arange(order+1))*numpy.pi/order
-    abscisas = 0.5*numpy.cos(theta) + 0.5
+    abscissas = 0.5*numpy.cos(theta) + 0.5
 
     idx, idy = numpy.mgrid[:order+1, :order//2]
     weights = 2*numpy.cos(2*(idy+1)*theta[idx])/(4*idy*(idy+2)+3)
@@ -127,4 +161,7 @@ def _fejer(order):
         weights[:, -1] *= 0.5
     weights = (1-numpy.sum(weights, -1)) / order
 
-    return abscisas[1:-1], weights[1:-1]
+    abscissas = abscissas[1:-1]
+    weights = weights[1:-1]
+    assert len(abscissas) == order-1
+    return abscissas, weights
