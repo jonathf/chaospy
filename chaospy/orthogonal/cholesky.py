@@ -28,7 +28,7 @@ import chaospy
 import numpoly
 
 
-def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
+def orth_chol(order, dist, normed=False, sort="G", cross_truncation=1., retall=False, **kws):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
@@ -45,11 +45,17 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
             terms in expansion.
+        retall (bool):
+            If true return numerical stabilized norms as well. Roughly the same
+            as ``cp.E(orth**2, dist)``.
 
     Examples:
-        >>> Z = chaospy.Normal()
-        >>> chaospy.orth_chol(3, Z).round(4)
-        polynomial([1.0, q0, -0.7071+0.7071*q0**2, -1.2247*q0+0.4082*q0**3])
+        >>> distribution = chaospy.Normal()
+        >>> expansion, norms = chaospy.orth_chol(3, distribution, retall=True)
+        >>> expansion.round(4)
+        polynomial([1.0, q0, -1.0+q0**2, -3.0*q0+q0**3])
+        >>> norms
+        array([1., 1., 2., 6.])
     """
     dim = len(dist)
     basis = chaospy.poly.basis(
@@ -58,11 +64,15 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
     )
     length = len(basis)
 
-    cholmat = chaospy.chol.gill_king(chaospy.descriptives.Cov(basis, dist))
+    covariance = chaospy.descriptives.Cov(basis, dist)
+    cholmat = chaospy.chol.gill_king(covariance)
     cholmat_inv = numpy.linalg.inv(cholmat.T).T
     if not normed:
         diag_mesh = numpy.repeat(numpy.diag(cholmat_inv), len(cholmat_inv))
         cholmat_inv /= diag_mesh.reshape(cholmat_inv.shape)
+        norms = numpy.hstack([1, numpy.diag(cholmat)**2])
+    else:
+        norms = numpy.ones(length+1, dtype=float)
 
     coefs = numpy.empty((length+1, length+1))
 
@@ -84,31 +94,6 @@ def orth_chol(order, dist, normed=True, sort="G", cross_truncation=1., **kws):
     names = numpoly.symbols("q:%d" % dim)
     polynomials = chaospy.poly.polynomial(out, names=names)
 
+    if retall:
+        return polynomials, norms
     return polynomials
-
-
-def norm(order, dist, orth=None):
-
-    dim = len(dist)
-    try:
-        if dim>1:
-            norms = numpy.array([norm(order+1, D) for D in dist])
-            Is = numpoly.bindex(order+1, dimensions=dim)
-            out = numpy.ones(len(Is))
-
-            for i in range(len(Is)):
-                index = Is[i]
-                for j in range(dim):
-                    if index[j]:
-                        out[i] *= norms[j, index[j]]
-            return out
-
-        K = range(1,order+1)
-        ttr = [1.] + [dist.ttr(k)[1] for k in K]
-        return numpy.cumprod(ttr)
-
-    except NotImplementedError:
-
-        if orth is None:
-            orth = orth_chol(order, dist)
-        return chaospy.descriptives.E(orth**2, dist)

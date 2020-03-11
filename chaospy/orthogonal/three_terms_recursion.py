@@ -84,14 +84,17 @@ def orth_ttr(
 
     Returns:
         (chaospy.poly.ndpoly, numpy.ndarray):
-            Orthogonal polynomial expansion and norms of the orthogonal
+            Orthogonal polynomial expansion. Norms of the orthogonal
             expansion on the form ``E(orth**2, dist)``. Calculated using
             recurrence coefficients for stability.
 
     Examples:
-        >>> Z = chaospy.Normal()
-        >>> chaospy.orth_ttr(4, Z).round(4)
+        >>> distribution = chaospy.Normal()
+        >>> expansion, norms = chaospy.orth_ttr(4, distribution, retall=True)
+        >>> expansion.round(4)
         polynomial([1.0, q0, -1.0+q0**2, -3.0*q0+q0**3, 3.0-6.0*q0**2+q0**4])
+        >>> norms
+        array([ 1.,  1.,  2.,  6., 24.])
     """
     try:
         _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
@@ -114,6 +117,7 @@ def orth_ttr(
             norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)
     else:
         polynomials = polynomials.flatten()
+        norms = norms.flatten()
 
     if retall:
         return polynomials, norms

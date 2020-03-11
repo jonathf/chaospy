@@ -53,21 +53,22 @@ point collocation method will look as follows:
     import numpy
 
     # your code wrapper goes here
-    def foo(coord, prm):
+    coordinates = numpy.linspace(0, 10, 100)
+    def foo(coordinates, params):
         """Function to do uncertainty quantification on."""
-        return prm[0] * numpy.e ** (-prm[1] * numpy.linspace(0, 10, 100))
+        return params[0] * numpy.e**(-params[1]*coordinates)
 
     # bi-variate probability distribution
     distribution = chaospy.J(chaospy.Uniform(1, 2), chaospy.Uniform(0.1, 0.2))
 
     # polynomial chaos expansion
-    polynomial_expansion = chaospy.orth_ttr(8, distribution)
+    polynomial_expansion = chaospy.generate_expansion(8, distribution)
 
     # samples:
     samples = distribution.sample(1000)
 
     # evaluations:
-    evals = [foo(sample) for sample in samples.T]
+    evals = [foo(coordinates, sample) for sample in samples.T]
 
     # polynomial approximation
     foo_approx = chaospy.fit_regression(
