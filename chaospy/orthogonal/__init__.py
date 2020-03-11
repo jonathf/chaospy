@@ -38,6 +38,7 @@ For the case of ``chaospy.prange`` (which creates simple monomials), not all
 pairs are orthogonal, as the outer matrix is not diagonal. The methods for
 creating orthogonal polynomials are listed bellow.
 """
+from .frontend import generate_expansion
 from .three_terms_recursion import orth_ttr
 from .lagrange import lagrange_polynomial
 from .gram_schmidt import orth_gs
