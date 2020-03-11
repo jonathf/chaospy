@@ -40,7 +40,7 @@ Testing
 
 To run test::
 
-    poetry run pytest --doctest-modules chaospy test doc/*.rst
+    poetry run pytest -nbval --doctest-modules chaospy test doc/*.rst tutorial
 
 Documentation
 -------------
