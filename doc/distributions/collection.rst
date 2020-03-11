@@ -228,6 +228,11 @@ Pareto 1 Distribution
 
 .. autoclass:: chaospy.distributions.collection.pareto1.Pareto1
 
+(Generalized) PERT Distribution
+-------------------------------
+
+.. autoclass:: chaospy.distributions.collection.beta.PERT
+
 Pareto 2 Distribution
 ---------------------
 

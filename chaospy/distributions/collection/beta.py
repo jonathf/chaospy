@@ -187,3 +187,50 @@ class Wigner(Add):
     def __init__(self, radius=1, shift=0):
         self._repr = {"radius": radius, "shift": shift}
         Add.__init__(self, left=radius*(2*beta_(1.5, 1.5)-1), right=shift)
+
+
+class PERT(Beta):
+    r"""
+    Program Evaluation and Review Technique (PERT) Distribution.
+
+    Defined by its mean::
+
+        \mu = \frac{lower + gamma*mode + upper}{2 + gamma}
+
+    Normal PERT for `gamma=4`. Other values results in the so called
+    modified-PERT distribution.
+
+    Args:
+        lower (float):
+            The lower bounds for the distribution.
+        mode (float, Dist):
+            The mode of the distribution.
+        upper (float):
+            The upper bounds for the distribution.
+        gamma (flat, Dist):
+            Modify the PERT distribution to make more emphasis on the
+            distribution mode instead of the distribution tails.
+
+    Examples:
+        >>> distribution = chaospy.PERT(-1, 0, 1)
+        >>> distribution
+        PERT(gamma=4, lower=-1, mode=0, upper=1)
+        >>> q = numpy.linspace(0, 1, 7)[1:-1]
+        >>> distribution.inv(q).round(4)
+        array([-0.3946, -0.1817,  0.    ,  0.1817,  0.3946])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([0.6683, 0.8766, 0.9375, 0.8766, 0.6683])
+        >>> distribution.sample(4).round(4)
+        array([ 0.1669, -0.4788,  0.6223, -0.019 ])
+        >>> distribution.mom(1).round(4)
+        0.0
+    """
+
+    def __init__(self, lower, mode, upper, gamma=4):
+        mu = (lower+4*mode+upper)/6.
+        alpha = 1+gamma*(mu-lower)/(upper-lower)
+        beta = 1+gamma*(upper-mu)/(upper-lower)
+        Beta.__init__(self, alpha=alpha, beta=beta, lower=lower, upper=upper)
+        self._repr = {"lower": lower, "mode": mode, "upper": upper, "gamma": gamma}
