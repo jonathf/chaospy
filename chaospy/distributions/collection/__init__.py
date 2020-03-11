@@ -1,6 +1,6 @@
 from .alpha import Alpha
 from .anglit import Anglit
-from .beta import Beta, ArcSinus, Arcsinus, PowerLaw, Powerlaw, Wigner
+from .beta import Beta, ArcSinus, Arcsinus, PowerLaw, Powerlaw, Wigner, PERT
 from .binomial import Binomial
 from .bradford import Bradford
 from .burr import Burr
