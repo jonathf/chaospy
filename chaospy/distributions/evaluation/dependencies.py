@@ -24,13 +24,13 @@ def sorted_dependencies(dist, reverse=False):
         >>> dist1 = chaospy.Uniform()
         >>> dist2 = chaospy.Normal(dist1)
         >>> print(sorted_dependencies(dist1))
-        [Uniform(lower=0, upper=1), Mul(uniform(), 0.5), uniform()]
+        [Uniform(lower=0, upper=1), Mul(uniform(), [0.5]), uniform()]
         >>> print(sorted_dependencies(dist2)) # doctest: +NORMALIZE_WHITESPACE
         [Normal(mu=Uniform(lower=0, upper=1), sigma=1),
          Uniform(lower=0, upper=1),
-         Mul(uniform(), 0.5),
+         Mul(uniform(), [0.5]),
          uniform(),
-         Mul(normal(), 1),
+         Mul(normal(), [1.]),
          normal()]
         >>> dist1 in sorted_dependencies(dist2)
         True
@@ -121,13 +121,13 @@ def get_dependencies(*distributions):
         >>> dist2 = chaospy.Uniform(1, 2) * dist1
         >>> dist3 = chaospy.Uniform(3, 5)
         >>> print(chaospy.get_dependencies(dist1, dist2))
-        [uniform(), Mul(uniform(), 0.5), Uniform(lower=1, upper=2)]
+        [uniform(), Mul(uniform(), [0.5]), Uniform(lower=1, upper=2)]
         >>> print(chaospy.get_dependencies(dist1, dist3))
         []
         >>> print(chaospy.get_dependencies(dist2, dist3))
         []
         >>> print(chaospy.get_dependencies(dist1, dist2, dist3))
-        [uniform(), Mul(uniform(), 0.5), Uniform(lower=1, upper=2)]
+        [uniform(), Mul(uniform(), [0.5]), Uniform(lower=1, upper=2)]
     """
     from .. import baseclass
     distributions = [
