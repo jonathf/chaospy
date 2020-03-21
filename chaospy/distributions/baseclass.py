@@ -413,6 +413,16 @@ class Dist(object):
         from . import operators
         return operators.Neg(self)
 
+    def __matmul__(self, X):
+        """Y.__matmul__(X) <==> X@Y"""
+        from . import operators
+        return operators.Matmul(self, X)
+
+    def __rmatmul__(self, X):
+        """Y.__rmatmul__(X) <==> Y@X"""
+        from . import operators
+        return operators.Matmul(X, self)
+
     def __mul__(self, X):
         """Y.__mul__(X) <==> X*Y"""
         from . import operators

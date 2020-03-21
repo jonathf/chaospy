@@ -8,7 +8,7 @@ Distribution * a constant::
 
     >>> distribution = chaospy.Uniform(0, 1) * 4
     >>> print(distribution)
-    Mul(Uniform(lower=0, upper=1), 4)
+    Mul(Uniform(lower=0, upper=1), [4.])
     >>> print(numpy.around(distribution.sample(5), 4))
     [2.6144 0.46   3.8011 1.9288 3.4899]
     >>> print(numpy.around(distribution.fwd([1, 2, 3]), 4))
@@ -80,6 +80,7 @@ Inverse transformations::
     [[-2.99  -2.5   -2.01 ]
      [ 2.691  1.25   0.201]]
 """
+import chaospy
 import numpy
 
 from ..baseclass import Dist
@@ -99,17 +100,24 @@ class Mul(BinaryOperator):
                 Right hand side.
         """
         self.matrix = False
-        if (isinstance(left, Dist) and
-                len(left) > 1 and
-                not isinstance(right, Dist)):
-            right = right*numpy.eye(len(left))
-            self.matrix = True
+        if isinstance(left, Dist):
+            if not isinstance(right, Dist):
+                right = right*numpy.ones(len(left))
+                if len(right.shape) > 1:
+                    raise ValueError("Too many dimensions")
+                if len(left) == 1 and len(right) > 1:
+                    raise ValueError("Univariate distribution x vector")
 
-        elif (isinstance(right, Dist) and
-                len(right) > 1 and
-                not isinstance(left, Dist)):
-            left = left*numpy.eye(len(right))
-            self.matrix = True
+        else:
+            if isinstance(right, Dist):
+                left = left*numpy.ones(len(right))
+                if len(left.shape) > 1:
+                    raise ValueError("Too many dimensions")
+                if len(right) == 1 and len(left) > 1:
+                    raise ValueError("Univariate distribution x vector")
+            else:
+                raise ValueError(
+                    "Either left or right side must be distributions")
 
         Dist.__init__(self, left=left, right=right)
 
@@ -118,18 +126,10 @@ class Mul(BinaryOperator):
         Distribution lower bounds.
 
         Example:
-            >>> print(chaospy.Uniform().lower)
-            [0.]
-            >>> print(chaospy.Mul(chaospy.Uniform(), 2).lower)
-            [0.]
-            >>> print(chaospy.Mul(chaospy.Uniform(1, 2), -1).lower)
-            [-2.]
-            >>> print(chaospy.Mul(2, chaospy.Uniform()).lower)
-            [0.]
-            >>> print(chaospy.Mul(2, chaospy.Uniform(-1, 0)).lower)
-            [-2.]
-            >>> print(chaospy.Mul(2, 3).lower)
-            [6.]
+            >>> chaospy.Mul(chaospy.Uniform(-1, 2), -2).lower
+            array([-4.])
+            >>> chaospy.Mul(chaospy.Uniform(-1, 1), chaospy.Uniform(1, 2)).lower
+            array([-2.])
         """
         if isinstance(left, Dist):
             left_upper = evaluation.evaluate_upper(left, cache=cache)
@@ -146,9 +146,6 @@ class Mul(BinaryOperator):
                     left_upper*right_upper,
                 ), axis=0)
 
-            elif self.matrix:
-                out = numpy.min([numpy.dot(left_lower, right),
-                                 numpy.dot(left_upper, right)], axis=0)
             else:
                 out = numpy.min([left_lower*right, left_upper*right], axis=0)
 
@@ -158,13 +155,8 @@ class Mul(BinaryOperator):
         else:
             right_upper = evaluation.evaluate_upper(right, cache=cache)
             right_lower = evaluation.evaluate_lower(right, cache=cache)
-            if self.matrix:
-                out = numpy.min([numpy.dot(left, right_lower),
-                                 numpy.dot(left, right_upper)], axis=0)
-            else:
-                out = numpy.min([left*right_lower, left*right_upper], axis=0)
+            out = numpy.min([left*right_lower, left*right_upper], axis=0)
 
-        assert numpy.array(out).shape[:1] in [(), (len(self),)], out
         return out
 
     def _upper(self, left, right, cache):
@@ -172,18 +164,10 @@ class Mul(BinaryOperator):
         Distribution upper bounds.
 
         Example:
-            >>> print(chaospy.Uniform().upper)
-            [1.]
-            >>> print(chaospy.Mul(chaospy.Uniform(), 2).upper)
-            [2.]
-            >>> print(chaospy.Mul(chaospy.Uniform(1, 2), -1).upper)
-            [-1.]
-            >>> print(chaospy.Mul(2, chaospy.Uniform()).upper)
-            [2.]
-            >>> print(chaospy.Mul(2, chaospy.Uniform(-1, 0)).upper)
-            [0.]
-            >>> print(chaospy.Mul(2, 3).upper)
-            [6.]
+            >>> chaospy.Mul(chaospy.Uniform(-1, 2), -2).upper
+            array([2.])
+            >>> chaospy.Mul(chaospy.Uniform(-1, 1), chaospy.Uniform(1, 2)).upper
+            array([2.])
         """
         if isinstance(left, Dist):
             left_lower = evaluation.evaluate_lower(left, cache=cache)
@@ -200,9 +184,6 @@ class Mul(BinaryOperator):
                     (left_upper.T*right_upper.T).T,
                 ), axis=0)
 
-            elif self.matrix:
-                out = numpy.max([numpy.dot(left_lower, right),
-                                 numpy.dot(left_upper, right)], axis=0)
             else:
                 out = numpy.max([left_lower*right, left_upper*right], axis=0)
 
@@ -212,46 +193,27 @@ class Mul(BinaryOperator):
         else:
             right_lower = evaluation.evaluate_lower(right, cache=cache)
             right_upper = evaluation.evaluate_upper(right, cache=cache)
-            if self.matrix:
-                out = numpy.max([numpy.dot(left, right_lower),
-                                 numpy.dot(left, right_upper)], axis=0)
-            else:
-                out = numpy.max([left*right_lower, left*right_upper], axis=0)
+            out = numpy.max([left*right_lower, left*right_upper], axis=0)
 
-        assert numpy.array(out).shape[:1] in [(), (len(self),)]
         return out
 
     def _pre_fwd_left(self, xloc, other):
-        if self.matrix:
-            Ci = numpy.linalg.inv(other)
-            out = numpy.dot(Ci, xloc)
-        else:
-            valids = other != 0
-            out = xloc.copy()
-            out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
+        valids = other != 0
+        out = xloc.copy()
+        out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
         return out
 
     def _pre_fwd_right(self, xloc, other):
-        if self.matrix:
-            Ci = numpy.linalg.inv(other)
-            out = numpy.dot(xloc.T, Ci).T
-        else:
-            valids = other != 0
-            out = xloc.copy()
-            out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
+        valids = other != 0
+        out = xloc.copy()
+        out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
         return out
 
     def _post_fwd(self, uloc, other):
-        if not self.matrix:
-            uloc = numpy.where(other.T >= 0, uloc.T, 1-uloc.T).T
-        return uloc
+        return numpy.where(other.T >= 0, uloc.T, 1-uloc.T).T
 
     def _alt_fwd(self, xloc, left, right):
-        if self.matrix:
-            out = 0.5*(numpy.dot(left, right) == xloc)
-        else:
-            out = 0.5*(left*right == xloc)
-        return out
+        return 0.5*(left*right == xloc)
 
     def _ppf(self, uloc, left, right, cache):
         """
@@ -264,8 +226,6 @@ class Mul(BinaryOperator):
             [0.2 0.4 1.8]
             >>> print(Mul(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
             [0.2 0.4 1.8]
-            >>> print(Mul(2, 2).inv([0.1, 0.2, 0.9]))
-            [4. 4. 4.]
             >>> dist = chaospy.Mul([2, 1], chaospy.Iid(chaospy.Uniform(), 2))
             >>> print(dist.inv([[0.5, 0.6, 0.7], [0.5, 0.6, 0.7]]))
             [[1.  1.2 1.4]
@@ -283,29 +243,18 @@ class Mul(BinaryOperator):
                 raise evaluation.DependencyError(
                     "under-defined distribution {} or {}".format(left, right))
 
-            if not self.matrix:
-                uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
+            uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
             xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
-            if self.matrix:
-                xloc = numpy.dot(xloc.T, right).T
-            else:
-                xloc *= right
+            xloc = (xloc.T*right.T).T
             assert uloc.shape == xloc.shape
 
         elif not isinstance(right, Dist):
-            if self.matrix:
-                xloc = numpy.dot(left, right)
-            else:
-                xloc = left*right
+            xloc = left*right
 
         else:
-            if not self.matrix:
-                uloc = numpy.where(numpy.asfarray(left).T > 0, uloc.T, 1-uloc.T).T
+            uloc = numpy.where(numpy.asfarray(left).T > 0, uloc.T, 1-uloc.T).T
             xloc = evaluation.evaluate_inverse(right, uloc, cache=cache)
-            if self.matrix:
-                xloc = numpy.dot(left, xloc)
-            else:
-                xloc *= left
+            xloc = (xloc.T*left.T).T
 
         return xloc
 
@@ -320,8 +269,6 @@ class Mul(BinaryOperator):
             [0.  0.5 0.5 0. ]
             >>> print(Mul(2, chaospy.Uniform()).pdf([-0.5, 0.5, 1.5, 2.5]))
             [0.  0.5 0.5 0. ]
-            >>> print(Mul(1, 1.5).pdf([-0.5, 0.5, 1.5, 2.5])) # Dirac logic
-            [ 0.  0. inf  0.]
             >>> dist = chaospy.Mul([2, 1], chaospy.Iid(chaospy.Uniform(), 2))
             >>> print(dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
             [0.5 0.5 0. ]
@@ -337,42 +284,27 @@ class Mul(BinaryOperator):
                 raise evaluation.DependencyError(
                     "under-defined distribution {} or {}".format(left, right))
 
-            if self.matrix:
-                Ci = numpy.linalg.inv(right)
-                xloc = numpy.dot(xloc.T, Ci).T
-            else:
-                right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
-                valids = right != 0
-                xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
-                xloc.T[~valids.T] = numpy.inf
+            right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
+            valids = right != 0
+            xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
+            xloc.T[~valids.T] = numpy.inf
 
             pdf = evaluation.evaluate_density(left, xloc, cache=cache)
-            if self.matrix:
-                pdf = numpy.dot(pdf.T, Ci).T
-            else:
-                pdf.T[valids.T] /= right.T[valids.T]
+            pdf.T[valids.T] /= right.T[valids.T]
             assert pdf.shape == xloc.shape
 
         elif not isinstance(right, Dist):
             pdf = numpy.inf
 
         else:
-            if self.matrix:
-                Ci = numpy.linalg.inv(left)
-                xloc = numpy.dot(Ci, xloc)
-
-            else:
-                left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
-                valids = left != 0
-                xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
+            left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
+            valids = left != 0
+            xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
 
             pdf = evaluation.evaluate_density(right, xloc, cache=cache)
-            if self.matrix:
-                pdf = numpy.dot(Ci, pdf)
-            else:
-                pdf.T[valids.T] /= left.T[valids.T]
+            pdf.T[valids.T] /= left.T[valids.T]
 
-        return pdf
+        return numpy.abs(pdf)
 
     def _mom(self, key, left, right, cache):
         """
@@ -387,8 +319,6 @@ class Mul(BinaryOperator):
             [1.     1.     1.3333 2.    ]
             >>> print(numpy.around(Mul(chaospy.Uniform(), chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
             [1.     0.25   0.1111 0.0625]
-            >>> print(numpy.around(Mul(2, 2).mom([0, 1, 2, 3]), 4))
-            [ 1.  4. 16. 64.]
         """
         if evaluation.get_dependencies(left, right):
             raise evaluation.DependencyError(
@@ -404,7 +334,7 @@ class Mul(BinaryOperator):
             right = evaluation.evaluate_moment(right, key, cache=cache)
         else:
             right = (numpy.array(right).T**key).T
-        return numpy.sum(left*right)
+        return numpy.prod(left)*numpy.prod(right)
 
     def _ttr(self, kloc, left, right, cache):
         """Three terms recursion coefficients."""
@@ -428,10 +358,16 @@ class Mul(BinaryOperator):
                 ", " + str(self.prm["right"]) + ")")
 
     def __len__(self):
+        out1 = out2 = 1
         try:
-            return len(self.prm["left"])
+            out1 = len(self.prm["left"])
         except TypeError:
-            return 1
+            pass
+        try:
+            out2 = len(self.prm["right"])
+        except TypeError:
+            pass
+        return max(out1, out2)
 
     def _fwd_cache(self, cache):
         left = evaluation.get_forward_cache(self.prm["left"], cache)
@@ -446,18 +382,3 @@ class Mul(BinaryOperator):
         if not isinstance(left, Dist) and not isinstance(right, Dist):
             return left*right
         return self
-
-
-def mul(left, right):
-    """
-    Distribution multiplication.
-
-    Args:
-        left (Dist, numpy.ndarray) : left hand side.
-        right (Dist, numpy.ndarray) : right hand side.
-    """
-    from .mv_mul import MvMul
-    length = max(left, right)
-    if length == 1:
-        return Mul(left, right)
-    return MvMul(left, right)
