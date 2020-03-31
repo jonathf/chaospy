@@ -46,6 +46,7 @@ jobs:
           command: |
             if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
+              /home/circleci/venv/bin/pip install poetry==1.0.5
             fi
             source /home/circleci/venv/bin/activate
             poetry install
