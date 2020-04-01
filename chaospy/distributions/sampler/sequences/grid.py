@@ -41,8 +41,7 @@ Multivariate usage::
      [0.3333 0.6667 0.3333 0.6667]]
 """
 import numpy
-
-import chaospy.quadrature
+import chaospy
 
 
 def create_grid_samples(order, dim=1):

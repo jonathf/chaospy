@@ -3,8 +3,6 @@ import inspect
 
 import numpy
 
-from ... import quadrature
-
 from .common import DependencyError
 from .parameters import load_parameters as load_inputs
 from .dependencies import sorted_dependencies, get_dependencies

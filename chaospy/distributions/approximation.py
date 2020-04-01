@@ -1,9 +1,10 @@
 import logging
 from functools import partial
+
 import numpy
+import chaospy
 
 from . import evaluation
-from .. import quadrature
 
 
 def approximate_inverse(
@@ -156,7 +157,7 @@ def approximate_moment(
     if dim > 1:
         shape = shape[1:]
 
-    X, W = quadrature.generate_quadrature(order, dist, rule=rule, **kws)
+    X, W = chaospy.quadrature.generate_quadrature(order, dist, rule=rule, **kws)
 
     grid = numpy.mgrid[:len(X[0]), :size]
     X = X.T[grid[0]].T
