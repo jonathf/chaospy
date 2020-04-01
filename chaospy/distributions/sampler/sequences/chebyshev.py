@@ -41,8 +41,7 @@ Multivariate usage::
      [0.25 0.75 0.25 0.75]]
 """
 import numpy
-
-import chaospy.quadrature
+import chaospy
 
 
 def create_chebyshev_samples(order, dim=1):
