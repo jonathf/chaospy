@@ -73,10 +73,10 @@ def test_dist_matmul_inverse():
 def test_dist_matmul_density():
     assert numpy.allclose((MULTIVARIATE.__matmul__([2, 3])).pdf([[2-EPS, 2+EPS, 4-EPS, 4+EPS],
                                                        [6-EPS, 6+EPS, 12-EPS, 12+EPS]]),
-                          [[0, 1/12, 1/12, 0]])
+                          [[0, 1/12., 1/12., 0]])
     assert numpy.allclose((MULTIVARIATE.__rmatmul__([2, 3])).pdf([[2-EPS, 2+EPS, 4-EPS, 4+EPS],
                                                        [6-EPS, 6+EPS, 12-EPS, 12+EPS]]),
-                          [[0, 1/12, 1/12, 0]])
+                          [[0, 1/12., 1/12., 0]])
     assert numpy.allclose((MULTIVARIATE.__matmul__([[1, 1], [0, 1]])).pdf([[1, 1, 1, 1, 2, 2, 2, 2],
                                                                  [3-EPS, 3+EPS, 5-EPS, 5+EPS,
                                                                   4-EPS, 4+EPS, 6-EPS, 6+EPS]]),

@@ -123,10 +123,10 @@ def test_dist_multiply_density():
                           [[0, 1/96., 1/96., 0]])
     assert numpy.allclose((MULTIVARIATE*[2, 3]).pdf([[-2-EPS, -2+EPS, 4-EPS, 4+EPS],
                                                      [12+EPS, 12-EPS, 6+EPS, 6-EPS]]),
-                          [[0, 1/36, 1/36, 0]])
+                          [[0, 1/36., 1/36., 0]])
     assert numpy.allclose(([2, 3]*MULTIVARIATE).pdf([[-2-EPS, -2+EPS, 4-EPS, 4+EPS],
                                                      [12+EPS, 12-EPS, 6+EPS, 6-EPS]]),
-                          [[0, 1/36, 1/36, 0]])
+                          [[0, 1/36., 1/36., 0]])
 
     assert numpy.allclose(DEPENDENT1.pdf([[-2, -2, -2, -2, 3, 3, 3, 3],
                                           [-2-EPS, -2+EPS, 4-EPS, 4+EPS, -6-EPS, -6+EPS, 3-EPS, 3+EPS]]),
