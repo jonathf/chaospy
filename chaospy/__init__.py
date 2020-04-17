@@ -7,6 +7,7 @@ This module contains tools for performing uncertainty quantification of models.
 import logging
 import os
 import pkg_resources
+from numpoly.baseclass import INDETERMINANT_DEFAULTS
 
 import chaospy.bertran
 import chaospy.chol
@@ -34,6 +35,7 @@ try:
 except pkg_resources.DistributionNotFound:
     __version__ = None
 
+INDETERMINANT_DEFAULTS["force_suffix"] = True
 
 def configure_logging():
     """Configure logging for Chaospy."""
