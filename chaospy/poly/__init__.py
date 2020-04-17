@@ -105,6 +105,7 @@ from numpoly import (
     stack, subtract, sum, vstack,
 )
 
+
 @wraps(polynomial)
 def Poly(*args, **kwargs):
     print("Deprecation warning: "
