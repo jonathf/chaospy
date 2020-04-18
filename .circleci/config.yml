@@ -6,7 +6,7 @@ version: 2
 jobs:
   test-py27:
     docker:
-      - image: circleci/python:2.7.16
+      - image: circleci/python:2.7.17
     working_directory: /home/circleci/project
     steps:
       - checkout
@@ -21,7 +21,7 @@ jobs:
               virtualenv /home/circleci/venv
             fi
             source /home/circleci/venv/bin/activate
-            pip install -U numpoly scipy pytest openturns scikit-learn==0.20.1
+            pip install -U numpoly functools32 scipy pytest openturns scikit-learn==0.20.1
       - save_cache:
           key: deps-py27-{{ checksum "pyproject.toml" }}
           paths:
