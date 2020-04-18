@@ -20,4 +20,4 @@ def variable(dims=1):
         >>> chaospy.variable(3)
         polynomial([q0, q1, q2])
     """
-    return numpoly.symbols("q:%d" % dims, asarray=True)
+    return numpoly.symbols("q:%d" % dims)

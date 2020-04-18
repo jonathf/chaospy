@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-numpoly = ">=0.1.13"
+numpoly = ">=0.1.16"
 scipy = "*"
 functools32 = { version = "*", python = "^2.7" }
 
