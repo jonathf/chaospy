@@ -1,5 +1,6 @@
 """Discretized Stieltjes' method."""
 import numpy
+import numpoly
 import chaospy.poly
 
 
@@ -144,7 +145,7 @@ def analytical_stieljes(order, dist, normed=False):
 
     norms = numpy.cumprod(coeffs[1], 1)
     if normed:
-        orth /= numpy.sqrt(norms)
+        orth = numpoly.true_divide(orth, numpy.sqrt(norms))
         norms **= 0
 
     return coeffs, orth, norms
