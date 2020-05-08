@@ -1168,7 +1168,7 @@ description = "Polynomials as a numpy datatype"
 name = "numpoly"
 optional = false
 python-versions = "*"
-version = "0.2.2"
+version = "0.2.3"
 
 [package.dependencies]
 numpy = ">=1.16,<2.0"
@@ -1443,7 +1443,7 @@ description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-version = "4.6.9"
+version = "4.6.10"
 
 [package.dependencies]
 atomicwrites = ">=1.0"
@@ -2084,7 +2084,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "dfdd8833d74e4ba279f64d1247cee31a65542a5d65e6df6e0d6801b79166e704"
+content-hash = "b90b11ea310688c63e5195f5837036049d3f5cd062c2800e43c1534f16bcef51"
 python-versions = "*"
 
 [metadata.files]
@@ -2582,8 +2582,8 @@ notebook = [
     {file = "notebook-6.0.3.tar.gz", hash = "sha256:47a9092975c9e7965ada00b9a20f0cf637d001db60d241d479f53c0be117ad48"},
 ]
 numpoly = [
-    {file = "numpoly-0.2.2-py2.py3-none-any.whl", hash = "sha256:206c436cf2986835a09d222da62b8ae6586d317266fcd31c8a599501c2c36a2e"},
-    {file = "numpoly-0.2.2.tar.gz", hash = "sha256:a0a573660288bd146d354a0063ad41ea07cf344460ef0baedac6447e918e706d"},
+    {file = "numpoly-0.2.3-py2.py3-none-any.whl", hash = "sha256:7b037d5db361be24f10e1096b14c8d5fb8f290d85bd857c9581ea71cdd61a831"},
+    {file = "numpoly-0.2.3.tar.gz", hash = "sha256:f50e946566fa30b2695c2e88eaf3ec22de98d035a8eab1ae5fd05d1ddb77f682"},
 ]
 numpy = [
     {file = "numpy-1.16.6-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:08bf4f66f190822f4642e036accde8da810b87fffc0b9409e7a00d9e54760099"},
@@ -2713,8 +2713,8 @@ pyrsistent = [
     {file = "pyrsistent-0.16.0.tar.gz", hash = "sha256:28669905fe725965daa16184933676547c5bb40a5153055a8dee2a4bd7933ad3"},
 ]
 pytest = [
-    {file = "pytest-4.6.9-py2.py3-none-any.whl", hash = "sha256:c77a5f30a90e0ce24db9eaa14ddfd38d4afb5ea159309bdd2dae55b931bc9324"},
-    {file = "pytest-4.6.9.tar.gz", hash = "sha256:19e8f75eac01dd3f211edd465b39efbcbdc8fc5f7866d7dd49fedb30d8adf339"},
+    {file = "pytest-4.6.10-py2.py3-none-any.whl", hash = "sha256:a24f6d11abff602da7b8aa33520734d604d25c4f070222e23667bb9782ba763e"},
+    {file = "pytest-4.6.10.tar.gz", hash = "sha256:0031b5021e1204f12e5a044500fbf31e3f64c6f2d69ded910af003abd0d91ae4"},
     {file = "pytest-5.4.2-py3-none-any.whl", hash = "sha256:95c710d0a72d91c13fae35dce195633c929c3792f54125919847fdcdf7caa0d3"},
     {file = "pytest-5.4.2.tar.gz", hash = "sha256:eb2b5e935f6a019317e455b6da83dd8650ac9ffd2ee73a7b657a30873d67a698"},
 ]
