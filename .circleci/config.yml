@@ -69,7 +69,7 @@ jobs:
             name: "Run tests"
             command: |
                 source /home/circleci/venv/bin/activate
-                pytest --nbval --doctest-modules --cov=chaospy chaospy tests tutorial/ doc/*.rst
+                pytest --nbval --doctest-modules --cov=chaospy chaospy tests tutorial/ doc/*.rst doc/*/*.rst
                 codecov --token $CODECOV_TOKEN
   sphinx:
     docker:
