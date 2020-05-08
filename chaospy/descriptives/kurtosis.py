@@ -1,5 +1,6 @@
 """Kurtosis operator."""
 import numpy
+import numpoly
 
 from .. import distributions, poly as polynomials
 from .expected import E
@@ -47,5 +48,5 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         return poly.tonumpy()**4-adjust
 
     poly = poly-E(poly, dist, **kws)
-    poly = poly/Std(poly, dist, **kws)
+    poly = numpoly.true_divide(poly, Std(poly, dist, **kws))
     return E(poly**4, dist, **kws)-adjust
