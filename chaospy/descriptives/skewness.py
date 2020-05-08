@@ -1,4 +1,5 @@
 """Skewness operator."""
+import numpoly
 from .. import poly as polynomials
 
 from .expected import E
@@ -39,5 +40,5 @@ def Skew(poly, dist=None, **kws):
         return poly.tonumpy()**3
 
     poly = poly-E(poly, dist, **kws)
-    poly = poly/Std(poly, dist, **kws)
+    poly = numpoly.true_divide(poly, Std(poly, dist, **kws))
     return E(poly**3, dist, **kws)
