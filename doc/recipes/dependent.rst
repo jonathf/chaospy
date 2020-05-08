@@ -98,12 +98,12 @@ measure the uncertainty in a model function::
 
     >>> def u(q):
     ...    x = numpy.linspace(0, 1, 100)
-    ...    return q[1]*np.exp(-q[0]*x)
+    ...    return q[1]*numpy.exp(-q[0]*x)
 
 where the two parameters ``Q`` are distributed with a multivariate normal
 distribution::
 
-    >>> dist_q = chaospy.MvNormal(mu=[0.5, 0.5], C=[[2,1],[1,2]])
+    >>> dist_q = chaospy.MvNormal([0.5, 0.5], [[2, 1], [1, 2]])
 
 Under GPCE we select a distribution that is similar as a proxy, which is
 uncorrelated. In the case of multivariate normal distribution, this canonically
@@ -114,8 +114,10 @@ implies identical independent distributed normal random variable ``R``::
 Unlike the dependent ``dist_q``, the independent ``dist_r`` allows for
 orthogonal polynomials::
 
-    >>> polynomial = chaopy.orth_ttr(3, dist_R)
-    >>> print(polynomial)
+    >>> polynomial = chaospy.orth_ttr(3, dist_r)
+    >>> polynomial
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2, -3.0*q1+q1**3,
+                -q0+q0*q1**2, -q1+q0**2*q1, -3.0*q0+q0**3])
 
 The idea is that we create our polynomial expansion in ``R`` and link the proxy
 variable to the original problem through a map ``T``. These maps can be created
@@ -134,12 +136,12 @@ In the case of point collocation method, the map can be used directly between
 random samples (or pseudo-random sequences)::
 
     >>> samples_r = dist_r.sample(2*len(polynomial), rule="hammersley")
-    >>> samples_q = dist_Q.inv(dist_R.fwd(nodes_r))
+    >>> samples_q = dist_q.inv(dist_r.fwd(samples_r))
 
 As these samples are linked, they can be used as follows to solve the dependent
 problem::
 
-    >>> samples_u = [u(*sample) for sample in samples_q.T]
+    >>> samples_u = [u(sample) for sample in samples_q.T]
     >>> u_hat = chaospy.fit_regression(polynomial, samples_r, samples_u)
 
 Note here that the ``samples_q`` is used as argument in ``u``, and
@@ -153,12 +155,11 @@ weights have to be adjusted. For example::
 
     >>> abscissas_r, weights_r = chaospy.generate_quadrature(4, dist_r)
     >>> abscissas_q = dist_q.inv(dist_r.fwd(abscissas_r))
-    >>> weights_q = weights_r*dist_q.pdf(abscissas_r)/
-    ...     dist_r.pdf(abscissas_q)
+    >>> weights_q = weights_r*dist_q.pdf(abscissas_r)/dist_r.pdf(abscissas_q)
 
 These can then be used to solve the dependent problem as follows::
 
-    >>> samples_u = [u(*abscissas) for abscissas in abscissas_q.T]
+    >>> samples_u = [u(abscissas) for abscissas in abscissas_q.T]
     >>> u_hat = chaospy.fit_quadrature(
     ...   polynomial, abscissas_r, weights_q, samples_u)
 
@@ -194,9 +195,9 @@ therefore applicable to dependent variables.
 In practice, the decorrelation method using Cholesky decomposition can be done
 as follows::
 
-    >>> polynomial = chaopy.orth_chol(3, dist_q)
+    >>> polynomial = chaospy.orth_chol(3, dist_q)
     >>> samples_q = dist_q.sample(2*len(polynomial), rule="hammersley")
-    >>> samples_u = [u(*sample) for sample in samples_q.T]
+    >>> samples_u = [u(sample) for sample in samples_q.T]
     >>> u_hat = chaospy.fit_regression(polynomial, samples_q, samples_u)
 
 In principle, the same method could be used in pseudo-spectral projection
@@ -212,9 +213,9 @@ orthogonal. Like the decorrelation method, however, it is known for being
 numerically unstable. However, it also does not violate any assumption about
 stochastic independence when being used. As such, it can be used as follows::
 
-    >>> polynomial = chaopy.orth_gs(3, dist_q)
+    >>> polynomial = chaospy.orth_gs(3, dist_q)
     >>> samples_q = dist_q.sample(2*len(polynomial), rule="hammersley")
-    >>> samples_u = [u(*sample) for sample in samples_q.T]
+    >>> samples_u = [u(sample) for sample in samples_q.T]
     >>> u_hat = chaospy.fit_regression(polynomial, samples_q, samples_u)
 
 Same as with the decorrelation method, this method is mostly meant for point

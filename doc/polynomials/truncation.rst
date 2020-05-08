@@ -31,8 +31,8 @@ The default behavior for all expansion method is sorted *using graded reverse
 lexicographical sorting* (grevlex). For example::
 
     >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Normal(0, 1))
-    >>> print(chaospy.orth_ttr(2, distribution))
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> chaospy.orth_ttr(2, distribution)
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
 
 Here the largest polynomial order was provided, and not the number of terms.
 This is because this is in most cases what one wants. And if one wants
@@ -40,7 +40,7 @@ a specific number of terms it is possible to achieve this through a secondary
 manual truncation::
 
     >>> print(chaospy.orth_ttr(2, distribution)[:4])
-    [1.0, q1, q0, q1^2-1.0]
+    [1.0 q1 q0 -1.0+q1**2]
 
 .. _full_tensor_product:
 
@@ -54,44 +54,43 @@ does not match up the intuitive idea of of the tensor-product. To create the
 correct expansion, it is possible to use the flag ``cross_truncation=0`` to
 include all terms::
 
-    >>> expansion = chaospy.orth_ttr(2, distribution, cross_truncation=0)
-    >>> print(expansion)  # doctest: +NORMALIZE_WHITESPACE
-    [1.0, q1, q0, q1^2-1.0, q0q1,
-     q0^2-1.0, q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
+    >>> chaospy.orth_ttr(2, distribution, cross_truncation=0)
+    polynomial([1.0, q1, q0, -1.0+q1**2, -1.0+q0**2])
 
 For what it is worth, the same expansion can be created manually with a little
 bit of tinkering. First create two univariate expansions to combine::
 
     >>> expansion1 = chaospy.orth_ttr(2, chaospy.Normal(0, 1))
     >>> expansion2 = chaospy.orth_ttr(2, chaospy.Normal(0, 1))
-    >>> print(expansion1, expansion2)
-    [1.0, q0, q0^2-1.0] [1.0, q0, q0^2-1.0]
+    >>> expansion1, expansion2
+    (polynomial([1.0, q0, -1.0+q0**2]), polynomial([1.0, q0, -1.0+q0**2]))
 
 Adjust the dimensions so the dimensions are no longer common::
 
-    >>> expansion2 = chaospy.swapdim(expansion2, dim1=0, dim2=1)
-    >>> print(expansion1, expansion2)
-    [1.0, q0, q0^2-1.0] [1.0, q1, q1^2-1.0]
+    >>> q0, q1 = chaospy.variable(2)
+    >>> expansion2 = expansion2(q0=q1)
+    >>> expansion1, expansion2
+    (polynomial([1.0, q0, -1.0+q0**2]), polynomial([1.0, q1, -1.0+q1**2]))
 
 From there we create the cross product::
 
     >>> expansion = chaospy.outer(expansion1, expansion2)
-    >>> print(expansion) # doctest: +NORMALIZE_WHITESPACE
-    [[1.0,      q1,        q1^2-1.0],
-     [q0,       q0q1,      q0q1^2-q0],
-     [q0^2-1.0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]]
+    >>> expansion # doctest: +NORMALIZE_WHITESPACE
+    polynomial([[1.0,        q1,           -1.0+q1**2],
+                [q0,         q0*q1,        -q0+q0*q1**2],
+                [-1.0+q0**2, -q1+q0**2*q1, 1.0-q1**2-q0**2+q0**2*q1**2]])
 
 Lastly, we flatten the expansion and put each term in the right order::
 
-    >>> expansion = chaospy.flatten(expansion)
-    >>> print(expansion) # doctest: +NORMALIZE_WHITESPACE
-    [1.0, q1, q1^2-1.0, q0, q0q1,
-     q0q1^2-q0, q0^2-1.0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
+    >>> expansion = expansion.flatten()
+    >>> expansion  # doctest: +NORMALIZE_WHITESPACE
+    polynomial([1.0, q1, -1.0+q1**2, q0, q0*q1, -q0+q0*q1**2, -1.0+q0**2,
+                -q1+q0**2*q1, 1.0-q1**2-q0**2+q0**2*q1**2])
     >>> expansion = sorted(expansion, key=lambda q: q.exponents.sum(1).max())
     >>> expansion = chaospy.polynomial(expansion)
-    >>> print(expansion) # doctest: +NORMALIZE_WHITESPACE
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0,
-     q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
+    >>> expansion # doctest: +NORMALIZE_WHITESPACE
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2, -q0+q0*q1**2,
+                -q1+q0**2*q1, 1.0-q1**2-q0**2+q0**2*q1**2])
 
 .. _anisotropic_polynomial_expansion:
 
@@ -105,19 +104,19 @@ different dimension. For example, consider the following simple bivariate
 expansion::
 
     >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Normal(0, 1))
-    >>> print(chaospy.orth_ttr(2, distribution))
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> chaospy.orth_ttr(2, distribution)
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
 
 To let one dimension have greater weight than another, the first positional
 argument of ``orth_ttr`` can receive a vector of value indicating the max order
 for each dimension. For example::
 
-    >>> print(chaospy.orth_ttr([0, 2], distribution))
-    [1.0, q0, q0^2-1.0]
-    >>> print(chaospy.orth_ttr([1, 2], distribution))
-    [1.0, q1, q0, q0q1, q0^2-1.0]
-    >>> print(chaospy.orth_ttr([2, 2], distribution))
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> chaospy.orth_ttr([0, 2], distribution)
+    polynomial([1.0, q1, -1.0+q1**2])
+    >>> chaospy.orth_ttr([1, 2], distribution)
+    polynomial([1.0, q1, q0, -1.0+q1**2])
+    >>> chaospy.orth_ttr([2, 2], distribution)
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
 
 Cross Truncation Schemes
 ------------------------
@@ -135,15 +134,12 @@ here :math:`D` is the number of dimensions, `C` is the ``cross_truncation``
 value and :math:`O` is the polynomial order. If you fill in the value 0 and
 1 respectivly for :math:`C`, the two expansions listed so far can be created::
 
-    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=0))  # doctest: +NORMALIZE_WHITESPACE
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0,
-     q0q1^2-q0, q0^2q1-q1, q0^2q1^2-q0^2-q1^2+1.0]
-    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=1))
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0]
+    >>> chaospy.orth_ttr(2, distribution, cross_truncation=0)
+    polynomial([1.0, q1, q0, -1.0+q1**2, -1.0+q0**2])
+    >>> chaospy.orth_ttr(2, distribution, cross_truncation=1)
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
 
 Following the formula other truncation schemes can be chosen::
 
-    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=0.01))
-    [1.0, q1, q0, q1^2-1.0, q0q1, q0^2-1.0, q0q1^2-q0, q0^2q1-q1]
-    >>> print(chaospy.orth_ttr(2, distribution, cross_truncation=2))
-    [1.0, q1, q0, q1^2-1.0, q0^2-1.0]
+    >>> chaospy.orth_ttr(2, distribution, cross_truncation=2)
+    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
