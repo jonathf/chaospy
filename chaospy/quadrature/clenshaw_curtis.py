@@ -103,8 +103,14 @@ def quad_clenshaw_curtis(order, domain, growth=False, segments=1):
     if isinstance(domain, Dist):
         abscissas, weights = quad_clenshaw_curtis(
             order, (domain.lower, domain.upper), growth, segments)
-        weights *= domain.pdf(abscissas).flatten()
+
+        # Sometimes edge samples (inside the domain) falls out again from simple
+        # rounding errors. Edge samples needs to be adjusted.
+        eps = 1e-14*(domain.upper-domain.lower)
+        abscissas_ = numpy.clip(abscissas, domain.lower+eps, domain.upper-eps)
+        weights *= domain.pdf(abscissas_).flatten()
         weights /= numpy.sum(weights)
+
         return abscissas, weights
 
     order = numpy.asarray(order, dtype=int).flatten()
