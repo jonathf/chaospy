@@ -45,7 +45,7 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
                [[1.     , 0.08333, 0.06667],
                 [1.     , 0.03061, 0.04321]]])
         >>> orth[2].round(5)
-        polynomial([0.16667-q0+q0**2, 0.16667-0.88889*q1+q1**2])
+        polynomial([q0**2-q0+0.16667, q1**2-0.88889*q1+0.16667])
         >>> norms.round(5)
         array([[1.     , 0.08333, 0.00556],
                [1.     , 0.03061, 0.00132]])
@@ -58,8 +58,8 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
                [[1.     , 1.     , 1.     ],
                 [1.     , 1.     , 1.     ]]])
         >>> orth[2].round(5)
-        polynomial([-1.04874-2.1209*q0+3.9155*q0**2,
-                    -1.00494-2.63343*q1+5.94906*q1**2])
+        polynomial([3.9155*q0**2-2.1209*q0-1.04874,
+                    5.94906*q1**2-2.63343*q1-1.00494])
         >>> norms.round(5)
         array([[1., 1., 1.],
                [1., 1., 1.]])
@@ -112,7 +112,7 @@ def analytical_stieljes(order, dist, normed=False):
                [[1.     , 0.08333, 0.06667],
                 [1.     , 0.03061, 0.04321]]])
         >>> orth[:, 2].round(5)
-        polynomial([0.16667-q0+q0**2, 0.16667-0.88889*q1+q1**2])
+        polynomial([q0**2-q0+0.16667, q1**2-0.88889*q1+0.16667])
         >>> norms.round(5)
         array([[1.     , 0.08333, 0.00556],
                [1.     , 0.03061, 0.00132]])
@@ -124,8 +124,8 @@ def analytical_stieljes(order, dist, normed=False):
                [[1.     , 0.08333, 0.06667],
                 [1.     , 0.03061, 0.04321]]])
         >>> orth[:, 2].round(5)
-        polynomial([2.23607-13.41641*q0+13.41641*q0**2,
-                    4.58258-24.4404*q1+27.49545*q1**2])
+        polynomial([13.41641*q0**2-13.41641*q0+2.23607,
+                    27.49545*q1**2-24.4404*q1+4.58258])
         >>> norms.round(5)
         array([[1., 1., 1.],
                [1., 1., 1.]])
