@@ -23,7 +23,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
 
     >>> expansion = chaospy.orth_ttr(2, distribution)
     >>> expansion
-    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
+    polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
 
 - A function evaluated using the nodes generated in the second step.
   For example::
@@ -43,7 +43,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
     >>> approx = chaospy.fit_quadrature(
     ...     expansion, abscissas, weights, solves)
     >>> approx.round(4)
-    polynomial([q0*q1, 1.0+1.6382*q0-1.5806*q0*q1])
+    polynomial([q0*q1, -1.5806*q0*q1+1.6382*q0+1.0])
 
 Note that in this case the function output is
 bivariate. The software is designed to create an approximation of any
@@ -65,7 +65,7 @@ can be added::
     >>> approx2 = chaospy.fit_quadrature(
     ...     expansion, abscissas, weights, solves, norms=norms)
     >>> approx2.round(4)
-    polynomial([q0*q1, 1.0+1.6382*q0-1.5806*q0*q1])
+    polynomial([q0*q1, -1.5806*q0*q1+1.6382*q0+1.0])
 
 Note that at low polynomial order, the error is very small. For example the
 largest coefficient between the two approximation::

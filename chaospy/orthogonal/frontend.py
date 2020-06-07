@@ -82,7 +82,7 @@ def generate_expansion(
         >>> distribution = chaospy.Normal()
         >>> expansion, norms = generate_expansion(3, distribution, retall=True)
         >>> expansion
-        polynomial([1.0, q0, -1.0+q0**2, -3.0*q0+q0**3])
+        polynomial([1.0, q0, q0**2-1.0, q0**3-3.0*q0])
         >>> norms
         array([1., 1., 2., 6.])
     """

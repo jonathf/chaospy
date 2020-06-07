@@ -17,14 +17,15 @@ def setdim(poly, dim=None):
             `poly`'s dimensions, variables with cut components are all cut.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> poly = x*x-x*y
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = q0*q1-q0**2
         >>> chaospy.setdim(poly, 1)
-        polynomial(q0**2)
+        polynomial(-q0**2)
         >>> chaospy.setdim(poly, 3)
-        polynomial(q0**2-q0*q1)
-        >>> chaospy.setdim(poly, 3).names
+        polynomial(q0*q1-q0**2)
+        >>> chaospy.setdim(poly).names
         ('q0', 'q1', 'q2')
+
     """
     poly = numpoly.polynomial(poly)
     indices = [int(name[1:]) for name in poly.names]

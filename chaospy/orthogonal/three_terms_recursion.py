@@ -43,8 +43,8 @@ recursion scheme can be done through ``orth_ttr``. For example::
     >>> dist = chaospy.Iid(chaospy.Gamma(1), 2)
     >>> orths = chaospy.orth_ttr(2, dist)
     >>> orths.round(4)
-    polynomial([1.0, -1.0+q1, -1.0+q0, 2.0-4.0*q1+q1**2, 1.0-q1-q0+q0*q1,
-                2.0-4.0*q0+q0**2])
+    polynomial([1.0, q1-1.0, q0-1.0, q1**2-4.0*q1+2.0, q0*q1-q1-q0+1.0,
+                q0**2-4.0*q0+2.0])
 
 The method will use the ``ttr`` function if available, and discretized
 Stieltjes otherwise.
@@ -92,7 +92,7 @@ def orth_ttr(
         >>> distribution = chaospy.Normal()
         >>> expansion, norms = chaospy.orth_ttr(4, distribution, retall=True)
         >>> expansion.round(4)
-        polynomial([1.0, q0, -1.0+q0**2, -3.0*q0+q0**3, 3.0-6.0*q0**2+q0**4])
+        polynomial([1.0, q0, q0**2-1.0, q0**3-3.0*q0, q0**4-6.0*q0**2+3.0])
         >>> norms
         array([ 1.,  1.,  2.,  6., 24.])
     """

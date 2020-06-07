@@ -9,7 +9,8 @@ import numpy
 import chaospy
 
 
-def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
+def orth_gs(order, dist, normed=False, graded=True, reverse=True,
+            cross_truncation=1., sort=None, **kws):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
 
@@ -21,9 +22,15 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
             Weighting distribution(s) defining orthogonality.
         normed (bool):
             If True orthonormal polynomials will be used instead of monic.
-        sort (str):
-            Ordering argument passed to poly.basis. If custom basis is used,
-            argument is ignored.
+        graded (bool):
+            Graded sorting, meaning the indices are always sorted by the index
+            sum. E.g. ``q0**2*q1**2*q2**2`` has an exponent sum of 6, and will
+            therefore be consider larger than both ``q0**2*q1*q2``,
+            ``q0*q1**2*q2`` and ``q0*q1*q2**2``, which all have exponent sum of
+            5.
+        reverse (bool):
+            Reverse lexicographical sorting meaning that ``q0*q1**3`` is
+            considered bigger than ``q0**3*q1``, instead of the opposite.
         cross_truncation (float):
             Use hyperbolic cross truncation scheme to reduce the number of
             terms in expansion.
@@ -35,16 +42,16 @@ def orth_gs(order, dist, normed=False, sort="G", cross_truncation=1., **kws):
     Examples:
         >>> Z = chaospy.J(chaospy.Normal(), chaospy.Normal())
         >>> chaospy.orth_gs(2, Z).round(4)
-        polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
+        polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
     """
     logger = logging.getLogger(__name__)
     dim = len(dist)
 
     if isinstance(order, int):
         if order == 0:
-            return chaospy.poly.polynomial(1, indeterminants=("q0",))
-        basis = chaospy.poly.basis(
-            0, order, dim, sort, cross_truncation=cross_truncation)
+            return chaospy.poly.polynomial(1, names=("q0",))
+        basis = chaospy.poly.basis(0, order, dim, graded=graded, reverse=reverse,
+                                   sort=sort, cross_truncation=cross_truncation)
     else:
         basis = order
 

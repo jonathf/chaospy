@@ -38,8 +38,8 @@ There is also the possibility to create anisotropic expansions::
 
 and the possibility to fine tune the sorting of the polynomials::
 
-    >>> chaospy.basis(start=1, stop=2, dim=2, sort="GRI")
-    polynomial([q1**2, q0*q1, q0**2, q1, q0])
+    >>> chaospy.basis(start=1, stop=2, dim=2, graded=False, reverse=False)
+    polynomial([q0, q0**2, q1, q0*q1, q1**2])
 
 To manipulate a polynomial there is a collection of tools available. In
 table [tab\_poly] they are listed with description. Much of the behavior
@@ -87,23 +87,71 @@ It is also possible to do all the over mentioned methods together in the same
 time. For example, partial evaluation and variable substitution::
 
     >>> poly(q1=q1**3-1)
-    polynomial([1, q0**2, -q0+q0*q1**3])
+    polynomial([1, q0**2, q0*q1**3-q0])
 """
+from typing import Callable
 from functools import wraps
+
+import numpoly
+from numpoly import *
 
 from .basis import basis
 from .prange import prange
 from .variable import variable
 from .setdim import setdim
 
-from numpoly import (
-    abs, absolute, add, any, all, allclose, around, aspolynomial, atleast_1d,
-    atleast_2d, atleast_3d, bindex, call, ceil, concatenate, cumsum, decompose,
-    diff, divide, dstack, equal, floor, gradient, hessian, hstack, inner,
-    isclose, isconstant, isfinite, multiply, ndpoly, negative, not_equal,
-    outer, polynomial, positive, power, prod, repeat, rint, round, square,
-    stack, subtract, sum, vstack,
-)
+
+def compatability_layer(function):
+    """
+    Function decorator addressing incompatibility between numpoly and chaospy.
+
+    The issues includes:
+    * Enforce that all indeterminant names are on the format ``q<N>``.
+
+    Args:
+        function (Callable):
+            Function to create wrapper around.
+
+    Returns:
+        (Callable):
+            Same as `function`, but wrapped to ensure that it is chaospy
+            compatible.
+
+    Examples:
+        >>> numpoly.monomial(3)
+        polynomial([1, q, q**2])
+        >>> my_monomial = compatability_layer(numpoly.monomial)
+        >>> my_monomial(3)
+        polynomial([1, q0, q0**2])
+
+    """
+
+    @wraps(function)
+    def wrapper_func(*args, **kwargs):
+        with numpoly.global_options(
+            default_varname="q",
+            force_number_suffix=True,
+            varname_filter=r"q\d+",
+        ):
+            return function(*args, **kwargs)
+
+    return wrapper_func
+
+
+def wrap_numpoly():
+    globals_ = globals()
+    for name, item in globals_.items():
+
+        if not isinstance(item, Callable):
+            continue
+
+        if not item.__module__.startswith("numpoly."):
+            continue
+
+        if name in ("ndpoly",):
+            continue
+
+        globals_[name] = compatability_layer(item)
 
 
 @wraps(polynomial)
@@ -111,3 +159,5 @@ def Poly(*args, **kwargs):
     print("Deprecation warning: "
           "`chaospy.Poly` replaced by `chaospy.polynomial`")
     return polynomial(*args, **kwargs)
+
+wrap_numpoly()

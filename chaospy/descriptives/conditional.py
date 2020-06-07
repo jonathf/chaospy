@@ -34,14 +34,14 @@ def E_cond(poly, freeze, dist, **kws):
         >>> x, y = chaospy.variable(2)
         >>> poly = chaospy.polynomial([1, x, y, 10*x*y-1])
         >>> poly
-        polynomial([1, q0, q1, -1+10*q0*q1])
+        polynomial([1, q0, q1, 10*q0*q1-1])
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
         >>> chaospy.E_cond(poly, [1, 0], dist)
         polynomial([1.0, q0, 0.0, -1.0])
         >>> chaospy.E_cond(poly, [0, 1], dist)
-        polynomial([1.0, 1.0, q1, -1.0+10.0*q1])
+        polynomial([1.0, 1.0, q1, 10.0*q1-1.0])
         >>> chaospy.E_cond(poly, [1, 1], dist)
-        polynomial([1, q0, q1, -1+10*q0*q1])
+        polynomial([1, q0, q1, 10*q0*q1-1])
         >>> chaospy.E_cond(poly, [0, 0], dist)
         polynomial([1.0, 1.0, 0.0, -1.0])
     """

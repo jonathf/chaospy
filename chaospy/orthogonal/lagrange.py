@@ -22,12 +22,12 @@ def lagrange_polynomial(abscissas, sort="G"):
 
     Example:
         >>> chaospy.lagrange_polynomial([-10, 10]).round(4)
-        polynomial([0.5-0.05*q0, 0.5+0.05*q0])
+        polynomial([-0.05*q0+0.5, 0.05*q0+0.5])
         >>> chaospy.lagrange_polynomial([-1, 0, 1]).round(4)
-        polynomial([-0.5*q0+0.5*q0**2, 1.0-q0**2, 0.5*q0+0.5*q0**2])
+        polynomial([0.5*q0**2-0.5*q0, -q0**2+1.0, 0.5*q0**2+0.5*q0])
         >>> poly = chaospy.lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
         >>> poly.round(4)
-        polynomial([0.5-0.5*q1+0.5*q0, 1.0-q0, -0.5+0.5*q1+0.5*q0])
+        polynomial([-0.5*q1+0.5*q0+0.5, -q0+1.0, 0.5*q1+0.5*q0-0.5])
         >>> poly([1, 0, 1], [0, 1, 2]).round(4)
         array([[1., 0., 0.],
                [0., 1., 0.],

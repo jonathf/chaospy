@@ -11,7 +11,7 @@ samples and evaluations. The experiment can be done as follows:
 
     >>> orthogonal_expansion = chaospy.orth_ttr(2, distribution)
     >>> orthogonal_expansion
-    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2])
+    polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
 
 - Generate samples using :ref:`sampling` (or alternative abscissas from
   :ref:`quadrature`)::
@@ -38,7 +38,7 @@ samples and evaluations. The experiment can be done as follows:
     >>> approx_model = chaospy.fit_regression(
     ...      orthogonal_expansion, samples, solves)
     >>> approx_model.round(2)
-    polynomial([q0*q1, 0.94-0.09*q1+0.11*q1**2+1.22*q0-1.44*q0*q1+0.05*q0**2])
+    polynomial([q0*q1, 0.11*q1**2-1.44*q0*q1+0.05*q0**2-0.09*q1+1.22*q0+0.94])
 
 In this example, the number of collocation points is selected to be twice the
 number of unknown coefficients :math:`N+1`. Changing this is obviously
@@ -78,7 +78,7 @@ coefficients to be for example 1: ``n_nonzero_coefs=1``. In practice::
     >>> approx_model = chaospy.fit_regression(  # doctest: +SKIP
     ...     orthogonal_expansion, samples, solves, rule=omp)
     >>> approx_model.round(2)
-    polynomial([q0*q1, 0.94-0.09*q1+0.11*q1**2+1.22*q0-1.44*q0*q1+0.05*q0**2])
+    polynomial([q0*q1, 0.11*q1**2-1.44*q0*q1+0.05*q0**2-0.09*q1+1.22*q0+0.94])
 
 Note that the option ``fit_intercept=False``. This is a prerequisite for
 ``scikit-learn`` to be compatible with ``chaospy``.
@@ -128,7 +128,7 @@ def fit_regression(
         >>> abscissas = [[-1,-1,1,1], [-1,1,-1,1]]
         >>> evals = [0,1,1,2]
         >>> chaospy.fit_regression(polynomials, abscissas, evals).round(14)
-        polynomial(1.0+0.5*q1+0.5*q0)
+        polynomial(0.5*q1+0.5*q0+1.0)
     """
     abscissas = numpy.asarray(abscissas)
     if len(abscissas.shape) == 1:
