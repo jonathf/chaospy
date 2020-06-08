@@ -1,5 +1,4 @@
-import numpy
-
+"""Frontend function for generating polynomial expansions."""
 from .three_terms_recursion import orth_ttr
 from .cholesky import orth_chol
 from .gram_schmidt import orth_gs
@@ -18,13 +17,15 @@ EXPANSION_FUNCTIONS = {
 
 
 def generate_expansion(
-    order,
-    dist,
-    rule="three_terms_recursion",
-    normed=False,
-    sort="G",
-    cross_truncation=1.,
-    **kws
+        order,
+        dist,
+        rule="three_terms_recursion",
+        normed=False,
+        graded=True,
+        reverse=True,
+        cross_truncation=1.,
+        sort=None,
+        **kws
 ):
     """
     Create orthogonal polynomial expansion.
@@ -61,8 +62,15 @@ def generate_expansion(
             The orthogonalization method used.
         normed (bool):
             If True orthonormal polynomials will be used.
-        sort (str):
-            Polynomial sorting. Same as in basis.
+        graded (bool):
+            Graded sorting, meaning the indices are always sorted by the index
+            sum. E.g. ``q0**2*q1**2*q2**2`` has an exponent sum of 6, and will
+            therefore be consider larger than both ``q0**2*q1*q2``,
+            ``q0*q1**2*q2`` and ``q0*q1*q2**2``, which all have exponent sum of
+            5.
+        reverse (bool):
+            Reverse lexicographical sorting meaning that ``q0*q1**3`` is
+            considered bigger than ``q0**3*q1``, instead of the opposite.
         retall (bool):
             If true return numerical stabilized norms as well. Roughly the same
             as ``cp.E(orth**2, dist)``.
@@ -85,8 +93,10 @@ def generate_expansion(
         polynomial([1.0, q0, q0**2-1.0, q0**3-3.0*q0])
         >>> norms
         array([1., 1., 2., 6.])
+
     """
     name = EXPANSION_NAMES[rule.lower()]
     expansion_function = EXPANSION_FUNCTIONS[name]
-    return expansion_function(order, dist=dist, normed=normed, sort=sort,
+    return expansion_function(order, dist=dist, normed=normed, graded=graded,
+                              reverse=reverse, sort=sort,
                               cross_truncation=cross_truncation, **kws)
