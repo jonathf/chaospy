@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class truncexpon(Dist):
@@ -62,6 +61,3 @@ class TruncExponential(Add):
         self._repr = {"upper": upper, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=truncexpon((upper-shift)*1./scale)*scale, right=shift)
-
-
-Truncexpon = deprecation_warning(TruncExponential, "Truncexpon")

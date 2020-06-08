@@ -37,7 +37,6 @@ from scipy.stats import gaussian_kde
 from chaospy.distributions.baseclass import Dist
 from chaospy.distributions.operators.addition import Add
 from chaospy.distributions.collection.uniform import Uniform
-from chaospy.distributions.collection.deprecate import deprecation_warning
 
 
 class sample_dist(Dist):

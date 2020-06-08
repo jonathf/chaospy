@@ -3,7 +3,6 @@ import numpy
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class exponential_weibull(Dist):
@@ -62,6 +61,3 @@ class ExponentialWeibull(Add):
             "alpha": alpha, "kappa": kappa, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=exponential_weibull(alpha, kappa)*scale, right=shift)
-
-
-Exponweibull = deprecation_warning(ExponentialWeibull, "Exponweibull")

@@ -4,7 +4,6 @@ from scipy import special, misc
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class log_laplace(Dist):
@@ -57,6 +56,3 @@ class LogLaplace(Add):
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(self, left=log_laplace(shape)*scale, right=shift)
-
-
-Loglaplace = deprecation_warning(LogLaplace, "Loglaplace")

@@ -52,14 +52,15 @@ Stieltjes otherwise.
 .. _paper by Gautschi: https://www.ams.org/journals/mcom/1968-22-102/S0025-5718-1968-0228171-0/
 .. _paper by Golub and Welsch: https://web.stanford.edu/class/cme335/spr11/S0025-5718-69-99647-1.pdf
 """
+import logging
+
 import numpy
 import numpoly
 import chaospy
 
 
-def orth_ttr(
-        order, dist, normed=False, sort="G", retall=False,
-        cross_truncation=1., **kws):
+def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
+             retall=False, cross_truncation=1., sort=None, **kws):
     """
     Create orthogonal polynomial expansion from three terms recursion formula.
 
@@ -71,8 +72,15 @@ def orth_ttr(
             exists, it will be used. Must be stochastically independent.
         normed (bool):
             If True orthonormal polynomials will be used.
-        sort (str):
-            Polynomial sorting. Same as in basis.
+        graded (bool):
+            Graded sorting, meaning the indices are always sorted by the index
+            sum. E.g. ``q0**2*q1**2*q2**2`` has an exponent sum of 6, and will
+            therefore be consider larger than both ``q0**2*q1*q2``,
+            ``q0*q1**2*q2`` and ``q0*q1*q2**2``, which all have exponent sum of
+            5.
+        reverse (bool):
+            Reverse lexicographical sorting meaning that ``q0*q1**3`` is
+            considered bigger than ``q0**3*q1``, instead of the opposite.
         retall (bool):
             If true return numerical stabilized norms as well. Roughly the same
             as ``cp.E(orth**2, dist)``.
@@ -96,6 +104,13 @@ def orth_ttr(
         >>> norms
         array([ 1.,  1.,  2.,  6., 24.])
     """
+    logger = logging.getLogger(__name__)
+    if sort is not None:
+        logger.warning("deprecation warning: 'sort' argument is deprecated; "
+                       "use 'graded' and/or 'reverse' instead")
+        graded = "G" in sort.upper()
+        reverse = "R" not in sort.upper()
+
     try:
         _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
             numpy.max(order), dist, normed=normed)
@@ -108,8 +123,9 @@ def orth_ttr(
     polynomials = polynomials.reshape((len(dist), numpy.max(order)+1))
 
     order = numpy.array(order)
-    indices = numpoly.bindex(start=0, stop=order+1, dimensions=len(dist),
-                             ordering=sort, cross_truncation=cross_truncation)
+    indices = numpoly.glexindex(start=0, stop=order+1, dimensions=len(dist),
+                                graded=graded, reverse=reverse,
+                                cross_truncation=cross_truncation)
     if len(dist) > 1:
         polynomials = chaospy.poly.prod(chaospy.polynomial([
             poly[idx] for poly, idx in zip(polynomials, indices.T)]), 0)

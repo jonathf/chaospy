@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class tukey_lambda(Dist):
@@ -70,6 +69,3 @@ class TukeyLambda(Add):
     def __init__(self, shape=0, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
         Add.__init__(self, left=tukey_lambda(shape)*scale, right=shift)
-
-
-Tukeylambda = deprecation_warning(TukeyLambda, "Tukeylambda")

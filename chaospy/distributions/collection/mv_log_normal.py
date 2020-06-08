@@ -3,7 +3,6 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from .deprecate import deprecation_warning
 
 
 class MvLogNormal(Dist):
@@ -80,6 +79,3 @@ class MvLogNormal(Dist):
 
     def __len__(self):
         return len(self.prm["C"])
-
-
-MvLognormal = deprecation_warning(MvLogNormal, "MvLognormal")
