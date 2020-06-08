@@ -116,8 +116,8 @@ orthogonal polynomials::
 
     >>> polynomial = chaospy.orth_ttr(3, dist_r)
     >>> polynomial
-    polynomial([1.0, q1, q0, -1.0+q1**2, q0*q1, -1.0+q0**2, -3.0*q1+q1**3,
-                -q0+q0*q1**2, -q1+q0**2*q1, -3.0*q0+q0**3])
+    polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0, q1**3-3.0*q1,
+                q0*q1**2-q0, q0**2*q1-q1, q0**3-3.0*q0])
 
 The idea is that we create our polynomial expansion in ``R`` and link the proxy
 variable to the original problem through a map ``T``. These maps can be created
