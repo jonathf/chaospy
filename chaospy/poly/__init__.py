@@ -89,75 +89,24 @@ time. For example, partial evaluation and variable substitution::
     >>> poly(q1=q1**3-1)
     polynomial([1, q0**2, q0*q1**3-q0])
 """
-from typing import Callable
 from functools import wraps
 
 import numpoly
 from numpoly import *
 
+from .wrapper import wrap_numpoly
 from .basis import basis
 from .prange import prange
 from .variable import variable
 from .setdim import setdim
 
-
-def compatability_layer(function):
-    """
-    Function decorator addressing incompatibility between numpoly and chaospy.
-
-    The issues includes:
-    * Enforce that all indeterminant names are on the format ``q<N>``.
-
-    Args:
-        function (Callable):
-            Function to create wrapper around.
-
-    Returns:
-        (Callable):
-            Same as `function`, but wrapped to ensure that it is chaospy
-            compatible.
-
-    Examples:
-        >>> numpoly.monomial(3)
-        polynomial([1, q, q**2])
-        >>> my_monomial = compatability_layer(numpoly.monomial)
-        >>> my_monomial(3)
-        polynomial([1, q0, q0**2])
-
-    """
-
-    @wraps(function)
-    def wrapper_func(*args, **kwargs):
-        with numpoly.global_options(
-            default_varname="q",
-            force_number_suffix=True,
-            varname_filter=r"q\d+",
-        ):
-            return function(*args, **kwargs)
-
-    return wrapper_func
-
-
-def wrap_numpoly():
-    globals_ = globals()
-    for name, item in globals_.items():
-
-        if not isinstance(item, Callable):
-            continue
-
-        if not item.__module__.startswith("numpoly."):
-            continue
-
-        if name in ("ndpoly",):
-            continue
-
-        globals_[name] = compatability_layer(item)
+# only uses numpoly features compatible with chaospy.
+wrap_numpoly(globals())
 
 
 @wraps(polynomial)
 def Poly(*args, **kwargs):
+    """Old way of creating polynomials. To be deprecated."""
     print("Deprecation warning: "
           "`chaospy.Poly` replaced by `chaospy.polynomial`")
     return polynomial(*args, **kwargs)
-
-wrap_numpoly()
