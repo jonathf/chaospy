@@ -8,7 +8,6 @@ import logging
 import os
 import pkg_resources
 
-import chaospy.bertran
 import chaospy.chol
 import chaospy.descriptives
 import chaospy.distributions

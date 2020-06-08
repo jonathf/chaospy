@@ -8,6 +8,7 @@ For more details, see this `article on Lagrange polynomials`_.
 .. _article on Lagrange polynomials: https://en.wikipedia.org/wiki/Lagrange_polynomial
 """
 import numpy
+from scipy.special import comb
 import numpoly
 import chaospy
 
@@ -54,7 +55,7 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
     dim, size = abscissas.shape
 
     order = 1
-    while chaospy.bertran.terms(order, dim) < size:
+    while comb(order+dim, dim) < size:
         order += 1
 
     indices = numpoly.glexindex(0, order+1, dimensions=dim,
