@@ -38,7 +38,7 @@ def Sens_m_nataf(order, dist, samples, vals, **kws):
     marginal = dist.prm["dist"]
     dim = len(dist)
 
-    orth = chaospy.orthogonal.orth_ttr(order, marginal, sort="GR")
+    orth = chaospy.orthogonal.orth_ttr(order, marginal, graded=True, reverse=False)
 
     r = range(dim)
 

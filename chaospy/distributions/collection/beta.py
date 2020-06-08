@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class beta_(Dist):
@@ -117,8 +116,6 @@ class ArcSinus(Add):
         Add.__init__(
             self, left=beta_(shape, 1-shape)*(upper-lower), right=lower)
 
-Arcsinus = deprecation_warning(ArcSinus, "Arcsinus")
-
 
 class PowerLaw(Add):
     """
@@ -152,9 +149,6 @@ class PowerLaw(Add):
     def __init__(self, shape=1, lower=0, upper=1):
         self._repr = {"shape": shape, "lower": lower, "upper": upper}
         Add.__init__(self, left=beta_(shape, 1)*(upper-lower), right=lower)
-
-
-Powerlaw = deprecation_warning(PowerLaw, "Powerlaw")
 
 
 class Wigner(Add):

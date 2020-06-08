@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class generalized_gamma(Dist):
@@ -71,6 +70,3 @@ class GeneralizedGamma(Add):
             "shape1": shape1, "shape2": shape2, "scale": scale, "shift": shift}
         Add.__init__(
             self, left=generalized_gamma(shape1, shape2)*scale, right=shift)
-
-
-Gengamma = deprecation_warning(GeneralizedGamma, "Gengamma")

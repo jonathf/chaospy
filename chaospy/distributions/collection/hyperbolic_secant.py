@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class hyperbolic_secant(Dist):
@@ -58,6 +57,3 @@ class HyperbolicSecant(Add):
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}
         Add.__init__(self, left=hyperbolic_secant()*scale, right=loc)
-
-
-Hypgeosec = deprecation_warning(HyperbolicSecant, "Hypgeosec")

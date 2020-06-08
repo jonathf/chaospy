@@ -142,7 +142,8 @@ def _construct_collection(
     skew = orders-order
 
     # Indices and coefficients used in the calculations
-    indices = numpoly.bindex(order-len(dist)+1, order+1, dimensions=len(dist))
+    indices = numpoly.glexindex(
+        order-len(dist)+1, order+1, dimensions=len(dist))
     coeffs = numpy.sum(indices, -1)
     coeffs = (2*((order-coeffs+1) % 2)-1)*comb(len(dist)-1, order-coeffs)
 

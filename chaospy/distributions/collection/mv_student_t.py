@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from .student_t import student_t
-from .deprecate import deprecation_warning
 
 
 class MvStudentT(Dist):
@@ -130,6 +129,3 @@ class MvStudentT(Dist):
     #         out += pos*coef*loc_*M[i]
 
     #     return out
-
-
-MvStudent_t = deprecation_warning(MvStudentT, "MvStudent_t")

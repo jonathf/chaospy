@@ -3,7 +3,6 @@ import numpy
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class log_weibull(Dist):
@@ -52,6 +51,3 @@ class LogWeibull(Add):
     def __init__(self, scale=1, loc=0):
         self._repr = {"scale": scale, "loc": loc}
         Add.__init__(self, left=log_weibull()*scale, right=loc)
-
-
-Logweibull = deprecation_warning(LogWeibull, "Logweibull")

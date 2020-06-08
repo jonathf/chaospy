@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class generalized_extreme(Dist):
@@ -64,6 +63,3 @@ class GeneralizedExtreme(Add):
     def __init__(self, shape=0, scale=1, loc=0):
         self._repr = {"shape": shape, "scale": scale, "loc": loc}
         Add.__init__(self, left=generalized_extreme(shape)*scale, right=loc)
-
-
-Genextreme = deprecation_warning(GeneralizedExtreme, "Genextreme")

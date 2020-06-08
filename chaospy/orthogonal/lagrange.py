@@ -12,13 +12,22 @@ import numpoly
 import chaospy
 
 
-def lagrange_polynomial(abscissas, sort="G"):
+def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
     """
     Create Lagrange polynomials.
 
     Args:
         abscissas (numpy.ndarray):
             Sample points where the Lagrange polynomials shall be defined.
+        graded (bool):
+            Graded sorting, meaning the indices are always sorted by the index
+            sum. E.g. ``q0**2*q1**2*q2**2`` has an exponent sum of 6, and will
+            therefore be consider larger than both ``q0**2*q1*q2``,
+            ``q0*q1**2*q2`` and ``q0*q1*q2**2``, which all have exponent sum of
+            5.
+        reverse (bool):
+            Reverse lexicographical sorting meaning that ``q0*q1**3`` is
+            considered bigger than ``q0**3*q1``, instead of the opposite.
 
     Example:
         >>> chaospy.lagrange_polynomial([-10, 10]).round(4)
@@ -48,7 +57,8 @@ def lagrange_polynomial(abscissas, sort="G"):
     while chaospy.bertran.terms(order, dim) < size:
         order += 1
 
-    indices = numpoly.bindex(0, order+1, dimensions=dim, ordering=sort)[:size]
+    indices = numpoly.glexindex(0, order+1, dimensions=dim,
+                                graded=graded, reverse=reverse)[:size]
     idx, idy = numpy.mgrid[:size, :size]
 
     matrix = numpy.prod(abscissas.T[idx]**indices[idy], -1)
@@ -57,12 +67,14 @@ def lagrange_polynomial(abscissas, sort="G"):
         raise numpy.linalg.LinAlgError(
             "Lagrange abscissas resulted in invertible matrix")
 
-    vec = chaospy.poly.basis(0, order, dim, sort)[:size]
+    vec = chaospy.poly.basis(0, order, dim, graded=graded,
+                             reverse=reverse, sort=sort)[:size]
 
     coeffs = numpy.zeros((size, size))
 
     if size == 1:
-        out = chaospy.poly.basis(0, 0, dim, sort)*abscissas.item()
+        out = chaospy.poly.basis(0, 0, dim, graded=graded,
+                                 reverse=reverse, sort=sort)*abscissas.item()
 
     elif size == 2:
         coeffs = numpy.linalg.inv(matrix)

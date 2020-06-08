@@ -4,7 +4,6 @@ from scipy import special
 
 from ..baseclass import Dist
 from ..operators.addition import Add
-from .deprecate import deprecation_warning
 
 
 class power_normal(Dist):
@@ -56,6 +55,3 @@ class PowerNormal(Add):
     def __init__(self, shape=1, mu=0, scale=1):
         self._repr = {"shape": shape, "mu": mu, "scale": scale}
         Add.__init__(self, left=power_normal(shape)*scale, right=mu)
-
-
-Powernorm = deprecation_warning(PowerNormal, "Powernorm")

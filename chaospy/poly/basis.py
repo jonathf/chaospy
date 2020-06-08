@@ -1,5 +1,6 @@
 """Create an N-dimensional unit polynomial basis."""
 import logging
+
 import numpy
 import numpoly
 
