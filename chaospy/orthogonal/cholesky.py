@@ -28,7 +28,8 @@ import chaospy
 import numpoly
 
 
-def orth_chol(order, dist, normed=False, graded=True, reverse=True, cross_truncation=1., retall=False, sort=None, **kws):
+def orth_chol(order, dist, normed=False, graded=True, reverse=True,
+              cross_truncation=1., retall=False, sort=None, **kws):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
