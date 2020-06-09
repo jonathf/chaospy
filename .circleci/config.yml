@@ -33,7 +33,7 @@ jobs:
               pytest tests
   build-cache:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.7.7
     working_directory: /home/circleci/project
     steps:
       - checkout
@@ -60,7 +60,7 @@ jobs:
           root: /home/circleci
   test:
     docker:
-        - image: circleci/python:3.7.5
+        - image: circleci/python:3.7.7
     working_directory: /home/circleci/project
     steps:
         - attach_workspace:
@@ -71,10 +71,10 @@ jobs:
                 source /home/circleci/venv/bin/activate
                 coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
                     chaospy/ tests/ tutorial/ doc/*.rst doc/*/*.rst
-                codecov
+                bash <(curl -s https://codecov.io/bash)
   sphinx:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.7.7
     working_directory: /home/circleci/project
     steps:
       - attach_workspace:
@@ -86,7 +86,7 @@ jobs:
               sphinx-build doc/ doc/.build -b html -n -v --color -T -W
   deploy:
     docker:
-      - image: circleci/python:3.7.5
+      - image: circleci/python:3.7.7
     working_directory: /home/circleci/project
     steps:
       - attach_workspace:
