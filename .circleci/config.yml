@@ -31,62 +31,47 @@ jobs:
           command: |
               source /home/circleci/venv/bin/activate
               pytest tests
-  build-cache:
+  test:
     docker:
-      - image: circleci/python:3.7.7
+      - image: circleci/python:3.8.3
     working_directory: /home/circleci/project
     steps:
       - checkout
       - restore_cache:
           keys:
-              - deps-py37-{{ checksum "poetry.lock" }}
+            - deps-py38-{{ checksum "poetry.lock" }}
+            - deps-py38-
       - run:
           name: "Installation"
           command: |
             if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
-              /home/circleci/venv/bin/pip install poetry==1.0.5
+              /home/circleci/venv/bin/pip install poetry==1.0.9
             fi
             source /home/circleci/venv/bin/activate
             poetry install
       - save_cache:
-          key: deps-py37-{{ checksum "poetry.lock" }}
+          key: deps-py38-{{ checksum "poetry.lock" }}
           paths:
-              - /home/circleci/venv
-      - persist_to_workspace:
-          paths:
-              - project
-              - venv
-          root: /home/circleci
-  test:
-    docker:
-        - image: circleci/python:3.7.7
-    working_directory: /home/circleci/project
-    steps:
-        - attach_workspace:
-            at: /home/circleci
-        - run:
-            name: "Run tests"
-            command: |
-                source /home/circleci/venv/bin/activate
-                coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
-                    chaospy/ tests/ tutorial/ doc/*.rst doc/*/*.rst
-                bash <(curl -s https://codecov.io/bash)
-  sphinx:
-    docker:
-      - image: circleci/python:3.7.7
-    working_directory: /home/circleci/project
-    steps:
-      - attach_workspace:
-          at: /home/circleci
+            - /home/circleci/venv
       - run:
-          name: "Ensure documentation build"
+          name: "Ensure the documentation builds"
           command: |
-              source /home/circleci/venv/bin/activate
-              sphinx-build doc/ doc/.build -b html -n -v --color -T -W
+            source /home/circleci/venv/bin/activate
+            sphinx-build doc/ doc/.build -b html -n -v --color -T -W
+      - run:
+          name: "Run pytest"
+          command: |
+            source /home/circleci/venv/bin/activate
+            coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
+                chaospy/ tests/ tutorial/ doc/*.rst doc/*/*.rst
+      - run:
+          name: "Upload results to CodeCov"
+          command: |
+            bash <(curl -s https://codecov.io/bash)
   deploy:
     docker:
-      - image: circleci/python:3.7.7
+      - image: circleci/python:3.8.3
     working_directory: /home/circleci/project
     steps:
       - attach_workspace:
@@ -113,24 +98,12 @@ workflows:
       - test-py27:
           filters:
             <<: *version-tags
-      - build-cache:
-          filters:
-            <<: *version-tags
       - test:
           filters:
             <<: *version-tags
-          requires:
-            - build-cache
-      - sphinx:
-          filters:
-            <<: *version-tags
-          requires:
-            - build-cache
       - deploy:
           requires:
-            - test-py27
             - test
-            - sphinx
           filters:
             <<: *version-tags
             branches:
