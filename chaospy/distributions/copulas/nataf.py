@@ -2,7 +2,7 @@
 import numpy
 from scipy import special
 
-from .baseclass import Archimedean, Copula
+from .baseclass import Copula
 from ..baseclass import Dist
 
 class nataf(Dist):
@@ -42,44 +42,41 @@ class Nataf(Copula):
     """
     Nataf (normal) copula.
 
+    Args:
+        dist (Dist):
+            The Distribution to wrap.
+        R (numpy.ndarray):
+            Covariance matrix.
+
     Examples:
-        >>> distribution = chaospy.Iid(chaospy.Uniform(), 2)
-        >>> R = [[1, 0.5], [0.5, 1]]
-        >>> copula = chaospy.Nataf(distribution, R)
-        >>> print(copula)
-        Nataf(Iid(Uniform(lower=0, upper=1), 2), R=[[1, 0.5], [0.5, 1]])
-        >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(copula.inv(mesh), 4))
-        [[[0.25   0.5    0.75  ]
-          [0.25   0.5    0.75  ]
-          [0.25   0.5    0.75  ]]
+        >>> distribution = chaospy.Nataf(
+        ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), R=[[1, .5], [.5, 1]])
+        >>> distribution
+        Nataf(Iid(Uniform(lower=-1, upper=1), 2), R=[[1, 0.5], [0.5, 1]])
+        >>> samples = distribution.sample(3)
+        >>> samples.round(4)
+        array([[ 0.3072, -0.77  ,  0.9006],
+               [ 0.1262,  0.3001,  0.1053]])
+        >>> distribution.pdf(samples).round(4)
+        array([0.292 , 0.1627, 0.2117])
+        >>> distribution.fwd(samples).round(4)
+        array([[0.6536, 0.115 , 0.9503],
+               [0.4822, 0.8725, 0.2123]])
+        >>> mesh = numpy.meshgrid([.4, .5, .6], [.4, .5, .6])
+        >>> distribution.inv(mesh).round(4)
+        array([[[-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ]],
         <BLANKLINE>
-         [[0.1784 0.2796 0.4025]
-          [0.368  0.5    0.632 ]
-          [0.5975 0.7204 0.8216]]]
-        >>> print(numpy.around(copula.fwd(copula.inv(mesh)), 4))
-        [[[0.25 0.5  0.75]
-          [0.25 0.5  0.75]
-          [0.25 0.5  0.75]]
-        <BLANKLINE>
-         [[0.25 0.25 0.25]
-          [0.5  0.5  0.5 ]
-          [0.75 0.75 0.75]]]
-        >>> print(numpy.around(copula.pdf(copula.inv(mesh)), 4))
-        [[1.4061 1.0909 0.9482]
-         [1.2223 1.1547 1.2223]
-         [0.9482 1.0909 1.4061]]
-        >>> print(numpy.around(copula.sample(4), 4))
-        [[0.6536 0.115  0.9503 0.4822]
-         [0.8816 0.0983 0.2466 0.4021]]
+               [[-0.2707, -0.1737, -0.0739],
+                [-0.1008,  0.    ,  0.1008],
+                [ 0.0739,  0.1737,  0.2707]]])
+        >>> distribution.mom([1, 1]).round(4)
+        0.1609
+
     """
 
     def __init__(self, dist, R, ordering=None):
-        """
-        Args:
-            dist (Dist) : The Distribution to wrap.
-            R (numpy.ndarray) : Covariance matrix.
-        """
         self._repr = {"R": R}
         assert len(dist) == len(R)
         return Copula.__init__(self, dist=dist, trans=nataf(R, ordering))

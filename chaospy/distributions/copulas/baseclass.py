@@ -57,8 +57,11 @@ class Copula(Dist):
     def __init__(self, dist, trans):
         r"""
         Args:
-            dist (Dist) : Distribution to wrap the copula around.
-            trans (Dist) : The copula wrapper `[0,1]^D \into [0,1]^D`.
+            dist (Dist):
+                Distribution to wrap the copula around.
+            trans (Dist):
+                The copula wrapper `[0,1]^D \into [0,1]^D`.
+
         """
         Dist.__init__(self, dist=dist, trans=trans)
 
@@ -104,103 +107,3 @@ class Copula(Dist):
         args = [key + "=" + str(self._repr[key]) for key in sorted(self._repr)]
         return (self.__class__.__name__ + "(" + str(self.prm["dist"]) +
                 ", " + ", ".join(args) + ")")
-
-
-class Archimedean(Dist):
-    """
-    Archimedean copula superclass.
-
-    Subset this to generate an Archimedean copula.
-    """
-
-    def _ppf(self, x, th, eps):
-
-        for i in range(1, len(x)):
-
-            q = x[:i+1].copy()
-            lo, up = 0, 1
-            dq = numpy.zeros(i+1)
-            dq[i] = eps
-            flo, fup = -q[i],1-q[i]
-
-            for iteration in range(1, 10):
-
-                fq = self._diff(q[:i+1], th, eps)
-                dfq = self._diff((q[:i+1].T+dq).T, th, eps)
-                dfq = (dfq-fq)/eps
-                dfq = numpy.where(dfq==0, numpy.inf, dfq)
-
-                fq = fq-x[i]
-                if not numpy.any(numpy.abs(fq)>eps):
-                    break
-
-                # reduce boundaries
-                flo = numpy.where(fq<=0, fq, flo)
-                lo = numpy.where(fq<=0, q[i], lo)
-
-                fup = numpy.where(fq>=0, fq, fup)
-                up = numpy.where(fq>=0, q[i], up)
-
-                # Newton increment
-                qdq = q[i]-fq/dfq
-
-                # if new val on interior use Newton
-                # else binary search
-                q[i] = numpy.where((qdq<up)*(qdq>lo),
-                        qdq, .5*(up+lo))
-
-            x[i] = q[i]
-        return x
-
-
-    def _cdf(self, x, th, eps):
-        out = numpy.zeros(x.shape)
-        out[0] = x[0]
-        for i in range(1,len(x)):
-            out[i][x[i]==1] = 1
-            out[i] = self._diff(x[:i+1], th, eps)
-
-        return out
-
-    def _pdf(self, x, th, eps):
-        out = numpy.ones(x.shape)
-        sign = 1-2*(x>.5)
-        for i in range(1, len(x)):
-            x[i] += eps*sign[i]
-            out[i] = self._diff(x[:i+1], th, eps)
-            x[i] -= eps*sign[i]
-            out[i] -= self._diff(x[:i+1], th, eps)
-            out[i] /= eps
-
-        out = abs(out)
-        return out
-
-    def _diff(self, x, th, eps):
-        """
-        Differentiation function.
-
-        Numerical approximation of a Rosenblatt transformation created from
-        copula formulation.
-        """
-        foo = lambda y: self.igen(numpy.sum(self.gen(y, th), 0), th)
-
-        out1 = out2 = 0.
-        sign = 1 - 2*(x > .5).T
-        for I in numpy.ndindex(*((2,)*(len(x)-1)+(1,))):
-
-            eps_ = numpy.array(I)*eps
-            x_ = (x.T + sign*eps_).T
-            out1 += (-1)**sum(I)*foo(x_)
-
-            x_[-1] = 1
-            out2 += (-1)**sum(I)*foo(x_)
-
-        out = out1/out2
-        return out
-
-
-    def _lower(self, **prm):
-        return 0.
-
-    def _upper(Self, **prm):
-        return 1.
