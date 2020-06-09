@@ -26,9 +26,7 @@ functools32 = { version = "*", python = "^2.7" }
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
-pylint = "*"
 sphinx = "*"
-codecov = "*"
 coverage = "*"
 openturns = "*"
 scikit-learn = "*"
