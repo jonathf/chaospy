@@ -65,9 +65,6 @@ jobs:
             source /home/circleci/venv/bin/activate
             coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
                 chaospy/ tests/ tutorial/ doc/*.rst doc/*/*.rst
-      - run:
-          name: "Upload results to CodeCov"
-          command: |
             bash <(curl -s https://codecov.io/bash)
   deploy:
     docker:
