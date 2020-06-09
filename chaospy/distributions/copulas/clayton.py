@@ -46,50 +46,35 @@ class Clayton(Copula):
         theta (float):
             Copula parameter. Required to be above 0.
 
-    Returns:
-        (Dist) : The resulting copula distribution.
-
     Examples:
         >>> distribution = chaospy.Clayton(
-        ...     chaospy.Iid(chaospy.Uniform(), 2), theta=2)
-        >>> print(distribution)
-        Clayton(Iid(Uniform(lower=0, upper=1), 2), theta=2)
-        >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
-        [[[0.25   0.5    0.75  ]
-          [0.25   0.5    0.75  ]
-          [0.25   0.5    0.75  ]]
+        ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), theta=2)
+        >>> distribution
+        Clayton(Iid(Uniform(lower=-1, upper=1), 2), theta=2)
+        >>> samples = distribution.sample(3)
+        >>> samples.round(4)
+        array([[ 0.3072, -0.77  ,  0.9006],
+               [ 0.2736, -0.3015,  0.1539]])
+        >>> distribution.pdf(samples).round(4)
+        array([0.3679, 0.1855, 0.2665])
+        >>> distribution.fwd(samples).round(4)
+        array([[0.6536, 0.115 , 0.9503],
+               [0.4822, 0.8725, 0.2123]])
+        >>> mesh = numpy.meshgrid([.4, .5, .6], [.4, .5, .6])
+        >>> distribution.inv(mesh).round(4)
+        array([[[-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ]],
         <BLANKLINE>
-         [[0.1987 0.3758 0.5197]
-          [0.3101 0.5464 0.6994]
-          [0.4777 0.7361 0.8525]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
-        [[[0.25 0.5  0.75]
-          [0.25 0.5  0.75]
-          [0.25 0.5  0.75]]
-        <BLANKLINE>
-         [[0.25 0.25 0.25]
-          [0.5  0.5  0.5 ]
-          [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
-        [[2.3697 1.4016 1.1925]
-         [1.9803 1.4482 1.5536]
-         [1.0651 1.1643 1.686 ]]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [[0.6017 0.3102 0.6819 0.209 ]
-         [0.631  0.4154 0.625  0.125 ]]
-        >>> print(numpy.around(distribution.mom((1, 2)), 4))
-        0.2196
+               [[-0.2008, -0.0431,  0.0945],
+                [-0.0746,  0.0928,  0.2329],
+                [ 0.0636,  0.2349,  0.3713]]])
+        >>> distribution.mom([1, 2]).round(4)
+        -0.0311
+
     """
 
     def __init__(self, dist, theta=2.):
-        """
-        Args:
-            dist (Dist):
-                The Distribution to wrap
-            theta (float):
-                Copula parameter
-        """
         assert theta > 0
         self._repr = {"theta": theta}
         trans = clayton(len(dist), theta=theta)

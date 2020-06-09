@@ -114,45 +114,34 @@ class Gumbel(Copula):
         theta (float):
             Copula parameter
 
-    Returns:
-        (Dist) : The resulting copula distribution.
-
     Examples:
         >>> distribution = chaospy.Gumbel(
-        ...     chaospy.Iid(chaospy.Uniform(), 2), theta=2)
-        >>> print(distribution)
-        Gumbel(Iid(Uniform(lower=0, upper=1), 2), theta=2)
-        >>> mesh = numpy.meshgrid(*[numpy.linspace(0, 1, 5)[1:-1]]*2)
-        >>> print(numpy.around(distribution.inv(mesh), 4))
-        [[[0.25   0.5    0.75  ]
-          [0.25   0.5    0.75  ]
-          [0.25   0.5    0.75  ]]
+        ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), theta=2)
+        >>> distribution
+        Gumbel(Iid(Uniform(lower=-1, upper=1), 2), theta=2)
+        >>> samples = distribution.sample(3)
+        >>> samples.round(4)
+        array([[ 0.3072, -0.77  ,  0.9006],
+               [ 0.4709,  0.2102,  0.8696]])
+        >>> distribution.pdf(samples).round(4)
+        array([7.9975000e+00, 5.0700000e-02, 3.6718099e+03])
+        >>> distribution.fwd(samples).round(4)
+        array([[0.6536, 0.115 , 0.9503],
+               [0.4822, 0.8725, 0.2123]])
+        >>> mesh = numpy.meshgrid([.4, .5, .6], [.4, .5, .6])
+        >>> distribution.inv(mesh).round(4)
+        array([[[-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ]],
         <BLANKLINE>
-         [[0.2843 0.4898 0.7218]
-          [0.4348 0.6296 0.8129]
-          [0.5968 0.7532 0.882 ]]]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(mesh)), 4))
-        [[[0.25 0.5  0.75]
-          [0.25 0.5  0.75]
-          [0.25 0.5  0.75]]
-        <BLANKLINE>
-         [[0.25 0.25 0.25]
-          [0.5  0.5  0.5 ]
-          [0.75 0.75 0.75]]]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(mesh)), 4))
-        [[  1.0732   5.3662  59.9037]
-         [  1.2609   7.9291 108.0494]
-         [  1.0296   7.6845 120.2633]]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [[0.4868 0.2788 0.5216 0.4511]
-         [0.5322 0.061  0.7691 0.8187]]
+               [[-0.0022,  0.1573,  0.3174],
+                [ 0.109 ,  0.2591,  0.4062],
+                [ 0.2181,  0.3564,  0.489 ]]])
+        >>> distribution.mom([1, 1]).round(4)
+        1.0
+
     """
 
     def __init__(self, dist, theta, eps=1e-6):
-        """
-        Args:
-            dist (Dist) : The Distribution to wrap
-            theta (float) : Copula parameter
-        """
         self._repr = {"theta": theta}
         Copula.__init__(self, dist=dist, trans=gumbel(len(dist), theta))

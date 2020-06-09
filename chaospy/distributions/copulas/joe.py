@@ -83,16 +83,40 @@ class Joe(Copula):
     """
     Joe Copula
 
-    where `theta` is defined on the interval `[1,inf)`.
+    Args:
+        dist (Dist):
+            The Distribution to wrap
+        theta (float):
+            Copula parameter. Required to be above 1.
+
+    Examples:
+        >>> distribution = chaospy.Joe(
+        ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), theta=2)
+        >>> distribution
+        Joe(Iid(Uniform(lower=-1, upper=1), 2), theta=2)
+        >>> samples = distribution.sample(3)
+        >>> samples.round(4)
+        array([[ 0.3072, -0.77  ,  0.9005],
+               [ 0.4155, -0.173 ,  0.866 ]])
+        >>> distribution.pdf(samples).round(4)
+        array([ 0.2014,  0.3844, 11.8424])
+        >>> distribution.fwd(samples).round(4)
+        array([[0.6536, 0.115 , 0.9503],
+               [0.4822, 0.8725, 0.2123]])
+        >>> mesh = numpy.meshgrid([.4, .5, .6], [.4, .5, .6])
+        >>> distribution.inv(mesh).round(4)
+        array([[[-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ],
+                [-0.2   ,  0.    ,  0.2   ]],
+        <BLANKLINE>
+               [[-0.3764, -0.0596,  0.1991],
+                [-0.1496,  0.115 ,  0.331 ],
+                [ 0.0446,  0.2645,  0.444 ]]])
+        >>> distribution.mom([1, 2]).round(4)
+        0.9985
+
     """
 
     def __init__(self, dist, theta=2.):
-        """
-        Args:
-            dist (Dist):
-                The Distribution to wrap
-            theta (float):
-                Copula parameter
-        """
         self._repr = {"theta": theta}
         Copula.__init__(self, dist, joe(len(dist), theta))
