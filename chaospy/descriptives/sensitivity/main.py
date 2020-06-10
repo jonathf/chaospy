@@ -35,12 +35,14 @@ def Sens_m(poly, dist, **kws):
     dim = len(dist)
     poly = setdim(poly, dim)
 
-    zero = [0]*dim
     out = numpy.zeros((dim,) + poly.shape)
-    V = Var(poly, dist, **kws)
-    for i in range(dim):
-        zero[i] = 1
-        out[i] = Var(E_cond(poly, zero, dist, **kws),
-                     dist, **kws)/(V+(V == 0))*(V != 0)
-        zero[i] = 0
+    variance = Var(poly, dist, **kws)
+    valids = variance != 0
+
+    for idx, unit_vec in enumerate(numpy.eye(dim, dtype=int)):
+
+        conditional = E_cond(poly[valids], unit_vec, dist, **kws)
+        out[idx, valids] = Var(conditional, dist, **kws)
+        out[idx, valids] /= variance[valids]
+
     return out

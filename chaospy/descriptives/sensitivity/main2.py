@@ -38,31 +38,30 @@ def Sens_m2(poly, dist, **kws):
     dim = len(dist)
     poly = setdim(poly, len(dist))
 
-    zero = [0]*dim
     out = numpy.zeros((dim, dim) + poly.shape)
+    variance = Var(poly, dist)
 
-    mean = E(poly, dist)
-    V_total = Var(poly, dist)
-    E_cond_i = [None]*dim
-    V_E_cond_i = [None]*dim
-    for i in range(dim):
-        zero[i] = 1
-        E_cond_i[i] = E_cond(poly, zero, dist, **kws) 
-        V_E_cond_i[i] = Var(E_cond_i[i], dist, **kws)
-        zero[i] = 0
+    valids = variance != 0
+    if not numpy.all(valids):
+        out[:, :, valids] = Sens_m2(poly[valids], dist, **kws)
+        return out
 
-    for i in range(dim):
+    conditional_v = numpy.zeros((dim,)+poly.shape)
+    for idx, unit_vec in enumerate(numpy.eye(dim, dtype=int)):
+        conditional_e = E_cond(poly, unit_vec, dist, **kws)
+        conditional_v[idx] = Var(conditional_e, dist, **kws)
 
-        zero[i] = 1
-        for j in range(i+1, dim):
+    for idx, unit_vec1 in enumerate(numpy.eye(dim, dtype=int)):
+        for idy, unit_vec2 in enumerate(numpy.eye(dim, dtype=int)[idx+1:], idx+1):
 
-            zero[j] = 1
-            E_cond_ij = E_cond(poly, zero, dist, **kws)
-            out[i, j] = ((Var(E_cond_ij, dist, **kws)-V_E_cond_i[i]-V_E_cond_i[j]) /
-                         (V_total+(V_total == 0))*(V_total != 0))
-            out[j, i] = out[i, j]
-            zero[j] = 0
+            conditional_e = E_cond(poly, unit_vec1+unit_vec2, dist, **kws)
+            out[idx, idy] = Var(conditional_e, dist, **kws)
+            out[idx, idy] -= conditional_v[idx]
+            out[idx, idy] -= conditional_v[idy]
+            out[idx, idy] /= variance
 
-        zero[i] = 0
+    # copy upper matrix triangle down to lower triangle
+    indices = numpy.tril_indices(dim, -1)
+    out[indices] = numpy.swapaxes(out, 0, 1)[indices]
 
     return out

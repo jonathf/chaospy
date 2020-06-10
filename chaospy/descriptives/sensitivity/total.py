@@ -36,12 +36,18 @@ def Sens_t(poly, dist, **kws):
     dim = len(dist)
     poly = setdim(poly, dim)
 
-    zero = [1]*dim
-    out = numpy.zeros((dim,) + poly.shape, dtype=float)
-    V = Var(poly, dist, **kws)
-    for i in range(dim):
-        zero[i] = 0
-        out[i] = ((V-Var(E_cond(poly, zero, dist, **kws), dist, **kws)) /
-                  (V+(V == 0))**(V!=0))
-        zero[i] = 1
+    out = numpy.zeros((dim,)+poly.shape, dtype=float)
+    variance = Var(poly, dist, **kws)
+
+    valids = variance != 0
+    if not numpy.all(valids):
+        out[:, valids] = Sens_t(poly[valids], dist, **kws)
+        return out
+
+    out[:] = variance
+    for idx, unit_vec in enumerate(numpy.eye(dim, dtype=int)):
+        conditional = E_cond(poly, 1-unit_vec, dist, **kws)
+        out[idx] -= Var(conditional, dist, **kws)
+        out[idx] /= variance
+
     return out
