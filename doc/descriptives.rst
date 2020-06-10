@@ -68,16 +68,8 @@ Total Order Index ``Sens_t``
 
 .. autofunction:: chaospy.descriptives.sensitivity.total.Sens_t
 
-Nataf Copula
-------------
-
-.. automodule:: chaospy.descriptives.sensitivity.nataf
-.. autofunction:: chaospy.descriptives.sensitivity.nataf.Sens_m_nataf
-.. autofunction:: chaospy.descriptives.sensitivity.nataf.Sens_t_nataf
-.. autofunction:: chaospy.descriptives.sensitivity.nataf.Sens_nataf
-
-Miscelanious
-============
+Miscellaneous
+=============
 
 Percentile Function ``Perc``
 ----------------------------
