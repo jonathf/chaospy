@@ -97,12 +97,16 @@ def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
             recurrence coefficients for stability.
 
     Examples:
-        >>> distribution = chaospy.Normal()
-        >>> expansion, norms = chaospy.orth_ttr(4, distribution, retall=True)
-        >>> expansion.round(4)
-        polynomial([1.0, q0, q0**2-1.0, q0**3-3.0*q0, q0**4-6.0*q0**2+3.0])
-        >>> norms
-        array([ 1.,  1.,  2.,  6., 24.])
+        >>> distribution = chaospy.J(chaospy.Normal(), chaospy.Normal())
+        >>> polynomials, norms = chaospy.orth_ttr(2, distribution, retall=True)
+        >>> polynomials.round(10)
+        polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
+        >>> norms.round(10)
+        array([1., 1., 1., 2., 1., 2.])
+        >>> polynomials = chaospy.orth_ttr(2, distribution, normed=True)
+        >>> polynomials.round(3)
+        polynomial([1.0, q1, q0, 0.707*q1**2-0.707, q0*q1, 0.707*q0**2-0.707])
+
     """
     logger = logging.getLogger(__name__)
     if sort is not None:
