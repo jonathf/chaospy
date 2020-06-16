@@ -41,6 +41,12 @@ Core Topics
 Advanced Topics
 ---------------
 
+`Scikit-Learn Regression`_
+   The library `scikit-learn` is a great machine-learning toolkit that provides
+   a large collection of regression methods. By default, ``chaospy`` only
+   support traditional least-square regression when doing `Point Collocation`_,
+   but ``chaospy`` is designed to also work together with the various
+   regression functions provided by the `scikit-learn` interface.
 `Intrusive Galerkin`_
    Intrusive Galerkin method is the classical approach for applying polynomial
    chaos expansion on a set of governing equations. An intrusive method, unlike
@@ -48,6 +54,7 @@ Advanced Topics
    `Pseudo-Spectral Projection`_. It requires a bit more use of the mathematical
    hand holding to apply properly.
 
+.. _Scikit-Learn Regression: ./scikitlearn_regression.ipynb
 .. _Intrusive Galerkin: ./intrusive_galerkin.ipynb
 
 Polynomials and Polynomial Expansions
