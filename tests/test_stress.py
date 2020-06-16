@@ -90,9 +90,7 @@ def test_regression():
     orth, norms = cp.orth_ttr(order, dist, retall=1)
     data = dist.sample(samples)
     vals = np.zeros((samples, size))
-    cp.fit_regression(orth, data, vals, "LS")
-    cp.fit_regression(orth, data, vals, "T", order=0)
-    cp.fit_regression(orth, data, vals, "TC", order=0)
+    cp.fit_regression(orth, data, vals)
 
 
 def test_descriptives():
