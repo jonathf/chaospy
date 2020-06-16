@@ -81,6 +81,8 @@ These samples can then be used to do analysis using tools from the standard
     :ref:`sampling`,
     :ref:`distributions`
 
+.. _regression:
+
 Point Collocation method
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -119,6 +121,8 @@ With the approximation available, analysis can be done using tools from the
     :ref:`orthogonality`,
     :ref:`polynomials`,
     :ref:`regression`
+
+.. _spectral:
 
 Pseudo-spectral Projection method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
