@@ -12,9 +12,10 @@ And you should be ready to go.
 Alternatively, to get the most current experimental version, the code can be
 installed from Github as follows::
 
-    git clone git@github.com:jonathf/chaospy.git
-    cd chaospy
-    git checkout <tag or branch of interest>
+    git clone git@github.com:jonathf/chaospy.git    # only the first time
+    cd chaospy/
+    git checkout master
+    git pull                                        # after the first time
     pip install .
 
 Development
@@ -30,8 +31,8 @@ This will install all required dependencies and chaospy into a virtual
 environment. If you are not already managing your own virtual environment, you
 can use poetry to activate and deactivate with::
 
-    poetry shell        # enter
-    exit                # exit
+    poetry shell
+    exit
 
 .. _poetry: https://poetry.eustace.io/
 
@@ -40,7 +41,7 @@ Testing
 
 To run test::
 
-    poetry run pytest -nbval --doctest-modules chaospy test doc/*.rst tutorial
+    poetry run pytest --nbval --doctest-modules chaospy test doc/*.rst tutorial
 
 Documentation
 -------------

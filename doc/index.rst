@@ -25,4 +25,3 @@ Table of contents
     sampling/index.rst
     quadrature
     descriptives
-    recipes/index.rst

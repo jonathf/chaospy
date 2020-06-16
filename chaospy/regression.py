@@ -111,9 +111,9 @@ def fit_regression(
     else:
         try:
             from sklearn.base import BaseEstimator
-        except ImportError as err:
+        except ImportError:
             raise ValueError(
-                "arg model != None requires that scikit-learn is installed") from err
+                "arg model != None requires that scikit-learn is installed")
 
         if not isinstance(model, BaseEstimator):
             raise ValueError("model not recognized; "
