@@ -71,8 +71,7 @@ jobs:
       - image: circleci/python:3.8.3
     working_directory: /home/circleci/project
     steps:
-      - attach_workspace:
-          at: /home/circleci
+      - checkout
       - run:
           name: "Verify tag version"
           command: |
@@ -81,6 +80,9 @@ jobs:
                   | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\(-[a-z0-9]\+\)\{0,1\}')
               echo "$CIRCLE_TAG == v$PROJECT_TAG"
               test "$CIRCLE_TAG" = "v$PROJECT_TAG"
+      - restore_cache:
+          keys:
+            - deps-py38-{{ checksum "poetry.lock" }}
       - run:
           name: "Publish to PyPI"
           command: |
@@ -99,8 +101,6 @@ workflows:
           filters:
             <<: *version-tags
       - deploy:
-          requires:
-            - test
           filters:
             <<: *version-tags
             branches:
