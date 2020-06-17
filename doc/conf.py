@@ -37,6 +37,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.autosummary',
+    'nbsphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -66,6 +67,9 @@ exclude_patterns = ['.build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# Execute content of Jupyter notebooks:
+# "always", "never", "auto" (on empty cell only)
+nbsphinx_execute = "never"
 
 # -- Options for HTML output -------------------------------------------------
 
