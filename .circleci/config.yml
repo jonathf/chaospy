@@ -64,7 +64,8 @@ jobs:
           command: |
             source /home/circleci/venv/bin/activate
             coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
-                chaospy/ tests/ tutorial/ doc/*.rst doc/*/*.rst
+                chaospy/ tests/ doc/*.rst doc/*/*.rst \
+                doc/tutorials/*.ipynb doc/tutorials/*/*.ipynb
             bash <(curl -s https://codecov.io/bash)
   deploy:
     docker:

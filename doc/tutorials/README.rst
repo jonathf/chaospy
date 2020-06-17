@@ -1,13 +1,29 @@
-Tutorial
-========
+.. _tutorial:
+
+Tutorials
+=========
+
+.. toctree::
+   :hidden:
+
+   example_introduction
+   introduction/low_discrepancy_monte_carlo
+   introduction/point_collocation
+   introduction/pseudo_spectral_projection
+   advanced/scikitlearn_regression
+   advanced/intrusive_galerkin
+   polynomial/expansion_construction
+   polynomial/evaluation
+   polynomial/lagrange
+   polynomial/truncation
+   polynomial/wiener_askey
 
 Here is a collection of `Jupyter notebooks <https://jupyter.org/>`_ that
 explore different ways to use ``chaospy``.
 
-Precursor
----------
+.. rubric:: Precursor
 
-`Example Introduction <./example_introduction.ipynb>`_
+`Example Introduction`_
    The notebooks are all self contained, however many of the examples addressed
    is repeated a lot. In this introduction, the common example is explored in a
    little more detail, whereas in the other notebooks, the example is skimmed
@@ -15,8 +31,7 @@ Precursor
 
 .. _Example Introduction: ./example_introduction.ipynb
 
-Core Topics
------------
+.. rubric:: Introductory Topics
 
 `Low-discrepancy Monte Carlo`_
    Monte Carlo integration is the tried and true method for doing uncertainty
@@ -34,12 +49,11 @@ Core Topics
    quadrature) integration to estimate the Fourier coefficients needed to
    create the model approximation.
 
-.. _Low-discrepancy Monte Carlo: ./low_discrepancy_monte_carlo.ipynb
-.. _Point Collocation: ./point_collocation.ipynb
-.. _Pseudo-Spectral Projection: ./pseudo_spectral_projection.ipynb
+.. _Low-discrepancy Monte Carlo: ./introduction/low_discrepancy_monte_carlo.ipynb
+.. _Point Collocation: ./introduction/point_collocation.ipynb
+.. _Pseudo-Spectral Projection: ./introduction/pseudo_spectral_projection.ipynb
 
-Advanced Topics
----------------
+.. rubric:: Advanced Topics
 
 `Scikit-Learn Regression`_
    The library `scikit-learn` is a great machine-learning toolkit that provides
@@ -54,11 +68,10 @@ Advanced Topics
    `Pseudo-Spectral Projection`_. It requires a bit more use of the mathematical
    hand holding to apply properly.
 
-.. _Scikit-Learn Regression: ./scikitlearn_regression.ipynb
-.. _Intrusive Galerkin: ./intrusive_galerkin.ipynb
+.. _Scikit-Learn Regression: ./advanced/scikitlearn_regression.ipynb
+.. _Intrusive Galerkin: ./advanced/intrusive_galerkin.ipynb
 
-Polynomials and Polynomial Expansions
--------------------------------------
+.. rubric:: Polynomial Expansions
 
 `Constructing Polynomial Expansions`_
    An overview over how to construct both polynomials and polynomial
