@@ -972,6 +972,38 @@ test = ["pytest", "pytest-cov", "testpath"]
 
 [[package]]
 category = "dev"
+description = "Jupyter Notebook Tools for Sphinx"
+name = "nbsphinx"
+optional = false
+python-versions = ">=2.7"
+version = "0.5.1"
+
+[package.dependencies]
+docutils = "*"
+jinja2 = "*"
+nbconvert = "!=5.4"
+nbformat = "*"
+sphinx = ">=1.8"
+traitlets = "*"
+
+[[package]]
+category = "dev"
+description = "Jupyter Notebook Tools for Sphinx"
+name = "nbsphinx"
+optional = false
+python-versions = ">=3"
+version = "0.7.1"
+
+[package.dependencies]
+docutils = "*"
+jinja2 = "*"
+nbconvert = "!=5.4"
+nbformat = "*"
+sphinx = ">=1.8"
+traitlets = "*"
+
+[[package]]
+category = "dev"
 description = "A py.test plugin to validate Jupyter notebooks"
 name = "nbval"
 optional = false
@@ -1861,7 +1893,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "8eae10025e216c5c078d0b6c4855abd5b111bcb31c2f23300e60511ba38606fb"
+content-hash = "512845305344ea8ca6b10b8d112342976807c575fda3fe2e683e93a35e320177"
 python-versions = "*"
 
 [metadata.files]
@@ -2300,6 +2332,12 @@ nbformat = [
     {file = "nbformat-5.0.3-py3-none-any.whl", hash = "sha256:d1407544cf0c53ee88f504b6c732aef6e0f407a0858b405fcf133e0a25bb787b"},
     {file = "nbformat-5.0.7-py3-none-any.whl", hash = "sha256:ea55c9b817855e2dfcd3f66d74857342612a60b1f09653440f4a5845e6e3523f"},
     {file = "nbformat-5.0.7.tar.gz", hash = "sha256:54d4d6354835a936bad7e8182dcd003ca3dc0cedfee5a306090e04854343b340"},
+]
+nbsphinx = [
+    {file = "nbsphinx-0.5.1-py2.py3-none-any.whl", hash = "sha256:e100472db293dcc2f7aae04ebebec0bfbe8eba88e209d04f367373fdd4b1455d"},
+    {file = "nbsphinx-0.5.1.tar.gz", hash = "sha256:1c3e1b5c5b4c96c06c2e428536b6a7860ee23bc290dc4e6e73ee6ed5076a004e"},
+    {file = "nbsphinx-0.7.1-py3-none-any.whl", hash = "sha256:560b23ff8468643b49e19293c154c93c6ee7090786922731e1c391bd566aac86"},
+    {file = "nbsphinx-0.7.1.tar.gz", hash = "sha256:f50bd750e4ee3a4e4c3cf571155eab413dc87d581c1380021e7623205b5fa648"},
 ]
 nbval = [
     {file = "nbval-0.9.5-py2.py3-none-any.whl", hash = "sha256:10aced0f9a28893e608c2704b2e8bdcbc57635db9640d454f85fe0545fda5002"},
