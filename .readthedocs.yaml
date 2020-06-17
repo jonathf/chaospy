@@ -7,7 +7,7 @@ build:
 python:
   version: 3.8
   install:
+      - requirements: doc/requirements.txt
       - method: pip
         path: .
-        requirements: doc/requirements.txt
   system_packages: true
