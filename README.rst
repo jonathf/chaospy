@@ -36,7 +36,7 @@ installed from Github as follows::
     cd chaospy/
     pip install .
 
-Updating can later be done with::
+Updating can later be done from the ``chaospy/`` folder::
 
    git pull
    pip install .
@@ -162,10 +162,14 @@ To build documentation, run:
 
 The documentation will be generated into the folder ``doc/.build/html``.
 
+Note that the documentation build assumes that ``pandoc`` is installed on your
+system and available in your path.
+
 Questions and Contributions
 ---------------------------
 
-Please feel free to `file an issue <https://github.com/jonathf/chaospy/issues>`_ for:
+Please feel free to
+`file an issue <https://github.com/jonathf/chaospy/issues>`_ for:
 
 * bug reporting
 * asking questions related to usage
