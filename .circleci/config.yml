@@ -58,14 +58,14 @@ jobs:
           name: "Ensure the documentation builds"
           command: |
             source /home/circleci/venv/bin/activate
-            sphinx-build doc/ doc/.build -b html -n -v --color -T -W
+            sphinx-build docs/ docs/.build -b html -n -v --color -T -W
       - run:
           name: "Run pytest"
           command: |
             source /home/circleci/venv/bin/activate
             coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
-                chaospy/ tests/ doc/*.rst doc/*/*.rst \
-                doc/tutorials/*.ipynb doc/tutorials/*/*.ipynb
+                chaospy/ tests/ docs/*.rst docs/*/*.rst \
+                docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb
             bash <(curl -s https://codecov.io/bash)
   deploy:
     docker:
