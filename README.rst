@@ -18,10 +18,6 @@ Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
 Python.
 
-If you are using this software in work that will be published, please cite the
-journal article: `Chaospy: An open source tool for designing methods of
-uncertainty quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_
-
 .. contents:: Table of Contents:
 
 Installation
@@ -36,10 +32,14 @@ And you should be ready to go.
 Alternatively, to get the most current experimental version, the code can be
 installed from Github as follows::
 
-    git clone git@github.com:jonathf/chaospy.git    # first time only
+    git clone git@github.com:jonathf/chaospy.git
     cd chaospy/
-    git pull                                        # after the first time
     pip install .
+
+Updating can later be done with::
+
+   git pull
+   pip install .
 
 Example Usage
 -------------
@@ -49,14 +49,15 @@ point collocation method will look as follows:
 
 .. code-block:: python
 
-    import chaospy
     import numpy
+    import chaospy
 
     # your code wrapper goes here
     coordinates = numpy.linspace(0, 10, 100)
     def foo(coordinates, params):
         """Function to do uncertainty quantification on."""
-        return params[0] * numpy.e**(-params[1]*coordinates)
+        param_init, param_rate = params
+        return param_init*numpy.e**(-param_rate*coordinates)
 
     # bi-variate probability distribution
     distribution = chaospy.J(chaospy.Uniform(1, 2), chaospy.Uniform(0.1, 0.2))
@@ -68,7 +69,7 @@ point collocation method will look as follows:
     samples = distribution.sample(1000)
 
     # evaluations:
-    evals = [foo(coordinates, sample) for sample in samples.T]
+    evals = numpy.array([foo(coordinates, sample) for sample in samples.T])
 
     # polynomial approximation
     foo_approx = chaospy.fit_regression(
@@ -78,8 +79,9 @@ point collocation method will look as follows:
     expected = chaospy.E(foo_approx, distribution)
     deviation = chaospy.Std(foo_approx, distribution)
 
-For a more extensive description of what going on, see the
-`collection of tutorials <https://github.com/tutoral>`_.
+For a more extensive guides on what is going on, see the `tutorial collection`_.
+
+.. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorals
 
 Related Projects
 ----------------
@@ -169,3 +171,7 @@ Please feel free to `file an issue <https://github.com/jonathf/chaospy/issues>`_
 * asking questions related to usage
 * requesting new features
 * wanting to contribute with code
+
+If you are using this software in work that will be published, please cite the
+journal article: `Chaospy: An open source tool for designing methods of
+uncertainty quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_

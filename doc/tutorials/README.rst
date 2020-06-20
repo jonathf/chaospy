@@ -7,21 +7,22 @@ Tutorials
    :hidden:
 
    example_introduction
-   introduction/low_discrepancy_monte_carlo
+   introduction/monte_carlo_integration
    introduction/point_collocation
    introduction/pseudo_spectral_projection
    advanced/scikitlearn_regression
    advanced/intrusive_galerkin
    polynomial/expansion_construction
-   polynomial/evaluation
-   polynomial/lagrange
-   polynomial/truncation
-   polynomial/wiener_askey
+   polynomial/polynomial_evaluation
+   polynomial/wiener_askey_scheme
+   polynomial/truncation_scheme
+   polynomial/lagrange_polynomials
 
 Here is a collection of `Jupyter notebooks <https://jupyter.org/>`_ that
 explore different ways to use ``chaospy``.
 
-.. rubric:: Precursor
+Precursor
+---------
 
 `Example Introduction`_
    The notebooks are all self contained, however many of the examples addressed
@@ -31,9 +32,10 @@ explore different ways to use ``chaospy``.
 
 .. _Example Introduction: ./example_introduction.ipynb
 
-.. rubric:: Introductory Topics
+Introductory Topics
+-------------------
 
-`Low-discrepancy Monte Carlo`_
+`Monte Carlo Integration`_
    Monte Carlo integration is the tried and true method for doing uncertainty
    quantification. However, it is in many instances possible to speed up the
    convergence rate of the integration, by replacing traditional
@@ -49,11 +51,12 @@ explore different ways to use ``chaospy``.
    quadrature) integration to estimate the Fourier coefficients needed to
    create the model approximation.
 
-.. _Low-discrepancy Monte Carlo: ./introduction/low_discrepancy_monte_carlo.ipynb
+.. _Monte Carlo Integration: ./introduction/monte_carlo_integration.ipynb
 .. _Point Collocation: ./introduction/point_collocation.ipynb
 .. _Pseudo-Spectral Projection: ./introduction/pseudo_spectral_projection.ipynb
 
-.. rubric:: Advanced Topics
+Advanced Topics
+---------------
 
 `Scikit-Learn Regression`_
    The library `scikit-learn` is a great machine-learning toolkit that provides
@@ -71,9 +74,10 @@ explore different ways to use ``chaospy``.
 .. _Scikit-Learn Regression: ./advanced/scikitlearn_regression.ipynb
 .. _Intrusive Galerkin: ./advanced/intrusive_galerkin.ipynb
 
-.. rubric:: Polynomial Expansions
+Polynomial Behavior
+-------------------
 
-`Constructing Polynomial Expansions`_
+`Expansion Construction`_
    An overview over how to construct both polynomials and polynomial
    expansions.
 `Polynomial Evaluation`_
@@ -81,21 +85,21 @@ explore different ways to use ``chaospy``.
    the polynomials in ``chaospy``, the polynomial have support for vectorized
    evaluations, and partial evaluations and using ``numpy`` compatibility
    wrapper, to mention a few of the things that can be done.
-`Lagrange Polynomials`_
-   Lagrange polynomials are also used in Uncertainty quantification as an
-   alternative strategy to polynomial chaos expansions.
-`Truncation of Polynomial Expansion`_
+`Wiener-Askey Scheme`_
+   Classical theory defines the original orthogonal polynomial expansions back
+   to the Askey-polynomials. These polynomials have specific form and have
+   value from a theoretical analysis point of view.
+`Truncation Scheme`_
    Polynomial chaos expansion is classically truncated at fixed polynomial
    orders. However, it is possible to refine the truncation rule to better
    suite the problem that is being solved using dimension prioritization and
    :math:`L_p`-norm truncation rules.
-`The Wiener-Askey Polynomial Expansions`_
-   Classical theory defines the original orthogonal polynomial expansions back
-   to the Askey-polynomials. These polynomials have specific form and have
-   value from a theoretical analysis point of view.
+`Lagrange Polynomials`_
+   Lagrange polynomials are also used in Uncertainty quantification as an
+   alternative strategy to polynomial chaos expansions.
 
-.. _Constructing Polynomial Expansions: ./polynomial/expansion_construction.ipynb
-.. _Polynomial Evaluation: ./polynomial/evaluation.ipynb
+.. _Expansion Construction: ./polynomial/expansion_construction.ipynb
+.. _Polynomial Evaluation: ./polynomial/polynomial_evaluation.ipynb
+.. _Wiener-Askey Scheme: ./polynomial/wiener_askey_scheme.ipynb
+.. _Truncation Scheme: ./polynomial/truncation.ipynb
 .. _Lagrange Polynomials: ./polynomial/lagrange.ipynb
-.. _Truncation of Polynomial Expansion: ./polynomial/truncation.ipynb
-.. _The Wiener-Askey Polynomial Expansions: ./polynomial/wiener_askey.ipynb

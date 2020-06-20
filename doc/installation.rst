@@ -12,10 +12,10 @@ And you should be ready to go.
 Alternatively, to get the most current experimental version, the code can be
 installed from Github as follows::
 
-    git clone git@github.com:jonathf/chaospy.git    # only the first time
+    git clone git@github.com:jonathf/chaospy.git    # first time only
     cd chaospy/
     git checkout master
-    git pull                                        # after the first time
+    git pull                                        # after the first
     pip install .
 
 Development
@@ -41,7 +41,11 @@ Testing
 
 To run test::
 
-    poetry run pytest --nbval --doctest-modules chaospy test doc/*.rst tutorial
+    poetry run pytest --nbval --doctest-modules \
+        chaospy/ test/ doc/*.rst
+    poetry run pytest --nbval --doctest-modules \
+        chaospy/ tests/ doc/*.rst doc/*/*.rst \
+        doc/tutorials/*.ipynb doc/tutorials/*/*.ipynb
 
 Documentation
 -------------
