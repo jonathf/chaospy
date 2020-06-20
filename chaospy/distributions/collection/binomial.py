@@ -35,6 +35,7 @@ class Binomial(Dist):
     interpret_as_integer = True
 
     def __init__(self, size, prob):
+        self._repr = {"size": size, "prob": prob}
         Dist.__init__(self, size=size, prob=prob)
 
     def _cdf(self, x_data, size, prob):
