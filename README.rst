@@ -1,4 +1,4 @@
-.. image:: doc/.static/chaospy_logo.svg
+.. image:: docs/.static/chaospy_logo.svg
    :height: 200 px
    :width: 200 px
    :align: center
