@@ -1,6 +1,5 @@
+"""Percentile function."""
 import numpy
-
-from .. import poly as polynomials
 
 
 def Perc(poly, q, dist, sample=10000, **kws):
@@ -11,7 +10,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     Carlo sampling.
 
     Args:
-        poly (chaospy.poly.ndpoly):
+        poly (numpoly.ndpoly):
             Polynomial of interest.
         q (numpy.ndarray):
             positions where percentiles are taken. Must be a number or an
@@ -27,14 +26,15 @@ def Perc(poly, q, dist, sample=10000, **kws):
 
     Examples:
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.polynomial([0.05*x, 0.2*y, 0.01*x*y])
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.polynomial([0.05*q0, 0.2*q1, 0.01*q0*q1])
         >>> chaospy.Perc(poly, [0, 5, 50, 95, 100], dist).round(2)
         array([[ 0.  , -3.  , -6.3 ],
                [ 0.  , -0.64, -0.04],
                [ 0.03, -0.01, -0.  ],
                [ 0.15,  0.66,  0.04],
                [ 2.1 ,  3.  ,  6.3 ]])
+
     """
     shape = poly.shape
     poly = poly.flatten()
@@ -45,7 +45,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     # Interior
     Z = dist.sample(sample, **kws)
     if dim==1:
-        Z = (Z, )
+        Z = (Z,)
         q = numpy.array([q])
     poly1 = poly(*Z)
 

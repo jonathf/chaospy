@@ -1,6 +1,6 @@
 import numpy
+import numpoly
 
-from ...poly.setdim import setdim
 from ..conditional import E_cond
 from ..expected import E
 from ..variance import Var
@@ -13,7 +13,7 @@ def Sens_m2(poly, dist, **kws):
     Second order sensitivity indices.
 
     Args:
-        poly (chaospy.poly.ndpoly):
+        poly (numpoly.ndpoly):
             Polynomial to find second order Sobol indices on.
         dist (Dist):
             The distributions of the input used in ``poly``.
@@ -24,19 +24,19 @@ def Sens_m2(poly, dist, **kws):
             with shape ``(len(dist), len(dist)) + poly.shape``.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.polynomial([1, x*y, x*x*y*y, x*y*y*y])
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.polynomial([1, q0*q1, q0**3*q1, q0*q1**3])
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
-        >>> indices = chaospy.Sens_m2(poly, dist)
-        >>> print(indices)
-        [[[0.         0.         0.         0.        ]
-          [0.         0.14285714 0.28571429 0.20930233]]
+        >>> chaospy.Sens_m2(poly, dist).round(4)
+        array([[[0.    , 0.    , 0.    , 0.    ],
+                [0.    , 0.1429, 0.2093, 0.2093]],
         <BLANKLINE>
-         [[0.         0.14285714 0.28571429 0.20930233]
-          [0.         0.         0.         0.        ]]]
+               [[0.    , 0.1429, 0.2093, 0.2093],
+                [0.    , 0.    , 0.    , 0.    ]]])
+
     """
     dim = len(dist)
-    poly = setdim(poly, len(dist))
+    poly = numpoly.set_dimensions(poly, len(dist))
 
     out = numpy.zeros((dim, dim) + poly.shape)
     variance = Var(poly, dist)

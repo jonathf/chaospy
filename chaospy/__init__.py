@@ -8,17 +8,21 @@ import logging
 import os
 import pkg_resources
 
+from numpoly import *
+
 import chaospy.chol
 import chaospy.descriptives
 import chaospy.distributions
 import chaospy.orthogonal
-import chaospy.poly
 import chaospy.spectral
 import chaospy.quadrature
 import chaospy.saltelli
 import chaospy.regression
 
-from chaospy.poly import *
+# To be deprecated
+from .basis import basis
+from .prange import prange
+
 from chaospy.distributions import *
 from chaospy.orthogonal import *
 from chaospy.spectral import *
@@ -42,7 +46,9 @@ def configure_logging():
     loglevel = logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") else logging.WARNING
     streamer.setLevel(loglevel)
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("chaospy")
+    logger.addHandler(streamer)
+    logger = logging.getLogger("numpoly")
     logger.addHandler(streamer)
 
 configure_logging()

@@ -1,7 +1,6 @@
 """Discretized Stieltjes' method."""
 import numpy
 import numpoly
-import chaospy.poly
 
 
 def discretized_stieltjes(order, abscissas, weights, normed=False):
@@ -70,8 +69,9 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
     assert len(abscissas.shape) == 2
     assert abscissas.shape[-1] == len(weights)
 
-    poly = chaospy.poly.variable(len(abscissas))
-    orth = [poly*0, poly**0]
+    poly = numpoly.variable(len(abscissas))
+    orth = [numpoly.repeat(0., len(abscissas)),
+            numpoly.repeat(1., len(abscissas))]
 
     inner = numpy.sum(abscissas*weights, -1)
     norms = [numpy.ones(len(abscissas)), numpy.ones(len(abscissas))]
@@ -94,7 +94,7 @@ def discretized_stieltjes(order, abscissas, weights, normed=False):
 
     coeffs = numpy.moveaxis(coeffs, 0, 2)
     norms = numpy.array(norms[1:]).T
-    orth = chaospy.poly.polynomial(orth[1:])
+    orth = numpoly.polynomial(orth[1:])
 
     return coeffs, orth, norms
 
@@ -136,12 +136,12 @@ def analytical_stieljes(order, dist, normed=False):
     coeffs = dist.ttr(mom_order)
     coeffs[1, :, 0] = 1.
 
-    var = chaospy.poly.variable(dimensions)
+    var = numpoly.variable(dimensions)
     orth = [numpy.zeros(dimensions), numpy.ones(dimensions)]
     for order_ in range(order):
         orth.append(
             (var-coeffs[0, :, order_])*orth[-1]-coeffs[1, :, order_]*orth[-2])
-    orth = chaospy.poly.polynomial(orth[1:]).T
+    orth = numpoly.polynomial(orth[1:]).T
 
     norms = numpy.cumprod(coeffs[1], 1)
     if normed:

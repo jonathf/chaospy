@@ -1,6 +1,7 @@
+"""Constructs distributions for the quantity of interests."""
 import numpy
 
-from .. import distributions, poly as polynomials
+from .. import distributions
 from ..external import SampleDist
 
 
@@ -15,7 +16,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     with that newly generated Dists.
 
     Args:
-        poly (chaospy.poly.ndpoly):
+        poly (numpoly.ndpoly):
             Polynomial of interest.
         dist (Dist):
             Defines the space where the samples for the KDE is taken from the

@@ -29,7 +29,7 @@ import numpoly
 
 
 def orth_chol(order, dist, normed=False, graded=True, reverse=True,
-              cross_truncation=1., retall=False, sort=None, **kws):
+              cross_truncation=1., retall=False, **kws):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
@@ -66,9 +66,13 @@ def orth_chol(order, dist, normed=False, graded=True, reverse=True,
 
     """
     dim = len(dist)
-    basis = chaospy.poly.basis(
-        start=1, stop=order, dim=dim, graded=graded, reverse=reverse,
-        sort=sort, cross_truncation=cross_truncation,
+    basis = numpoly.monomial(
+        start=1,
+        stop=order+1,
+        names=numpoly.variable(dim).names,
+        graded=graded,
+        reverse=reverse,
+        cross_truncation=cross_truncation,
     )
     length = len(basis)
 
@@ -100,7 +104,7 @@ def orth_chol(order, dist, normed=False, graded=True, reverse=True,
         out[tuple(key)] = coefs[idx+1]
 
     names = numpoly.symbols("q:%d" % dim)
-    polynomials = chaospy.poly.polynomial(out, names=names)
+    polynomials = numpoly.polynomial(out, names=names)
 
     if retall:
         return polynomials, norms

@@ -68,18 +68,19 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
         raise numpy.linalg.LinAlgError(
             "Lagrange abscissas resulted in invertible matrix")
 
-    vec = chaospy.poly.basis(0, order, dim, graded=graded,
-                             reverse=reverse, sort=sort)[:size]
+    names = numpoly.variable(dim).names
+    vec = numpoly.monomial(
+        0, order+1, names=names, graded=graded, reverse=reverse)[:size]
 
     coeffs = numpy.zeros((size, size))
 
     if size == 1:
-        out = chaospy.poly.basis(0, 0, dim, graded=graded,
-                                 reverse=reverse, sort=sort)*abscissas.item()
+        out = numpoly.monomial(
+            0, 1, names=names, graded=graded, reverse=reverse)*abscissas.item()
 
     elif size == 2:
         coeffs = numpy.linalg.inv(matrix)
-        out = chaospy.poly.sum(vec*(coeffs.T), 1)
+        out = numpoly.sum(vec*(coeffs.T), 1)
 
     else:
         for i in range(size):
@@ -99,6 +100,6 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
                 k += 1
             matrix = numpy.roll(matrix, -1, axis=1) 
         coeffs /= det
-        out = chaospy.poly.sum(vec*(coeffs.T), 1)
+        out = numpoly.sum(vec*(coeffs.T), 1)
 
     return out
