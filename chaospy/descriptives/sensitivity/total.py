@@ -1,7 +1,7 @@
 """Total Sobol sensitivity index."""
 import numpy
+import numpoly
 
-from ...poly.setdim import setdim
 from ..conditional import E_cond
 from ..variance import Var
 
@@ -14,7 +14,7 @@ def Sens_t(poly, dist, **kws):
     Total effect sensitivity index
 
     Args:
-        poly (chaospy.poly.ndpoly):
+        poly (numpoly.ndpoly):
             Polynomial to find first order Sobol indices on.
         dist (Dist):
             The distributions of the input used in ``poly``.
@@ -25,16 +25,15 @@ def Sens_t(poly, dist, **kws):
             with shape ``(len(dist),) + poly.shape``.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
-        >>> indices = chaospy.Sens_t(poly, dist)
-        >>> print(indices)
-        [[0.         1.         0.         0.57142857]
-         [0.         0.         1.         0.57142857]]
+        >>> chaospy.Sens_t(poly, dist)
+        array([[0.        , 1.        , 0.        , 0.57142857],
+               [0.        , 0.        , 1.        , 0.57142857]])
     """
     dim = len(dist)
-    poly = setdim(poly, dim)
+    poly = numpoly.set_dimensions(poly, dim)
 
     out = numpy.zeros((dim,)+poly.shape, dtype=float)
     variance = Var(poly, dist, **kws)

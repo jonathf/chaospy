@@ -1,7 +1,6 @@
 """Expected value."""
 import numpy
-
-from .. import poly as polynomials
+import numpoly
 
 
 def E(poly, dist=None, **kws):
@@ -12,7 +11,7 @@ def E(poly, dist=None, **kws):
     probability space.
 
     Args:
-        poly (chaospy.poly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Dist):
             Input to take expected value on.
         dist (Dist):
             Defines the space the expected value is taken on. It is ignored if
@@ -27,16 +26,17 @@ def E(poly, dist=None, **kws):
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
         >>> chaospy.E(dist)
         array([1., 0.])
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> chaospy.E(poly, dist)
-        array([1., 1., 0., 0.])
+        array([ 1.,  1.,  0., -1.])
+
     """
     if dist is None:
-        dist, poly = poly, polynomials.variable(len(poly))
+        dist, poly = poly, numpoly.variable(len(poly))
 
-    poly = polynomials.setdim(poly, len(dist))
-    if not poly.isconstant:
+    poly = numpoly.set_dimensions(poly, len(dist))
+    if poly.isconstant():
         return poly.tonumpy()
 
     moments = dist.mom(poly.exponents.T, **kws)

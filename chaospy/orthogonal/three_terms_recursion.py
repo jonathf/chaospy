@@ -91,7 +91,7 @@ def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
             ``order >= sum(K**(1/cross_truncation))**cross_truncation``.
 
     Returns:
-        (chaospy.poly.ndpoly, numpy.ndarray):
+        (numpoly.ndpoly, numpy.ndarray):
             Orthogonal polynomial expansion. Norms of the orthogonal
             expansion on the form ``E(orth**2, dist)``. Calculated using
             recurrence coefficients for stability.
@@ -131,7 +131,7 @@ def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
                                 graded=graded, reverse=reverse,
                                 cross_truncation=cross_truncation)
     if len(dist) > 1:
-        polynomials = chaospy.poly.prod(chaospy.polynomial([
+        polynomials = numpoly.prod(chaospy.polynomial([
             poly[idx] for poly, idx in zip(polynomials, indices.T)]), 0)
         norms = numpy.prod([
             norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)

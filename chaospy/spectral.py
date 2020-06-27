@@ -76,6 +76,7 @@ largest coefficient between the two approximation::
 The ``coefficients`` function returns all the polynomial coefficients.
 """
 import numpy
+import numpoly
 import chaospy
 
 
@@ -85,7 +86,7 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
     distribution space.
 
     Args:
-        orth (chaospy.poly.ndpoly):
+        orth (numpoly.ndpoly):
             Orthogonal polynomial expansion. Must be orthogonal for the
             approximation to be accurate.
         nodes (numpy.ndarray):
@@ -106,10 +107,10 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
             no provided. ``norms.shape == (len(orth),)`` must hold.
 
     Returns:
-        (chaospy.poly.ndpoly):
+        (numpoly.ndpoly):
             Fitted model approximation in the form of an polynomial.
     """
-    orth = chaospy.poly.polynomial(orth)
+    orth = numpoly.polynomial(orth)
     nodes = numpy.asfarray(nodes)
     weights = numpy.asfarray(weights)
 
@@ -130,7 +131,7 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
 
     coefs = (numpy.sum(vals1, 1).T/norms).T
     coefs = coefs.reshape(len(coefs), *shape[1:])
-    approx_model = chaospy.poly.sum(orth*coefs.T, -1).T
+    approx_model = numpoly.sum(orth*coefs.T, -1).T
 
     if retall:
         return approx_model, coefs

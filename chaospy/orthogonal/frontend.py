@@ -81,7 +81,7 @@ def generate_expansion(
             ``order >= sum(K**(1/cross_truncation))**cross_truncation``.
 
     Returns:
-        (chaospy.poly.ndpoly, numpy.ndarray):
+        (numpoly.ndpoly, numpy.ndarray):
             Orthogonal polynomial expansion. norms of the orthogonal
             expansion on the form ``E(orth**2, dist)``. Calculated using
             recurrence coefficients for stability.

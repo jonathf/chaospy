@@ -1,7 +1,7 @@
 """Main Sobol sensitivity index."""
 import numpy
+import numpoly
 
-from ...poly.setdim import setdim
 from ..variance import Var
 from ..conditional import E_cond
 
@@ -13,7 +13,7 @@ def Sens_m(poly, dist, **kws):
     First order sensitivity indices.
 
     Args:
-        poly (chaospy.poly.ndpoly):
+        poly (numpoly.ndpoly):
             Polynomial to find first order Sobol indices on.
         dist (Dist):
             The distributions of the input used in ``poly``.
@@ -24,16 +24,15 @@ def Sens_m(poly, dist, **kws):
             with shape ``(len(dist),) + poly.shape``.
 
     Examples:
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
-        >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
-        >>> indices = chaospy.Sens_m(poly, dist)
-        >>> print(indices)
-        [[0.         1.         0.         0.42857143]
-         [0.         0.         1.         0.42857143]]
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
+        >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
+        >>> chaospy.Sens_m(poly, distribution)
+        array([[0.        , 1.        , 0.        , 0.42857143],
+               [0.        , 0.        , 1.        , 0.42857143]])
     """
     dim = len(dist)
-    poly = setdim(poly, dim)
+    poly = numpoly.set_dimensions(poly, dim)
 
     out = numpy.zeros((dim,) + poly.shape)
     variance = Var(poly, dist, **kws)

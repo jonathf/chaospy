@@ -52,6 +52,7 @@ import logging
 import numpy
 from scipy import linalg
 
+import numpoly
 import chaospy
 
 
@@ -66,7 +67,7 @@ def fit_regression(
     Fit a polynomial chaos expansion using linear regression.
 
     Args:
-        polynomials (chaospy.poly.ndpoly):
+        polynomials (numpoly.ndpoly):
             Polynomial expansion with ``polynomials.shape == (M,)`` and
             `polynomials.dim=D`.
         abscissas (numpy.ndarray):
@@ -126,7 +127,7 @@ def fit_regression(
     if shape:
         evals = evals.reshape(evals.shape[0], *shape)
 
-    approx_model = chaospy.poly.sum((polynomials*uhat.T), -1)
+    approx_model = numpoly.sum((polynomials*uhat.T), -1)
     approx_model = approx_model.reshape(shape)
 
     if retall == 1:

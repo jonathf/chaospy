@@ -2,7 +2,7 @@
 import numpy
 import numpoly
 
-from .. import distributions, poly as polynomials
+from .. import distributions
 from .expected import E
 from .standard_deviation import Std
 
@@ -14,7 +14,7 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     Element by element 4rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (chaospy.poly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Dist):
             Input to take kurtosis on.
         dist (Dist):
             Defines the space the skewness is taken on. It is ignored if
@@ -34,16 +34,16 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         array([6., 0.])
         >>> chaospy.Kurt(dist, fisher=False).round(4)
         array([9., 3.])
-        >>> x, y = chaospy.variable(2)
-        >>> poly = chaospy.polynomial([1, x, y, 10*x*y])
+        >>> q0, q1 = chaospy.variable(2)
+        >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> chaospy.Kurt(poly, dist).round(4)
         array([nan,  6.,  0., 15.])
     """
     adjust = 3 if fisher else 0
 
     if dist is None:
-        dist, poly = poly, polynomials.variable(len(poly))
-    poly = polynomials.setdim(poly, len(dist))
+        dist, poly = poly, numpoly.variable(len(poly))
+    poly = numpoly.set_dimensions(poly, len(dist))
     if not poly.isconstant:
         return poly.tonumpy()**4-adjust
 

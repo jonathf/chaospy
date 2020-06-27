@@ -9,12 +9,12 @@ def Acf(poly, dist, N=None, **kws):
     Auto-correlation function.
 
     Args:
-        poly (chaospy.poly.ndpoly):
+        poly (numpoly.ndpoly):
             Polynomial of interest. Must have ``len(poly) > N``.
         dist (Dist):
             Defines the space the correlation is taken on.
         N (int):
-            The number of time steps appart included. If omited set to
+            The number of time steps apart included. If omitted set to
             ``len(poly)/2+1``.
 
     Returns:
@@ -24,9 +24,10 @@ def Acf(poly, dist, N=None, **kws):
 
     Examples:
         >>> poly = chaospy.prange(10)[1:]
-        >>> Z = chaospy.Uniform()
-        >>> print(numpy.around(chaospy.Acf(poly, Z, 5), 4))
-        [1.     0.9915 0.9722 0.9457 0.9127]
+        >>> dist = chaospy.Uniform()
+        >>> chaospy.Acf(poly, dist, 5).round(4)
+        array([1.    , 0.9915, 0.9722, 0.9457, 0.9127])
+
     """
     if N is None:
         N = len(poly)/2 + 1

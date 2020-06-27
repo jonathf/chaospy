@@ -19,13 +19,6 @@ def compatibility_layer(function):
             Same as `function`, but wrapped to ensure that it is chaospy
             compatible.
 
-    Examples:
-        >>> numpoly.monomial(3)
-        polynomial([1, q, q**2])
-        >>> my_monomial = compatibility_layer(numpoly.monomial)
-        >>> my_monomial(3)
-        polynomial([1, q0, q0**2])
-
     """
 
     @wraps(function)

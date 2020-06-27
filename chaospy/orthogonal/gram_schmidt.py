@@ -6,16 +6,17 @@ terms in an expansion orthogonal to the previous ones.
 import logging
 
 import numpy
+import numpoly
 import chaospy
 
 
 def orth_gs(order, dist, normed=False, graded=True, reverse=True,
-            retall=False, cross_truncation=1., sort=None, **kws):
+            retall=False, cross_truncation=1., **kws):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
 
     Args:
-        order (int, chaospy.poly.ndpoly):
+        order (int, numpoly.ndpoly):
             The upper polynomial order. Alternative a custom polynomial basis
             can be used.
         dist (Dist):
@@ -59,9 +60,15 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
 
     if isinstance(order, int):
         if order == 0:
-            return chaospy.poly.polynomial(1, names=("q0",))
-        basis = chaospy.poly.basis(0, order, dim, graded=graded, reverse=reverse,
-                                   sort=sort, cross_truncation=cross_truncation)
+            return numpoly.polynomial(1)
+        basis = numpoly.monomial(
+            0,
+            order+1,
+            names=numpoly.variable(2).names,
+            graded=graded,
+            reverse=reverse,
+            cross_truncation=cross_truncation,
+        )
     else:
         basis = order
 
