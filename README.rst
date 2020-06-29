@@ -29,18 +29,6 @@ Installation should be straight forward::
 
 And you should be ready to go.
 
-Alternatively, to get the most current experimental version, the code can be
-installed from Github as follows::
-
-    git clone git@github.com:jonathf/chaospy.git
-    cd chaospy/
-    pip install .
-
-Updating can later be done from the ``chaospy/`` folder::
-
-   git pull
-   pip install .
-
 Example Usage
 -------------
 
@@ -136,34 +124,6 @@ Also a few shout-outs:
 .. _Nico Schlömer: https://github.com/nschloe
 .. _Florian Künzner: https://github.com/flo2k
 .. _sample distribution: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.samples
-
-Development
------------
-
-Development is done using `Poetry <https://poetry.eustace.io/>`_ manager.
-Inside the repository directory, install and create a virtual environment with:
-
-.. code-block:: bash
-
-   poetry install
-
-To run tests:
-
-.. code-block:: bash
-
-   poetry run pytest chaospy/ tests/ doc/ --doctest-modules
-
-To build documentation, run:
-
-.. code-block:: bash
-
-   cd doc/
-   make html
-
-The documentation will be generated into the folder ``doc/.build/html``.
-
-Note that the documentation build assumes that ``pandoc`` is installed on your
-system and available in your path.
 
 Questions and Contributions
 ---------------------------
