@@ -1,8 +1,4 @@
-"""
-Perhaps the simplest method for creating orthogonal polynomials is
-Gram-Schmidt's method. It consist of using projections to iteratively make new
-terms in an expansion orthogonal to the previous ones.
-"""
+"""Gram-Schmidt process for generating orthogonal polynomials."""
 import logging
 
 import numpy

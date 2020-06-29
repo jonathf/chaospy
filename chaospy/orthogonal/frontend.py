@@ -33,24 +33,24 @@ def generate_expansion(
     This function is a frontend wrapper for the three methods for creating
     orthogonal polynomials:
 
-    ---------------------   ---------------------------------------------------
-    Method                  Description
-    =====================   ===================================================
-    three_terms_recursion   Three terms recurrence coefficients gnerated using
-                            Stieltjes and Golub-Welsch method. The most stable
-                            of the methods, but do not work on dependent
-                            distributions.
-    ---------------------   ---------------------------------------------------
-    gram_schmidt            Gram-Schmidt orthogonalization method applied on
-                            polynomial expansions. Know for being numerically
-                            unstable.
-    ---------------------   ---------------------------------------------------
-    cholesky                Orthogonalization through decorrelation of
-                            the covariance matrix. Uses Gill-King's Cholesky
-                            decomposition method for higher numerical
-                            stability. Still not scalable to high number of
-                            dimensions.
-    ---------------------   ---------------------------------------------------
+    +-----------------------+--------------------------------------------------+
+    | Algorithm             | Description                                      |
+    +-----------------------+--------------------------------------------------+
+    | three_terms_recursion | Three terms recurrence coefficients generated    |
+    |                       | using Stieltjes and Golub-Welsch method. The     |
+    |                       | most stable of the methods, but do not work on   |
+    |                       | dependent distributions.                         |
+    +-----------------------+--------------------------------------------------+
+    | gram_schmidt          | Gram-Schmidt orthogonalization method applied on |
+    |                       | polynomial expansions. Know for being            |
+    |                       | numerically unstable.                            |
+    +-----------------------+--------------------------------------------------+
+    | cholesky              | Orthogonalization through decorrelation of the   |
+    |                       | covariance matrix. Uses Gill-King's Cholesky     |
+    |                       | decomposition method for higher numerical        |
+    |                       | stability. Still not scalable to high number of  |
+    |                       | dimensions.                                      |
+    +-----------------------+--------------------------------------------------+
 
     Args:
         order (int):
@@ -66,8 +66,8 @@ def generate_expansion(
             Graded sorting, meaning the indices are always sorted by the index
             sum. E.g. ``q0**2*q1**2*q2**2`` has an exponent sum of 6, and will
             therefore be consider larger than both ``q0**2*q1*q2``,
-            ``q0*q1**2*q2`` and ``q0*q1*q2**2``, which all have exponent sum of
-            5.
+            ``q0*q1**2*q2`` and ``q0*q1*q2**2``,
+            which all have exponent sum of 5.
         reverse (bool):
             Reverse lexicographical sorting meaning that ``q0*q1**3`` is
             considered bigger than ``q0**3*q1``, instead of the opposite.
@@ -88,7 +88,8 @@ def generate_expansion(
 
     Examples:
         >>> distribution = chaospy.Normal()
-        >>> expansion, norms = generate_expansion(3, distribution, retall=True)
+        >>> expansion, norms = generate_expansion(
+        ...     3, distribution, retall=True)
         >>> expansion
         polynomial([1.0, q0, q0**2-1.0, q0**3-3.0*q0])
         >>> norms
