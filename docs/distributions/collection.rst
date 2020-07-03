@@ -11,7 +11,7 @@ List of Distributions
 
         >>> upper_truncated_weibull = chaospy.Weibull(1, 1) < 2
         >>> print(upper_truncated_weibull)
-        Trunc(Weibull(scale=1, shape=1, shift=0), 2))
+        Trunc(Weibull(scale=1, shape=1, shift=0), 2)
         >>> upper_and_lower_truncated_weibull = upper_truncated_weibull > 0.5
         >>> print(upper_and_lower_truncated_weibull)
         Trunc(0.5, Trunc(Weibull(scale=1, shape=1, shift=0), 2))
