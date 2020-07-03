@@ -273,6 +273,16 @@ Triangle Distribution
 
 .. autoclass:: chaospy.distributions.collection.triangle.Triangle
 
+Truncated Normal Distribution
+-----------------------------
+
+.. autoclass:: chaospy.distributions.collection.trunc_normal.TruncNormal
+
+Truncated Exponential Distribution
+----------------------------------
+
+.. autoclass:: chaospy.distributions.collection.trunc_exponential.TruncExponential
+
 Tukey-Lambda Distribution
 -------------------------
 
