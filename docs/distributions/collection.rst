@@ -3,6 +3,19 @@
 List of Distributions
 =====================
 
+.. note::
+    Note that distributions for which there is no specific truncated variant,
+    can be truncated using the generic truncation feature, i.e.
+
+    .. code-block::
+
+        >>> upper_truncated_weibull = chaospy.Weibull(1.0,1.0) < 2.0
+        >>> print(upper_truncated_weibull)
+        Trunc(Weibull(scale=1, shape=1, shift=0), 2.0))
+        >>> upper_and_lower_truncated_weibull = upper_truncated_weibull > 0.5
+        >>> print(upper_and_lower_truncated_weibull)
+        Trunc(0.5, Trunc(Weibull(scale=1, shape=1, shift=0), 2.0))
+
 Alpha Distribution
 ------------------
 
