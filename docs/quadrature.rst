@@ -30,6 +30,14 @@ Clenshaw-Curtis Quadrature
 .. automodule:: chaospy.quadrature.clenshaw_curtis
 .. autofunction:: chaospy.quadrature.clenshaw_curtis.quad_clenshaw_curtis
 
+.. _discrete:
+
+Discrete Quadrature
+-------------------
+
+.. automodule:: chaospy.quadrature.discrete
+.. autofunction:: chaospy.quadrature.discrete.quad_discrete
+
 .. _fejer:
 
 Fejér Quadrature

@@ -21,10 +21,12 @@ class DiscreteUniform(Dist):
         >>> distribution
         DiscreteUniform(lower=2, upper=4)
         >>> q = numpy.linspace(0, 1, 9)
-        >>> distribution.inv(q)
-        array([2, 2, 2, 3, 3, 3, 4, 4, 4])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0. , 0. , 0. , 0.5, 0.5, 0.5, 1. , 1. , 1. ])
+        >>> q.round(2)
+        array([0.  , 0.12, 0.25, 0.38, 0.5 , 0.62, 0.75, 0.88, 1.  ])
+        >>> distribution.inv(q).round(2)
+        array([1.5 , 1.88, 2.25, 2.62, 3.  , 3.38, 3.75, 4.12, 4.5 ])
+        >>> distribution.fwd(distribution.inv(q)).round(2)
+        array([0.  , 0.12, 0.25, 0.38, 0.5 , 0.62, 0.75, 0.88, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
         >>> distribution.sample(4)
@@ -42,25 +44,28 @@ class DiscreteUniform(Dist):
 
     def _cdf(self, x_data, lower, upper):
         """Cumulative distribution function."""
-        return ((numpy.floor(x_data)-numpy.ceil(lower))/
-                (numpy.floor(upper)-numpy.ceil(lower)))
+        lower = numpy.round(lower)
+        upper = numpy.round(upper)
+        out = (x_data-lower+0.5)/(upper-lower+1)
+        return out
 
     def _lower(self, lower, upper):
         """Lower bounds."""
-        return numpy.ceil(lower)
+        return numpy.round(lower)-0.5
 
     def _upper(self, lower, upper):
         """Upper bounds."""
-        return numpy.floor(upper)
+        return numpy.round(upper)+0.5
 
     def _pdf(self, x_data, lower, upper):
         """Probability density function."""
-        return x_data**0/(numpy.floor(upper)-numpy.ceil(lower))
+        return x_data**0/(numpy.round(upper)-numpy.round(lower))
 
     def _ppf(self, q_data, lower, upper):
         """Point percentile function."""
-        return (numpy.floor(q_data*(
-            numpy.floor(upper+1)-numpy.ceil(lower))+numpy.ceil(lower)))
+        lower = numpy.round(lower)
+        upper = numpy.round(upper)
+        return q_data*(upper-lower+1)+lower-0.5
 
     def _mom(self, k_data, lower, upper):
         """Raw statistical moments."""

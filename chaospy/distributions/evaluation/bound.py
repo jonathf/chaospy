@@ -52,9 +52,8 @@ def evaluate_lower(
     parameters = load_parameters(
         distribution, "_lower", parameters=parameters)
 
-    dtype = int if distribution.interpret_as_integer else float
     lower = distribution._lower(**parameters)
-    lower = numpy.asarray(lower, dtype=dtype)+numpy.zeros(len(distribution), dtype=dtype)
+    lower = numpy.asfarray(lower)+numpy.zeros(len(distribution))
 
     cache[distribution] = lower
     return lower
@@ -87,8 +86,7 @@ def evaluate_upper(
     parameters = load_parameters(
         distribution, "_upper", parameters=parameters)
 
-    dtype = int if distribution.interpret_as_integer else float
     upper = distribution._upper(**parameters)
-    upper = numpy.asarray(upper, dtype=dtype)+numpy.zeros(len(distribution), dtype=dtype)
+    upper = numpy.asfarray(upper)+numpy.zeros(len(distribution))
     cache[distribution] = upper
     return upper

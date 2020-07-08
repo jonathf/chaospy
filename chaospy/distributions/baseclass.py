@@ -150,6 +150,9 @@ class Dist(object):
         if len(self) > 1 and evaluation.get_dependencies(*self):
             raise StochasticallyDependentError(
                 "Cumulative distribution does not support dependencies.")
+        x_data = numpy.asarray(x_data)
+        if self.interpret_as_integer:
+            x_data = x_data+0.5
         q_data = self.fwd(x_data)
         if len(self) > 1:
             q_data = numpy.prod(q_data, 0)
@@ -298,7 +301,7 @@ class Dist(object):
                 out = out.reshape(dim, int(out.size/dim))
 
         if self.interpret_as_integer:
-            out = out.astype(int)
+            out = numpy.round(out).astype(int)
         return out
 
     def mom(self, K, **kws):

@@ -40,6 +40,7 @@ import numpy
 from .combine import combine
 
 from .clenshaw_curtis import quad_clenshaw_curtis
+from .discrete import quad_discrete
 from .fejer import quad_fejer
 from .gaussian import quad_gaussian
 from .gauss_patterson import quad_gauss_patterson
@@ -48,6 +49,7 @@ from .gauss_lobatto import quad_gauss_lobatto
 from .gauss_kronrod import quad_gauss_kronrod
 from .gauss_radau import quad_gauss_radau
 from .genz_keister import quad_genz_keister
+from .grid import quad_grid
 from .leja import quad_leja
 from .newton_cotes import quad_newton_cotes
 
@@ -63,6 +65,8 @@ QUAD_NAMES = {
     "z": "genz_keister", "genz_keister": "genz_keister",
     "j": "leja", "leja": "leja",
     "n": "newton_cotes", "newton_cotes": "newton_cotes",
+    "d": "discrete", "discrete": "discrete",
+    "i": "grid", "grid": "grid",
 }
 QUAD_FUNCTIONS = {
     "clenshaw_curtis": quad_clenshaw_curtis,
@@ -76,6 +80,8 @@ QUAD_FUNCTIONS = {
     "genz_keister": quad_genz_keister,
     "leja": quad_leja,
     "newton_cotes": quad_newton_cotes,
+    "discrete": quad_discrete,
+    "grid": quad_grid,
 }
 
 
