@@ -1,3 +1,10 @@
+Master Branch
+=============
+
+* `numpoly` update version 1.0.5:
+  * Bugfix: Poly-division with large relative error caused infinity-loops.
+  * Support for saving and loading of polynomials.
+  * Some extra numpy wrapper functions.
 * Added changelog (the file you currently are reading).
 
 Version 3.3.3 (2020-06-29)
