@@ -42,6 +42,7 @@ def quad_discrete(order, domain=(0, 1)):
         order (int, numpy.ndarray):
             Quadrature order.
         domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+            Either distribution or bounding of interval to integrate over.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):

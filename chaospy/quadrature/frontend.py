@@ -36,6 +36,7 @@ Non-Gaussian Quadrature Rules
     Numerical integration rule based on fixed width abscissas.
 """
 import numpy
+import chaospy
 
 from .combine import combine
 
@@ -88,7 +89,7 @@ QUAD_FUNCTIONS = {
 def generate_quadrature(
         order,
         dist,
-        rule="clenshaw_curtis",
+        rule="",
         sparse=False,
         accuracy=100,
         growth=None,
@@ -103,9 +104,12 @@ def generate_quadrature(
             The order of the quadrature.
         dist (chaospy.distributions.baseclass.Dist):
             The distribution which density will be used as weight function.
-        rule (str):
-            Rule for generating abscissas and weights. Either done with
-            quadrature rules, or with random samples with constant weights.
+        rule (str, Sequence[str]):
+            Rule for generating abscissas and weights. If one name is provided,
+            that rule is applied to all dimensions. If multiple names, each
+            rule is positionally applied to each dimension. If omitted,
+            ``clenshaw_curtis`` is applied to all continuous dimensions, and
+            ``discrete`` to all discrete ones.
         sparse (bool):
             If True used Smolyak's sparse grid instead of normal tensor product
             grid.
@@ -142,6 +146,14 @@ def generate_quadrature(
         >>> weights
         array([0.25, 0.25, 0.25, 0.25])
     """
+    if not rule:
+        if not isinstance(dist, chaospy.J):
+            dist = [dist]
+        rule = [
+            ("discrete" if dist.interpret_as_integer else "clenshaw_curtis")
+            for dist in dist
+        ]
+
     if sparse:
         from . import sparse_grid
         return sparse_grid.construct_sparse_grid(
