@@ -16,13 +16,27 @@ The first few orders with linear growth rule::
     ...     print(order, abscissas.round(3), weights.round(3))
     0 [[0]] [1.]
     1 [[-1  1]] [0.5 0.5]
-    2 [[-1  0  1]] [0.333 0.333 0.333]
-    3 [[-1  0  0  1]] [0.25 0.25 0.25 0.25]
-    4 [[-2  0  0  1  2]] [0.2 0.2 0.2 0.2 0.2]
-    5 [[-2  0  0  1  2]] [0.2 0.2 0.2 0.2 0.2]
-    9 [[-2  0  0  1  2]] [0.2 0.2 0.2 0.2 0.2]
+    2 [[-2  0  2]] [0.333 0.333 0.333]
+    3 [[-2 -1  1  2]] [0.25 0.25 0.25 0.25]
+    4 [[-2 -1  0  1  2]] [0.2 0.2 0.2 0.2 0.2]
+    5 [[-2 -1  0  1  2]] [0.2 0.2 0.2 0.2 0.2]
+    9 [[-2 -1  0  1  2]] [0.2 0.2 0.2 0.2 0.2]
 
-As the accuracy of discrete distribution plateau when all contained values are included, there is no reason to increase the number of nodes after this point.
+As the accuracy of discrete distribution plateau when all contained values are
+included, there is no reason to increase the number of nodes after this point.
+
+The first few orders with exponential growth rule where the nodes are nested::
+
+    >>> distribution = chaospy.DiscreteUniform(0, 10)
+    >>> for order in [0, 1, 2, 3, 4]:
+    ...     abscissas, weights = chaospy.generate_quadrature(
+    ...         order, distribution, rule="discrete", growth=True)
+    ...     print(order, abscissas)
+    0 [[5]]
+    1 [[1 5 9]]
+    2 [[1 3 5 7 9]]
+    3 [[ 0  1  3  4  5  6  7  9 10]]
+    4 [[ 0  1  2  3  4  5  6  7  8  9 10]]
 """
 import numpy
 
@@ -30,7 +44,7 @@ from .combine import combine_quadrature
 from .grid import quad_grid
 
 
-def quad_discrete(order, domain=(0, 1)):
+def quad_discrete(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate quadrature abscissas and weights for discrete distributions.
 
@@ -43,6 +57,9 @@ def quad_discrete(order, domain=(0, 1)):
             Quadrature order.
         domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
+        growth (bool):
+            if true sets the growth rule for the quadrature rule to only
+            include orders that enhances nested samples.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -67,10 +84,14 @@ def quad_discrete(order, domain=(0, 1)):
     """
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
-        abscissas, weights = quad_discrete(order, (domain.lower, domain.upper))
+        abscissas, weights = quad_discrete(order, (domain.lower, domain.upper), growth=growth, segments=segments)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights
+
+    del segments  # Basically segments doesn't do much here
+    if growth:
+        order = numpy.where(order > 0, 2**(order), 0)
 
     order = numpy.atleast_1d(order)
     order, lower, upper = numpy.broadcast_arrays(order, domain[0], domain[1])

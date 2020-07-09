@@ -172,7 +172,7 @@ def generate_quadrature(
     rule = QUAD_NAMES[rule.lower()]
     kwargs = {}
 
-    if rule in ("clenshaw_curtis", "fejer", "newton_cotes"):
+    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
         kwargs.update(growth=growth, segments=segments)
 
     if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
@@ -188,7 +188,7 @@ def generate_quadrature(
     from ..distributions.operators.joint import J
     from ..distributions.evaluation import sorted_dependencies
     if dist.interpret_as_integer:
-        abscissas = abscissas.astype(int)
+        abscissas = numpy.around(abscissas).astype(int)
     elif isinstance(dist, J):
         for dist_ in sorted_dependencies(dist):
             if dist_ in dist.inverse_map and dist_.interpret_as_integer:
