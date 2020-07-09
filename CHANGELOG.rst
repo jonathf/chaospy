@@ -1,9 +1,13 @@
 Master Branch
 =============
 
+Version 3.3.4 (2020-07-09)
+==========================
+
+* Refactor descrete distributions to work better with quadrature.
 * `numpoly` update version 1.0.5:
   * Bugfix: Poly-division with large relative error caused infinity-loops.
-  * Support for saving and loading of polynomials.
+  * Support for saving to and loading of polynomials from disk.
   * Some extra numpy wrapper functions.
 * Added changelog (the file you currently are reading).
 
@@ -119,7 +123,6 @@ Version 3.2.0 (2020-02-10)
      transfer over, undocumented and likely not used.
 * Added `chaospy.__version__`
 * Fix to `interpret_as_integer` of joint distribution with discrete components.
-
 
 Version 3.1.1 (2020-01-10)
 ==========================
