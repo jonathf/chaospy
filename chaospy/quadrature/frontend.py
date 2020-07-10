@@ -162,7 +162,7 @@ def generate_quadrature(
     if not isinstance(rule, str):
         order = numpy.ones(len(dist), dtype=int)*order
         abscissas, weights = zip(*[
-            generate_quadrature(order_, dist_, rule_, growth)
+            generate_quadrature(order_, dist_, rule_, growth=growth)
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
         abscissas = combine([abscissa.T for abscissa in abscissas]).T

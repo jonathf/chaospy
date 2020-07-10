@@ -59,6 +59,7 @@ from itertools import product
 import numpy
 from scipy.special import comb
 import numpoly
+import chaospy
 
 
 def construct_sparse_grid(
@@ -116,6 +117,10 @@ def construct_sparse_grid(
         array([ 0.17,  0.25, -0.5 ,  0.25,  0.67,  0.25, -0.5 ,  0.25,  0.17])
     """
     orders = order*numpy.ones(len(dist), dtype=int)
+
+    assert isinstance(dist, chaospy.Dist), "dist must be chaospy.Dist"
+    if not isinstance(dist, chaospy.J):
+        dist = chaospy.J(dist)
 
     if isinstance(rule, str):
         rule = (rule,)*len(dist)
