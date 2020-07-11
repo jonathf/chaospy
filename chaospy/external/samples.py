@@ -39,6 +39,7 @@ https://en.wikipedia.org/wiki/Kernel_density_estimation
 """
 import numpy
 from scipy.stats import gaussian_kde
+import chaospy
 
 from chaospy.distributions import DistributionCore, Nataf, Add, J, Uniform
 
@@ -74,7 +75,7 @@ class sample_dist(DistributionCore):
     def _mom(self, k, lo, up):
         if self.unbound:
             return numpy.prod(numpy.mean(self.samples.T**k, -1))
-        raise chaospy.StochasticallyDependentError("component lack support")
+        raise chaospy.UnsupportedError("component lack support")
 
 
 def SampleDist(samples, lo=None, up=None, threshold=1e-5):
