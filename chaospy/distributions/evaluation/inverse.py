@@ -66,8 +66,7 @@ def evaluate_inverse(
         ``u_data`` using parameters ``parameters``.
     """
     cache = cache if cache is not None else {}
-    dtype = int if distribution.interpret_as_integer else float
-    out = numpy.zeros(u_data.shape, dtype=dtype)
+    out = numpy.zeros(u_data.shape)
 
     # Distribution self know how to handle inverse Rosenblatt.
     if hasattr(distribution, "_ppf"):

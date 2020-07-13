@@ -98,7 +98,7 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
     from ..distributions.baseclass import Dist
     if isinstance(domain, Dist):
         abscissas, weights = quad_newton_cotes(
-            order, (domain.lower, domain.upper), growth)
+            order, (domain.lower, domain.upper), growth, segments)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights

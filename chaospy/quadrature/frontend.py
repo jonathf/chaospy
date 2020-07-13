@@ -36,10 +36,12 @@ Non-Gaussian Quadrature Rules
     Numerical integration rule based on fixed width abscissas.
 """
 import numpy
+import chaospy
 
 from .combine import combine
 
 from .clenshaw_curtis import quad_clenshaw_curtis
+from .discrete import quad_discrete
 from .fejer import quad_fejer
 from .gaussian import quad_gaussian
 from .gauss_patterson import quad_gauss_patterson
@@ -48,6 +50,7 @@ from .gauss_lobatto import quad_gauss_lobatto
 from .gauss_kronrod import quad_gauss_kronrod
 from .gauss_radau import quad_gauss_radau
 from .genz_keister import quad_genz_keister
+from .grid import quad_grid
 from .leja import quad_leja
 from .newton_cotes import quad_newton_cotes
 
@@ -63,6 +66,8 @@ QUAD_NAMES = {
     "z": "genz_keister", "genz_keister": "genz_keister",
     "j": "leja", "leja": "leja",
     "n": "newton_cotes", "newton_cotes": "newton_cotes",
+    "d": "discrete", "discrete": "discrete",
+    "i": "grid", "grid": "grid",
 }
 QUAD_FUNCTIONS = {
     "clenshaw_curtis": quad_clenshaw_curtis,
@@ -76,13 +81,15 @@ QUAD_FUNCTIONS = {
     "genz_keister": quad_genz_keister,
     "leja": quad_leja,
     "newton_cotes": quad_newton_cotes,
+    "discrete": quad_discrete,
+    "grid": quad_grid,
 }
 
 
 def generate_quadrature(
         order,
         dist,
-        rule="clenshaw_curtis",
+        rule="",
         sparse=False,
         accuracy=100,
         growth=None,
@@ -97,9 +104,12 @@ def generate_quadrature(
             The order of the quadrature.
         dist (chaospy.distributions.baseclass.Dist):
             The distribution which density will be used as weight function.
-        rule (str):
-            Rule for generating abscissas and weights. Either done with
-            quadrature rules, or with random samples with constant weights.
+        rule (str, Sequence[str]):
+            Rule for generating abscissas and weights. If one name is provided,
+            that rule is applied to all dimensions. If multiple names, each
+            rule is positionally applied to each dimension. If omitted,
+            ``clenshaw_curtis`` is applied to all continuous dimensions, and
+            ``discrete`` to all discrete ones.
         sparse (bool):
             If True used Smolyak's sparse grid instead of normal tensor product
             grid.
@@ -136,6 +146,14 @@ def generate_quadrature(
         >>> weights
         array([0.25, 0.25, 0.25, 0.25])
     """
+    if not rule:
+        if not isinstance(dist, chaospy.J):
+            dist = [dist]
+        rule = [
+            ("discrete" if dist.interpret_as_integer else "clenshaw_curtis")
+            for dist in dist
+        ]
+
     if sparse:
         from . import sparse_grid
         return sparse_grid.construct_sparse_grid(
@@ -144,7 +162,7 @@ def generate_quadrature(
     if not isinstance(rule, str):
         order = numpy.ones(len(dist), dtype=int)*order
         abscissas, weights = zip(*[
-            generate_quadrature(order_, dist_, rule_, growth)
+            generate_quadrature(order_, dist_, rule_, growth=growth)
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
         abscissas = combine([abscissa.T for abscissa in abscissas]).T
@@ -154,7 +172,7 @@ def generate_quadrature(
     rule = QUAD_NAMES[rule.lower()]
     kwargs = {}
 
-    if rule in ("clenshaw_curtis", "fejer", "newton_cotes"):
+    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
         kwargs.update(growth=growth, segments=segments)
 
     if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
@@ -170,7 +188,7 @@ def generate_quadrature(
     from ..distributions.operators.joint import J
     from ..distributions.evaluation import sorted_dependencies
     if dist.interpret_as_integer:
-        abscissas = abscissas.astype(int)
+        abscissas = numpy.around(abscissas).astype(int)
     elif isinstance(dist, J):
         for dist_ in sorted_dependencies(dist):
             if dist_ in dist.inverse_map and dist_.interpret_as_integer:
