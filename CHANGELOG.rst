@@ -1,6 +1,17 @@
 Master Branch
 =============
 
+Version 3.3.5 (2020-07-13)
+==========================
+
+* Refactor discrete distribution:
+  * Allowing "offset" (up to 0.5 on each side), making all discrete
+    distributions piece-wise constants.
+  * Use linear interpolation in `dist.fwd` and `dist.inv` between the edges,
+    making them piece linear function.
+  * `dist.cdf` adjusted 0.5 to the right to replicate old behavior.
+  * Update the two implemented discrete distributions `DiscreteUniform` and `Binomial`.
+
 Version 3.3.4 (2020-07-09)
 ==========================
 
