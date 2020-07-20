@@ -137,7 +137,7 @@ def generate_quadrature(
             such that ``abscissas.shape == (len(dist), len(weights))``.
 
     Examples:
-        >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 3)
+        >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 2)
         >>> abscissas, weights = generate_quadrature(
         ...     1, distribution, rule=("gaussian", "fejer"))
         >>> abscissas
@@ -147,19 +147,26 @@ def generate_quadrature(
         array([0.25, 0.25, 0.25, 0.25])
     """
     if not rule:
-        if not isinstance(dist, chaospy.J):
-            dist = [dist]
-        rule = [
-            ("discrete" if dist.interpret_as_integer else "clenshaw_curtis")
-            for dist in dist
-        ]
+        if isinstance(dist, chaospy.J):
+            rule = [
+                ("discrete" if dist_.interpret_as_integer else "clenshaw_curtis")
+                for dist_ in dist
+            ]
+        else:
+            rule = ("discrete" if dist.interpret_as_integer
+                    else "clenshaw_curtis")
+
+    if isinstance(rule, str):
+        rule = [rule]*len(dist)
+    assert len(rule) == len(dist), (
+        "rules and distribution length does not match.")
 
     if sparse:
         from . import sparse_grid
         return sparse_grid.construct_sparse_grid(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
-    if not isinstance(rule, str):
+    if isinstance(dist, chaospy.J):
         order = numpy.ones(len(dist), dtype=int)*order
         abscissas, weights = zip(*[
             generate_quadrature(order_, dist_, rule_, growth=growth)
@@ -169,7 +176,35 @@ def generate_quadrature(
         weights = numpy.prod(combine([abscissa.T for abscissa in weights]), -1)
         return abscissas, weights
 
-    rule = QUAD_NAMES[rule.lower()]
+    elif isinstance(dist, chaospy.Add):
+        if isinstance(dist.prm["left"], chaospy.Dist):
+            const = numpy.asarray(dist.prm["right"])
+            dist_ = dist.prm["left"]
+        else:
+            const = numpy.asarray(dist.prm["left"])
+            dist_ = dist.prm["right"]
+        abscissas, weights = generate_quadrature(
+            order=order, dist=dist_, rule=rule, accuracy=accuracy,
+            growth=growth, segments=segments,
+            recurrence_algorithm=recurrence_algorithm,
+        )
+        return (abscissas.T+const.T).T, weights
+
+    if isinstance(dist, chaospy.Mul):
+        if isinstance(dist.prm["left"], chaospy.Dist):
+            const = numpy.asarray(dist.prm["right"])
+            dist_ = dist.prm["left"]
+        else:
+            const = numpy.asarray(dist.prm["left"])
+            dist_ = dist.prm["right"]
+        abscissas, weights = generate_quadrature(
+            order=order, dist=dist_, rule=rule, accuracy=accuracy,
+            growth=growth, segments=segments,
+            recurrence_algorithm=recurrence_algorithm,
+        )
+        return (abscissas.T*const.T).T, weights
+
+    rule = QUAD_NAMES[rule[0].lower()]
     kwargs = {}
 
     if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
