@@ -117,66 +117,51 @@ def approximate_inverse(
     logger.debug("end approximate_inverse: %s", distribution)
     return xloc
 
+MOMENTS_QUADS = {}
+MOMENTS_RESULTS = {}
+
 
 def approximate_moment(
         dist,
-        K,
-        retall=False,
-        control_var=None,
+        k_loc,
+        order=None,
         rule="fejer",
-        order=1000,
         **kws
 ):
     """
     Approximation method for estimation of raw statistical moments.
 
     Args:
-        dist : Dist
+        dist (Dist):
             Distribution domain with dim=len(dist)
-        K : numpy.ndarray
-            The exponents of the moments of interest with shape (dim,K).
-        control_var : Dist
-            If provided will be used as a control variable to try to reduce
-            the error.
-        acc (:py:data:typing.Optional[int]):
-            The order of quadrature/MCI
-        sparse : bool
-            If True used Smolyak's sparse grid instead of normal tensor
-            product grid in numerical integration.
-        rule : str
-            Quadrature rule.
-        antithetic (:py:data:typing.Optional[numpy.ndarray]):
-            List of bool. Represents the axes to mirror using antithetic
-            variable during MCI.
+        k_loc (Sequence[int, ...]):
+            The exponents of the moments of interest with shape (dim,).
+        order (int):
+            The quadrature order used in approximation. If omitted, calculated
+            to be ``1000/log2(len(dist)+1)``.
+        rule (str):
+            Quadrature rule for integrating moments.
+        kws:
+            Extra args passed to `chaospy.generate_quadrature`.
     """
-    dim = len(dist)
-    shape = K.shape
-    size = int(K.size/dim)
-    K = K.reshape(dim, size)
+    if order is None:
+        order = int(1000./numpy.log2(len(dist)+1))
+    assert isinstance(order, int)
+    assert isinstance(dist, chaospy.Dist)
+    k_loc = numpy.asarray(k_loc, dtype=int)
+    assert k_loc.shape == (len(dist),), "incorrect size of exponents"
+    assert k_loc.dtype == int, "exponents have the wrong dtype"
 
-    if dim > 1:
-        shape = shape[1:]
+    if (tuple(k_loc), dist) in MOMENTS_RESULTS:
+        return MOMENTS_RESULTS[tuple(k_loc), dist]
 
-    X, W = chaospy.quadrature.generate_quadrature(order, dist, rule=rule, **kws)
+    if (tuple(k_loc), dist, order) not in MOMENTS_QUADS:
+        MOMENTS_QUADS[tuple(k_loc), dist, order] = chaospy.generate_quadrature(
+            order, dist, rule=rule, **kws)
+    X, W = MOMENTS_QUADS[tuple(k_loc), dist, order]
 
-    grid = numpy.mgrid[:len(X[0]), :size]
-    X = X.T[grid[0]].T
-    K = K.T[grid[1]].T
-    out = numpy.prod(X**K, 0)*W
-
-    if control_var is not None:
-
-        Y = control_var.ppf(dist.fwd(X))
-        mu = control_var.mom(numpy.eye(len(control_var)))
-
-        if (mu.size == 1) and (dim > 1):
-            mu = mu.repeat(dim)
-
-        for d in range(dim):
-            alpha = numpy.cov(out, Y[d])[0, 1]/numpy.var(Y[d])
-            out -= alpha*(Y[d]-mu)
-
-    out = numpy.sum(out, -1)
+    out = numpy.sum(numpy.prod(X.T**k_loc, 1)*W)
+    MOMENTS_RESULTS[tuple(k_loc), dist] = out
     return out
 
 

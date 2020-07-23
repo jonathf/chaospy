@@ -1,6 +1,17 @@
 Master Branch
 =============
 
+* Simlify/Improve approximate_moment:
+  * Remove unused antithetic variate. (Really never used.)
+  * Remove redundant support for multiple exponents at once. In practice only
+    one is called at the time anyway.
+  * Adding buffering for both quadrature and results, so to reduce needed
+    computation for recursive methods.
+  * New order default: 1000 -> 1000/log2(len(dist)+1)
+    About the same for lower dimensions, but scales better with higher
+    dimensions.
+* Support for quadrature dispatching for `Mul`, `Add` and (independent) `J`.
+
 Version 3.3.5 (2020-07-13)
 ==========================
 

@@ -155,11 +155,11 @@ def generate_quadrature(
         else:
             rule = ("discrete" if dist.interpret_as_integer
                     else "clenshaw_curtis")
-
     if isinstance(rule, str):
         rule = [rule]*len(dist)
     assert len(rule) == len(dist), (
         "rules and distribution length does not match.")
+    assert all(isinstance(rule_, str) for rule_ in rule)
 
     if sparse:
         from . import sparse_grid
@@ -167,13 +167,34 @@ def generate_quadrature(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
     if isinstance(dist, chaospy.J):
+
         order = numpy.ones(len(dist), dtype=int)*order
-        abscissas, weights = zip(*[
-            generate_quadrature(order_, dist_, rule_, growth=growth)
-            for order_, dist_, rule_ in zip(order, dist, rule)
-        ])
-        abscissas = combine([abscissa.T for abscissa in abscissas]).T
-        weights = numpy.prod(combine([abscissa.T for abscissa in weights]), -1)
+        from ..distributions.evaluation import get_dependencies
+        if get_dependencies(*dist):
+            abscissas, weights = generate_quadrature(
+                order=order,
+                dist=(dist.lower, dist.upper),
+                rule=rule,
+                growth=growth,
+                segments=segments,
+                recurrence_algorithm=recurrence_algorithm,
+            )
+            weights *= dist.pdf(abscissas)
+        else:
+            abscissas, weights = zip(*[
+                generate_quadrature(
+                    order=order_,
+                    dist=dist_,
+                    rule=rule_,
+                    growth=growth,
+                    segments=segments,
+                    recurrence_algorithm=recurrence_algorithm,
+                )
+                for order_, dist_, rule_ in zip(order, dist, rule)
+            ])
+            abscissas = combine([abscissa.T for abscissa in abscissas]).T
+            weights = numpy.prod(combine([weight.T for weight in weights]), -1)
+
         return abscissas, weights
 
     elif isinstance(dist, chaospy.Add):
@@ -222,7 +243,7 @@ def generate_quadrature(
 
     from ..distributions.operators.joint import J
     from ..distributions.evaluation import sorted_dependencies
-    if dist.interpret_as_integer:
+    if isinstance(dist, chaospy.Dist) and dist.interpret_as_integer:
         abscissas = numpy.around(abscissas).astype(int)
     elif isinstance(dist, J):
         for dist_ in sorted_dependencies(dist):

@@ -185,7 +185,7 @@ class J(Dist):
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> print(numpy.around(dist.mom([1, 1]), 4))
-            0.5833
+            0.5834
         """
         if evaluation.get_dependencies(*list(self.inverse_map)):
             raise StochasticallyDependentError(
