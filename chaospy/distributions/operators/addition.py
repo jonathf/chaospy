@@ -7,67 +7,67 @@ Example usage
 Distribution and a constant::
 
     >>> distribution = chaospy.Normal(0, 1) + 10
-    >>> print(distribution)
+    >>> distribution
     Add(Normal(mu=0, sigma=1), 10)
-    >>> print(numpy.around(distribution.sample(5), 4))
-    [10.395   8.7997 11.6476  9.9553 11.1382]
-    >>> print(numpy.around(distribution.fwd([9, 10, 11]), 4))
-    [0.1587 0.5    0.8413]
-    >>> print(numpy.around(distribution.inv(distribution.fwd([9, 10, 11])), 4))
-    [ 9. 10. 11.]
-    >>> print(numpy.around(distribution.pdf([9, 10, 11]), 4))
-    [0.242  0.3989 0.242 ]
-    >>> print(distribution.mom([1, 2, 3]))
-    [  10.  101. 1030.]
-    >>> print(distribution.ttr([1, 2, 3]))
-    [[10. 10. 10.]
-     [ 1.  2.  3.]]
+    >>> distribution.sample(5).round(4)
+    array([10.395 ,  8.7997, 11.6476,  9.9553, 11.1382])
+    >>> distribution.fwd([9, 10, 11]).round(4)
+    array([0.1587, 0.5   , 0.8413])
+    >>> distribution.inv(distribution.fwd([9, 10, 11])).round(4)
+    array([ 9., 10., 11.])
+    >>> distribution.pdf([9, 10, 11]).round(4)
+    array([0.242 , 0.3989, 0.242 ])
+    >>> distribution.mom([1, 2, 3]).round(4)
+    array([  10.,  101., 1030.])
+    >>> distribution.ttr([1, 2, 3]).round(4)
+    array([[10., 10., 10.],
+           [ 1.,  2.,  3.]])
 
 Construct joint addition distribution::
 
     >>> lhs = chaospy.Uniform(2, 3)
     >>> rhs = chaospy.Uniform(3, 4)
     >>> addition = lhs + rhs
-    >>> print(addition)
+    >>> addition
     Add(Uniform(lower=2, upper=3), Uniform(lower=3, upper=4))
     >>> joint1 = chaospy.J(lhs, addition)
     >>> joint2 = chaospy.J(rhs, addition)
 
 Generate random samples::
 
-    >>> print(numpy.around(joint1.sample(4), 4))
-    [[2.2123 2.0407 2.3972 2.2331]
-     [6.0541 5.2478 6.1397 5.6253]]
-    >>> print(numpy.around(joint2.sample(4), 4))
-    [[3.1823 3.7435 3.0696 3.8853]
-     [6.1349 6.6747 5.485  5.9143]]
+    >>> joint1.sample(4).round(4)
+    array([[2.2123, 2.0407, 2.3972, 2.2331],
+           [6.0541, 5.2478, 6.1397, 5.6253]])
+    >>> joint2.sample(4).round(4)
+    array([[3.1823, 3.7435, 3.0696, 3.8853],
+           [6.1349, 6.6747, 5.485 , 5.9143]])
 
 Forward transformations::
 
     >>> lcorr = numpy.array([2.1, 2.5, 2.9])
     >>> rcorr = numpy.array([3.01, 3.5, 3.99])
-    >>> print(numpy.around(joint1.fwd([lcorr, lcorr+rcorr]), 4))
-    [[0.1  0.5  0.9 ]
-     [0.01 0.5  0.99]]
-    >>> print(numpy.around(joint2.fwd([rcorr, lcorr+rcorr]), 4))
-    [[0.01 0.5  0.99]
-     [0.1  0.5  0.9 ]]
+    >>> joint1.fwd([lcorr, lcorr+rcorr]).round(4)
+    array([[0.1 , 0.5 , 0.9 ],
+           [0.01, 0.5 , 0.99]])
+    >>> joint2.fwd([rcorr, lcorr+rcorr]).round(4)
+    array([[0.01, 0.5 , 0.99],
+           [0.1 , 0.5 , 0.9 ]])
 
 Inverse transformations::
 
-    >>> print(numpy.around(joint1.inv(joint1.fwd([lcorr, lcorr+rcorr])), 4))
-    [[2.1  2.5  2.9 ]
-     [5.11 6.   6.89]]
-    >>> print(numpy.around(joint2.inv(joint2.fwd([rcorr, lcorr+rcorr])), 4))
-    [[3.01 3.5  3.99]
-     [5.11 6.   6.89]]
+    >>> joint1.inv(joint1.fwd([lcorr, lcorr+rcorr])).round(4)
+    array([[2.1 , 2.5 , 2.9 ],
+           [5.11, 6.  , 6.89]])
+    >>> joint2.inv(joint2.fwd([rcorr, lcorr+rcorr])).round(4)
+    array([[3.01, 3.5 , 3.99],
+           [5.11, 6.  , 6.89]])
 
 Raw moments::
 
-    >>> print(numpy.around(joint1.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.      2.5    15.0833]
-    >>> print(numpy.around(joint2.mom([(0, 1, 1), (1, 0, 1)]), 4))
-    [ 6.      3.5    21.0833]
+    >>> joint1.mom([(0, 1, 1), (1, 0, 1)]).round(4)
+    array([ 6.0006,  2.5002, 15.0847])
+    >>> joint2.mom([(0, 1, 1), (1, 0, 1)]).round(4)
+    array([ 6.0006,  3.5003, 21.0853])
 """
 from __future__ import division
 from scipy.special import comb
