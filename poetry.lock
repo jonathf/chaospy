@@ -404,7 +404,7 @@ description = "IPython Kernel for Jupyter"
 name = "ipykernel"
 optional = false
 python-versions = ">=3.5"
-version = "5.3.2"
+version = "5.3.4"
 
 [package.dependencies]
 appnope = "*"
@@ -590,7 +590,7 @@ description = "An autocompletion tool for Python that can be used for text edito
 name = "jedi"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "0.17.1"
+version = "0.17.2"
 
 [package.dependencies]
 parso = ">=0.7.0,<0.8.0"
@@ -720,7 +720,7 @@ description = "Jupyter protocol implementation and client libraries"
 name = "jupyter-client"
 optional = false
 python-versions = ">=3.5"
-version = "6.1.5"
+version = "6.1.6"
 
 [package.dependencies]
 jupyter-core = ">=4.6.0"
@@ -730,7 +730,7 @@ tornado = ">=4.1"
 traitlets = "*"
 
 [package.extras]
-test = ["ipykernel", "ipython", "mock", "pytest"]
+test = ["async-generator", "ipykernel", "ipython", "mock", "pytest", "pytest-asyncio", "pytest-timeout"]
 
 [[package]]
 category = "dev"
@@ -1024,7 +1024,7 @@ description = "A web-based notebook environment for interactive computing"
 name = "notebook"
 optional = false
 python-versions = "*"
-version = "5.7.9"
+version = "5.7.10"
 
 [package.dependencies]
 Send2Trash = "*"
@@ -1807,8 +1807,8 @@ description = "Type Hints for Python"
 marker = "python_version >= \"3.3\" and python_version <= \"3.4\" or python_version < \"3.5\""
 name = "typing"
 optional = false
-python-versions = "*"
-version = "3.7.4.1"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "3.7.4.3"
 
 [[package]]
 category = "dev"
@@ -1840,7 +1840,7 @@ description = "HTTP library with thread-safe connection pooling, file post, and 
 name = "urllib3"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
-version = "1.25.9"
+version = "1.25.10"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
@@ -1907,7 +1907,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "632f1b25b73e3fcf484a428e0123fb6052a701f18b57331500c94516cc546a17"
+content-hash = "9bf9d5fd5f1e5b2dd783c03bf6bdbc6b5fa76b867e0ad051a45b98b120118e79"
 python-versions = "*"
 
 [metadata.files]
@@ -2147,8 +2147,8 @@ ipykernel = [
     {file = "ipykernel-4.10.1.tar.gz", hash = "sha256:eeb74b2bcfe0ced5a7900361f98fa1171288aa47ed4b522efe5acb167c6cf5fb"},
     {file = "ipykernel-5.1.4-py3-none-any.whl", hash = "sha256:ba8c9e5561f3223fb47ce06ad7925cb9444337ac367341c0c520ffb68ea6d120"},
     {file = "ipykernel-5.1.4.tar.gz", hash = "sha256:7f1f01df22f1229c8879501057877ccaf92a3b01c1d00db708aad5003e5f9238"},
-    {file = "ipykernel-5.3.2-py3-none-any.whl", hash = "sha256:0a5f1fc6f63241b9710b5960d314ffe44d8a18bf6674e3f28d2542b192fa318c"},
-    {file = "ipykernel-5.3.2.tar.gz", hash = "sha256:89dc4bd19c7781f6d7eef0e666c59ce57beac56bb39b511544a71397b7b31cbb"},
+    {file = "ipykernel-5.3.4-py3-none-any.whl", hash = "sha256:d6fbba26dba3cebd411382bc484f7bc2caa98427ae0ddb4ab37fe8bfeb5c7dd3"},
+    {file = "ipykernel-5.3.4.tar.gz", hash = "sha256:9b2652af1607986a1b231c62302d070bc0534f564c393a5d9d130db9abbbe89d"},
 ]
 ipython = [
     {file = "ipython-5.10.0-py2-none-any.whl", hash = "sha256:68eb2d70595ea5c3f9f5f8f562c9119e86b0f84de3e5d23407a142cb2a73ba11"},
@@ -2170,8 +2170,8 @@ ipywidgets = [
 jedi = [
     {file = "jedi-0.16.0-py2.py3-none-any.whl", hash = "sha256:b4f4052551025c6b0b0b193b29a6ff7bdb74c52450631206c262aef9f7159ad2"},
     {file = "jedi-0.16.0.tar.gz", hash = "sha256:d5c871cb9360b414f981e7072c52c33258d598305280fef91c6cae34739d65d5"},
-    {file = "jedi-0.17.1-py2.py3-none-any.whl", hash = "sha256:1ddb0ec78059e8e27ec9eb5098360b4ea0a3dd840bedf21415ea820c21b40a22"},
-    {file = "jedi-0.17.1.tar.gz", hash = "sha256:807d5d4f96711a2bcfdd5dfa3b1ae6d09aa53832b182090b222b5efb81f52f63"},
+    {file = "jedi-0.17.2-py2.py3-none-any.whl", hash = "sha256:98cc583fa0f2f8304968199b01b6b4b94f469a1f4a74c1560506ca2a211378b5"},
+    {file = "jedi-0.17.2.tar.gz", hash = "sha256:86ed7d9b750603e4ba582ea8edc678657fb4007894a12bcf6f4bb97892f31d20"},
 ]
 jinja2 = [
     {file = "Jinja2-2.10.3-py2.py3-none-any.whl", hash = "sha256:74320bb91f31270f9551d46522e33af46a80c3d619f4a4bf42b3164d30b5911f"},
@@ -2197,8 +2197,8 @@ jupyter-client = [
     {file = "jupyter_client-5.2.4.tar.gz", hash = "sha256:b5f9cb06105c1d2d30719db5ffb3ea67da60919fb68deaefa583deccd8813551"},
     {file = "jupyter_client-5.3.5-py2.py3-none-any.whl", hash = "sha256:325b7b9b098b6d45ba0e943c74c15a2479b1c04c13069f42082ce6c976c4b2ba"},
     {file = "jupyter_client-5.3.5.tar.gz", hash = "sha256:5efdf4131124d4a0d5789101e74827022585f172d2f4b60cf6fa98e0a7511b25"},
-    {file = "jupyter_client-6.1.5-py3-none-any.whl", hash = "sha256:9f0092a0951d878e7521924899e1fba6f689c7a99d43735a4c0bc05c6f311452"},
-    {file = "jupyter_client-6.1.5.tar.gz", hash = "sha256:5099cda1ac86b27b655a715c51e15bdc8bd9595b2b17adb41a2bd446bbbafc4a"},
+    {file = "jupyter_client-6.1.6-py3-none-any.whl", hash = "sha256:7ad9aa91505786420d77edc5f9fb170d51050c007338ba8d196f603223fd3b3a"},
+    {file = "jupyter_client-6.1.6.tar.gz", hash = "sha256:b360f8d4638bc577a4656e93f86298db755f915098dc763f6fc05da0c5d7a595"},
 ]
 jupyter-console = [
     {file = "jupyter_console-5.2.0-py2.py3-none-any.whl", hash = "sha256:3f928b817fc82cda95e431eb4c2b5eb21be5c483c2b43f424761a966bb808094"},
@@ -2361,8 +2361,8 @@ nbval = [
     {file = "nbval-0.9.5.tar.gz", hash = "sha256:e8727bb54ae844368fd17a40c15f3bf2ae64be6ec3a9ac1433e0155ddeb902f6"},
 ]
 notebook = [
-    {file = "notebook-5.7.9-py2.py3-none-any.whl", hash = "sha256:e74b83b076f43c4445375f3e7dabb742ddab3ec142cceb3d202892809be137ac"},
-    {file = "notebook-5.7.9.tar.gz", hash = "sha256:a6d8c5bed28cd0601a8798aaa3f704b6e84bc44ff54d7c2a48d6178d4d2f1e0b"},
+    {file = "notebook-5.7.10-py2.py3-none-any.whl", hash = "sha256:26ea725787068cf50a3bf2c8a1c39928500bac3c9af1a66df5e757f63f718bea"},
+    {file = "notebook-5.7.10.tar.gz", hash = "sha256:b10107e1438e7a564292aa32510e610c88844cae03c882fe5286b891792b5c11"},
     {file = "notebook-6.0.3-py3-none-any.whl", hash = "sha256:3edc616c684214292994a3af05eaea4cc043f6b4247d830f3a2f209fa7639a80"},
     {file = "notebook-6.0.3.tar.gz", hash = "sha256:47a9092975c9e7965ada00b9a20f0cf637d001db60d241d479f53c0be117ad48"},
 ]
@@ -2761,17 +2761,16 @@ traitlets = [
     {file = "traitlets-4.3.3.tar.gz", hash = "sha256:d023ee369ddd2763310e4c3eae1ff649689440d4ae59d7485eb4cfbbe3e359f7"},
 ]
 typing = [
-    {file = "typing-3.7.4.1-py2-none-any.whl", hash = "sha256:c8cabb5ab8945cd2f54917be357d134db9cc1eb039e59d1606dc1e60cb1d9d36"},
-    {file = "typing-3.7.4.1-py3-none-any.whl", hash = "sha256:f38d83c5a7a7086543a0f649564d661859c5146a85775ab90c0d2f93ffaa9714"},
-    {file = "typing-3.7.4.1.tar.gz", hash = "sha256:91dfe6f3f706ee8cc32d38edbbf304e9b7583fb37108fef38229617f8b3eba23"},
+    {file = "typing-3.7.4.3-py2-none-any.whl", hash = "sha256:283d868f5071ab9ad873e5e52268d611e851c870a2ba354193026f2dfb29d8b5"},
+    {file = "typing-3.7.4.3.tar.gz", hash = "sha256:1187fb9c82fd670d10aa07bbb6cfcfe4bdda42d6fab8d5134f04e8c4d0b71cc9"},
 ]
 urllib3 = [
     {file = "urllib3-1.22-py2.py3-none-any.whl", hash = "sha256:06330f386d6e4b195fbfc736b297f58c5a892e4440e54d294d7004e3a9bbea1b"},
     {file = "urllib3-1.22.tar.gz", hash = "sha256:cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"},
     {file = "urllib3-1.24.3-py2.py3-none-any.whl", hash = "sha256:a637e5fae88995b256e3409dc4d52c2e2e0ba32c42a6365fee8bbd2238de3cfb"},
     {file = "urllib3-1.24.3.tar.gz", hash = "sha256:2393a695cd12afedd0dcb26fe5d50d0cf248e5a66f75dbd89a3d4eb333a61af4"},
-    {file = "urllib3-1.25.9-py2.py3-none-any.whl", hash = "sha256:88206b0eb87e6d677d424843ac5209e3fb9d0190d0ee169599165ec25e9d9115"},
-    {file = "urllib3-1.25.9.tar.gz", hash = "sha256:3018294ebefce6572a474f0604c2021e33b3fd8006ecd11d62107a5d2a963527"},
+    {file = "urllib3-1.25.10-py2.py3-none-any.whl", hash = "sha256:e7983572181f5e1522d9c98453462384ee92a0be7fac5f1413a1e35c56cc0461"},
+    {file = "urllib3-1.25.10.tar.gz", hash = "sha256:91056c15fa70756691db97756772bb1eb9678fa585d9184f24534b100dc60f4a"},
 ]
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},

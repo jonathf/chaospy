@@ -1,7 +1,10 @@
 Master Branch
 =============
 
-* Simlify/Improve approximate_moment:
+Version 3.3.6 (2020-07-23)
+==========================
+
+* Refactor approximate_moment:
   * Remove unused antithetic variate. (Really never used.)
   * Remove redundant support for multiple exponents at once. In practice only
     one is called at the time anyway.
@@ -11,6 +14,7 @@ Master Branch
     About the same for lower dimensions, but scales better with higher
     dimensions.
 * Support for quadrature dispatching for `Mul`, `Add` and (independent) `J`.
+* Update requirements to include numpy.
 
 Version 3.3.5 (2020-07-13)
 ==========================
@@ -21,7 +25,8 @@ Version 3.3.5 (2020-07-13)
   * Use linear interpolation in `dist.fwd` and `dist.inv` between the edges,
     making them piece linear function.
   * `dist.cdf` adjusted 0.5 to the right to replicate old behavior.
-  * Update the two implemented discrete distributions `DiscreteUniform` and `Binomial`.
+  * Update the two implemented discrete distributions `DiscreteUniform` and
+    `Binomial`.
 
 Version 3.3.4 (2020-07-09)
 ==========================
@@ -128,7 +133,8 @@ Version 3.2.1 (2020-02-11)
 
 * Bugfix for `evaluate_lower` and `evaluate_upper` for operators like
   addition, multiply, power, etc.
-* Fix to `interpret_as_integer` of joint distribution (now covering mixed content).
+* Fix to `interpret_as_integer` of joint distribution
+  (now covering mixed content).
 
 Version 3.2.0 (2020-02-10)
 ==========================
@@ -205,13 +211,14 @@ Version 3.0.6 (2019-07-26)
 * Update CircleCI to test for Python versions 2.7.16, 3.6.8 and 3.7.3
 * Added license to setup.py
 * Update dependencies
-* Deprecating `chaospy.distributions.collection.raised_cosine` as `hyp1f2` is no
-  longer supported by `scipy`.
+* Deprecating `chaospy.distributions.collection.raised_cosine` as `hyp1f2` is
+  no longer supported by `scipy`.
 * Removing local `set_state` for Sobol indices and instead rely on
   `numpy.random`'s random seed.
 * Refactored `chaospy.quadrature`:
    * Standardize quadrature interface.
-   * New quadrature rules: Gauss-Lobatto, Gauss-Kronrod, Gauss-Radau, Newton-Cotes (thanks to Nico Schlömer).
+   * New quadrature rules: Gauss-Lobatto, Gauss-Kronrod, Gauss-Radau,
+     Newton-Cotes (thanks to Nico Schlömer).
    * Lots of new docs.
 * Move version number `chaospy.{version -> __init__}`.
 
