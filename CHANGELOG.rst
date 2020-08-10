@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 3.3.8 (2020-08-10)
+==========================
+
+FIXED:
+  * Correct length for multivariate binary operators.
+
 Version 3.3.7 (2020-08-09)
 ==========================
 
@@ -49,7 +55,7 @@ CHANGED:
   * Refactor descrete distributions to work better with quadrature.
   * `numpoly` update to version 1.0.5.
 
-FIXES:
+FIXED:
   * Bugfix: Poly-division with large relative error caused infinity-loops.
 
 Version 3.3.3 (2020-06-29)
@@ -158,7 +164,7 @@ REMOVED:
 Version 3.2.1 (2020-02-11)
 ==========================
 
-FIXES:
+FIXED:
   * Bugfix for `evaluate_lower` and `evaluate_upper` for operators like
     addition, multiply, power, etc.
   * Fix to `interpret_as_integer` of joint distribution
@@ -243,7 +249,7 @@ CHANGED:
   * Moved `chaospy.{quad -> quadrature}` to finalize the refactor from v3.0.6.
   * Documentation polish to `chaospy.quadrature`.
 
-FIXES:
+FIXED:
   * Bugfixes in handling of three-terms-recursion
 
 REMOVED:
@@ -307,7 +313,7 @@ REMOVED:
 Version 3.0.3 (2019-02-10)
 ==========================
 
-FIXES:
+FIXED:
   * Fixes to CircleCI testing.
 
 Version 3.0.2 (2019-02-09)
