@@ -134,6 +134,7 @@ class Add(BinaryOperator):
         return xloc
 
     def _post_fwd(self, uloc, other):
+        del other
         return uloc
 
     def _alt_fwd(self, xloc, left, right):
@@ -244,8 +245,8 @@ class Add(BinaryOperator):
             coef = comb(keys.T, key)
             out += coef*left[idx]*right[idx]*(key <= keys.T)
 
-        if len(self) > 1:
-            out = numpy.prod(out, 1)
+        if numpy.asarray(out).shape:
+            out = numpy.prod(out)
         return out
 
     def _ttr(self, kloc, left, right, cache):

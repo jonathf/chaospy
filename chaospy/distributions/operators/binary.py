@@ -61,3 +61,13 @@ class BinaryOperator(Dist):
 
         assert uloc.shape == xloc.shape
         return uloc
+
+    def __len__(self):
+        """Length of binary operator."""
+        left = self.prm["left"]
+        if not isinstance(left, Dist):
+            left = numpy.atleast_1d(left)
+        right = self.prm["right"]
+        if not isinstance(right, Dist):
+            right = numpy.atleast_1d(right)
+        return max(len(left), len(right))
