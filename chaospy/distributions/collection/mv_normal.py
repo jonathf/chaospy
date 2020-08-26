@@ -7,12 +7,88 @@ from .normal import normal
 from ..baseclass import Dist
 
 
-class MvNormal(Dist):
+class LocScaling(Dist):
+    r"""
+    Multivariate Transformation Distribution.
+
+    Args:
+        location (float, Dist):
+            Mean vector
+        scale (float, Dist):
+            Covariance matrix or variance vector if scale is a 1-d vector.
+        rotation (Sequence[int]):
+            The order of which to resolve conditionals.
+            Defaults to `range(len(distribution))` which is the same as
+            `p(x0), p(x1|x0), p(x2|x0,x1), ...`.
+
+    """
+
+    def __init__(self, dist, location, scale, rotation):
+        self.location = numpy.asfarray(location)
+        self.scale = numpy.asfarray(scale)
+        assert len(self.location) == len(self.scale)
+        self._repr = {"location": self.location.tolist(),
+                      "scale": self.scale.tolist()}
+        if rotation is not None:
+            self.rotation = numpy.asarray(rotation, dtype=int)
+            self._repr["rotation"] = self.rotation.tolist()
+        else:
+            self.rotation = numpy.arange(len(self.scale), dtype=int)
+
+        self.diag = numpy.sqrt(numpy.diag(self.scale))
+        self.rotate = numpy.zeros((len(self.scale), len(self.scale)), dtype=int)
+        self.rotate[numpy.arange(len(self.scale), dtype=int), self.rotation] = 1
+        scale_ = self.rotate.T.dot(self.scale).dot(self.rotate)
+        chol = numpy.linalg.cholesky(scale_)
+        self.ppf_transform = self.rotate.T.dot(chol).dot(self.rotate)
+        self.cdf_transform = self.rotate.T.dot(numpy.linalg.inv(chol)).dot(self.rotate)
+        self.dist = dist
+        Dist.__init__(self)
+
+    def _ppf(self, q):
+        z = self.dist.inv(q)
+        return (self.ppf_transform.dot(z).T+self.location).T
+
+    def _cdf(self, x):
+        z = self.cdf_transform.dot((x.T-self.location).T)
+        return self.dist.fwd(z)
+
+    def _pdf(self, x):
+        x_ = self.rotate.dot(x)
+        location = self.rotate.dot(self.location)
+        scale = self.rotate.T.dot(self.scale).dot(self.rotate)
+
+        out = numpy.ones(x.shape)
+        sigma = numpy.sqrt(scale[0, 0])
+        z = (x_[0]-location[0])/sigma
+        out[0] = self.dist.pdf(z)/sigma
+
+        for dim in range(1, len(self)):
+            s11 = scale[dim, dim]
+            s22inv = numpy.linalg.inv(scale[:dim, :dim])
+            s12 = scale[dim, :dim]
+            s21 = scale[:dim, dim]
+            location_ = location[dim]+s12.dot(s22inv).dot((x_[:dim].T-location[:dim]).T)
+            sigma = numpy.sqrt(s11-s12.dot(s22inv).dot(s21))
+            z = (x_[dim]-location_)/sigma
+            out[dim] = self.dist.pdf(z)/sigma
+
+        out = self.rotate.dot(out)
+        return out
+
+    def _lower(self):
+        return self.dist.lower*self.diag+self.location
+
+    def _upper(self):
+        return self.dist.upper*self.diag+self.location
+
+
+class MvNormal(LocScaling):
     r"""
     Multivariate Normal Distribution.
 
     Args:
-        loc (float, Dist):
+        location (float, Dist):
             Mean vector
         scale (float, Dist):
             Covariance matrix or variance vector if scale is a 1-d vector.
@@ -25,7 +101,7 @@ class MvNormal(Dist):
         >>> distribution = chaospy.MvNormal([10, 20, 30],
         ...     [[1, 0.2, 0.3], [0.2, 2, 0.4], [0.3, 0.4, 1]], rotation=[1, 2, 0])
         >>> distribution  # doctest: +NORMALIZE_WHITESPACE
-        MvNormal(loc=[10.0, 20.0, 30.0], rotation=[1, 2, 0],
+        MvNormal(location=[10.0, 20.0, 30.0], rotation=[1, 2, 0],
                  scale=[[1.0, 0.2, 0.3], [0.2, 2.0, 0.4], [0.3, 0.4, 1.0]])
         >>> chaospy.E(distribution)
         array([10., 20., 30.])
@@ -54,88 +130,31 @@ class MvNormal(Dist):
 
     """
 
-    def __init__(self, loc=[0, 0], scale=[[1, .5], [.5, 1]], rotation=None):
-        loc = numpy.asfarray(loc)
-        self.scale = numpy.asfarray(scale)
-        assert len(loc) == len(scale)
-        self._repr = {"loc": loc.tolist(), "scale": self.scale.tolist()}
-        if rotation is not None:
-            self.rotation = numpy.asarray(rotation, dtype=int)
-            self._repr["rotation"] = self.rotation.tolist()
-        else:
-            self.rotation = numpy.arange(len(self.scale), dtype=int)
-
-        self.P = numpy.zeros((len(self.scale), len(self.scale)), dtype=int)
-        self.P[numpy.arange(len(self.scale), dtype=int), self.rotation] = 1
-        self.C = numpy.linalg.cholesky(self.P.T.dot(self.scale).dot(self.P))
-        self.Ci = numpy.linalg.inv(self.C)
-        self.loc = self.P.dot(loc)
-        Dist.__init__(self)
-
-    def _ppf(self, q):
-        z = numpy.clip(special.ndtri(q).T, -7.5, 7.5).T
-        z = self.P.dot(z)
-        x = (self.C.dot(z).T+self.loc).T
-        x = self.P.T.dot(x)
-        return x
-
-    def _cdf(self, x):
-        x = self.P.dot(x)
-        z = self.Ci.dot((x.T-self.loc).T)
-        z = self.P.T.dot(z)
-        x = special.ndtr(z)
-        return x
-
-    def _pdf(self, x):
-        x_ = self.P.dot(x)
-        scale = self.P.T.dot(self.scale).dot(self.P)
-
-        out = numpy.ones(x.shape)
-        alpha = 1/numpy.sqrt(2*numpy.pi*scale[0, 0])
-        out[0] = alpha*numpy.e**(-0.5*(x_[0]-self.loc[0])**2/scale[0, 0])
-
-        for dim in range(1, len(self)):
-            s11 = scale[dim, dim]
-            s22inv = numpy.linalg.inv(scale[:dim, :dim])
-            s12 = scale[dim, :dim]
-            s21 = scale[:dim, dim]
-            loc = self.loc[dim]+s12.dot(s22inv).dot((x_[:dim].T-self.loc[:dim]).T)
-            sigma = s11-s12.dot(s22inv).dot(s21)
-            alpha = 1/numpy.sqrt(2*numpy.pi*sigma)
-            out[dim] = alpha*numpy.e**(-0.5*(x_[dim]-loc)**2/sigma)
-
-        out = self.P.dot(out)
-        return out
-
-    def _lower(self):
-        return -7.5*numpy.sqrt(numpy.diag(self.scale))+self.loc.T.dot(self.P).T
-
-    def _upper(self):
-        return 7.5*numpy.sqrt(numpy.diag(self.scale))+self.loc.T.dot(self.P).T
+    def __init__(self, location=[0, 0], scale=[[1, .5], [.5, 1]], rotation=None):
+        LocScaling.__init__(
+            self, dist=normal(), location=location, scale=scale, rotation=rotation)
 
     def _mom(self, k):
-        loc = self.loc.T.dot(self.P)
         out = 0.
         for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)
-            diff = k.T - kdx
+            diff = k.T-kdx
             pos = diff >= 0
             diff = diff*pos
             pos = numpy.all(pos)
-            loc_ = numpy.prod(loc**diff)
+            location_ = numpy.prod(self.location**diff)
 
-            out += pos*coef*loc_*isserlis_moment(tuple(kdx), self.scale)
+            out += pos*coef*location_*isserlis_moment(tuple(kdx), self.scale)
 
         return float(out)
 
     def __len__(self):
-        return len(self.C)
+        return len(self.scale)
 
 
 def isserlis_moment(k, scale):
     """
-    Raw statistical moments centralized Normal distribution using Isserlis'
-    theorem.
+    Centralized statistical moments using Isserlis' theorem.
 
     Args:
         k (Tuple[int, ...]):
@@ -177,7 +196,6 @@ def isserlis_moment(k, scale):
     eye = numpy.eye(len(k), dtype=int)
     out = (k[idx]-1)*scale[idx, idx]*isserlis_moment(k-2*eye[idx], scale)
     for idj in range(idx+1, len(k)):
-        out += k[idj]*scale[idx, idj]*isserlis_moment(
-            k-eye[idx]-eye[idj], scale)
+        out += k[idj]*scale[idx, idj]*isserlis_moment(k-eye[idx]-eye[idj], scale)
 
     return float(out)
