@@ -192,7 +192,7 @@ class Dist(object):
         x_data = x_data.reshape(shape)
         return x_data
 
-    def pdf(self, x_data, step=1e-7):
+    def pdf(self, x_data, decompose=False):
         """
         Probability density function.
 
@@ -204,17 +204,39 @@ class Dist(object):
 
         Args:
             x_data (numpy.ndarray):
-                Location for the density function. ``x_data.shape`` must be
-                compatible with distribution shape.
-            step (float, numpy.ndarray):
-                If approximation is used, the step length given in the
-                approximation of the derivative. If array provided, elements
-                are used along each axis.
+                Location for the density function. If multivariate,
+                `len(x_data) == len(self)` is required.
+            decompose (bool):
+                Decompose multivariate probability density `p(x), p(y|x), ...`
+                instead of multiplying them together into `p(x, y, ...)`.
 
         Returns:
             (numpy.ndarray):
-                Evaluated density function values. Shapes are related through
-                the identity ``x_data.shape == dist.shape+out.shape``.
+                Evaluated density function evaluated in `x_data`. If decompose,
+                `output.shape == x_data.shape`, else if multivariate the first
+                dimension is multiplied together.
+
+        Example:
+            >>> chaospy.Gamma(2).pdf([1, 2, 3, 4, 5]).round(3)
+            array([0.368, 0.271, 0.149, 0.073, 0.034])
+            >>> dist = chaospy.Iid(chaospy.Normal(0, 1), 2)
+            >>> grid = numpy.mgrid[-1.5:2, -1.5:2]
+            >>> dist.pdf(grid).round(3)
+            array([[0.017, 0.046, 0.046, 0.017],
+                   [0.046, 0.124, 0.124, 0.046],
+                   [0.046, 0.124, 0.124, 0.046],
+                   [0.017, 0.046, 0.046, 0.017]])
+            >>> dist.pdf(grid, decompose=True).round(3)
+            array([[[0.13 , 0.13 , 0.13 , 0.13 ],
+                    [0.352, 0.352, 0.352, 0.352],
+                    [0.352, 0.352, 0.352, 0.352],
+                    [0.13 , 0.13 , 0.13 , 0.13 ]],
+            <BLANKLINE>
+                   [[0.13 , 0.352, 0.352, 0.13 ],
+                    [0.13 , 0.352, 0.352, 0.13 ],
+                    [0.13 , 0.352, 0.352, 0.13 ],
+                    [0.13 , 0.352, 0.352, 0.13 ]]])
+
         """
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
@@ -224,7 +246,7 @@ class Dist(object):
         indices = (x_data.T <= self.upper).T & (x_data.T >= self.lower).T
         f_data[indices] = evaluation.evaluate_density(self, x_data)[indices]
         f_data = f_data.reshape(shape)
-        if len(self) > 1:
+        if len(self) > 1 and not decompose:
             f_data = numpy.prod(f_data, 0)
         return f_data
 
