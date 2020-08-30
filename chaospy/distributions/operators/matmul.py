@@ -195,7 +195,7 @@ class Matmul(BinaryOperator):
 
     def __str__(self):
         if self._repr is not None:
-            return super(Mul, self).__str__()
+            return super(Matmul, self).__str__()
         return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
                 ", " + str(self.prm["right"]) + ")")
 

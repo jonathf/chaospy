@@ -10,3 +10,4 @@ from .joint import J, Iid
 from .trunkation import Trunc, Trunk, trunk
 
 from .logarithm import Log, Log10, Logn
+from .locscale import LocScaling
