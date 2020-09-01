@@ -1,18 +1,23 @@
-.. image:: docs/.static/chaospy_logo.svg
+.. image:: https://github.com/jonathf/chaospy/raw/master/docs/.static/chaospy_logo.svg
    :height: 200 px
    :width: 200 px
    :align: center
 
-|circleci| |codecov| |pypi| |readthedocs|
+|circleci| |codecov| |readthedocs| |license| |python-versions| |pypi| |downloads|
 
-.. |circleci| image:: https://circleci.com/gh/jonathf/chaospy/tree/master.svg?style=shield
+.. |circleci| image:: https://img.shields.io/circleci/build/github/jonathf/chaospy/master
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
-.. |codecov| image:: https://codecov.io/gh/jonathf/chaospy/branch/master/graph/badge.svg
+.. |codecov| image:: https://img.shields.io/codecov/c/github/jonathf/chaospy
     :target: https://codecov.io/gh/jonathf/chaospy
-.. |pypi| image:: https://badge.fury.io/py/chaospy.svg
-    :target: https://badge.fury.io/py/chaospy
 .. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
     :target: http://chaospy.readthedocs.io/en/master/?badge=master
+.. |license| image:: https://img.shields.io/pypi/l/chaospy
+    :target: https://opensource.org/licenses/MIT
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/chaospy
+.. |pypi| image:: https://badge.fury.io/py/chaospy.svg
+    :target: https://badge.fury.io/py/chaospy
+.. |downloads| image:: https://img.shields.io/pypi/dw/chaospy
+    :target: https://pypistats.org/packages/chaospy
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
