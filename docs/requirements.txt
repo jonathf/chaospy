@@ -1,2 +1,3 @@
 nbsphinx
 sphinx_automodapi
+setuptools==49.6.0
