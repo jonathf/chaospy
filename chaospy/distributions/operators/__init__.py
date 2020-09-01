@@ -5,7 +5,8 @@ from .matmul import Matmul
 from .negative import Neg, neg
 from .power import Pow
 
-from .joint import J, Iid
+from .joint import J
+from .iid import Iid
 
 from .trunkation import Trunc, Trunk, trunk
 

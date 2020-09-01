@@ -5,15 +5,6 @@ from ..baseclass import Dist
 
 class UnaryOperator(Dist):
 
-    def _precedence_order(self):
-        """Precedence order of the various dimensions."""
-        dist = self.prm["dist"]
-        if isinstance(dist, Dist):
-            indices = dist._precedence_order()
-        else:
-            indices = list(range(len(self)))
-        return indices
-
     def _pdf(self, xloc, dist, cache, **kwargs):
         """Probability density function."""
         xloc_ = self._pre_fwd(xloc, **kwargs)

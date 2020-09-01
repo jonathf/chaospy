@@ -3,22 +3,30 @@ import numpy
 from scipy import special
 
 from .baseclass import Copula
-from ..baseclass import Dist
+from ..baseclass import Dist, get_new_identifiers
 
 class nataf(Dist):
     """Nataf (normal) copula."""
 
-    def __init__(self, R, ordering=None):
-        if ordering is None:
-            ordering = range(len(R))
-        ordering = numpy.array(ordering)
-        P = numpy.eye(len(R))[ordering]
+    def __init__(self, R, rotation=None):
+        if rotation is None:
+            rotation = range(len(R))
+        self._rotation = numpy.array(rotation)
+
+        accumulant = set()
+        dependencies = get_new_identifiers(self, len(R))
+        self._dependencies = [None]*len(R)
+        for idx in self._rotation:
+            accumulant.add(dependencies[idx])
+            self._dependencies[idx] = accumulant.copy()
+
+        P = numpy.eye(len(R))[rotation]
         R = numpy.dot(P, numpy.dot(R, P.T))
         R = numpy.linalg.cholesky(R)
         R = numpy.dot(P.T, numpy.dot(R, P))
         Ci = numpy.linalg.inv(R)
-        Dist.__init__(self, C=R, Ci=Ci)
         self.length = len(R)
+        Dist.__init__(self, C=R, Ci=Ci)
 
     def __len__(self):
         return self.length
@@ -76,7 +84,7 @@ class Nataf(Copula):
 
     """
 
-    def __init__(self, dist, R, ordering=None):
+    def __init__(self, dist, R, rotation=None):
         self._repr = {"R": R}
         assert len(dist) == len(R)
-        return Copula.__init__(self, dist=dist, trans=nataf(R, ordering))
+        return Copula.__init__(self, dist=dist, trans=nataf(R, rotation))

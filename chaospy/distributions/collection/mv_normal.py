@@ -5,6 +5,7 @@ from scipy import special
 
 from .normal import normal
 
+from ..baseclass import Dist
 from ..operators import LocScaling
 
 
@@ -13,9 +14,9 @@ class MvNormal(LocScaling):
     Multivariate Normal Distribution.
 
     Args:
-        mu (float, Dist):
+        mu (float, numpy.ndarray):
             Mean vector
-        scale (float, Dist):
+        scale (float, numpy.ndarray):
             Covariance matrix or variance vector if scale is a 1-d vector.
         rotation (Sequence[int]):
             The order of which to resolve conditionals.
@@ -78,7 +79,6 @@ class MvNormal(LocScaling):
             self, dist=normal(), mean=mu, covariance=sigma, rotation=rotation)
 
     def _mom(self, k, cache):
-        self._check_dependencies(cache)
         out = 0.
         for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)
@@ -91,9 +91,6 @@ class MvNormal(LocScaling):
             out += pos*coef*location_*isserlis_moment(tuple(kdx), self.covariance)
 
         return float(out)
-
-    def __len__(self):
-        return len(self.covariance)
 
 
 def isserlis_moment(k, scale):

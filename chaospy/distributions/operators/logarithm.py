@@ -36,8 +36,9 @@ class Logn(UnaryOperator):
         assert isinstance(dist, Dist)
         assert numpy.all(dist.lower > 0)
         assert base > 0 and base != 1
-        Dist.__init__(self, dist=dist, base=base)
+        self._dependencies = [deps.copy() for deps in dist._dependencies]
         self._repr = {"_": [dist, base]}
+        Dist.__init__(self, dist=dist, base=base)
 
     def _post_pdf(self, xloc, base):
         return base**xloc*numpy.log(base)

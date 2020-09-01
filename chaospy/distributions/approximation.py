@@ -69,7 +69,7 @@ def approximate_inverse(
     ulower = -qloc
     uupper = 1-qloc
 
-    for dim in distribution._precedence_order():
+    for dim in range(len(distribution)):
         indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
         for idx in range(2*iterations):

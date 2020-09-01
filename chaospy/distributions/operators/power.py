@@ -1,6 +1,8 @@
 """Power operator."""
 import numpy
 
+from .binary import BinaryOperator
+
 from ..baseclass import Dist, StochasticallyDependentError
 from .. import evaluation
 
@@ -16,7 +18,7 @@ class Pow(Dist):
             left (Dist, numpy.ndarray) : Left hand side.
             right (Dist, numpy.ndarray) : Right hand side.
         """
-        Dist.__init__(self, left=left, right=right)
+        BinaryOperator.__init__(self, left=left, right=right)
 
     def _lower(self, left, right, cache):
         """
@@ -33,8 +35,7 @@ class Pow(Dist):
             [1.]
             >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).lower)
             [0.5]
-            >>> print(chaospy.Pow(2, 3).lower)
-            [8.]
+
         """
         if isinstance(left, Dist):
             left_lower = evaluation.evaluate_lower(left, cache=cache)
@@ -54,9 +55,7 @@ class Pow(Dist):
 
             return numpy.min([left_lower**right, left_upper**right], axis=0)
 
-        elif not isinstance(right, Dist):
-            return left**right
-
+        assert isinstance(right, Dist)
         right_lower = evaluation.evaluate_lower(right, cache=cache)
         right_upper = evaluation.evaluate_upper(right, cache=cache)
         return numpy.min([left**right_lower, left**right_upper], axis=0)
@@ -76,8 +75,7 @@ class Pow(Dist):
             [2.]
             >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).upper)
             [1.]
-            >>> print(chaospy.Pow(2, 3).upper)
-            [8.]
+
         """
         if isinstance(left, Dist):
             left_lower = evaluation.evaluate_lower(left, cache=cache)
@@ -97,9 +95,7 @@ class Pow(Dist):
 
             return numpy.max([left_lower**right, left_upper**right], axis=0)
 
-        elif not isinstance(right, Dist):
-            return left**right
-
+        assert isinstance(right, Dist)
         right_lower = evaluation.evaluate_lower(right, cache=cache)
         right_upper = evaluation.evaluate_upper(right, cache=cache)
         return numpy.max([left**right_lower, left**right_upper], axis=0)
@@ -132,8 +128,7 @@ class Pow(Dist):
             [0.        0.        0.5849625 1.       ]
             >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).fwd([0.4, 0.6, 0.8, 1.2]))
             [0.         0.26303441 0.67807191 1.        ]
-            >>> print(chaospy.Pow(2, 3).fwd([7, 8, 9]))
-            [0. 1. 1.]
+
         """
         left = evaluation.get_forward_cache(left, cache)
         right = evaluation.get_forward_cache(right, cache)
@@ -143,10 +138,8 @@ class Pow(Dist):
                 raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
 
-        elif not isinstance(right, Dist):
-            return numpy.inf
-
         else:
+            assert isinstance(right, Dist)
             assert numpy.all(left > 0), "imaginary result"
 
             y = (numpy.log(numpy.abs(xloc) + 1.*(xloc <= 0)) /
@@ -181,8 +174,7 @@ class Pow(Dist):
             [1.07177346 1.14869835 1.86606598]
             >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).inv([0.1, 0.2, 0.9]))
             [0.53588673 0.57434918 0.93303299]
-            >>> print(chaospy.Pow(2, 3).inv([0.1, 0.2, 0.9]))
-            [8. 8. 8.]
+
         """
         left = evaluation.get_inverse_cache(left, cache)
         right = evaluation.get_inverse_cache(right, cache)
@@ -191,10 +183,8 @@ class Pow(Dist):
             if isinstance(right, Dist):
                 raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
-        elif not isinstance(right, Dist):
-            return left**right
-
         else:
+            assert isinstance(right, Dist)
             out = evaluation.evaluate_inverse(right, q, cache=cache)
             out = numpy.where(left < 0, 1-out, out)
             out = left**out
@@ -221,8 +211,7 @@ class Pow(Dist):
             [0.         0.         0.96179669 0.        ]
             >>> print(chaospy.Pow(2, chaospy.Uniform(-1, 0)).pdf([0.4, 0.6, 0.8, 1.2]))
             [0.         2.40449173 1.8033688  0.        ]
-            >>> print(chaospy.Pow(2, 3).pdf([7, 8, 9]))
-            [ 0. inf  0.]
+
         """
         left = evaluation.get_forward_cache(left, cache)
         right = evaluation.get_forward_cache(right, cache)
@@ -232,11 +221,8 @@ class Pow(Dist):
                 raise StochasticallyDependentError(
                     "under-defined distribution {} or {}".format(left, right))
 
-        elif not isinstance(right, Dist):
-            return numpy.inf
-
         else:
-
+            assert isinstance(right, Dist)
             assert numpy.all(left > 0), "imaginary result"
             x_ = numpy.where(xloc <= 0, -numpy.inf,
                     numpy.log(xloc + 1.*(xloc<=0))/numpy.log(left+1.*(left == 1)))
@@ -274,8 +260,7 @@ class Pow(Dist):
             [1.     1.4427 2.164  3.3663]
             >>> print(numpy.around(chaospy.Pow(2, chaospy.Uniform(-1, 0)).mom([0, 1, 2, 3]), 4))
             [1.     0.7213 0.541  0.4208]
-            >>> print(numpy.around(chaospy.Pow(2, 1).mom([0, 1, 2, 3]), 4))
-            [1. 2. 4. 8.]
+
         """
         if isinstance(right, Dist):
             raise StochasticallyDependentError(
@@ -294,7 +279,7 @@ class Pow(Dist):
         """
         Example:
             >>> print(chaospy.Pow(chaospy.Uniform(), 2))
-            Pow(Uniform(lower=0, upper=1), 2)
+            Pow(Uniform(lower=0, upper=1), [2])
         """
         return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
                 ", " + str(self.prm["right"]) + ")")

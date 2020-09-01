@@ -59,7 +59,7 @@ from ..baseclass import Dist
 
 class Archimedean(Dist):
 
-    def __init__(self, length, theta=1.):
+    def __init__(self, length, theta=1., ):
         self.length = length
         Dist.__init__(self, theta=float(theta))
 

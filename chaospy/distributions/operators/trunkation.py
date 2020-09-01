@@ -19,15 +19,14 @@ Illegal dependencies:
     >>> dist1 = chaospy.Uniform()
     >>> dist2 = chaospy.Trunc(dist1, 0.5)
     >>> dist = chaospy.J(dist1, dist2)
-    >>> dist.sample() # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    chaospy.distributions.baseclass.StochasticallyDependentError: truncated variable ...
+    AssertionError: illegal dependency structure
 """
 import numpy
 
 from .joint import J
-from ..baseclass import Dist, StochasticallyDependentError
+from ..baseclass import Dist, StochasticallyDependentError, get_new_identifiers
 from .. import evaluation
 
 
@@ -39,21 +38,27 @@ class Trunc(Dist):
         Constructor.
 
         Args:
-            left (Dist, numpy.ndarray) : Left hand side.
-            right (Dist, numpy.ndarray) : Right hand side.
+            left (Dist, numpy.ndarray):
+                Left hand side.
+            right (Dist, numpy.ndarray):
+                Right hand side.
         """
-        if isinstance(left, Dist) and len(left) > 1:
-            if (not isinstance(left, J) or
-                    evaluation.get_dependencies(*list(left.inverse_map))):
+        if isinstance(left, Dist):
+            self._exclusion = {dep for deps in left._dependencies for dep in deps}
+            if len(left) > 1 and (not isinstance(left, J) or
+                                      evaluation.get_dependencies(*list(left.inverse_map))):
                 raise StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
-        if isinstance(right, Dist) and len(right) > 1:
-            if (not isinstance(right, J) or
-                    evaluation.get_dependencies(*list(right.inverse_map))):
+        if isinstance(right, Dist):
+            self._exclusion = {dep for deps in right._dependencies for dep in deps}
+            if len(right) > 1 and (not isinstance(right, J) or
+                                   evaluation.get_dependencies(*list(right.inverse_map))):
                 raise StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
 
         assert isinstance(left, Dist) or isinstance(right, Dist)
+        self._dependencies = [set([idx])
+                              for idx in get_new_identifiers(self, len(self._exclusion))]
         Dist.__init__(self, left=left, right=right)
 
 

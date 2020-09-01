@@ -32,15 +32,6 @@ The created multivariate distribution behaves much like the univariate case::
      [ 0.4444  0.4444  0.5556  0.5556  0.7778  0.7778]]
     >>> print(distribution.mom([[2, 4, 6], [1, 2, 3]]))
     [0.5  1.   3.75]
-
-Constructing a multivariate probability distribution consisting of identical
-independent distributed marginals can be done using the
-:func:`~chaospy.distributions.operators.joint.Iid`. E.g.::
-
-    >>> X = chaospy.Normal()
-    >>> Y = chaospy.Iid(X, 4)
-    >>> print(Y.sample())
-    [ 0.39502989 -1.20032309  1.64760248 -0.04465437]
 """
 from copy import deepcopy
 
@@ -64,12 +55,20 @@ class J(Dist):
         """Determine if joint consist of only integers."""
         return all(dist.interpret_as_integer for dist in self.prm.values())
 
-    def __init__(self, *args):
+    def __init__(self, *args, rotation=None):
         args = [dist for arg in args
                 for dist in (arg if isinstance(arg, J) else [arg])]
         assert all(isinstance(dist, Dist) for dist in args)
         self.indices = [0] + numpy.cumsum([len(dist) for dist in args[:-1]]).tolist()
         self.inverse_map = {dist: idx for idx, dist in zip(self.indices, args)}
+        self._dependencies = [
+            deps.copy()
+            for dist in args
+            for deps in dist._dependencies
+        ]
+        if rotation is not None:
+            self._rotation = list(rotation)
+
         prm = {"_%03d" % idx: dist for idx, dist in zip(self.indices, args)}
         Dist.__init__(self, **prm)
 

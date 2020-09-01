@@ -40,6 +40,7 @@ class DiscreteUniform(Dist):
     interpret_as_integer = True
 
     def __init__(self, lower, upper):
+        self._repr = {"lower": lower, "upper": upper}
         Dist.__init__(self, lower=lower, upper=upper)
 
     def _cdf(self, x_data, lower, upper):

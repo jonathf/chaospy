@@ -2,7 +2,7 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
+from ..baseclass import Dist, get_new_identifiers
 
 
 class MvLogNormal(Dist):
@@ -55,6 +55,10 @@ class MvLogNormal(Dist):
 
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
+
+        indinces = get_new_identifiers(self, len(C))
+        self._dependencies = [set(indinces[:idx+1]) for idx in range(len(C))]
+
         Dist.__init__(self, loc=loc, C=C, Ci=Ci, scale=scale)
 
     def _cdf(self, x, loc, C, Ci, scale):

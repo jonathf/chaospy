@@ -63,16 +63,15 @@ class Copula(Dist):
                 The copula wrapper `[0,1]^D \into [0,1]^D`.
 
         """
-        Dist.__init__(self, dist=dist, trans=trans)
+        assert len(dist) == len(trans), "Copula length missmatch"
 
-    def _precedence_order(self):
-        """Precedence order of the various dimensions."""
-        dist = self.prm["dist"]
-        if isinstance(dist, Dist):
-            indices = dist._precedence_order()
-        else:
-            indices = list(range(len(self)))
-        return indices
+        accumulant = set()
+        self._dependencies = [deps.copy() for deps in dist._dependencies]
+        for idx, _ in sorted(enumerate(trans._dependencies), key=lambda x: len(x[1])):
+            accumulant.update(dist._dependencies[idx])
+            self._dependencies[idx] = accumulant.copy()
+
+        Dist.__init__(self, dist=dist, trans=trans)
 
     def _cdf(self, x, dist, trans, cache):
         output = evaluation.evaluate_forward(dist, x, cache=cache)

@@ -119,7 +119,7 @@ class Mul(BinaryOperator):
                 raise ValueError(
                     "Either left or right side must be distributions")
 
-        Dist.__init__(self, left=left, right=right)
+        BinaryOperator.__init__(self, left=left, right=right)
 
     def _lower(self, left, right, cache):
         """
@@ -130,6 +130,7 @@ class Mul(BinaryOperator):
             array([-4.])
             >>> chaospy.Mul(chaospy.Uniform(-1, 1), chaospy.Uniform(1, 2)).lower
             array([-2.])
+
         """
         if isinstance(left, Dist):
             left_upper = evaluation.evaluate_upper(left, cache=cache)
@@ -149,10 +150,8 @@ class Mul(BinaryOperator):
             else:
                 out = numpy.min([left_lower*right, left_upper*right], axis=0)
 
-        elif not isinstance(right, Dist):
-            out = left*right
-
         else:
+            assert isinstance(right, Dist)
             right_upper = evaluation.evaluate_upper(right, cache=cache)
             right_lower = evaluation.evaluate_lower(right, cache=cache)
             out = numpy.min([left*right_lower, left*right_upper], axis=0)
@@ -168,6 +167,7 @@ class Mul(BinaryOperator):
             array([2.])
             >>> chaospy.Mul(chaospy.Uniform(-1, 1), chaospy.Uniform(1, 2)).upper
             array([2.])
+
         """
         if isinstance(left, Dist):
             left_lower = evaluation.evaluate_lower(left, cache=cache)
@@ -187,10 +187,8 @@ class Mul(BinaryOperator):
             else:
                 out = numpy.max([left_lower*right, left_upper*right], axis=0)
 
-        elif not isinstance(right, Dist):
-            out = left*right
-
         else:
+            assert isinstance(right, Dist)
             right_lower = evaluation.evaluate_lower(right, cache=cache)
             right_upper = evaluation.evaluate_upper(right, cache=cache)
             out = numpy.max([left*right_lower, left*right_upper], axis=0)
@@ -234,6 +232,7 @@ class Mul(BinaryOperator):
             >>> print(dist.inv([[0.5, 0.6, 0.7], [0.5, 0.6, 0.7]]))
             [[0.5 0.6 0.7]
              [1.  1.2 1.4]]
+
         """
         left = evaluation.get_inverse_cache(left, cache)
         right = evaluation.get_inverse_cache(right, cache)
@@ -248,10 +247,8 @@ class Mul(BinaryOperator):
             xloc = (xloc.T*right.T).T
             assert uloc.shape == xloc.shape
 
-        elif not isinstance(right, Dist):
-            xloc = left*right
-
         else:
+            assert isinstance(right, Dist)
             uloc = numpy.where(numpy.asfarray(left).T > 0, uloc.T, 1-uloc.T).T
             xloc = evaluation.evaluate_inverse(right, uloc, cache=cache)
             xloc = (xloc.T*left.T).T
@@ -275,6 +272,7 @@ class Mul(BinaryOperator):
             >>> dist = chaospy.Mul(chaospy.Iid(chaospy.Uniform(), 2), [1, 2])
             >>> print(dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
             [0.5 0.5 0. ]
+
         """
         left = evaluation.get_forward_cache(left, cache)
         right = evaluation.get_forward_cache(right, cache)
@@ -293,10 +291,8 @@ class Mul(BinaryOperator):
             pdf.T[valids.T] /= right.T[valids.T]
             assert pdf.shape == xloc.shape
 
-        elif not isinstance(right, Dist):
-            pdf = numpy.inf
-
         else:
+            assert isinstance(right, Dist)
             left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
             valids = left != 0
             xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]

@@ -46,6 +46,16 @@ import numpy
 from . import evaluation, approximation
 
 
+DISTRIBUTION_IDENTIFIERS = {}
+
+def get_new_identifiers(dist, count=1):
+    length = len(DISTRIBUTION_IDENTIFIERS)
+    new_identifiers = list(range(length+1, length+1+count))
+    for idx in new_identifiers:
+        DISTRIBUTION_IDENTIFIERS[idx] = dist
+    return new_identifiers
+
+
 class StochasticallyDependentError(Exception):
     """Error related to stochastically dependent variables."""
 
@@ -63,28 +73,6 @@ class Dist(object):
     should be interpreted as integers instead of floating point.
     """
 
-    def _precedence_order(self):
-        """Precedence order of the various dimensions."""
-        return list(range(len(self)))
-
-    def _lower(self, **prm):
-        """Backend lower bound."""
-        return self._ppf(numpy.array([1e-10]*len(self)), **prm)
-
-    @property
-    def lower(self):
-        """Lower bound for the distribution."""
-        return evaluation.evaluate_lower(self)
-
-    def _upper(self, **prm):
-        """Backend upper bound."""
-        return self._ppf(numpy.array([1-1e-10]*len(self)), **prm)
-
-    @property
-    def upper(self):
-        """Upper bound for the distribution."""
-        return evaluation.evaluate_upper(self)
-
     def __init__(self, **prm):
         """
         Args:
@@ -93,12 +81,81 @@ class Dist(object):
                 sub-functions.
         """
         self.prm = prm
+        if not hasattr(self, "_dependencies"):
+            length = 1
+            for key, param in prm.items():
+                if not isinstance(param, Dist):
+                    length = max(length, numpy.asarray(param).size)
+                    self.prm[key] = numpy.asarray(param).ravel()
+
+            self._dependencies = [
+                set([idx]) for idx in get_new_identifiers(self, length)]
+            for param in prm.values():
+                if isinstance(param, Dist):
+                    assert len(param) in (1, len(self._dependencies))
+                    if len(param) == 1:
+                        for dep in self._dependencies:
+                            dep.update(param._dependencies[0])
+                    else:
+                        for dep, other in zip(self._dependencies, param._dependencies):
+                            dep.update(other)
+
+        all_dependencies = set()
+        for dep in self._dependencies:
+            all_dependencies.update(dep)
+
+        if not hasattr(self, "_rotation"):
+            self._rotation = [key for key, _ in sorted(enumerate(self._dependencies), key=lambda x: len(x[1]))]
+        if not hasattr(self, "_exclusion"):
+            self._exclusion = set()
+        for param in prm.values():
+            if isinstance(param, Dist):
+                assert not all_dependencies.intersection(param._exclusion), (
+                    "illegal dependency structure")
+                self._exclusion.update(param._exclusion)
+
+        assert len(self._rotation) == len(self._dependencies)
+        cur = set()
+        last_length = 0
+        for idx in self._rotation:
+            cur.update(self._dependencies[idx])
+            assert len(cur) > last_length, (
+                "illegal rotation: %s" % self._dependencies)
+            last_length = len(cur)
+
+    def _check_dependencies(self):
+        cur = set()
+        for idx in self._rotation:
+            length = len(cur)
+            cur.update(self._dependencies[idx])
+            assert len(cur) == length+1, "dependency issues: %s -- %s" % (self, self._dependencies)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         assert "_bnd" not in cls.__dict__, (
             "Dist._bnd is deprecated. Use Dist._lower and Dist._upper instead.")
 
+    def _lower(self, **prm):
+        """Backend lower bound."""
+        return self._ppf(numpy.array([1e-10]*len(self)), **prm)
+
+    @property
+    def lower(self):
+        """Lower bound for the distribution."""
+        out = evaluation.evaluate_lower(self)
+        assert len(out) == len(self), (self, len(self), out)
+        return out
+
+    def _upper(self, **prm):
+        """Backend upper bound."""
+        return self._ppf(numpy.array([1-1e-10]*len(self)), **prm)
+
+    @property
+    def upper(self):
+        """Upper bound for the distribution."""
+        out = evaluation.evaluate_upper(self)
+        assert len(out) == len(self)
+        return out
 
     def fwd(self, x_data):
         """
@@ -114,6 +171,7 @@ class Dist(object):
                 Evaluated distribution function values, where
                 ``out.shape==x_data.shape``.
         """
+        self._check_dependencies()
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
@@ -147,6 +205,7 @@ class Dist(object):
                 ``x_data.shape`` in one dimension and ``x_data.shape[1:]`` in
                 higher dimensions.
         """
+        self._check_dependencies()
         if len(self) > 1 and evaluation.get_dependencies(*self):
             raise StochasticallyDependentError(
                 "Cumulative distribution does not support dependencies.")
@@ -183,6 +242,7 @@ class Dist(object):
                 Inverted probability values where
                 ``out.shape == q_data.shape``.
         """
+        self._check_dependencies()
         q_data = numpy.asfarray(q_data)
         assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
         shape = q_data.shape
@@ -238,6 +298,7 @@ class Dist(object):
                     [0.13 , 0.352, 0.352, 0.13 ]]])
 
         """
+        self._check_dependencies()
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
@@ -301,6 +362,7 @@ class Dist(object):
             (numpy.ndarray):
                 Random samples with shape ``(len(self),)+self.shape``.
         """
+        self._check_dependencies()
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         if dim > 1:
@@ -383,6 +445,7 @@ class Dist(object):
                 Where out[0] is the first (A) and out[1] is the second
                 coefficient With ``out.shape==(2,)+k.shape``.
         """
+        self._check_dependencies()
         kloc = numpy.asarray(kloc, dtype=int)
         shape = kloc.shape
         kloc = kloc.reshape(len(self), -1)
@@ -411,7 +474,7 @@ class Dist(object):
 
     def __len__(self):
         """X.__len__() <==> len(X)"""
-        return 1
+        return len(self._dependencies)
 
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""

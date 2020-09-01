@@ -2,7 +2,7 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
+from ..baseclass import Dist, get_new_identifiers
 from .student_t import student_t
 
 
@@ -57,6 +57,10 @@ class MvStudentT(Dist):
 
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
+
+        indinces = get_new_identifiers(self, len(C))
+        self._dependencies = [set(indinces[:idx+1]) for idx in range(len(C))]
+
         Dist.__init__(self, a=df, C=C, Ci=Ci, loc=loc)
 
     def _cdf(self, x, a, C, Ci, loc):
