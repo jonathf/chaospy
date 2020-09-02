@@ -54,17 +54,16 @@ It has the convenient property:
 """
 import numpy
 
-from ..baseclass import Dist
+from ..baseclass import Dist, declare_stochastic_dependencies
 
 
 class Archimedean(Dist):
 
     def __init__(self, length, theta=1., ):
         self.length = length
+        self._dependencies = [
+            {idx} for idx in declare_stochastic_dependencies(self, length)]
         Dist.__init__(self, theta=float(theta))
-
-    def __len__(self):
-        return self.length
 
     def _lower(self, theta):
         return 0.

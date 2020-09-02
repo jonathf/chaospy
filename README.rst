@@ -3,19 +3,21 @@
    :width: 200 px
    :align: center
 
-|circleci| |codecov| |readthedocs| |license| |python-versions| |pypi| |downloads|
+|circleci| |codecov| |readthedocs| |pypi|
+
+|license| |python-versions| |downloads|
 
 .. |circleci| image:: https://img.shields.io/circleci/build/github/jonathf/chaospy/master
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
 .. |codecov| image:: https://img.shields.io/codecov/c/github/jonathf/chaospy
     :target: https://codecov.io/gh/jonathf/chaospy
-.. |readthedocs| image:: https://readthedocs.org/projects/chaospy/badge/?version=master
+.. |readthedocs| image:: https://img.shields.io/readthedocs/chaospy
     :target: http://chaospy.readthedocs.io/en/master/?badge=master
+.. |pypi| image:: https://img.shields.io/pypi/v/chaospy
+    :target: https://pypi.org/project/chaospy
 .. |license| image:: https://img.shields.io/pypi/l/chaospy
     :target: https://opensource.org/licenses/MIT
 .. |python-versions| image:: https://img.shields.io/pypi/pyversions/chaospy
-.. |pypi| image:: https://badge.fury.io/py/chaospy.svg
-    :target: https://badge.fury.io/py/chaospy
 .. |downloads| image:: https://img.shields.io/pypi/dw/chaospy
     :target: https://pypistats.org/packages/chaospy
 

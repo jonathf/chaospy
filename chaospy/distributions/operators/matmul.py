@@ -19,7 +19,6 @@ class Matmul(BinaryOperator):
             right (Dist, numpy.ndarray):
                 Right hand side.
         """
-
         if isinstance(left, Dist) and not isinstance(right, Dist):
             right = numpy.asarray(right)
             if not right.shape:
@@ -47,7 +46,7 @@ class Matmul(BinaryOperator):
             raise ValueError(
                 "matmul: at least one argument must be a distribution")
 
-        Dist.__init__(self, left=left, right=right)
+        BinaryOperator.__init__(self, left=left, right=right)
 
 
     def _lower(self, left, right, cache):

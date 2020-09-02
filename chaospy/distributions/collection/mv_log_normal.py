@@ -2,7 +2,7 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist, get_new_identifiers
+from ..baseclass import Dist, declare_stochastic_dependencies
 
 
 class MvLogNormal(Dist):
@@ -56,7 +56,7 @@ class MvLogNormal(Dist):
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
 
-        indinces = get_new_identifiers(self, len(C))
+        indinces = declare_stochastic_dependencies(self, len(C))
         self._dependencies = [set(indinces[:idx+1]) for idx in range(len(C))]
 
         Dist.__init__(self, loc=loc, C=C, Ci=Ci, scale=scale)

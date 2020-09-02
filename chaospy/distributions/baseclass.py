@@ -40,7 +40,7 @@ possible to define the following methods:
     Method for creating coefficients from three terms recursion method, used to
     perform "analytical" Stiltjes' method.
 """
-import types
+import logging
 import numpy
 
 from . import evaluation, approximation
@@ -48,7 +48,7 @@ from . import evaluation, approximation
 
 DISTRIBUTION_IDENTIFIERS = {}
 
-def get_new_identifiers(dist, count=1):
+def declare_stochastic_dependencies(dist, count=1):
     length = len(DISTRIBUTION_IDENTIFIERS)
     new_identifiers = list(range(length+1, length+1+count))
     for idx in new_identifiers:
@@ -73,62 +73,60 @@ class Dist(object):
     should be interpreted as integers instead of floating point.
     """
 
+    @property
+    def stochastic_dependent(self):
+        """True if distribution contains stochastically dependent components."""
+        return any(len(deps) > 1 for deps in self._dependencies)
+
+
     def __init__(self, **prm):
         """
         Args:
-            prm (numpy.ndarray):
+            prm (numpy.ndarray, chaospy.Dist):
                 Other optional parameters. Will be assumed when calling any
                 sub-functions.
         """
         self.prm = prm
-        if not hasattr(self, "_dependencies"):
-            length = 1
-            for key, param in prm.items():
-                if not isinstance(param, Dist):
-                    length = max(length, numpy.asarray(param).size)
-                    self.prm[key] = numpy.asarray(param).ravel()
 
-            self._dependencies = [
-                set([idx]) for idx in get_new_identifiers(self, length)]
+        if not hasattr(self, "_dependencies"):
+            length = max([numpy.asarray(param).size for param in prm.values()
+                          if not isinstance(param, Dist)]+[1])
+            self._dependencies = [set([idx]) for idx in declare_stochastic_dependencies(self, length)]
             for param in prm.values():
                 if isinstance(param, Dist):
                     assert len(param) in (1, len(self._dependencies))
-                    if len(param) == 1:
-                        for dep in self._dependencies:
-                            dep.update(param._dependencies[0])
-                    else:
-                        for dep, other in zip(self._dependencies, param._dependencies):
-                            dep.update(other)
-
-        all_dependencies = set()
-        for dep in self._dependencies:
-            all_dependencies.update(dep)
+                    for idx in range(len(self)):
+                        self._dependencies[idx].update(
+                            param._dependencies[min(idx, len(param._dependencies)-1)])
 
         if not hasattr(self, "_rotation"):
-            self._rotation = [key for key, _ in sorted(enumerate(self._dependencies), key=lambda x: len(x[1]))]
+            self._rotation = sorted(enumerate(self._dependencies), key=lambda x: len(x[1]))
+            self._rotation = [key for key, _ in self._rotation]
         if not hasattr(self, "_exclusion"):
             self._exclusion = set()
+
+        all_dependencies = {dep for deps in self._dependencies for dep in deps}
+        if len(all_dependencies) < len(self):
+            raise StochasticallyDependentError(
+                "%s is an under-defined probability distribution." % self)
+
         for param in prm.values():
             if isinstance(param, Dist):
-                assert not all_dependencies.intersection(param._exclusion), (
-                    "illegal dependency structure")
+                if all_dependencies.intersection(param._exclusion):
+                    raise StochasticallyDependentError((
+                        "%s contains dependencies that can not also exist "
+                        "other places in the dependency hierarchy") % param)
                 self._exclusion.update(param._exclusion)
 
-        assert len(self._rotation) == len(self._dependencies)
-        cur = set()
-        last_length = 0
-        for idx in self._rotation:
-            cur.update(self._dependencies[idx])
-            assert len(cur) > last_length, (
-                "illegal rotation: %s" % self._dependencies)
-            last_length = len(cur)
 
     def _check_dependencies(self):
         cur = set()
         for idx in self._rotation:
             length = len(cur)
             cur.update(self._dependencies[idx])
-            assert len(cur) == length+1, "dependency issues: %s -- %s" % (self, self._dependencies)
+            if len(cur) != length+1:
+                raise StochasticallyDependentError(
+                    "%s has more underlying dependencies than the size of distribution." % self)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -171,6 +169,7 @@ class Dist(object):
                 Evaluated distribution function values, where
                 ``out.shape==x_data.shape``.
         """
+        logger = logging.getLogger(__name__)
         self._check_dependencies()
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
@@ -180,9 +179,16 @@ class Dist(object):
         indices = (x_data.T > self.upper.T).T
         q_data[indices] = 1
         indices = ~indices & (x_data.T >= self.lower).T
+        if not numpy.all(indices):
+            logger.debug("%s.fwd: %d/%d inputs out of bounds",
+                         self, numpy.sum(~indices), len(indices))
 
-        q_data[indices] = numpy.clip(evaluation.evaluate_forward(
-            self, x_data), a_min=0, a_max=1)[indices]
+        q_data[indices] = evaluation.evaluate_forward(self, x_data)[indices]
+        indices = (q_data > 1) | (q_data < 0)
+        if numpy.any(indices):
+            logger.debug("%s.fwd: %d/%d outputs out of bounds",
+                         self, numpy.sum(indices), len(indices))
+            q_data = numpy.clip(q_data, a_min=0, a_max=1)
 
         q_data = q_data.reshape(shape)
         return q_data
@@ -206,7 +212,7 @@ class Dist(object):
                 higher dimensions.
         """
         self._check_dependencies()
-        if len(self) > 1 and evaluation.get_dependencies(*self):
+        if self.stochastic_dependent:
             raise StochasticallyDependentError(
                 "Cumulative distribution does not support dependencies.")
         x_data = numpy.asarray(x_data)
@@ -242,13 +248,26 @@ class Dist(object):
                 Inverted probability values where
                 ``out.shape == q_data.shape``.
         """
+        logger = logging.getLogger(__name__)
         self._check_dependencies()
         q_data = numpy.asfarray(q_data)
         assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
         shape = q_data.shape
         q_data = q_data.reshape(len(self), -1)
         x_data = evaluation.evaluate_inverse(self, q_data)
-        x_data = numpy.clip(x_data.T, self.lower, self.upper).T
+
+        indices = numpy.all((x_data.T < self.lower), axis=-1)
+        if numpy.any(indices):
+            logger.debug("%s.inv: %d/%d outputs under lower bound",
+                         self, numpy.sum(indices), len(indices))
+            x_data.T[indices] = self.lower
+
+        indices = numpy.all((x_data.T > self.upper), axis=-1)
+        if numpy.any(indices):
+            logger.debug("%s.inv: %d/%d outputs over upper bound",
+                         self, numpy.sum(indices), len(indices))
+            x_data.T[indices] = self.upper
+
         x_data = x_data.reshape(shape)
         return x_data
 
@@ -298,6 +317,7 @@ class Dist(object):
                     [0.13 , 0.352, 0.352, 0.13 ]]])
 
         """
+        logger = logging.getLogger(__name__)
         self._check_dependencies()
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
@@ -305,6 +325,9 @@ class Dist(object):
 
         f_data = numpy.zeros(x_data.shape)
         indices = (x_data.T <= self.upper).T & (x_data.T >= self.lower).T
+        if not numpy.all(indices):
+            logger.debug("%s.fwd: %d/%d inputs out of bounds",
+                         self, numpy.sum(~indices), len(indices))
         f_data[indices] = evaluation.evaluate_density(self, x_data)[indices]
         f_data = f_data.reshape(shape)
         if len(self) > 1 and not decompose:
@@ -427,7 +450,7 @@ class Dist(object):
 
     def _mom(self, *args, **kws):
         """Default moment generator, throws error."""
-        raise StochasticallyDependentError("component lack support")
+        raise StochasticallyDependentError("component lack support for raw statistical moments.")
 
     def ttr(self, kloc, acc=10**3, verbose=1):
         """

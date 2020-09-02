@@ -46,8 +46,10 @@ class J(Dist):
     Joint random variable generator.
 
     Args:
-        args: Dist
+        args (chaospy.Dist):
             Distribution to join together.
+        rotation (Optional[Sequence[int]]):
+            The order of how the joint should be evaluated.
     """
 
     @property
@@ -55,7 +57,7 @@ class J(Dist):
         """Determine if joint consist of only integers."""
         return all(dist.interpret_as_integer for dist in self.prm.values())
 
-    def __init__(self, *args, rotation=None):
+    def __init__(self, *args, **kwargs):
         args = [dist for arg in args
                 for dist in (arg if isinstance(arg, J) else [arg])]
         assert all(isinstance(dist, Dist) for dist in args)
@@ -66,8 +68,9 @@ class J(Dist):
             for dist in args
             for deps in dist._dependencies
         ]
-        if rotation is not None:
-            self._rotation = list(rotation)
+        if "rotation" in kwargs:
+            self._rotation = list(kwargs.pop("rotation"))
+        assert not kwargs, "'rotation' is the only allowed keyword."
 
         prm = {"_%03d" % idx: dist for idx, dist in zip(self.indices, args)}
         Dist.__init__(self, **prm)
@@ -99,8 +102,8 @@ class J(Dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> dist.lower
-            array([ 0. , -7.5])
+            >>> dist.lower.round(4)
+            array([ 0.    , -6.3613])
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> dist.lower
@@ -118,8 +121,8 @@ class J(Dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> dist.upper
-            array([1. , 7.5])
+            >>> dist.upper.round(4)
+            array([1.    , 6.3613])
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> dist.upper
@@ -229,10 +232,6 @@ class J(Dist):
                 dist, kloc[idx:idx+len(dist)], cache=cache)
             output.T[idx] = values.T
         return output
-
-
-    def __len__(self):
-        return sum(len(dist) for dist in self.inverse_map)
 
     def __str__(self):
         """

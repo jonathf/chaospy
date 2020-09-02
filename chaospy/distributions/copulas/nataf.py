@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from .baseclass import Copula
-from ..baseclass import Dist, get_new_identifiers
+from ..baseclass import Dist, declare_stochastic_dependencies
 
 class nataf(Dist):
     """Nataf (normal) copula."""
@@ -14,7 +14,7 @@ class nataf(Dist):
         self._rotation = numpy.array(rotation)
 
         accumulant = set()
-        dependencies = get_new_identifiers(self, len(R))
+        dependencies = declare_stochastic_dependencies(self, len(R))
         self._dependencies = [None]*len(R)
         for idx in self._rotation:
             accumulant.add(dependencies[idx])

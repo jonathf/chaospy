@@ -13,7 +13,7 @@ Define a simple distribution::
 Normal usage::
 
     >>> print(load_parameters(dist, "_pdf"))
-    {'param1': array([45])}
+    {'param1': 45}
     >>> print(load_parameters(dist, "_pdf", parameters={"param1": 35}))
     {'param1': 35}
 

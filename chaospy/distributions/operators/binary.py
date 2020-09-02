@@ -17,9 +17,9 @@ class BinaryOperator(Dist):
                 Right hand side.
         """
         if not isinstance(left, Dist):
-            left = numpy.asarray(left).flatten()
+            left = numpy.atleast_1d(left)
         if not isinstance(right, Dist):
-            right = numpy.asarray(right).flatten()
+            right = numpy.atleast_1d(right)
         length = max(len(left), len(right))
         self._dependencies = [set() for _ in range(length)]
         if isinstance(left, Dist):

@@ -27,10 +27,10 @@ distribution is stochastically independent.
 In the ``chaospy`` toolbox three terms recursion coefficient can be
 generating by calling the ``ttr`` instance method::
 
-    >>> dist = chaospy.Uniform(-1,1)
-    >>> print(numpy.around(dist.ttr([0,1,2,3]), 4))
-    [[ 0.      0.      0.      0.    ]
-     [-0.      0.3333  0.2667  0.2571]]
+    >>> dist = chaospy.Uniform(-1, 1)
+    >>> dist.ttr([0,1,2,3]).round(4)
+    array([[ 0.    ,  0.    ,  0.    ,  0.    ],
+           [-0.    ,  0.3333,  0.2667,  0.2571]])
 
 In many of the pre-defined probability distributions in ``chaospy``, the three
 terms recursion coefficients are calculated analytically. If the distribution

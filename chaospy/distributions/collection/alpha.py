@@ -11,6 +11,8 @@ class alpha(Dist):
     """Standard Alpha distribution."""
 
     def __init__(self, a=1):
+        a = numpy.atleast_1d(a)
+        assert a.ndim == 1, "a has too many dimensions"
         Dist.__init__(self, a=a)
 
     def _cdf(self, x, a):
@@ -24,7 +26,7 @@ class alpha(Dist):
             numpy.e**(.5*(a-1.0/x.T)**2)/numpy.sqrt(2*numpy.pi)).T
 
     def _lower(self, a):
-        return numpy.zeros(len(a))
+        return numpy.zeros(a.size)
 
 
 class Alpha(LocScaling):

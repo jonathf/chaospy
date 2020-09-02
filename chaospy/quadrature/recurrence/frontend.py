@@ -68,8 +68,8 @@ def construct_recurrence_coefficients(
         >>> distribution = chaospy.Normal(0, 1)
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     4, distribution, recurrence_algorithm="stieltjes")
-        >>> coefficients[0].round(4)
-        array([[-0.,  0.,  0., -0.,  0.],
+        >>> coefficients[0].round(3)
+        array([[-0., -0., -0., -0., -0.],
                [ 1.,  1.,  2.,  3.,  4.]])
         >>> distribution = chaospy.J(chaospy.Exponential(), chaospy.Uniform())
         >>> coefficients = chaospy.construct_recurrence_coefficients(

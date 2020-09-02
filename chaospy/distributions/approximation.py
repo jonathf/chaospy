@@ -49,7 +49,7 @@ def approximate_inverse(
         >>> distribution = chaospy.Normal(1000, 10)
         >>> qloc = numpy.array([[0.1, 0.2, 0.9]])
         >>> approximate_inverse(distribution, qloc, seed=1234).round(4)
-        array([[ 987.1846,  991.5839, 1012.8152]])
+        array([[ 987.1845,  991.5838, 1012.8152]])
         >>> distribution.inv(qloc).round(4)
         array([[ 987.1845,  991.5838, 1012.8155]])
     """

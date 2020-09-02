@@ -2,7 +2,7 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist, get_new_identifiers
+from ..baseclass import Dist, declare_stochastic_dependencies
 from .student_t import student_t
 
 
@@ -58,7 +58,7 @@ class MvStudentT(Dist):
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
 
-        indinces = get_new_identifiers(self, len(C))
+        indinces = declare_stochastic_dependencies(self, len(C))
         self._dependencies = [set(indinces[:idx+1]) for idx in range(len(C))]
 
         Dist.__init__(self, a=df, C=C, Ci=Ci, loc=loc)

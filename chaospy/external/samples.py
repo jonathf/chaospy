@@ -12,21 +12,27 @@ data as input argument::
 
 This distribution can be used as any other distributions::
 
-    >>> print(numpy.around(distribution.cdf([3, 3.5, 4, 4.5, 5]), 4))
-    [0.     0.1932 0.4279 0.7043 1.    ]
-    >>> print(numpy.around(distribution.mom(1), 4))
-    4.0922
+    >>> distribution.cdf([3, 3.5, 4, 4.5, 5]).round(4)
+    array([0.    , 0.1932, 0.4279, 0.7043, 1.    ])
+    >>> distribution.mom(1).round(4)
+    4.25
+    >>> distribution.sample(4).round(4)
+    array([4.4131, 3.3111, 4.9139, 4.1042])
 
 It also supports lower and upper bounds defining where the range is expected to
 appear, which gives a slightly different distribution::
 
     >>> distribution = chaospy.SampleDist(data, lo=2, up=6)
-    >>> print(numpy.around(distribution.cdf([3, 3.5, 4, 4.5, 5]), 4))
-    [0.1344 0.2543 0.4001 0.5716 0.7552]
-    >>> print(numpy.around(distribution.mom(1), 4))
-    4.2149
+    >>> distribution.cdf([3, 3.5, 4, 4.5, 5]).round(4)
+    array([0.1344, 0.2543, 0.4001, 0.5716, 0.7552])
 
-Currently the wrapper is limited to only support univariate distributions.
+In addition multivariate distributions supported::
+
+    >>> data = [[1, 2, 2, 3], [5, 5, 4, 3]]
+    >>> distribution = chaospy.SampleDist(data)
+    >>> distribution.sample(4).round(4)
+    array([[2.3601, 1.7626, 1.094 , 2.6507],
+           [3.9457, 4.5802, 4.9081, 3.9278]])
 
 .. _kernel density estimation: \
 https://en.wikipedia.org/wiki/Kernel_density_estimation
@@ -34,18 +40,22 @@ https://en.wikipedia.org/wiki/Kernel_density_estimation
 import numpy
 from scipy.stats import gaussian_kde
 
-from chaospy.distributions.baseclass import Dist
-from chaospy.distributions.operators.addition import Add
+from chaospy.distributions.baseclass import Dist, StochasticallyDependentError
+from chaospy.distributions.copulas import Nataf
+from chaospy.distributions.operators import Add, J
 from chaospy.distributions.collection.uniform import Uniform
 
 
 class sample_dist(Dist):
     """A distribution that is based on a kernel density estimator (KDE)."""
+
     def __init__(self, samples, lo, up):
         self.samples = samples
         self.kernel = gaussian_kde(samples, bw_method="scott")
         self.flo = self.kernel.integrate_box_1d(0, lo)
         self.fup = self.kernel.integrate_box_1d(0, up)
+        self.unbound = numpy.all(lo == samples.min())
+        self.unbound &= numpy.all(up == samples.max())
         super(sample_dist, self).__init__(lo=lo, up=up)
 
     def _cdf(self, x, lo, up):
@@ -64,35 +74,13 @@ class sample_dist(Dist):
     def _upper(self, lo, up):
         return up
 
-    def sample(self, size=(), rule="random", antithetic=None, verbose=False, **kws):
-        """
-        Overwrite sample() function, because the constructed Dist that is
-        based on the KDE is only working with the random sampling that is
-        given by the KDE itself.
-        """
-        size_ = numpy.prod(size, dtype=int)
-        dim = len(self)
-        if dim > 1:
-            if isinstance(size, (tuple,list,numpy.ndarray)):
-                shape = (dim,) + tuple(size)
-            else:
-                shape = (dim, size)
-        else:
-            shape = size
-
-        out = self.kernel.resample(size_)[0]
-        try:
-            out = out.reshape(shape)
-        except:
-            if len(self) == 1:
-                out = out.flatten()
-            else:
-                out = out.reshape(dim, out.size/dim)
-
-        return out
+    def _mom(self, k, lo, up):
+        if self.unbound:
+            return numpy.prod(numpy.mean(self.samples.T**k, -1))
+        raise StochasticallyDependentError("component lack support")
 
 
-def SampleDist(samples, lo=None, up=None):
+def SampleDist(samples, lo=None, up=None, threshold=1e-5):
     """
     Distribution based on samples.
 
@@ -101,11 +89,18 @@ def SampleDist(samples, lo=None, up=None):
 
     Args:
         samples (numpy.ndarray):
-            Sample values to construction of the KDE
+            Sample values to construction of the KDE. Either shape
+            ``(N,)`` or ``(D, N)``, where ``N`` are the number of
+            samples, and ``D`` is the number of dimension in the
+            distribution.
         lo (float):
-            Location of lower threshold
+            Location of lower bound.
         up (float):
-            Location of upper threshold
+            Location of upper bound.
+        threshold (float):
+            Threshold for how low the correlation between two
+            columns should be before defining them as
+            stochastically independent.
 
     Example:
         >>> distribution = chaospy.SampleDist([0, 1, 1, 1, 2])
@@ -119,22 +114,41 @@ def SampleDist(samples, lo=None, up=None):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.2254, 0.4272, 0.5135, 0.4272, 0.2254])
         >>> distribution.sample(4).round(4)
-        array([2.3836, 0.411 , 0.4378, 0.9087])
+        array([1.0294, 1.0993, 0.9116, 0.3768])
         >>> distribution.mom(1).round(4)
         1.0
+
     """
-    samples = numpy.asarray(samples)
+    samples = numpy.atleast_2d(samples)
+    assert samples.ndim == 2, "samples have too many dimensions provided"
+
     if lo is None:
-        lo = samples.min()
+        lo = samples.min(axis=-1)
     if up is None:
-        up = samples.max()
+        up = samples.max(axis=-1)
+    lo, up, _ = numpy.broadcast_arrays(lo, up, samples[:, 0])
 
-    try:
+    # construct vector of marginals
+    distributions = []
+    for samples_, lo_, up_ in zip(samples, lo, up):
         #construct the kernel density estimator
-        dist = sample_dist(samples, lo, up)
+        try:
+            dist = sample_dist(samples_, lo_, up_)
+        #raised by gaussian_kde if dataset is singular matrix
+        except numpy.linalg.LinAlgError:
+            dist = Uniform(lower=-numpy.inf, upper=numpy.inf)
+        distributions.append(dist)
 
-    #raised by gaussian_kde if dataset is singular matrix
-    except numpy.linalg.LinAlgError:
-        dist = Uniform(lower=-numpy.inf, upper=numpy.inf)
+    if len(samples) == 1:
+        distributions = distributions[0]
 
-    return dist
+    else:
+        distributions = J(*distributions)
+
+        # Attach dependencies to data.
+        correlation = numpy.corrcoef(samples)
+        correlation[numpy.abs(correlation) <= threshold] = 0
+        if numpy.any(correlation != numpy.diag(numpy.diag(correlation))):
+            distributions = Nataf(distributions, correlation)
+
+    return distributions

@@ -16,13 +16,13 @@ class folded_normal(Dist):
         return numpy.sqrt(2.0/numpy.pi)*numpy.cosh(c*x)*numpy.exp(-(x*x+c*c)/2.0)
 
     def _cdf(self, x, c):
-        return special.ndtr(x-c) + special.ndtr(x+c) - 1.0
+        return special.ndtr(x-c) + special.ndtr(x+c)-1.0
 
     def _lower(self, c):
         return 0.
 
     def _upper(self, c):
-        return 7.5+c
+        return 8+c
 
 
 class FoldedNormal(Add):
@@ -49,11 +49,11 @@ class FoldedNormal(Add):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.1417, 0.1934, 0.1932, 0.14  ])
         >>> distribution.sample(4).round(4)
-        array([2.1633, 1.7827, 4.6911, 5.5156])
+        array([2.1633, 1.7828, 4.6912, 5.5157])
         >>> distribution.mom(1).round(4)
         5.034
     """
 
     def __init__(self, mu=0, sigma=1, loc=0):
         self._repr = {"mu": mu, "sigma": sigma, "loc": loc}
-        Add.__init__(self, left= folded_normal(mu-loc)*sigma, right=loc)
+        Add.__init__(self, left=folded_normal(mu-loc)*sigma, right=loc)

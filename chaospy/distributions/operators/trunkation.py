@@ -13,20 +13,12 @@ Example usage
     >>> distribution = chaospy.Normal(0, 1) < 2
     >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
     [1.1726 1.8449 1.9822]
-
-Illegal dependencies:
-
-    >>> dist1 = chaospy.Uniform()
-    >>> dist2 = chaospy.Trunc(dist1, 0.5)
-    >>> dist = chaospy.J(dist1, dist2)
-    Traceback (most recent call last):
-        ...
-    AssertionError: illegal dependency structure
 """
 import numpy
 
 from .joint import J
-from ..baseclass import Dist, StochasticallyDependentError, get_new_identifiers
+from ..baseclass import (
+    Dist, StochasticallyDependentError, declare_stochastic_dependencies)
 from .. import evaluation
 
 
@@ -58,7 +50,7 @@ class Trunc(Dist):
 
         assert isinstance(left, Dist) or isinstance(right, Dist)
         self._dependencies = [set([idx])
-                              for idx in get_new_identifiers(self, len(self._exclusion))]
+                              for idx in declare_stochastic_dependencies(self, len(self._exclusion))]
         Dist.__init__(self, left=left, right=right)
 
 
