@@ -49,6 +49,20 @@ from . import evaluation, approximation
 DISTRIBUTION_IDENTIFIERS = {}
 
 def declare_stochastic_dependencies(dist, count=1):
+    """
+    Declare stochastic dependency to an underlying random variable.
+
+    Args:
+        dist (chaospy.Dist):
+            The probability distribution that is making the declaration.
+        count (int):
+            The number of variables to declare.
+
+    Returns:
+        (List[int]):
+            Unique integer identifiers that represents dependencies.
+
+    """
     length = len(DISTRIBUTION_IDENTIFIERS)
     new_identifiers = list(range(length+1, length+1+count))
     for idx in new_identifiers:

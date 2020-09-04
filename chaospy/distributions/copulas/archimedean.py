@@ -59,7 +59,7 @@ from ..baseclass import Dist, declare_stochastic_dependencies
 
 class Archimedean(Dist):
 
-    def __init__(self, length, theta=1., ):
+    def __init__(self, length, theta=1.):
         self.length = length
         self._dependencies = [
             {idx} for idx in declare_stochastic_dependencies(self, length)]
