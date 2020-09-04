@@ -13,21 +13,12 @@ Example usage
     >>> distribution = chaospy.Normal(0, 1) < 2
     >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
     [1.1726 1.8449 1.9822]
-
-Illegal dependencies:
-
-    >>> dist1 = chaospy.Uniform()
-    >>> dist2 = chaospy.Trunc(dist1, 0.5)
-    >>> dist = chaospy.J(dist1, dist2)
-    >>> dist.sample() # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    chaospy.distributions.baseclass.StochasticallyDependentError: truncated variable ...
 """
 import numpy
 
 from .joint import J
-from ..baseclass import Dist, StochasticallyDependentError
+from ..baseclass import (
+    Dist, StochasticallyDependentError, declare_stochastic_dependencies)
 from .. import evaluation
 
 
@@ -39,21 +30,27 @@ class Trunc(Dist):
         Constructor.
 
         Args:
-            left (Dist, numpy.ndarray) : Left hand side.
-            right (Dist, numpy.ndarray) : Right hand side.
+            left (Dist, numpy.ndarray):
+                Left hand side.
+            right (Dist, numpy.ndarray):
+                Right hand side.
         """
-        if isinstance(left, Dist) and len(left) > 1:
-            if (not isinstance(left, J) or
-                    evaluation.get_dependencies(*list(left.inverse_map))):
+        if isinstance(left, Dist):
+            self._exclusion = {dep for deps in left._dependencies for dep in deps}
+            if len(left) > 1 and (not isinstance(left, J) or
+                                      evaluation.get_dependencies(*list(left.inverse_map))):
                 raise StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
-        if isinstance(right, Dist) and len(right) > 1:
-            if (not isinstance(right, J) or
-                    evaluation.get_dependencies(*list(right.inverse_map))):
+        if isinstance(right, Dist):
+            self._exclusion = {dep for deps in right._dependencies for dep in deps}
+            if len(right) > 1 and (not isinstance(right, J) or
+                                   evaluation.get_dependencies(*list(right.inverse_map))):
                 raise StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
 
         assert isinstance(left, Dist) or isinstance(right, Dist)
+        self._dependencies = [set([idx])
+                              for idx in declare_stochastic_dependencies(self, len(self._exclusion))]
         Dist.__init__(self, left=left, right=right)
 
 

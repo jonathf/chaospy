@@ -1,6 +1,35 @@
 Master Branch
 =============
 
+Version 4.0.0 (2020-09-04)
+==========================
+
+Adding rotation, part 1.
+
+ADDED:
+  * Property for checking for dependencies: `Dist.stochastic_dependent`.
+  * Lots of illegal probability distribution configuration that would cause
+    trouble during execution are now caught earlier with an appropriate
+    error.
+  * Logging of samples out-of-bound for Dist methods:
+    `pdf`, `cdf`, `inv`, `fwd`.
+  * `Dist.pdf` get the extra flag `decompose` to split density into parts
+    (like `inv` and `fwd` does by default.) Should work with all
+    distribution, with a few exception. (MvLogNormal comes to mind.)
+  * New `LocScale` baseclass for all generic distributions with location and
+    and covariance structure.
+  * Lots of new tests.
+CHANGED:
+  * New and improved dependency system based on underlying variable
+    declaration.
+  * Some probability distribution boundaries moved from hardcoded to
+    automatically detected.
+  * Update `Iid` to not be `J` subclass.
+  * Test cases for the new `LocScale` baseclass: `MvNormal` and `Alpha`.
+REMOVED:
+  * Precedence order system. Was not ready yet, and a new one is being made
+    with the rotation system.
+
 Version 3.3.8 (2020-08-10)
 ==========================
 

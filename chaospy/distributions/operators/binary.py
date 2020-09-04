@@ -16,22 +16,35 @@ class BinaryOperator(Dist):
             right (Dist, numpy.ndarray):
                 Right hand side.
         """
-        Dist.__init__(self, left=left, right=right)
-
-    def _precedence_order(self):
-        """Precedence order of the various dimensions."""
-        left = self.prm["left"]
-        right = self.prm["right"]
+        if not isinstance(left, Dist):
+            left = numpy.atleast_1d(left)
+        if not isinstance(right, Dist):
+            right = numpy.atleast_1d(right)
+        length = max(len(left), len(right))
+        self._dependencies = [set() for _ in range(length)]
         if isinstance(left, Dist):
-            indices = left._precedence_order()
-            if isinstance(right, Dist):
-                assert indices == right._precedence_order()
-        elif isinstance(right, Dist):
-            indices = right._precedence_order()
-        else:
-            indices = list(range(len(self)))
-        return indices
-
+            if len(left) == 1:
+                self._dependencies = [
+                    dep.union(left._dependencies[0])
+                    for dep in self._dependencies
+                ]
+            else:
+                self._dependencies = [
+                    dep.union(other)
+                    for dep, other in zip(self._dependencies, left._dependencies)
+                ]
+        if isinstance(right, Dist):
+            if len(right) == 1:
+                self._dependencies = [
+                    dep.union(right._dependencies[0])
+                    for dep in self._dependencies
+                ]
+            else:
+                self._dependencies = [
+                    dep.union(other)
+                    for dep, other in zip(self._dependencies, right._dependencies)
+                ]
+        Dist.__init__(self, left=left, right=right)
 
     def _cdf(self, xloc, left, right, cache):
         """Cumulative distribution function."""

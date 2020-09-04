@@ -27,12 +27,6 @@ class normal(Dist):
     def _ttr(self, n):
         return 0., 1.*n
 
-    def _lower(self):
-        return -7.5
-
-    def _upper(self):
-        return 7.5
-
 
 class Normal(Add):
     R"""

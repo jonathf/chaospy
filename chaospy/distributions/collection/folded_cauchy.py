@@ -21,7 +21,7 @@ class folded_cauchy(Dist):
         return 0.
 
     def _upper(self, c):
-        return 10.**10  # actually infinity
+        return 1e+16  # actually infinity
 
 
 class FoldedCauchy(Add):
@@ -48,7 +48,8 @@ class FoldedCauchy(Add):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.0915, 0.1603, 0.1306, 0.0393])
         >>> distribution.sample(4).round(4)
-        array([9.2648, 7.5918, 7.2159, 7.1782])
+        array([ 3.2852,  3.988 ,  2.1266, 19.5435])
+
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

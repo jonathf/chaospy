@@ -8,7 +8,7 @@ Distribution and a constant::
 
     >>> distribution = chaospy.Normal(0, 1) + 10
     >>> distribution
-    Add(Normal(mu=0, sigma=1), 10)
+    Add(Normal(mu=0, sigma=1), [10])
     >>> distribution.sample(5).round(4)
     array([10.395 ,  8.7997, 11.6476,  9.9553, 11.1382])
     >>> distribution.fwd([9, 10, 11]).round(4)
@@ -92,8 +92,6 @@ class Add(BinaryOperator):
             array([2.])
             >>> chaospy.Add(2, chaospy.Uniform()).lower
             array([2.])
-            >>> chaospy.Add(1, 1).lower
-            array([2.])
         """
         left = evaluation.get_forward_cache(left, cache)
         right = evaluation.get_forward_cache(right, cache)
@@ -114,8 +112,7 @@ class Add(BinaryOperator):
             array([3.])
             >>> chaospy.Add(2, chaospy.Uniform()).upper
             array([3.])
-            >>> chaospy.Add(1, 1).upper
-            array([2.])
+
         """
         left = evaluation.get_forward_cache(left, cache)
         right = evaluation.get_forward_cache(right, cache)
@@ -151,8 +148,7 @@ class Add(BinaryOperator):
             [0. 0. 1. 0.]
             >>> print(chaospy.Add(2, chaospy.Uniform()).pdf([-2, 0, 2, 4]))
             [0. 0. 1. 0.]
-            >>> print(chaospy.Add(1, 1).pdf([-2, 0, 2, 4])) # Dirac logic
-            [ 0.  0. inf  0.]
+
         """
         left = evaluation.get_forward_cache(left, cache)
         right = evaluation.get_forward_cache(right, cache)
@@ -182,8 +178,6 @@ class Add(BinaryOperator):
             [2.1 2.2 2.9]
             >>> print(chaospy.Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
             [2.1 2.2 2.9]
-            >>> print(chaospy.Add(1, 1).inv([0.1, 0.2, 0.9]))
-            [2. 2. 2.]
         """
         left = evaluation.get_inverse_cache(left, cache)
         right = evaluation.get_inverse_cache(right, cache)
@@ -212,8 +206,6 @@ class Add(BinaryOperator):
             [ 1.      2.5     6.3333 16.25  ]
             >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
             [ 1.      2.5     6.3333 16.25  ]
-            >>> print(numpy.around(chaospy.Add(1, 1).mom([0, 1, 2, 3]), 4))
-            [1. 2. 4. 8.]
         """
         if evaluation.get_dependencies(left, right):
             raise evaluation.DependencyError(
@@ -263,10 +255,7 @@ class Add(BinaryOperator):
             >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
             [[ 2.5     2.5     2.5     2.5   ]
              [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(1, 1).ttr([0, 1, 2, 3]), 4)) # doctest: +IGNORE_EXCEPTION_DETAIL
-            Traceback (most recent call last):
-                ...
-            chaospy.distributions.baseclass.StochasticallyDependentError: recurrence ...
+
         """
         if isinstance(left, Dist):
             if isinstance(right, Dist):

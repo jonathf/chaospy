@@ -140,10 +140,10 @@ def generate_quadrature(
         >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 2)
         >>> abscissas, weights = generate_quadrature(
         ...     1, distribution, rule=("gaussian", "fejer"))
-        >>> abscissas
-        array([[-1.  , -1.  ,  1.  ,  1.  ],
-               [-3.75,  3.75, -3.75,  3.75]])
-        >>> weights
+        >>> abscissas.round(3)
+        array([[-1.   , -1.   ,  1.   ,  1.   ],
+               [-3.181,  3.181, -3.181,  3.181]])
+        >>> weights.round(3)
         array([0.25, 0.25, 0.25, 0.25])
     """
     if not rule:
@@ -166,7 +166,7 @@ def generate_quadrature(
         return sparse_grid.construct_sparse_grid(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
-    if isinstance(dist, chaospy.J):
+    if isinstance(dist, (chaospy.J, chaospy.Iid)):
 
         order = numpy.ones(len(dist), dtype=int)*order
         from ..distributions.evaluation import get_dependencies
@@ -238,8 +238,7 @@ def generate_quadrature(
     quad_function = QUAD_FUNCTIONS[rule]
     abscissas, weights = quad_function(order, dist, **kwargs)
 
-    assert len(weights) == abscissas.shape[1]
-    assert len(abscissas.shape) == 2
+    assert abscissas.shape == (len(dist), len(weights))
 
     from ..distributions.operators.joint import J
     from ..distributions.evaluation import sorted_dependencies

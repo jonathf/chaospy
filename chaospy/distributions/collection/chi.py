@@ -22,9 +22,6 @@ class chi(Dist):
     def _ppf(self, q, df):
         return numpy.sqrt(2*special.gammaincinv(df*0.5, q))
 
-    def _lower(self, df):
-        return 0.
-
     def _mom(self, k, df):
         return 2**(.5*k)*special.gamma(.5*(df+k))\
                 /special.gamma(.5*df)
@@ -48,7 +45,7 @@ class Chi(Add):
         Chi(df=2, scale=4, shift=1)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
-        array([ 1.    ,  4.0341,  5.7096,  7.6604, 28.1446])
+        array([ 1.0001,  4.0341,  5.7096,  7.6604, 28.1446])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)
@@ -57,6 +54,7 @@ class Chi(Add):
         array([ 6.8244,  2.9773, 10.8003,  5.5892])
         >>> distribution.mom(1).round(4)
         6.0133
+
     """
 
     def __init__(self, df=1, scale=1, shift=0):
@@ -81,7 +79,7 @@ class Maxwell(Add):
         Maxwell(scale=2, shift=3)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
-        array([ 3.    ,  5.2023,  6.0763,  7.0538, 17.0772])
+        array([ 3.0014,  5.2023,  6.0763,  7.0538, 17.0772])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)

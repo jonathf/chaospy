@@ -25,16 +25,10 @@ class laplace(Dist):
     def _ppf(self, x):
         return numpy.where(x>.5, -numpy.log(2*(1-x)), numpy.log(2*x))
 
-    def _lower(self):
-        return -32.
-
-    def _upper(self):
-        return 32.
-
     def _ttr(self, k):
         from ...quadrature import quad_fejer, discretized_stieltjes
-        q1, w1 = quad_fejer(500, (-32, 0))
-        q2, w2 = quad_fejer(500, (0, 32))
+        q1, w1 = quad_fejer(500, (self.lower, 0))
+        q2, w2 = quad_fejer(500, (0, self.upper))
         q = numpy.concatenate([q1,q2], 1)
         w = numpy.concatenate([w1,w2])*self.pdf(q[0])
 
@@ -67,7 +61,8 @@ class Laplace(Add):
         2.0
         >>> distribution.ttr([1, 2, 3]).round(4)
         array([[ 2.    ,  2.    ,  2.    ],
-               [ 8.    , 39.9995, 86.4011]])
+               [ 8.    , 39.9995, 86.3947]])
+
     """
     def __init__(self, mu=0, scale=1):
         self._repr = {"mu": mu, "scale": scale}

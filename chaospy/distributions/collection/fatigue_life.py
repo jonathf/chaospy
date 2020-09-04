@@ -25,9 +25,6 @@ class fatigue_life(Dist):
         tmp = c*special.ndtri(q)
         return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
 
-    def _lower(self, c):
-        return 0.
-
 
 class FatigueLife(Add):
     """

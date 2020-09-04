@@ -29,9 +29,6 @@ class gamma(Dist):
     def _lower(self, a):
         return 0.
 
-    def _upper(self, a):
-        return 40+2*a
-
 
 class Gamma(Add):
     """

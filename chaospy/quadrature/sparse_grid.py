@@ -119,7 +119,7 @@ def construct_sparse_grid(
     orders = order*numpy.ones(len(dist), dtype=int)
 
     assert isinstance(dist, chaospy.Dist), "dist must be chaospy.Dist"
-    if not isinstance(dist, chaospy.J):
+    if not isinstance(dist, (chaospy.J, chaospy.Iid)):
         dist = chaospy.J(dist)
 
     if isinstance(rule, str):

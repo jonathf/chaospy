@@ -66,7 +66,7 @@ To be able to reproduce results it is possible to fix the random seed in
     array([0.79  , 0.8132, 3.6967, 5.459 , 4.3098])
 """
 from . import baseclass
-from .baseclass import Dist
+from .baseclass import Dist, StochasticallyDependentError
 
 from .sampler import *
 from .operators import *

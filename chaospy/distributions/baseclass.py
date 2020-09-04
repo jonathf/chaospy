@@ -40,10 +40,34 @@ possible to define the following methods:
     Method for creating coefficients from three terms recursion method, used to
     perform "analytical" Stiltjes' method.
 """
-import types
+import logging
 import numpy
 
 from . import evaluation, approximation
+
+
+DISTRIBUTION_IDENTIFIERS = {}
+
+def declare_stochastic_dependencies(dist, count=1):
+    """
+    Declare stochastic dependency to an underlying random variable.
+
+    Args:
+        dist (chaospy.Dist):
+            The probability distribution that is making the declaration.
+        count (int):
+            The number of variables to declare.
+
+    Returns:
+        (List[int]):
+            Unique integer identifiers that represents dependencies.
+
+    """
+    length = len(DISTRIBUTION_IDENTIFIERS)
+    new_identifiers = list(range(length+1, length+1+count))
+    for idx in new_identifiers:
+        DISTRIBUTION_IDENTIFIERS[idx] = dist
+    return new_identifiers
 
 
 class StochasticallyDependentError(Exception):
@@ -63,9 +87,65 @@ class Dist(object):
     should be interpreted as integers instead of floating point.
     """
 
-    def _precedence_order(self):
-        """Precedence order of the various dimensions."""
-        return list(range(len(self)))
+    @property
+    def stochastic_dependent(self):
+        """True if distribution contains stochastically dependent components."""
+        return any(len(deps) > 1 for deps in self._dependencies)
+
+
+    def __init__(self, **prm):
+        """
+        Args:
+            prm (numpy.ndarray, chaospy.Dist):
+                Other optional parameters. Will be assumed when calling any
+                sub-functions.
+        """
+        self.prm = prm
+
+        if not hasattr(self, "_dependencies"):
+            length = max([numpy.asarray(param).size for param in prm.values()
+                          if not isinstance(param, Dist)]+[1])
+            self._dependencies = [set([idx]) for idx in declare_stochastic_dependencies(self, length)]
+            for param in prm.values():
+                if isinstance(param, Dist):
+                    assert len(param) in (1, len(self._dependencies))
+                    for idx in range(len(self)):
+                        self._dependencies[idx].update(
+                            param._dependencies[min(idx, len(param._dependencies)-1)])
+
+        if not hasattr(self, "_rotation"):
+            self._rotation = sorted(enumerate(self._dependencies), key=lambda x: len(x[1]))
+            self._rotation = [key for key, _ in self._rotation]
+        if not hasattr(self, "_exclusion"):
+            self._exclusion = set()
+
+        all_dependencies = {dep for deps in self._dependencies for dep in deps}
+        if len(all_dependencies) < len(self):
+            raise StochasticallyDependentError(
+                "%s is an under-defined probability distribution." % self)
+
+        for param in prm.values():
+            if isinstance(param, Dist):
+                if all_dependencies.intersection(param._exclusion):
+                    raise StochasticallyDependentError((
+                        "%s contains dependencies that can not also exist "
+                        "other places in the dependency hierarchy") % param)
+                self._exclusion.update(param._exclusion)
+
+
+    def _check_dependencies(self):
+        cur = set()
+        for idx in self._rotation:
+            length = len(cur)
+            cur.update(self._dependencies[idx])
+            if len(cur) != length+1:
+                raise StochasticallyDependentError(
+                    "%s has more underlying dependencies than the size of distribution." % self)
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        assert "_bnd" not in cls.__dict__, (
+            "Dist._bnd is deprecated. Use Dist._lower and Dist._upper instead.")
 
     def _lower(self, **prm):
         """Backend lower bound."""
@@ -74,7 +154,9 @@ class Dist(object):
     @property
     def lower(self):
         """Lower bound for the distribution."""
-        return evaluation.evaluate_lower(self)
+        out = evaluation.evaluate_lower(self)
+        assert len(out) == len(self), (self, len(self), out)
+        return out
 
     def _upper(self, **prm):
         """Backend upper bound."""
@@ -83,22 +165,9 @@ class Dist(object):
     @property
     def upper(self):
         """Upper bound for the distribution."""
-        return evaluation.evaluate_upper(self)
-
-    def __init__(self, **prm):
-        """
-        Args:
-            prm (numpy.ndarray):
-                Other optional parameters. Will be assumed when calling any
-                sub-functions.
-        """
-        self.prm = prm
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        assert "_bnd" not in cls.__dict__, (
-            "Dist._bnd is deprecated. Use Dist._lower and Dist._upper instead.")
-
+        out = evaluation.evaluate_upper(self)
+        assert len(out) == len(self)
+        return out
 
     def fwd(self, x_data):
         """
@@ -114,6 +183,8 @@ class Dist(object):
                 Evaluated distribution function values, where
                 ``out.shape==x_data.shape``.
         """
+        logger = logging.getLogger(__name__)
+        self._check_dependencies()
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
@@ -122,9 +193,16 @@ class Dist(object):
         indices = (x_data.T > self.upper.T).T
         q_data[indices] = 1
         indices = ~indices & (x_data.T >= self.lower).T
+        if not numpy.all(indices):
+            logger.debug("%s.fwd: %d/%d inputs out of bounds",
+                         self, numpy.sum(~indices), len(indices))
 
-        q_data[indices] = numpy.clip(evaluation.evaluate_forward(
-            self, x_data), a_min=0, a_max=1)[indices]
+        q_data[indices] = evaluation.evaluate_forward(self, x_data)[indices]
+        indices = (q_data > 1) | (q_data < 0)
+        if numpy.any(indices):
+            logger.debug("%s.fwd: %d/%d outputs out of bounds",
+                         self, numpy.sum(indices), len(indices))
+            q_data = numpy.clip(q_data, a_min=0, a_max=1)
 
         q_data = q_data.reshape(shape)
         return q_data
@@ -147,7 +225,8 @@ class Dist(object):
                 ``x_data.shape`` in one dimension and ``x_data.shape[1:]`` in
                 higher dimensions.
         """
-        if len(self) > 1 and evaluation.get_dependencies(*self):
+        self._check_dependencies()
+        if self.stochastic_dependent:
             raise StochasticallyDependentError(
                 "Cumulative distribution does not support dependencies.")
         x_data = numpy.asarray(x_data)
@@ -183,16 +262,30 @@ class Dist(object):
                 Inverted probability values where
                 ``out.shape == q_data.shape``.
         """
+        logger = logging.getLogger(__name__)
+        self._check_dependencies()
         q_data = numpy.asfarray(q_data)
         assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
         shape = q_data.shape
         q_data = q_data.reshape(len(self), -1)
         x_data = evaluation.evaluate_inverse(self, q_data)
-        x_data = numpy.clip(x_data.T, self.lower, self.upper).T
+
+        indices = numpy.all((x_data.T < self.lower), axis=-1)
+        if numpy.any(indices):
+            logger.debug("%s.inv: %d/%d outputs under lower bound",
+                         self, numpy.sum(indices), len(indices))
+            x_data.T[indices] = self.lower
+
+        indices = numpy.all((x_data.T > self.upper), axis=-1)
+        if numpy.any(indices):
+            logger.debug("%s.inv: %d/%d outputs over upper bound",
+                         self, numpy.sum(indices), len(indices))
+            x_data.T[indices] = self.upper
+
         x_data = x_data.reshape(shape)
         return x_data
 
-    def pdf(self, x_data, step=1e-7):
+    def pdf(self, x_data, decompose=False):
         """
         Probability density function.
 
@@ -204,27 +297,54 @@ class Dist(object):
 
         Args:
             x_data (numpy.ndarray):
-                Location for the density function. ``x_data.shape`` must be
-                compatible with distribution shape.
-            step (float, numpy.ndarray):
-                If approximation is used, the step length given in the
-                approximation of the derivative. If array provided, elements
-                are used along each axis.
+                Location for the density function. If multivariate,
+                `len(x_data) == len(self)` is required.
+            decompose (bool):
+                Decompose multivariate probability density `p(x), p(y|x), ...`
+                instead of multiplying them together into `p(x, y, ...)`.
 
         Returns:
             (numpy.ndarray):
-                Evaluated density function values. Shapes are related through
-                the identity ``x_data.shape == dist.shape+out.shape``.
+                Evaluated density function evaluated in `x_data`. If decompose,
+                `output.shape == x_data.shape`, else if multivariate the first
+                dimension is multiplied together.
+
+        Example:
+            >>> chaospy.Gamma(2).pdf([1, 2, 3, 4, 5]).round(3)
+            array([0.368, 0.271, 0.149, 0.073, 0.034])
+            >>> dist = chaospy.Iid(chaospy.Normal(0, 1), 2)
+            >>> grid = numpy.mgrid[-1.5:2, -1.5:2]
+            >>> dist.pdf(grid).round(3)
+            array([[0.017, 0.046, 0.046, 0.017],
+                   [0.046, 0.124, 0.124, 0.046],
+                   [0.046, 0.124, 0.124, 0.046],
+                   [0.017, 0.046, 0.046, 0.017]])
+            >>> dist.pdf(grid, decompose=True).round(3)
+            array([[[0.13 , 0.13 , 0.13 , 0.13 ],
+                    [0.352, 0.352, 0.352, 0.352],
+                    [0.352, 0.352, 0.352, 0.352],
+                    [0.13 , 0.13 , 0.13 , 0.13 ]],
+            <BLANKLINE>
+                   [[0.13 , 0.352, 0.352, 0.13 ],
+                    [0.13 , 0.352, 0.352, 0.13 ],
+                    [0.13 , 0.352, 0.352, 0.13 ],
+                    [0.13 , 0.352, 0.352, 0.13 ]]])
+
         """
+        logger = logging.getLogger(__name__)
+        self._check_dependencies()
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
 
         f_data = numpy.zeros(x_data.shape)
         indices = (x_data.T <= self.upper).T & (x_data.T >= self.lower).T
+        if not numpy.all(indices):
+            logger.debug("%s.fwd: %d/%d inputs out of bounds",
+                         self, numpy.sum(~indices), len(indices))
         f_data[indices] = evaluation.evaluate_density(self, x_data)[indices]
         f_data = f_data.reshape(shape)
-        if len(self) > 1:
+        if len(self) > 1 and not decompose:
             f_data = numpy.prod(f_data, 0)
         return f_data
 
@@ -279,6 +399,7 @@ class Dist(object):
             (numpy.ndarray):
                 Random samples with shape ``(len(self),)+self.shape``.
         """
+        self._check_dependencies()
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         if dim > 1:
@@ -343,7 +464,7 @@ class Dist(object):
 
     def _mom(self, *args, **kws):
         """Default moment generator, throws error."""
-        raise StochasticallyDependentError("component lack support")
+        raise StochasticallyDependentError("component lack support for raw statistical moments.")
 
     def ttr(self, kloc, acc=10**3, verbose=1):
         """
@@ -361,6 +482,7 @@ class Dist(object):
                 Where out[0] is the first (A) and out[1] is the second
                 coefficient With ``out.shape==(2,)+k.shape``.
         """
+        self._check_dependencies()
         kloc = numpy.asarray(kloc, dtype=int)
         shape = kloc.shape
         kloc = kloc.reshape(len(self), -1)
@@ -389,7 +511,7 @@ class Dist(object):
 
     def __len__(self):
         """X.__len__() <==> len(X)"""
-        return 1
+        return len(self._dependencies)
 
     def __add__(self, X):
         """Y.__add__(X) <==> X+Y"""

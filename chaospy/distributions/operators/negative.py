@@ -40,8 +40,9 @@ class Neg(UnaryOperator):
         Args:
             dist (Dist) : distribution.
         """
-        Dist.__init__(self, dist=dist)
+        self._dependencies = [deps.copy() for deps in dist._dependencies]
         self._repr = {"_": [dist]}
+        Dist.__init__(self, dist=dist)
 
     def _post_pdf(self, xloc):
         return 1.

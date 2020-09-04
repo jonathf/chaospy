@@ -3,17 +3,31 @@ import numpy
 from scipy import special
 
 from .baseclass import Copula
-from ..baseclass import Dist
+from ..baseclass import Dist, declare_stochastic_dependencies
 
 
 class t_copula(Dist):
     """T-Copula."""
 
-    def __init__(self, df, R):
-        C = numpy.linalg.cholesky(R)
-        Ci = numpy.linalg.inv(C)
+    def __init__(self, df, R, rotation=None):
+        if rotation is None:
+            rotation = range(len(R))
+        self._rotation = numpy.array(rotation)
+
+        accumulant = set()
+        dependencies = declare_stochastic_dependencies(self, len(R))
+        self._dependencies = [None]*len(R)
+        for idx in self._rotation:
+            accumulant.add(dependencies[idx])
+            self._dependencies[idx] = accumulant.copy()
+
+        P = numpy.eye(len(R))[rotation]
+        R = numpy.dot(P, numpy.dot(R, P.T))
+        R = numpy.linalg.cholesky(R)
+        R = numpy.dot(P.T, numpy.dot(R, P))
+        Ci = numpy.linalg.inv(R)
         self.length = len(R)
-        Dist.__init__(self, df=df, C=C, Ci=Ci)
+        Dist.__init__(self, df=df, C=R, Ci=Ci)
 
     def __len__(self):
         return self.length

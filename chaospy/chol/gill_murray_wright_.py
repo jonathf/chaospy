@@ -25,7 +25,7 @@ def gill_murray_wright(mat, eps=1e-16):
             Permutation matrix used for pivoting and lower triangular factor.
 
     Examples:
-        >>> mat = numpy.matrix([[4, 2, 1], [2, 6, 3], [1, 3, -.004]])
+        >>> mat = numpy.array([[4, 2, 1], [2, 6, 3], [1, 3, -.004]])
         >>> perm, lowtri = gill_murray_wright(mat)
         >>> perm
         array([[0, 1, 0],
