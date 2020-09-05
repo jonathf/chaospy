@@ -3,13 +3,13 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class beta_(Dist):
 
     def __init__(self, a=1, b=1):
-        Dist.__init__(self, a=a, b=b)
+        super(beta_, self).__init__(a=a, b=b)
 
     def _pdf(self, x, a, b):
         return x**(a-1)*(1-x)**(b-1)/ \
@@ -41,7 +41,7 @@ class beta_(Dist):
         return 1.
 
 
-class Beta(Add):
+class Beta(ShiftScale):
     R"""
     Beta Probability Distribution.
 
@@ -78,10 +78,10 @@ class Beta(Add):
     def __init__(self, alpha, beta, lower=0, upper=1):
         self._repr = {
             "alpha": alpha, "beta": beta, "lower": lower, "upper": upper}
-        Add.__init__(self, left=beta_(alpha, beta)*(upper-lower), right=lower)
+        super(Beta, self).__init__(dist=beta_(alpha, beta), scale=upper-lower, shift=lower)
 
 
-class ArcSinus(Add):
+class ArcSinus(ShiftScale):
     """
     Generalized Arc-sinus distribution
 
@@ -113,11 +113,10 @@ class ArcSinus(Add):
 
     def __init__(self, shape=0.5, lower=0, upper=1):
         self._repr = {"shape": shape, "lower": lower, "upper": upper}
-        Add.__init__(
-            self, left=beta_(shape, 1-shape)*(upper-lower), right=lower)
+        super(ArcSinus, self).__init__(dist=beta_(shape, 1-shape), scale=upper-lower, shift=lower)
 
 
-class PowerLaw(Add):
+class PowerLaw(ShiftScale):
     """
     Powerlaw distribution
 
@@ -148,10 +147,10 @@ class PowerLaw(Add):
 
     def __init__(self, shape=1, lower=0, upper=1):
         self._repr = {"shape": shape, "lower": lower, "upper": upper}
-        Add.__init__(self, left=beta_(shape, 1)*(upper-lower), right=lower)
+        super(PowerLaw, self).__init__(dist=beta_(shape, 1), scale=(upper-lower), shift=lower)
 
 
-class Wigner(Add):
+class Wigner(ShiftScale):
     """
     Wigner (semi-circle) distribution
 
@@ -180,7 +179,8 @@ class Wigner(Add):
 
     def __init__(self, radius=1, shift=0):
         self._repr = {"radius": radius, "shift": shift}
-        Add.__init__(self, left=radius*(2*beta_(1.5, 1.5)-1), right=shift)
+        super(Wigner, self).__init__(
+            dist=beta_(1.5, 1.5), scale=2*radius, shift=shift-radius)
 
 
 class PERT(Beta):
@@ -226,5 +226,5 @@ class PERT(Beta):
         mu = (lower+4*mode+upper)/6.
         alpha = 1+gamma*(mu-lower)/(upper-lower)
         beta = 1+gamma*(upper-mu)/(upper-lower)
-        Beta.__init__(self, alpha=alpha, beta=beta, lower=lower, upper=upper)
+        super(PERT, self).__init__(alpha=alpha, beta=beta, lower=lower, upper=upper)
         self._repr = {"lower": lower, "mode": mode, "upper": upper, "gamma": gamma}

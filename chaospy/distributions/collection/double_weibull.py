@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class double_weibull(Dist):
@@ -32,7 +32,7 @@ class double_weibull(Dist):
         return numpy.where(q>.5, Cq1, -Cq1)
 
 
-class DoubleWeibull(Add):
+class DoubleWeibull(ShiftScale):
     """
     Double Weibull distribution.
 
@@ -63,4 +63,4 @@ class DoubleWeibull(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=double_weibull(shape)*scale, right=shift)
+        super(DoubleWeibull, self).__init__(dist=double_weibull(shape), scale=scale, shift=shift)

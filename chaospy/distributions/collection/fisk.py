@@ -1,6 +1,6 @@
 """Fisk or Log-logistic distribution."""
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class fisk(Dist):
@@ -24,7 +24,7 @@ class fisk(Dist):
         return 0.
 
 
-class Fisk(Add):
+class Fisk(ShiftScale):
     """
     Fisk or Log-logistic distribution.
 
@@ -54,4 +54,4 @@ class Fisk(Add):
     """
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=fisk(shape)*scale, right=shift)
+        super(Fisk, self).__init__(dist=fisk(shape), scale=scale, shift=shift)

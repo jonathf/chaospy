@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class folded_normal(Dist):
@@ -25,7 +25,7 @@ class folded_normal(Dist):
         return 8+c
 
 
-class FoldedNormal(Add):
+class FoldedNormal(ShiftScale):
     """
     Folded normal distribution.
 
@@ -56,4 +56,4 @@ class FoldedNormal(Add):
 
     def __init__(self, mu=0, sigma=1, loc=0):
         self._repr = {"mu": mu, "sigma": sigma, "loc": loc}
-        Add.__init__(self, left=folded_normal(mu-loc)*sigma, right=loc)
+        super(FoldedNormal, self).__init__(dist=folded_normal(mu-loc), scale=sigma, shift=loc)

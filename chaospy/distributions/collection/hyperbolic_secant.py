@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class hyperbolic_secant(Dist):
@@ -27,7 +27,7 @@ class hyperbolic_secant(Dist):
         return output.reshape(shape)
 
 
-class HyperbolicSecant(Add):
+class HyperbolicSecant(ShiftScale):
     """
     Hyperbolic secant distribution
 
@@ -56,4 +56,4 @@ class HyperbolicSecant(Add):
 
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}
-        Add.__init__(self, left=hyperbolic_secant()*scale, right=loc)
+        super(HyperbolicSecant, self).__init__(dist=hyperbolic_secant(), scale=scale, shift=loc)

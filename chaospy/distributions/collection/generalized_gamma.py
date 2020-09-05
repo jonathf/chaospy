@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class generalized_gamma(Dist):
@@ -34,7 +34,7 @@ class generalized_gamma(Dist):
         return 0.
 
 
-class GeneralizedGamma(Add):
+class GeneralizedGamma(ShiftScale):
     """
     Generalized gamma distribution
 
@@ -68,5 +68,4 @@ class GeneralizedGamma(Add):
     def __init__(self, shape1, shape2, scale, shift):
         self._repr = {
             "shape1": shape1, "shape2": shape2, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=generalized_gamma(shape1, shape2)*scale, right=shift)
+        super(GeneralizedGamma, self).__init__(dist=generalized_gamma(shape1, shape2), scale=scale, shift=shift)

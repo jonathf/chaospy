@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class exponential_weibull(Dist):
@@ -26,7 +26,7 @@ class exponential_weibull(Dist):
         return 0.
 
 
-class ExponentialWeibull(Add):
+class ExponentialWeibull(ShiftScale):
     """
     Exponential Weibull distribution.
 
@@ -59,5 +59,4 @@ class ExponentialWeibull(Add):
     def __init__(self, alpha=1, kappa=1, scale=1, shift=0):
         self._repr = {
             "alpha": alpha, "kappa": kappa, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=exponential_weibull(alpha, kappa)*scale, right=shift)
+        super(ExponentialWeibull, self).__init__(dist=exponential_weibull(alpha, kappa), scale=scale, shift=shift)

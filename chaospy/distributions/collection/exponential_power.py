@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class exponential_power(Dist):
@@ -27,7 +27,7 @@ class exponential_power(Dist):
         return 0.
 
 
-class ExponentialPower(Add):
+class ExponentialPower(ShiftScale):
     """
     Exponential power distribution.
 
@@ -61,4 +61,4 @@ class ExponentialPower(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=exponential_power(shape)*scale, right=shift)
+        super(ExponentialPower, self).__init__(dist=exponential_power(shape), scale=scale, shift=shift)

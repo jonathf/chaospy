@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class gompertz(Dist):
@@ -26,7 +26,7 @@ class gompertz(Dist):
         return 0.
 
 
-class Gompertz(Add):
+class Gompertz(ShiftScale):
     """
     Gompertz distribution
 
@@ -57,4 +57,4 @@ class Gompertz(Add):
 
     def __init__(self, shape, scale, shift):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=gompertz(shape)*scale, right=shift)
+        super(Gompertz, self).__init__(dist=gompertz(shape), scale=scale, shift=shift)

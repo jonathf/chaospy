@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class nakagami(Dist):
@@ -25,7 +25,7 @@ class nakagami(Dist):
         return 0.
 
 
-class Nakagami(Add):
+class Nakagami(ShiftScale):
     """
     Nakagami-m distribution.
 
@@ -56,4 +56,4 @@ class Nakagami(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, nakagami(shape)*scale, shift)
+        super(Nakagami, self).__init__(dist=nakagami(shape), scale=scale, shift=shift)

@@ -3,7 +3,7 @@ import numpy
 from scipy import special, misc
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class log_laplace(Dist):
@@ -26,7 +26,7 @@ class log_laplace(Dist):
     def _lower(self, c):
         return 0.0
 
-class LogLaplace(Add):
+class LogLaplace(ShiftScale):
     """
     Log-laplace distribution
 
@@ -55,4 +55,4 @@ class LogLaplace(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=log_laplace(shape)*scale, right=shift)
+        super(LogLaplace, self).__init__(dist=log_laplace(shape), scale=scale, shift=shift)

@@ -11,4 +11,5 @@ from .iid import Iid
 from .trunkation import Trunc, Trunk, trunk
 
 from .logarithm import Log, Log10, Logn
-from .locscale import LocScaling
+from .mean_covariance import MeanCovariance
+from .shift_scale import ShiftScale

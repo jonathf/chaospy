@@ -3,11 +3,11 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class kumaraswamy(Dist):
-    """Kumaraswswamy's double bounded distribution."""
+    """Kumaraswamy's double bounded distribution."""
 
     def __init__(self, a=1, b=1):
         assert numpy.all(a > 0) and numpy.all(b > 0)
@@ -33,7 +33,7 @@ class kumaraswamy(Dist):
         return 1.
 
 
-class Kumaraswamy(Add):
+class Kumaraswamy(ShiftScale):
     """
     Kumaraswamy's double bounded distribution
 
@@ -67,5 +67,4 @@ class Kumaraswamy(Add):
     def __init__(self, alpha, beta, lower=0, upper=1):
         self._repr = {
             "alpha": alpha, "beta": beta, "lower": lower, "upper": upper}
-        Add.__init__(
-            self, left=kumaraswamy(alpha, beta)*(upper-lower), right=lower)
+        super(Kumaraswamy, self).__init__(dist=kumaraswamy(alpha, beta), scale=upper-lower, shift=lower)

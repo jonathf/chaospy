@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class gamma(Dist):
@@ -30,7 +30,7 @@ class gamma(Dist):
         return 0.
 
 
-class Gamma(Add):
+class Gamma(ShiftScale):
     """
     Gamma distribution.
 
@@ -66,10 +66,10 @@ class Gamma(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=gamma(shape)*scale, right=shift)
+        super(Gamma, self).__init__(dist=gamma(shape), scale=scale, shift=shift)
 
 
-class Exponential(Add):
+class Exponential(ShiftScale):
     R"""
     Exponential Probability Distribution
 
@@ -99,4 +99,4 @@ class Exponential(Add):
 
     def __init__(self, scale=1, shift=0):
         self._repr = {"scale": scale, "shift": shift}
-        Add.__init__(self, left=gamma(1)*scale, right=shift)
+        super(Exponential, self).__init__(dist=gamma(1), scale=scale, shift=shift)

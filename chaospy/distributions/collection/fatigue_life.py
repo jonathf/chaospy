@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class fatigue_life(Dist):
@@ -26,7 +26,7 @@ class fatigue_life(Dist):
         return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
 
 
-class FatigueLife(Add):
+class FatigueLife(ShiftScale):
     """
     Fatigue-Life or Birmbaum-Sanders distribution
 
@@ -56,4 +56,4 @@ class FatigueLife(Add):
     """
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=fatigue_life(shape)*scale, right=shift)
+        super(FatigueLife, self).__init__(dist=fatigue_life(shape), scale=scale, shift=shift)

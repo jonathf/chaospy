@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class pareto1(Dist):
@@ -25,7 +25,7 @@ class pareto1(Dist):
         return 1.0
 
 
-class Pareto1(Add):
+class Pareto1(ShiftScale):
     """
     Pareto type 1 distribution.
 
@@ -56,4 +56,4 @@ class Pareto1(Add):
 
     def __init__(self, shape=1, scale=1, loc=0):
         self._repr = {"shape": shape, "scale": scale, "loc": loc}
-        Add.__init__(self, left=pareto1(shape)*scale, right=loc)
+        super(Pareto1, self).__init__(dist=pareto1(shape), scale=scale, shift=loc)

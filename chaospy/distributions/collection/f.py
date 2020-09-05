@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class f(Dist):
@@ -33,7 +33,7 @@ class f(Dist):
         return 0.
 
 
-class F(Add):
+class F(ShiftScale):
     """
     (Non-central) F or Fisher-Snedecor distribution.
 
@@ -68,4 +68,4 @@ class F(Add):
 
     def __init__(self, n=1, m=1, scale=1, shift=0, nc=0):
         self._repr = {"n": n, "m": m, "scale": scale, "shift": shift, "nc": nc}
-        Add.__init__(self, left=f(n, m, nc)*scale, right=shift)
+        super(F, self).__init__(dist=f(n, m, nc), scale=scale, shift=shift)

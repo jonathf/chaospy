@@ -1,6 +1,6 @@
 """Pareto type 2 distribution."""
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class pareto2(Dist):
@@ -22,7 +22,7 @@ class pareto2(Dist):
         return 0.0
 
 
-class Pareto2(Add):
+class Pareto2(ShiftScale):
     """
     Pareto type 2 distribution.
 
@@ -55,4 +55,4 @@ class Pareto2(Add):
 
     def __init__(self, shape=1, scale=1, loc=0):
         self._repr = {"shape": shape, "scale": scale, "loc": loc}
-        Add.__init__(self, left=pareto2(shape)*scale, right=loc)
+        super(Pareto2, self).__init__(dist=pareto2(shape), scale=scale, shift=loc)

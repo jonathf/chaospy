@@ -3,7 +3,7 @@ import numpy
 from scipy import special, misc
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 class logistic(Dist):
     """Generalized logistic type 1 distribution."""
@@ -21,7 +21,7 @@ class logistic(Dist):
         return -numpy.log(q**(-1./c)-1)
 
 
-class Logistic(Add):
+class Logistic(ShiftScale):
     """
     Generalized logistic type 1 distribution
     Sech squared distribution
@@ -52,4 +52,4 @@ class Logistic(Add):
     """
     def __init__(self, loc=0, scale=1, skew=1):
         self._repr = {"loc": loc, "scale": scale, "skew": skew}
-        Add.__init__(self, left=logistic(skew)*scale, right=loc)
+        super(Logistic, self).__init__(dist=logistic(skew), scale=scale, shift=loc)

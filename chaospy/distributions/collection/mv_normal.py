@@ -6,10 +6,10 @@ from scipy import special
 from .normal import normal
 
 from ..baseclass import Dist
-from ..operators import LocScaling
+from ..operators import MeanCovariance
 
 
-class MvNormal(LocScaling):
+class MvNormal(MeanCovariance):
     r"""
     Multivariate Normal Distribution.
 
@@ -42,17 +42,17 @@ class MvNormal(LocScaling):
                [0.1, 0.6, 0.1, 0.6, 0.1, 0.6, 0.1, 0.6]])
         >>> mapped_samples = distribution.inv(mesh)
         >>> mapped_samples.round(2)
-        array([[ 8.39,  8.85,  8.39,  8.85,  9.86, 10.32,  9.86, 10.32],
-               [17.64, 18.26, 19.72, 20.34, 17.77, 18.39, 19.85, 20.47],
-               [28.72, 30.25, 28.72, 30.25, 28.72, 30.25, 28.72, 30.25]])
+        array([[ 8.25,  8.67,  8.47,  8.88,  9.71, 10.13,  9.93, 10.35],
+               [18.19, 18.19, 20.36, 20.36, 18.19, 18.19, 20.36, 20.36],
+               [28.41, 29.88, 28.84, 30.31, 28.41, 29.88, 28.84, 30.31]])
         >>> numpy.allclose(distribution.fwd(mapped_samples), mesh)
         True
         >>> distribution.pdf(mapped_samples).round(4)
         array([0.0042, 0.0092, 0.0092, 0.0203, 0.0092, 0.0203, 0.0203, 0.0446])
         >>> distribution.sample(4).round(4)
-        array([[10.1583,  9.1555, 11.3267, 10.1527],
-               [21.2826, 19.2191, 17.4524, 19.9038],
-               [29.2714, 31.0016, 29.1834, 30.651 ]])
+        array([[10.3396,  9.0158, 11.1009, 10.0971],
+               [21.6096, 18.871 , 17.5357, 19.6314],
+               [29.6231, 30.7349, 28.7239, 30.5507]])
 
     """
 
@@ -75,10 +75,14 @@ class MvNormal(LocScaling):
         elif sigma is not None:
             self._repr["sigma"] = numpy.array(sigma).tolist()
 
-        LocScaling.__init__(
-            self, dist=normal(), mean=mu, covariance=sigma, rotation=rotation)
+        super(MvNormal, self).__init__(
+            dist=normal(),
+            mean=mu,
+            covariance=sigma,
+            rotation=rotation,
+        )
 
-    def _mom(self, k, cache):
+    def _mom(self, k, mean, covariance):
         out = 0.
         for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)
@@ -86,9 +90,9 @@ class MvNormal(LocScaling):
             pos = diff >= 0
             diff = diff*pos
             pos = numpy.all(pos)
-            location_ = numpy.prod(self.mean**diff)
+            location_ = numpy.prod(mean**diff)
 
-            out += pos*coef*location_*isserlis_moment(tuple(kdx), self.covariance)
+            out += pos*coef*location_*isserlis_moment(tuple(kdx), covariance)
 
         return float(out)
 

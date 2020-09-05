@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class power_log_normal(Dist):
@@ -26,7 +26,7 @@ class power_log_normal(Dist):
         return 0.
 
 
-class PowerLogNormal(Add):
+class PowerLogNormal(ShiftScale):
     """
     Power log-normal distribution
 
@@ -60,5 +60,5 @@ class PowerLogNormal(Add):
     def __init__(self, shape=1, mu=0, sigma=1, shift=0, scale=1):
         self._repr = {
             "shape": shape, "mu": mu, "sigma": sigma, "shift": shift, "scale": scale}
-        Add.__init__(self, left=power_log_normal(
-            shape, sigma)*scale*numpy.e**mu, right=shift)
+        super(PowerLogNormal, self).__init__(
+            dist=power_log_normal(shape, sigma), scale=scale*numpy.e**mu, shift=shift)

@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class generalized_half_logistic(Dist):
@@ -34,7 +34,7 @@ class generalized_half_logistic(Dist):
         return 1/numpy.where(c < 10**-10, 10**-10, c)
 
 
-class GeneralizedHalfLogistic(Add):
+class GeneralizedHalfLogistic(ShiftScale):
     """
     Generalized half-logistic distribution
 
@@ -65,5 +65,5 @@ class GeneralizedHalfLogistic(Add):
 
     def __init__(self, shape, scale, shift):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=generalized_half_logistic(shape)*scale, right=shift)
+        super(GeneralizedHalfLogistic, self).__init__(
+            dist=generalized_half_logistic(shape), scale=scale, shift=shift)

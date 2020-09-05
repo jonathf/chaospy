@@ -3,8 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
-
+from ..operators import ShiftScale
 
 
 class laplace(Dist):
@@ -36,7 +35,7 @@ class laplace(Dist):
         return coeffs[:, 0, -1]
 
 
-class Laplace(Add):
+class Laplace(ShiftScale):
     R"""
     Laplace Probability Distribution
 
@@ -66,4 +65,4 @@ class Laplace(Add):
     """
     def __init__(self, mu=0, scale=1):
         self._repr = {"mu": mu, "scale": scale}
-        Add.__init__(self, left=laplace()*scale, right=mu)
+        super(Laplace, self).__init__(dist=laplace(), scale=scale, shift=mu)

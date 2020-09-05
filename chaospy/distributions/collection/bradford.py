@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class bradford(Dist):
@@ -27,7 +27,7 @@ class bradford(Dist):
         return 1
 
 
-class Bradford(Add):
+class Bradford(ShiftScale):
     """
     Bradford distribution.
 
@@ -57,4 +57,4 @@ class Bradford(Add):
     """
     def __init__(self, shape=1, lower=0, upper=1):
         self._repr = {"shape": shape, "lower": lower, "upper": upper}
-        Add.__init__(self, left=bradford(shape)*(upper-lower), right=lower)
+        super(Bradford, self).__init__(dist=bradford(shape), scale=upper-lower, shift=lower)

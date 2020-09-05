@@ -3,7 +3,7 @@ import numpy
 from scipy import special, misc
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 from .beta import beta_
 
 
@@ -51,7 +51,7 @@ class triangle(Dist):
         return coeffs[:, 0, -1]
 
 
-class Triangle(Add):
+class Triangle(ShiftScale):
     """
     Triangle Distribution.
 
@@ -86,4 +86,4 @@ class Triangle(Add):
     def __init__(self, lower=-1, midpoint=0, upper=1):
         self._repr = {"lower": lower, "midpoint": midpoint, "upper": upper}
         midpoint = (midpoint-lower)*1./(upper-lower)
-        Add.__init__(self, left=triangle(midpoint)*(upper-lower), right=lower)
+        super(Triangle, self).__init__(dist=triangle(midpoint), scale=upper-lower, shift=lower)

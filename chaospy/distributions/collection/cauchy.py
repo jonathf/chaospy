@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class cauchy(Dist):
@@ -21,7 +21,7 @@ class cauchy(Dist):
         return numpy.tan(numpy.pi*q-numpy.pi/2.0)
 
 
-class Cauchy(Add):
+class Cauchy(ShiftScale):
     """
     Cauchy distribution.
 
@@ -50,4 +50,4 @@ class Cauchy(Add):
 
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}
-        Add.__init__(self, left=cauchy()*scale, right=loc)
+        super(Cauchy, self).__init__(dist=cauchy(), scale=scale, shift=loc)

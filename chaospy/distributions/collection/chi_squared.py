@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class chi_squared(Dist):
@@ -34,7 +34,7 @@ class chi_squared(Dist):
                 return upper.item()
 
 
-class ChiSquared(Add):
+class ChiSquared(ShiftScale):
     """
     (Non-central) Chi-squared distribution.
 
@@ -67,4 +67,4 @@ class ChiSquared(Add):
 
     def __init__(self, df=1, scale=1, shift=0, nc=0):
         self._repr = {"df": df, "scale": scale, "shift": shift, "nc": nc}
-        Add.__init__(self, left=chi_squared(df, nc)*scale, right=shift)
+        super(ChiSquared, self).__init__(dist=chi_squared(df, nc), scale=scale, shift=shift)

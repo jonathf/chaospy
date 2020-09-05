@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class Reciprocal(Dist):

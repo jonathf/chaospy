@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class generalized_extreme(Dist):
@@ -30,7 +30,7 @@ class generalized_extreme(Dist):
         return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
 
 
-class GeneralizedExtreme(Add):
+class GeneralizedExtreme(ShiftScale):
     """
     Generalized extreme value distribution
     Fisher-Tippett distribution
@@ -62,4 +62,4 @@ class GeneralizedExtreme(Add):
 
     def __init__(self, shape=0, scale=1, loc=0):
         self._repr = {"shape": shape, "scale": scale, "loc": loc}
-        Add.__init__(self, left=generalized_extreme(shape)*scale, right=loc)
+        super(GeneralizedExtreme, self).__init__(dist=generalized_extreme(shape), scale=scale, shift=loc)

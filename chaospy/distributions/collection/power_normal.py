@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class power_normal(Dist):
@@ -23,7 +23,7 @@ class power_normal(Dist):
         return -special.ndtri(pow(1-q, 1./c))
 
 
-class PowerNormal(Add):
+class PowerNormal(ShiftScale):
     """
     Power normal or Box-Cox distribution.
 
@@ -54,4 +54,4 @@ class PowerNormal(Add):
 
     def __init__(self, shape=1, mu=0, scale=1):
         self._repr = {"shape": shape, "mu": mu, "scale": scale}
-        Add.__init__(self, left=power_normal(shape)*scale, right=mu)
+        super(PowerNormal, self).__init__(dist=power_normal(shape), scale=scale, shift=mu)

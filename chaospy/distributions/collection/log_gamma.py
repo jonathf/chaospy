@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class log_gamma(Dist):
@@ -22,7 +22,7 @@ class log_gamma(Dist):
         return numpy.log(special.gammaincinv(c,q))
 
 
-class LogGamma(Add):
+class LogGamma(ShiftScale):
     """
     Log-gamma distribution
 
@@ -53,4 +53,4 @@ class LogGamma(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=log_gamma(shape)*scale, right=shift)
+        super(LogGamma, self).__init__(dist=log_gamma(shape), scale=scale, shift=shift)

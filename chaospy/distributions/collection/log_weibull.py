@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class log_weibull(Dist):
@@ -22,7 +22,7 @@ class log_weibull(Dist):
         return -numpy.log(-numpy.log(q))
 
 
-class LogWeibull(Add):
+class LogWeibull(ShiftScale):
     """
     Gumbel or Log-Weibull distribution.
 
@@ -50,4 +50,4 @@ class LogWeibull(Add):
     """
     def __init__(self, scale=1, loc=0):
         self._repr = {"scale": scale, "loc": loc}
-        Add.__init__(self, left=log_weibull()*scale, right=loc)
+        super(LogWeibull, self).__init__(dist=log_weibull(), scale=scale, shift=loc)

@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class burr(Dist):
@@ -35,7 +35,7 @@ class burr(Dist):
         return 0.
 
 
-class Burr(Add):
+class Burr(ShiftScale):
     """
     Burr Type XII or Singh-Maddala distribution.
 
@@ -69,4 +69,4 @@ class Burr(Add):
     def __init__(self, alpha=1, kappa=1, loc=0, scale=1):
         self._repr = {
             "alpha": alpha, "kappa": kappa, "loc": loc, "scale": scale}
-        Add.__init__(self, left=burr(alpha, kappa)*scale, right=loc)
+        super(Burr, self).__init__(dist=burr(alpha, kappa), scale=scale, shift=loc)

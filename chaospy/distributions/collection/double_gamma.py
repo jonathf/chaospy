@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class double_gamma(Dist):
@@ -25,7 +25,7 @@ class double_gamma(Dist):
         return numpy.where(q>0.5, fac, -fac)
 
 
-class DoubleGamma(Add):
+class DoubleGamma(ShiftScale):
     """
     Double gamma distribution.
 
@@ -56,4 +56,4 @@ class DoubleGamma(Add):
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=double_gamma(shape)*scale, right=shift)
+        super(DoubleGamma, self).__init__(dist=double_gamma(shape), scale=scale, shift=shift)

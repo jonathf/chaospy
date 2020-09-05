@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class wald(Dist):
@@ -36,7 +36,7 @@ class wald(Dist):
         return 1e10
 
 
-class Wald(Add):
+class Wald(ShiftScale):
     """
     Wald distribution.
 
@@ -67,4 +67,4 @@ class Wald(Add):
 
     def __init__(self, mu=1, scale=1, shift=0):
         self._repr = {"mu": mu, "scale": scale, "shift": shift}
-        Add.__init__(self, left=wald(mu)*scale, right=shift)
+        super(Wald, self).__init__(dist=wald(mu), scale=scale, shift=shift)

@@ -124,13 +124,15 @@ class Dist(object):
             raise StochasticallyDependentError(
                 "%s is an under-defined probability distribution." % self)
 
-        for param in prm.values():
+        for key, param in prm.items():
             if isinstance(param, Dist):
                 if all_dependencies.intersection(param._exclusion):
                     raise StochasticallyDependentError((
                         "%s contains dependencies that can not also exist "
                         "other places in the dependency hierarchy") % param)
                 self._exclusion.update(param._exclusion)
+            else:
+                self.prm[key] = numpy.asarray(param)
 
 
     def _check_dependencies(self):

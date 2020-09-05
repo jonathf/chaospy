@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class generalized_exponential(Dist):
@@ -27,7 +27,7 @@ class generalized_exponential(Dist):
         return 10**10
 
 
-class GeneralizedExponential(Add):
+class GeneralizedExponential(ShiftScale):
     """
     Generalized exponential distribution.
 
@@ -67,5 +67,4 @@ class GeneralizedExponential(Add):
 
     def __init__(self, a=1, b=1, c=1, scale=1, shift=0):
         self._repr = {"a": a, "b": b, "c": c, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=generalized_exponential(a, b, c)*scale, right=shift)
+        super(GeneralizedExponential, self).__init__(dist=generalized_exponential(a, b, c), scale=scale, shift=shift)

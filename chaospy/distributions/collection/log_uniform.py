@@ -2,7 +2,7 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class log_uniform(Dist):
@@ -30,7 +30,7 @@ class log_uniform(Dist):
         return ((numpy.e**(up*k)-numpy.e**(lo*k))/((up-lo)*(k+(k==0))))**(k!=0)
 
 
-class LogUniform(Add):
+class LogUniform(ShiftScale):
     """
     Log-uniform distribution
 
@@ -63,4 +63,4 @@ class LogUniform(Add):
 
     def __init__(self, lower=0, upper=1, scale=1, shift=0):
         self._repr = {"lower": lower, "upper": upper, "scale": scale, "shift": shift}
-        Add.__init__(self, left=log_uniform(lower, upper)*scale, right=shift)
+        super(LogUniform, self).__init__(dist=log_uniform(lower, upper), scale=scale, shift=shift)

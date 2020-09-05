@@ -3,14 +3,14 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class wrapped_cauchy(Dist):
     """Wrapped Cauchy distribution."""
 
     def __init__(self, c):
-        Dist.__init__(self, c=c)
+        super(wrapped_cauchy, self).__init__(c=c)
 
     def _pdf(self, x, c):
         return (1.0-c*c)/(2*numpy.pi*(1+c*c-2*c*numpy.cos(x)))
@@ -51,7 +51,7 @@ class wrapped_cauchy(Dist):
         return 2*numpy.pi
 
 
-class WrappedCauchy(Add):
+class WrappedCauchy(ShiftScale):
     """
     Wrapped Cauchy distribution
 
@@ -82,4 +82,4 @@ class WrappedCauchy(Add):
 
     def __init__(self, shape=0.5, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=wrapped_cauchy(shape)*scale, right=shift)
+        super(WrappedCauchy, self).__init__(dist=wrapped_cauchy(shape), scale=scale, shift=shift)

@@ -1,13 +1,13 @@
 """Uniform probability distribution."""
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class uniform(Dist):
     """Uniform distribution fixed on the [-1, 1] interval."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(uniform, self).__init__()
 
     def _pdf(self, x):
         return 0.5
@@ -31,7 +31,7 @@ class uniform(Dist):
         return 0., n*n/(4.*n*n-1)
 
 
-class Uniform(Add):
+class Uniform(ShiftScale):
     r"""
     Uniform probability distribution.
 
@@ -63,6 +63,4 @@ class Uniform(Add):
 
     def __init__(self, lower=0, upper=1):
         self._repr = {"lower": lower, "upper": upper}
-        left = uniform()*((upper-lower)*.5)
-        right = 0.5*(upper+lower)
-        Add.__init__(self, left=left, right=right)
+        super(Uniform, self).__init__(dist=uniform(), scale=0.5*(upper-lower), shift=0.5*(upper+lower))

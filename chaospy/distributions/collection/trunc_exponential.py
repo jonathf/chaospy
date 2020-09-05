@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class truncexpon(Dist):
@@ -28,7 +28,7 @@ class truncexpon(Dist):
         return b
 
 
-class TruncExponential(Add):
+class TruncExponential(ShiftScale):
     """
     Truncated exponential distribution.
 
@@ -59,5 +59,5 @@ class TruncExponential(Add):
 
     def __init__(self, upper=1, scale=1, shift=0):
         self._repr = {"upper": upper, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=truncexpon((upper-shift)*1./scale)*scale, right=shift)
+        super(TruncExponential, self).__init__(
+            dist=truncexpon((upper-shift)*1./scale), scale=scale, shift=shift)

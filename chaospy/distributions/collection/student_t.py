@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class student_t(Dist):
@@ -33,7 +33,7 @@ class student_t(Dist):
         return 0., k*a*(a-k+1.)/ ((a-2*k)*(a-2*k+2))
 
 
-class StudentT(Add):
+class StudentT(ShiftScale):
     """
     (Non-central) Student-t distribution.
 
@@ -64,4 +64,4 @@ class StudentT(Add):
 
     def __init__(self, df=1, loc=0, scale=1):
         self._repr = {"df": df, "loc": loc, "scale": scale}
-        Add.__init__(self, left=student_t(df)*scale, right=loc)
+        super(StudentT, self).__init__(dist=student_t(df), scale=scale, shift=loc)

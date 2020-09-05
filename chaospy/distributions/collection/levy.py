@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class levy(Dist):
@@ -26,7 +26,7 @@ class levy(Dist):
         return 0.
 
 
-class Levy(Add):
+class Levy(ShiftScale):
     """
     Levy distribution
 
@@ -52,4 +52,4 @@ class Levy(Add):
     """
     def __init__(self, loc=0, scale=1):
         self._repr = {"loc": loc, "scale": scale}
-        Add.__init__(self, left=levy()*scale, right=loc)
+        super(Levy, self).__init__(dist=levy(), scale=scale, shift=loc)

@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class chi(Dist):
@@ -27,7 +27,7 @@ class chi(Dist):
                 /special.gamma(.5*df)
 
 
-class Chi(Add):
+class Chi(ShiftScale):
     """
     Chi distribution.
 
@@ -59,10 +59,10 @@ class Chi(Add):
 
     def __init__(self, df=1, scale=1, shift=0):
         self._repr = {"df": df, "scale": scale, "shift": shift}
-        Add.__init__(self, left=chi(df)*scale, right=shift)
+        super(Chi, self).__init__(dist=chi(df), scale=scale, shift=shift)
 
 
-class Maxwell(Add):
+class Maxwell(ShiftScale):
     """
     Maxwell-Boltzmann distribution
     Chi distribution with 3 degrees of freedom
@@ -92,10 +92,10 @@ class Maxwell(Add):
 
     def __init__(self, scale=1, shift=0):
         self._repr = {"scale": scale, "shift": shift}
-        Add.__init__(self, left=chi(3)*scale, right=shift)
+        super(Maxwell, self).__init__(dist=chi(3), scale=scale, shift=shift)
 
 
-class Rayleigh(Add):
+class Rayleigh(ShiftScale):
     """
     Rayleigh distribution
 
@@ -123,4 +123,4 @@ class Rayleigh(Add):
     """
     def __init__(self, scale=1, shift=0):
         self._repr = {"scale": scale, "shift": shift}
-        Add.__init__(self, left=chi(2)*scale, right=shift)
+        super(Rayleigh, self).__init__(dist=chi(2), scale=scale, shift=shift)

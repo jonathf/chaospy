@@ -2,14 +2,14 @@
 import numpy
 
 from ..baseclass import Dist
-from ..operators.addition import Add
+from ..operators import ShiftScale
 
 
 class anglit(Dist):
     """Anglit distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(anglit, self).__init__()
 
     def _pdf(self, x):
         return numpy.cos(2*x)
@@ -27,7 +27,7 @@ class anglit(Dist):
         return numpy.pi/4
 
 
-class Anglit(Add):
+class Anglit(ShiftScale):
     """
     Anglit distribution.
 
@@ -56,4 +56,4 @@ class Anglit(Add):
 
     def __init__(self, loc=0, scale=1):
         self._repr = {"scale": scale, "loc": loc}
-        Add.__init__(self, left=anglit()*scale, right=loc)
+        super(Anglit, self).__init__(dist=anglit(), scale=scale, shift=loc)

@@ -4,32 +4,30 @@ from scipy import special
 
 import chaospy
 from ..baseclass import Dist
-from ..operators import LocScaling
+from ..operators import ShiftScale
 
 
 class alpha(Dist):
     """Standard Alpha distribution."""
 
     def __init__(self, a=1):
-        a = numpy.atleast_1d(a)
-        assert a.ndim == 1, "a has too many dimensions"
-        Dist.__init__(self, a=a)
+        super(alpha, self).__init__(a=a)
 
     def _cdf(self, x, a):
-        return (special.ndtr(a-1./x.T)/special.ndtr(a)).T
+        return (special.ndtr(a.T-1./x.T)/special.ndtr(a.T)).T
 
     def _ppf(self, q, a):
-        return 1.0/(a-special.ndtri(q.T*special.ndtr(a))).T
+        return 1.0/(a.T-special.ndtri(q.T*special.ndtr(a.T))).T
 
     def _pdf(self, x, a):
-        return (1.0/(x.T**2)/special.ndtr(a)*
-            numpy.e**(.5*(a-1.0/x.T)**2)/numpy.sqrt(2*numpy.pi)).T
+        return (1.0/(x.T**2)/special.ndtr(a.T)*
+            numpy.e**(.5*(a.T-1.0/x.T)**2)/numpy.sqrt(2*numpy.pi)).T
 
     def _lower(self, a):
         return numpy.zeros(a.size)
 
 
-class Alpha(LocScaling):
+class Alpha(ShiftScale):
     """
     Alpha distribution.
 
@@ -53,12 +51,13 @@ class Alpha(LocScaling):
         >>> numpy.allclose(distribution.fwd(mapped_mesh), mesh)
         True
         >>> distribution.pdf(mapped_mesh).round(2)
-        array([32.15, 14.37,  8.04, 10.48,  4.68,  2.62,  3.34,  1.49,  0.84])
+        array([14.37, 10.48,  8.04,  1.49, 32.15,  0.84,  4.68,  3.34,  2.62])
         >>> distribution.sample(4).round(4)
         array([[0.5717, 0.2174, 3.1229, 0.4037],
                [0.5251, 0.1776, 0.1332, 0.2189]])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
         self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        LocScaling.__init__(self, dist=alpha(shape), covariance=scale**2, mean=shift)
+        super(Alpha, self).__init__(dist=alpha(shape), scale=scale, shift=shift)
