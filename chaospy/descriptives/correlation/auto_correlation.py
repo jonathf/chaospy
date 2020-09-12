@@ -11,7 +11,7 @@ def Acf(poly, dist, N=None, **kws):
     Args:
         poly (numpoly.ndpoly):
             Polynomial of interest. Must have ``len(poly) > N``.
-        dist (Dist):
+        dist (Distribution):
             Defines the space the correlation is taken on.
         N (int):
             The number of time steps apart included. If omitted set to

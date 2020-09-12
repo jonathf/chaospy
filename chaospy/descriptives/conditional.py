@@ -4,8 +4,7 @@ from itertools import product
 import numpy
 import numpoly
 
-from .expected import E
-from .. import distributions
+from . import expected
 
 
 def E_cond(poly, freeze, dist, **kws):
@@ -22,7 +21,7 @@ def E_cond(poly, freeze, dist, **kws):
             Boolean values defining the conditional variables. True values
             implies that the value is conditioned on, e.g. frozen during the
             expected value calculation.
-        dist (Dist) :
+        dist (Distribution) :
             The distributions of the input used in ``poly``.
 
     Returns:
@@ -49,7 +48,7 @@ def E_cond(poly, freeze, dist, **kws):
     poly = numpoly.set_dimensions(poly, len(dist))
     if not poly.isconstant:
         return poly.tonumpy()
-    assert not distributions.evaluation.get_dependencies(*dist), dist
+    assert not dist.stochastic_dependent, dist
 
     freeze = numpoly.polynomial(freeze)
     if freeze.isconstant():
@@ -73,4 +72,4 @@ def E_cond(poly, freeze, dist, **kws):
     for key in unfrozen.keys:
         unfrozen[key] = unfrozen[key] != 0
 
-    return numpoly.sum(frozen*E(unfrozen, dist), 0)
+    return numpoly.sum(frozen*expected.E(unfrozen, dist), 0)

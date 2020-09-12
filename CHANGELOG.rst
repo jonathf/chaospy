@@ -1,10 +1,56 @@
 Master Branch
 =============
 
+Version 4.0.1 (2020-09-12)
+==========================
+
+Adding rotation: changing dist backend.
+
+ADDED:
+  * Attributes to distributions:
+    * `.shares_dependencies`: Checking for dependencies between distributions.
+    * `.get_parameters`: Standardized way to get distribution parameters.
+  * New distribution "middle-ware":
+    * `OperatorDistribution`: Operator baseclass.
+    * `LowerUpper`: Convenience distribution class for distributions with
+      lower/upper bounds.
+    * `MeanCovariance`: Convenience distribution class for distributions with
+      mean-covariance structure.
+    * `ShiftScale`: Convenience distribution class for distributions with
+      shift-scale structure.
+  * New basic distribution: `InverseGamma`.
+  * New error type of error `UnsupportedFeatureError` to differentiate illegal
+    operations (covered by `StochasticallyDependentError`) and unsupported
+    features.
+CHANGED:
+  * Baseclass distribution baseclass refactoring:
+      * Split old `Dist` into two: Abstract baseclass `Distribution` and
+        convenience structure `DistributionCore`.
+      * Cleaned up `__init__` structured to be more standardized.
+      * Much improved REPR handle.
+      * standardized `__len__`.
+      * Lots more pre-flight checks for distribution integrity.
+      * Simplification and standardization of `distributions.operators`.
+      * Better recursive caching of values during evaluations.
+      * Some hierarchy changes.
+  * Tiny changes in argument signature for some distribution. Same arguments,
+    but some change in names or order to standardize. These changes affect:
+    `Angelit`, `Burr`, `Cauchy`, `ChiSquared`, `F`, `FoldedNormal`,
+    `GeneralizedExtreme`, `HyperbolicSecant`, `Levy`, `LogWeibull`, `Logistic`,
+    `MvStudentT`, `Pareto1`, `Pareto2`, `PowerLogNormal`, `PowerNormal`,
+    `StudentT`,
+REMOVED:
+  * `chaospy.distributions.evaluation` is removed in favor for method on the
+    `Distribution` class.
+  * `DependencyError` deprecated in favor of `StochasticallyDependentError`.
+  * `matmul` operator is in practice an really odd duckling that is highly
+    incompatible with the rotation idea. If linear map is needed, use
+    `MeanCovariance`.
+
 Version 4.0.0 (2020-09-04)
 ==========================
 
-Adding rotation, part 1.
+Adding rotation: the fundamentals.
 
 ADDED:
   * Property for checking for dependencies: `Dist.stochastic_dependent`.

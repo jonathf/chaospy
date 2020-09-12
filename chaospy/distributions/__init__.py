@@ -64,18 +64,18 @@ To be able to reproduce results it is possible to fix the random seed in
     array([0.2554, 2.622 , 1.6865, 3.5808, 3.5442])
     >>> distribution.sample(5).round(4)
     array([0.79  , 0.8132, 3.6967, 5.459 , 4.3098])
-"""
-from . import baseclass
-from .baseclass import Dist, StochasticallyDependentError
 
+"""
+from .baseclass import *
 from .sampler import *
-from .operators import *
 from .collection import *
 from .copulas import *
-from .evaluation import *
+from .operators import *
 from .constructor import construct
+from .approximation import (
+    approximate_density, approximate_inverse, approximate_moment)
 
 from . import (
-    sampler, evaluation, approximation,
+    baseclass, sampler, approximation,
     copulas, collection, operators, constructor
 )

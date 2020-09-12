@@ -2,18 +2,17 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class log_normal(Dist):
+class log_normal(DistributionCore):
 
     def __init__(self, a=1):
-        Dist.__init__(self, a=a)
+        super(log_normal, self).__init__(a=a)
 
     def _pdf(self, x, a):
-        out = numpy.e**(-numpy.log(x+(1-x)*(x<=0))**2/(2*a*a)) / \
-            ((x+(1-x)*(x<=0))*a*numpy.sqrt(2*numpy.pi))*(x>0)
+        out = (numpy.e**(-numpy.log(x+(1-x)*(x<=0))**2/(2*a*a))/
+               ((x+(1-x)*(x<=0))*a*numpy.sqrt(2*numpy.pi))*(x>0))
         return out
 
     def _cdf(self, x, a):
@@ -27,34 +26,35 @@ class log_normal(Dist):
 
     def _ttr(self, n, a):
         """Stieltjes-Wigert."""
-        return \
-    (numpy.e**(n*a*a)*(numpy.e**(a*a)+1)-1)*numpy.e**(.5*(2*n-1)*a*a), \
-                (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
+        return (
+            (numpy.e**(n*a*a)*(numpy.e**(a*a)+1)-1)*numpy.e**(.5*(2*n-1)*a*a),
+            (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
+        )
 
     def _lower(self, a):
         return 0.
 
 
-class LogNormal(Add):
+class LogNormal(ShiftScale):
     R"""
     Log-normal distribution
 
     Args:
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean in the normal distribution.  Overlaps with scale by
             mu=log(scale)
-        sigma (float, Dist):
+        sigma (float, Distribution):
             Standard deviation of the normal distribution.
-        shift (float, Dist):
+        shift (float, Distribution):
             Location of the lower bound.
-        scale (float, Dist):
+        scale (float, Distribution):
             Scale parameter. Overlaps with mu by scale=e**mu
 
     Examples:
         >>> distribution = chaospy.LogNormal(0, 1)
         >>> distribution
-        LogNormal(mu=0, scale=1, shift=0, sigma=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
+        LogNormal(mu=0, sigma=1)
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([0.431 , 0.7762, 1.2883, 2.3201])
         >>> distribution.fwd(distribution.inv(q)).round(4)
@@ -71,21 +71,25 @@ class LogNormal(Add):
     """
 
     def __init__(self, mu=0, sigma=1, shift=0, scale=1):
-        self._repr = {"mu": mu, "sigma": sigma, "shift": shift, "scale": scale}
-        left = log_normal(sigma)*scale*numpy.e**mu
-        Add.__init__(self, left=left, right=shift)
+        dist = ShiftScale(dist=log_normal(sigma), scale=numpy.e**mu)
+        super(LogNormal, self).__init__(
+            dist=dist,
+            scale=scale,
+            shift=shift,
+            repr_args=["mu=%s" % mu, "sigma=%s" % sigma],
+        )
 
 
-class Gilbrat(Add):
+class Gilbrat(ShiftScale):
     """
     Gilbrat distribution.
 
     Standard log-normal distribution
 
     Args:
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
@@ -109,5 +113,9 @@ class Gilbrat(Add):
     """
 
     def __init__(self, scale=1, shift=0):
-        self._repr = {"scale": scale, "shift": shift}
-        Add.__init__(self, left=log_normal(1)*scale, right=shift)
+        super(Gilbrat, self).__init__(
+            dist=log_normal(1),
+            scale=scale,
+            shift=shift,
+            repr_args=[],
+        )

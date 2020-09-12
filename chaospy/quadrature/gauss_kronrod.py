@@ -29,9 +29,9 @@ Generate Gauss-Kronrod quadrature rules::
     ...     print(abscissas.round(2), weights.round(2))
     [[-0.65 -0.    0.65]] [0.23 0.53 0.23]
     [[-0.82 -0.45  0.    0.45  0.82]] [0.07 0.26 0.34 0.26 0.07]
-    [[-0.89 -0.65 -0.34  0.    0.34  0.65  0.89]]
+    [[-0.89 -0.65 -0.34 -0.    0.34  0.65  0.89]]
      [0.03 0.12 0.22 0.26 0.22 0.12 0.03]
-    [[-0.93 -0.77 -0.54 -0.29  0.    0.29  0.54  0.77  0.93]]
+    [[-0.93 -0.77 -0.54 -0.29 -0.    0.29  0.54  0.77  0.93]]
      [0.01 0.06 0.13 0.19 0.22 0.19 0.13 0.06 0.01]
 
 Compare Gauss-Kronrod builds on top of Gauss-Legendre quadrature to pure
@@ -124,7 +124,7 @@ def quad_gauss_kronrod(
     Args:
         order (int):
             The order of the quadrature.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the

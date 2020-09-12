@@ -16,7 +16,7 @@ def test_sampling_statistics():
     assert numpy.allclose(
         numpy.mean(samples, axis=-1), mean, atol=1e-2, rtol=1e-3), numpy.mean(samples, axis=-1).round(3)
     assert numpy.allclose(
-        numpy.cov(samples), cov, atol=0.5, rtol=1e-1), numpy.cov(samples).round(3)
+        numpy.cov(samples), cov, atol=1e-1, rtol=1e-2), numpy.cov(samples).round(3)
 
 
 def test_roundtrip():
@@ -41,7 +41,7 @@ def test_rotation():
     cov = numpy.array([[ 1.0, -0.2, 0.3],
                        [-0.2,  1.0, 0.0],
                        [ 0.3,  0.0, 1.0]])
-    mesh = numpy.mgrid[-1:1:3j, 9:11:4j, -1:1:2j]
+    mesh = numpy.mgrid[-1:1:2j, 9:11:2j, -1:1:2j]
     dist1 = chaospy.MvNormal(mean, cov, rotation=[0, 1, 2])
     dist2 = chaospy.MvNormal(mean, cov, rotation=[2, 1, 0])
     dist3 = chaospy.MvNormal(mean, cov, rotation=[2, 0, 1])
@@ -49,11 +49,12 @@ def test_rotation():
     # PDF should be unaffected by rotation.
     assert numpy.allclose(dist1.pdf(mesh), dist2.pdf(mesh))
     assert numpy.allclose(dist1.pdf(mesh), dist3.pdf(mesh))
+    assert numpy.allclose(dist2.pdf(mesh), dist3.pdf(mesh))
 
     # One axis is constant. Verify that is the case for each rotation.
     assert numpy.all(dist1.fwd(mesh)[0, :, 0, 0] == dist1.fwd(mesh)[0].T)
     assert numpy.all(dist2.fwd(mesh)[2, 0, 0, :] == dist2.fwd(mesh)[2])
-    assert numpy.all(dist3.fwd(mesh)[1, 0, :, 0, numpy.newaxis] == dist3.fwd(mesh)[1])
+    assert numpy.all(dist3.fwd(mesh)[2, 0, 0, :] == dist2.fwd(mesh)[2])
 
 
 def test_sampling():

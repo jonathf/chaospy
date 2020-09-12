@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class power_normal(Dist):
+class power_normal(DistributionCore):
     """Power normal or Box-Cox distribution."""
 
     def __init__(self, c):
-        Dist.__init__(self, c=c)
+        super(power_normal, self).__init__(c=c)
 
     def _pdf(self, x, c):
         norm = (2*numpy.pi)**-.5*numpy.exp(-x**2/2.)
@@ -23,22 +22,22 @@ class power_normal(Dist):
         return -special.ndtri(pow(1-q, 1./c))
 
 
-class PowerNormal(Add):
+class PowerNormal(ShiftScale):
     """
     Power normal or Box-Cox distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean of the normal distribution
-        scale (float, Dist):
+        scale (float, Distribution):
             Standard deviation of the normal distribution
 
     Examples:
         >>> distribution = chaospy.PowerNormal(2, 2, 2)
         >>> distribution
-        PowerNormal(mu=2, scale=2, shape=2)
+        PowerNormal(2, mu=2, sigma=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([-0.5008,  0.4919,  1.3233,  2.2654])
@@ -50,8 +49,13 @@ class PowerNormal(Add):
         array([ 1.5523, -1.122 ,  3.5244,  0.8368])
         >>> distribution.mom(1).round(4)
         0.8716
+
     """
 
-    def __init__(self, shape=1, mu=0, scale=1):
-        self._repr = {"shape": shape, "mu": mu, "scale": scale}
-        Add.__init__(self, left=power_normal(shape)*scale, right=mu)
+    def __init__(self, shape=1, mu=0, sigma=1):
+        super(PowerNormal, self).__init__(
+            dist=power_normal(shape),
+            scale=sigma,
+            shift=mu,
+        )
+        self._repr_args = [shape, "mu=%s" % mu, "sigma=%s" % sigma]

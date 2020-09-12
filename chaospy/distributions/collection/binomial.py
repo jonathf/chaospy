@@ -3,10 +3,10 @@ from functools import wraps
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
+from ..baseclass import DistributionCore
 
 
-class Binomial(Dist):
+class Binomial(DistributionCore):
     """
     Binomial probability distribution.
 
@@ -43,7 +43,7 @@ class Binomial(Dist):
 
     def __init__(self, size, prob):
         self._repr = {"size": size, "prob": prob}
-        Dist.__init__(self, size=size, prob=prob)
+        super(Binomial, self).__init__(size=size, prob=prob)
 
     def _cdf(self, x_data, size, prob):
         size = numpy.round(size)
@@ -59,15 +59,7 @@ class Binomial(Dist):
         ceil[numpy.isnan(ceil)] = 0  # left edge case
 
         offset = x_data-numpy.floor(x_data)
-
         return floor*(1-offset) + ceil*offset
-
-        offset = x_data-x_data_int+0.5
-        assert numpy.all(offset >= 0) and numpy.all(offset <= 1), (
-            "somethings up with the offset: %s" % offset)
-        x_data_int = numpy.clip(x_data_int, 0, size)
-        out = out_lower*(1-offset) + out_upper*offset
-        return out
 
     def _pdf(self, x_data, size, prob):
         x_data = numpy.round(x_data)
@@ -85,7 +77,7 @@ class Binomial(Dist):
             x_data, size=numpy.floor(size), prob=prob))
 
     def _ttr(self, k_data, size, prob):
-        """Krawtchouk rule"""
+        """Krawtchouk rule."""
         from chaospy.quadrature import discretized_stieltjes
         abscissas = numpy.arange(0, numpy.floor(size)+1)
         weights = self._pdf(abscissas, size, prob)

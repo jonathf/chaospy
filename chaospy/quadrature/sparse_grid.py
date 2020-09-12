@@ -77,13 +77,13 @@ def construct_sparse_grid(
         order (int, numpy.ndarray):
             The order of the grid. If ``numpy.ndarray``, it overrides both
             ``dim`` and ``skew``.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
         rule (str):
             Rule for generating abscissas and weights. Either done with
             quadrature rules, or with random samples with constant weights.
         accuracy (int):
-            If gaussian is set, but the Dist provieded in domain does not
+            If gaussian is set, but the dist provided in domain does not
             provide an analytical TTR, ac sets the approximation order for the
             descitized Stieltje's method.
         growth (bool, None):
@@ -118,7 +118,7 @@ def construct_sparse_grid(
     """
     orders = order*numpy.ones(len(dist), dtype=int)
 
-    assert isinstance(dist, chaospy.Dist), "dist must be chaospy.Dist"
+    assert isinstance(dist, chaospy.Distribution), "dist must be chaospy.Distribution"
     if not isinstance(dist, (chaospy.J, chaospy.Iid)):
         dist = chaospy.J(dist)
 

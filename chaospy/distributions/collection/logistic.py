@@ -2,14 +2,13 @@
 import numpy
 from scipy import special, misc
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
-class logistic(Dist):
+class logistic(DistributionCore):
     """Generalized logistic type 1 distribution."""
 
     def __init__(self, c=1):
-        Dist.__init__(self, c=c)
+        super(logistic, self).__init__(c=c)
 
     def _pdf(self, x, c):
         return numpy.e**-x/(1+numpy.e**-x)**(c+1)
@@ -21,23 +20,23 @@ class logistic(Dist):
         return -numpy.log(q**(-1./c)-1)
 
 
-class Logistic(Add):
+class Logistic(ShiftScale):
     """
     Generalized logistic type 1 distribution
     Sech squared distribution
 
     Args:
-        loc (float, Dist):
-            Location parameter
-        scale (float, Dist):
-            Scale parameter
-        skew (float, Dist):
+        skew (float, Distribution):
             Shape parameter
+        shift (float, Distribution):
+            Location parameter
+        scale (float, Distribution):
+            Scale parameter
 
     Examples:
         >>> distribution = chaospy.Logistic(2, 2, 2)
         >>> distribution
-        Logistic(loc=2, scale=2, skew=2)
+        Logistic(skew=2, scale=2, shift=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([1.5761, 3.0855, 4.4689, 6.2736])
@@ -50,6 +49,10 @@ class Logistic(Add):
         >>> distribution.mom(1).round(4)
         4.0
     """
-    def __init__(self, loc=0, scale=1, skew=1):
-        self._repr = {"loc": loc, "scale": scale, "skew": skew}
-        Add.__init__(self, left=logistic(skew)*scale, right=loc)
+    def __init__(self, skew=1, shift=0, scale=1):
+        super(Logistic, self).__init__(
+            dist=logistic(skew),
+            scale=scale,
+            shift=shift,
+            repr_args=["skew=%s" % skew],
+        )

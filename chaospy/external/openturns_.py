@@ -16,7 +16,7 @@ a simple univariate Gaussian random variable::
     >>> import openturns
     >>> distribution = chaospy.OpenTURNSDist(openturns.Normal(0, 1))
     >>> distribution
-    OpenTURNSDist([Normal(mu = 0, sigma = 1)])
+    OpenTURNSDist([openturns.Normal(mu = 0, sigma = 1)])
 
 This distribution then behaves as a normal ``chaospy`` distribution::
 
@@ -31,8 +31,8 @@ The wrapper also supports multivariate distributions::
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
     >>> mv_distribution = chaospy.OpenTURNSDist(composed_distribution)
     >>> mv_distribution  # doctest: +NORMALIZE_WHITESPACE
-    OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
-                   Uniform(a = -1, b = 1)])
+    OpenTURNSDist([openturns.Triangular(a = -1, m = 0, b = 1),
+                   openturns.Uniform(a = -1, b = 1)])
     >>> mv_distribution.sample(4).round(4)
     array([[ 0.1676, -0.5204,  0.6847, -0.018 ],
            [ 0.7449, -0.5753, -0.9186, -0.2056]])
@@ -43,8 +43,8 @@ form lists::
     >>> mv_distribution = chaospy.OpenTURNSDist([
     ...     openturns.Triangular(-1, 0, 1), openturns.Uniform(-1, 1)])
     >>> mv_distribution  # doctest: +NORMALIZE_WHITESPACE
-    OpenTURNSDist([Triangular(a = -1, m = 0, b = 1),
-                   Uniform(a = -1, b = 1)])
+    OpenTURNSDist([openturns.Triangular(a = -1, m = 0, b = 1),
+                   openturns.Uniform(a = -1, b = 1)])
 
 Though multivariate distributions are supported, dependencies are not::
 
@@ -56,7 +56,7 @@ Though multivariate distributions are supported, dependencies are not::
     >>> chaospy.OpenTURNSDist(dependent_distribution)  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    chaospy...DependencyError: Stochastically dependent OpenTURNS distribution unsupported
+    chaospy.StochasticallyDependentError: Stochastically dependent OpenTURNS distribution unsupported
 
 .. _OpenTURNS distribution wrapper: http://openturns.github.io/\
 openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
@@ -66,11 +66,12 @@ try:
 except ImportError:
     from collections import Iterable
 import numpy
+import chaospy
 
-from ..distributions import Dist, J, DependencyError
+from ..distributions import DistributionCore, J
 
 
-class openturns_dist(Dist):
+class openturns_dist(DistributionCore):
     """One dimensional OpenTURNS distribution."""
 
     def __init__(self, distribution):
@@ -81,7 +82,7 @@ class openturns_dist(Dist):
         """
         assert distribution.isContinuous(), (
             "Only continuous distributions are supported")
-        Dist.__init__(self)
+        super(openturns_dist, self).__init__()
         self.distribution = distribution
 
     def _pdf(self, x_loc):
@@ -106,7 +107,10 @@ class openturns_dist(Dist):
         return self.distribution.getMoment(int(k_loc))[0]
 
     def __str__(self):
-        return str(self.distribution)
+        return "openturns."+str(self.distribution)
+
+    def __repr__(self):
+        return str(self)
 
 
 class OpenTURNSDist(J):
@@ -122,16 +126,17 @@ class OpenTURNSDist(J):
         >>> ot_distribution = ComposedDistribution([Normal(), Normal()])
         >>> distribution = chaospy.OpenTURNSDist(ot_distribution)
         >>> distribution  # doctest: +NORMALIZE_WHITESPACE
-        OpenTURNSDist([Normal(mu = 0, sigma = 1),
-                       Normal(mu = 0, sigma = 1)])
+        OpenTURNSDist([openturns.Normal(mu = 0, sigma = 1),
+                       openturns.Normal(mu = 0, sigma = 1)])
     """
 
     def __init__(self, distribution):
         from openturns import ComposedDistribution, ContinuousDistribution
         if isinstance(distribution, ComposedDistribution):
             if not distribution.hasIndependentCopula():
-                raise DependencyError("Stochastically dependent "
-                                      "OpenTURNS distribution unsupported")
+                raise chaospy.StochasticallyDependentError(
+                    "Stochastically dependent "
+                    "OpenTURNS distribution unsupported")
             distributions = [
                 openturns_dist(dist)
                 for dist in distribution.getDistributionCollection()
@@ -144,8 +149,5 @@ class OpenTURNSDist(J):
                 for dist in distribution
             ]), "Only (iterable of) continuous OpenTURNS distributions supported"
             distributions = [openturns_dist(dist) for dist in distribution]
-        J.__init__(self, *distributions)
-
-    def __str__(self):
-        args = [str(self.prm[key]) for key in sorted(list(self.prm))]
-        return self.__class__.__name__ + "([" + ", ".join(args) + "])"
+        super(OpenTURNSDist, self).__init__(*distributions)
+        self._repr_args = [distributions]

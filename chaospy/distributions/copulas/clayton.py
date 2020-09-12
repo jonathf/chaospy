@@ -18,9 +18,8 @@ The calculation of the derivative of the ``iphi`` function:
 import numpy
 from scipy import special
 
-from .baseclass import Copula
+from ..baseclass import Copula
 from .archimedean import Archimedean
-from ..baseclass import Dist
 
 
 class clayton(Archimedean):
@@ -41,8 +40,8 @@ class Clayton(Copula):
     Clayton Copula.
 
     Args:
-        dist (Dist):
-            The Distribution to wrap
+        dist (Distribution):
+            The distribution to wrap
         theta (float):
             Copula parameter. Required to be above 0.
 
@@ -76,6 +75,8 @@ class Clayton(Copula):
 
     def __init__(self, dist, theta=2.):
         assert theta > 0
-        self._repr = {"theta": theta}
-        trans = clayton(len(dist), theta=theta)
-        return Copula.__init__(self, dist=dist, trans=trans)
+        return super(Clayton, self).__init__(
+            dist=dist,
+            trans=clayton(len(dist), theta=theta),
+            repr_args=[dist, "theta=%s" % theta],
+        )

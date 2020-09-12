@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class generalized_extreme(Dist):
+class generalized_extreme(DistributionCore):
     """Generalized extreme value distribution."""
 
     def __init__(self, c=1):
-        Dist.__init__(self, c=c)
+        super(generalized_extreme, self).__init__(c=c)
 
     def _pdf(self, x, c):
         cx = c*x
@@ -30,23 +29,23 @@ class generalized_extreme(Dist):
         return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
 
 
-class GeneralizedExtreme(Add):
+class GeneralizedExtreme(ShiftScale):
     """
     Generalized extreme value distribution
     Fisher-Tippett distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        loc (float, Dist):
+        loc (float, Distribution):
             Location parameter
 
     Example:
         >>> distribution = chaospy.GeneralizedExtreme(3, 2, 2)
         >>> distribution
-        GeneralizedExtreme(loc=2, scale=2, shape=3)
+        GeneralizedExtreme(3, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([-0.1126,  2.1538,  2.5778,  2.6593])
@@ -60,6 +59,10 @@ class GeneralizedExtreme(Add):
         -2.2584
     """
 
-    def __init__(self, shape=0, scale=1, loc=0):
-        self._repr = {"shape": shape, "scale": scale, "loc": loc}
-        Add.__init__(self, left=generalized_extreme(shape)*scale, right=loc)
+    def __init__(self, shape=0, scale=1, shift=0):
+        super(GeneralizedExtreme, self).__init__(
+            dist=generalized_extreme(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

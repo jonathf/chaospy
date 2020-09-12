@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class tukey_lambda(Dist):
+class tukey_lambda(DistributionCore):
     """Tukey-lambda distribution."""
 
     def __init__(self, lam):
-        Dist.__init__(self, lam=lam)
+        super(tukey_lambda, self).__init__(lam=lam)
 
     def _pdf(self, x, lam):
         lam = numpy.zeros(x.shape) + lam
@@ -37,22 +36,22 @@ class tukey_lambda(Dist):
         return output
 
 
-class TukeyLambda(Add):
+class TukeyLambda(ShiftScale):
     """
     Tukey-lambda distribution.
 
     Args:
-        lam (float, Dist):
+        lam (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.TukeyLambda(0, 2, 2)
         >>> distribution
-        TukeyLambda(scale=2, shape=0, shift=2)
+        TukeyLambda(0, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([-1.2189,  0.6137,  2.    ,  3.3863,  5.2189])
@@ -67,5 +66,9 @@ class TukeyLambda(Add):
     """
 
     def __init__(self, shape=0, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=tukey_lambda(shape)*scale, right=shift)
+        super(TukeyLambda, self).__init__(
+            dist=tukey_lambda(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

@@ -4,11 +4,11 @@ Multiplication of distributions.
 Example usage
 -------------
 
-Distribution * a constant::
+Distribution multiplied with a constant::
 
-    >>> distribution = chaospy.Uniform(0, 1) * 4
-    >>> print(distribution)
-    Mul(Uniform(lower=0, upper=1), [4.])
+    >>> distribution = chaospy.Uniform(0, 1)*4
+    >>> distribution
+    Mul(Uniform(), 4)
     >>> print(numpy.around(distribution.sample(5), 4))
     [2.6144 0.46   3.8011 1.9288 3.4899]
     >>> print(numpy.around(distribution.fwd([1, 2, 3]), 4))
@@ -32,22 +32,22 @@ Construct joint multiplication distribution::
     Mul(Uniform(lower=-1, upper=0), Uniform(lower=-3, upper=-2))
     >>> joint1 = chaospy.J(lhs, multiplication)
     >>> print(joint1.lower)
-    [-1.  0.]
+    [-1. -0.]
     >>> print(joint1.upper)
     [0. 3.]
     >>> joint2 = chaospy.J(rhs, multiplication)
     >>> print(joint2.lower)
-    [-3.  0.]
+    [-3. -0.]
     >>> print(joint2.upper)
     [-2.  3.]
     >>> joint3 = chaospy.J(multiplication, lhs)
     >>> print(joint3.lower)
-    [ 0. -1.]
+    [-0. -1.]
     >>> print(joint3.upper)
     [3. 0.]
     >>> joint4 = chaospy.J(multiplication, rhs)
     >>> print(joint4.lower)
-    [ 0. -3.]
+    [-0. -3.]
     >>> print(joint4.upper)
     [ 3. -2.]
 
@@ -80,46 +80,29 @@ Inverse transformations::
     [[-2.99  -2.5   -2.01 ]
      [ 2.691  1.25   0.201]]
 """
-import chaospy
 import numpy
+import chaospy
 
-from ..baseclass import Dist
-from .. import evaluation
-from .binary import BinaryOperator
+from ..baseclass import Distribution
+from .operator import OperatorDistribution
 
 
-class Mul(BinaryOperator):
+class Mul(OperatorDistribution):
     """Multiplication."""
 
     def __init__(self, left, right):
         """
         Args:
-            left (Dist, numpy.ndarray):
+            left (Distribution, numpy.ndarray):
                 Left hand side.
-            right (Dist, numpy.ndarray):
+            right (Distribution, numpy.ndarray):
                 Right hand side.
         """
-        self.matrix = False
-        if isinstance(left, Dist):
-            if not isinstance(right, Dist):
-                right = right*numpy.ones(len(left))
-                if len(right.shape) > 1:
-                    raise ValueError("Too many dimensions")
-                if len(left) == 1 and len(right) > 1:
-                    raise ValueError("Univariate distribution x vector")
-
-        else:
-            if isinstance(right, Dist):
-                left = left*numpy.ones(len(right))
-                if len(left.shape) > 1:
-                    raise ValueError("Too many dimensions")
-                if len(right) == 1 and len(left) > 1:
-                    raise ValueError("Univariate distribution x vector")
-            else:
-                raise ValueError(
-                    "Either left or right side must be distributions")
-
-        BinaryOperator.__init__(self, left=left, right=right)
+        super(Mul, self).__init__(
+            left=left,
+            right=right,
+            repr_args=[left, right],
+        )
 
     def _lower(self, left, right, cache):
         """
@@ -132,29 +115,34 @@ class Mul(BinaryOperator):
             array([-2.])
 
         """
-        if isinstance(left, Dist):
-            left_upper = evaluation.evaluate_upper(left, cache=cache)
-            left_lower = evaluation.evaluate_lower(left, cache=cache)
+        # small hack to deal with sign-flipping boundaries.
+        del cache
+        left = self._parameters["left"]
+        right = self._parameters["right"]
+        if isinstance(left, Distribution):
+            left_upper = left._get_upper(cache={})
+            left_lower = left._get_lower(cache={})
 
-            if isinstance(right, Dist):
-                right_upper = evaluation.evaluate_upper(right, cache=cache)
-                right_lower = evaluation.evaluate_lower(right, cache=cache)
+            if isinstance(right, Distribution):
+                right_upper = right._get_upper(cache={})
+                right_lower = right._get_lower(cache={})
 
                 out = numpy.min(numpy.broadcast_arrays(
-                    left_lower*right_lower,
-                    left_lower*right_upper,
-                    left_upper*right_lower,
-                    left_upper*right_upper,
-                ), axis=0)
+                    left_lower.T*right_lower.T,
+                    left_lower.T*right_upper.T,
+                    left_upper.T*right_lower.T,
+                    left_upper.T*right_upper.T,
+                ), axis=0).T
 
             else:
-                out = numpy.min([left_lower*right, left_upper*right], axis=0)
+                out = numpy.min([left_lower.T*right.T, left_upper.T*right.T], axis=0).T
 
         else:
-            assert isinstance(right, Dist)
-            right_upper = evaluation.evaluate_upper(right, cache=cache)
-            right_lower = evaluation.evaluate_lower(right, cache=cache)
-            out = numpy.min([left*right_lower, left*right_upper], axis=0)
+            assert isinstance(right, Distribution)
+            right_upper = right._get_upper(cache={})
+            right_lower = right._get_lower(cache={})
+            out = numpy.min([left.T*right_lower.T,
+                             left.T*right_upper.T], axis=0).T
 
         return out
 
@@ -169,13 +157,17 @@ class Mul(BinaryOperator):
             array([2.])
 
         """
-        if isinstance(left, Dist):
-            left_lower = evaluation.evaluate_lower(left, cache=cache)
-            left_upper = evaluation.evaluate_upper(left, cache=cache)
+        # small hack to deal with sign-flipping boundaries.
+        del cache
+        left = self._parameters["left"]
+        right = self._parameters["right"]
+        if isinstance(left, Distribution):
+            left_lower = left._get_lower(cache={})
+            left_upper = left._get_upper(cache={})
 
-            if isinstance(right, Dist):
-                right_lower = evaluation.evaluate_lower(right, cache=cache)
-                right_upper = evaluation.evaluate_upper(right, cache=cache)
+            if isinstance(right, Distribution):
+                right_lower = right._get_lower(cache={})
+                right_upper = right._get_upper(cache={})
 
                 out = numpy.max(numpy.broadcast_arrays(
                     (left_lower.T*right_lower.T).T,
@@ -188,30 +180,22 @@ class Mul(BinaryOperator):
                 out = numpy.max([left_lower*right, left_upper*right], axis=0)
 
         else:
-            assert isinstance(right, Dist)
-            right_lower = evaluation.evaluate_lower(right, cache=cache)
-            right_upper = evaluation.evaluate_upper(right, cache=cache)
+            assert isinstance(right, Distribution)
+            right_lower = right._get_lower(cache={})
+            right_upper = right._get_upper(cache={})
             out = numpy.max([left*right_lower, left*right_upper], axis=0)
 
         return out
 
-    def _pre_fwd_left(self, xloc, other):
-        valids = other != 0
-        out = xloc.copy()
-        out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
-        return out
-
-    def _pre_fwd_right(self, xloc, other):
-        valids = other != 0
-        out = xloc.copy()
-        out.T[valids.T] = xloc.T[valids.T]/other.T[valids.T]
-        return out
-
-    def _post_fwd(self, uloc, other):
-        return numpy.where(other.T >= 0, uloc.T, 1-uloc.T).T
-
-    def _alt_fwd(self, xloc, left, right):
-        return 0.5*(left*right == xloc)
+    def _cdf(self, xloc, left, right, cache):
+        if isinstance(left, Distribution):
+            left, right = right, left
+        left = numpy.broadcast_arrays(left.T, xloc.T)[0].T
+        valids = left != 0
+        xloc_ = xloc.copy()
+        xloc_.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
+        uloc = right._get_fwd(xloc_, cache=cache)
+        return numpy.where(left.T >= 0, uloc.T, 1-uloc.T).T
 
     def _ppf(self, uloc, left, right, cache):
         """
@@ -234,24 +218,11 @@ class Mul(BinaryOperator):
              [1.  1.2 1.4]]
 
         """
-        left = evaluation.get_inverse_cache(left, cache)
-        right = evaluation.get_inverse_cache(right, cache)
-
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
-
-            uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
-            xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
-            xloc = (xloc.T*right.T).T
-            assert uloc.shape == xloc.shape
-
-        else:
-            assert isinstance(right, Dist)
-            uloc = numpy.where(numpy.asfarray(left).T > 0, uloc.T, 1-uloc.T).T
-            xloc = evaluation.evaluate_inverse(right, uloc, cache=cache)
-            xloc = (xloc.T*left.T).T
+        if isinstance(right, Distribution):
+            left, right = right, left
+        uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1-uloc.T).T
+        xloc = left._get_inv(uloc, cache=cache)
+        xloc = (xloc.T*right.T).T
 
         return xloc
 
@@ -274,32 +245,15 @@ class Mul(BinaryOperator):
             [0.5 0.5 0. ]
 
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
+        if isinstance(right, Distribution):
+            left, right = right, left
 
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
+        right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
+        valids = right != 0
+        xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
 
-            right = (numpy.asfarray(right).T+numpy.zeros(xloc.shape).T).T
-            valids = right != 0
-            xloc.T[valids.T] = xloc.T[valids.T]/right.T[valids.T]
-            xloc.T[~valids.T] = numpy.inf
-
-            pdf = evaluation.evaluate_density(left, xloc, cache=cache)
-            pdf.T[valids.T] /= right.T[valids.T]
-            assert pdf.shape == xloc.shape
-
-        else:
-            assert isinstance(right, Dist)
-            left = (numpy.asfarray(left).T+numpy.zeros(xloc.shape).T).T
-            valids = left != 0
-            xloc.T[valids.T] = xloc.T[valids.T]/left.T[valids.T]
-
-            pdf = evaluation.evaluate_density(right, xloc, cache=cache)
-            pdf.T[valids.T] /= left.T[valids.T]
-
+        pdf = left._get_pdf(xloc, cache=cache)
+        pdf.T[valids.T] /= right.T[valids.T]
         return numpy.abs(pdf)
 
     def _mom(self, key, left, right, cache):
@@ -316,65 +270,36 @@ class Mul(BinaryOperator):
             >>> print(numpy.around(Mul(chaospy.Uniform(), chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
             [1.     0.25   0.1111 0.0625]
         """
-        if evaluation.get_dependencies(left, right):
-            raise evaluation.DependencyError(
-                "product of dependent distributions not feasible: "
-                "{} and {}".format(left, right)
-            )
-
-        if isinstance(left, Dist):
-            left = evaluation.evaluate_moment(left, key, cache=cache)
+        del cache
+        if isinstance(left, Distribution):
+            if left.shares_dependencies(right):
+                raise chaospy.StochasticallyDependentError(
+                    "product of dependent distributions not feasible: "
+                    "{} and {}".format(left, right)
+                )
+            left = left._get_mom(key)
         else:
             left = (numpy.array(left).T**key).T
-        if isinstance(right, Dist):
-            right = evaluation.evaluate_moment(right, key, cache=cache)
+        if isinstance(right, Distribution):
+            right = right._get_mom(key)
         else:
             right = (numpy.array(right).T**key).T
         return numpy.prod(left)*numpy.prod(right)
 
     def _ttr(self, kloc, left, right, cache):
         """Three terms recursion coefficients."""
-        if isinstance(left, Dist) and isinstance(right, Dist):
-            raise evaluation.DependencyError(
-                "product of distributions not feasible: "
-                "{} and {}".format(left, right)
-            )
-        elif isinstance(right, Dist):
+        del cache
+        if isinstance(right, Distribution):
+            if isinstance(left, Distribution):
+                raise chaospy.StochasticallyDependentError(
+                    "product of distributions not feasible: "
+                    "{} and {}".format(left, right)
+                )
             left, right = right, left
-
-        coeff0, coeff1 = evaluation.evaluate_recurrence_coefficients(
-            left, kloc, cache=cache)
-        right = numpy.asarray(right)
+        coeff0, coeff1 = left._get_ttr(kloc)
         return coeff0*right, coeff1*right*right
 
-    def __str__(self):
-        if self._repr is not None:
-            return super(Mul, self).__str__()
-        return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
-                ", " + str(self.prm["right"]) + ")")
-
-    def __len__(self):
-        out1 = out2 = 1
-        try:
-            out1 = len(self.prm["left"])
-        except TypeError:
-            pass
-        try:
-            out2 = len(self.prm["right"])
-        except TypeError:
-            pass
-        return max(out1, out2)
-
-    def _fwd_cache(self, cache):
-        left = evaluation.get_forward_cache(self.prm["left"], cache)
-        right = evaluation.get_forward_cache(self.prm["right"], cache)
-        if not isinstance(left, Dist) and not isinstance(right, Dist):
-            return left*right
-        return self
-
-    def _inv_cache(self, cache):
-        left = evaluation.get_inverse_cache(self.prm["left"], cache)
-        right = evaluation.get_inverse_cache(self.prm["right"], cache)
-        if not isinstance(left, Dist) and not isinstance(right, Dist):
-            return left*right
-        return self
+    def _value(self, left, right, cache):
+        if isinstance(left, Distribution) or isinstance(right, Distribution):
+            return self
+        return left*right

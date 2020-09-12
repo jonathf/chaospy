@@ -2,17 +2,16 @@
 import numpy
 from scipy import special, misc
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, LowerUpper
 from .beta import beta_
 
 
-class triangle(Dist):
+class triangle(DistributionCore):
     """Triangle probability distribution."""
 
     def __init__(self, a=.5):
-        assert numpy.all(a>=0) and numpy.all(a<=1)
-        Dist.__init__(self, a=a)
+        # assert numpy.all(a>=0) and numpy.all(a<=1)
+        super(triangle, self).__init__(a=a)
 
     def _pdf(self, D, a):
         return numpy.where(D<a, 2*D/a, 2*(1-D)/(1-a))
@@ -51,18 +50,18 @@ class triangle(Dist):
         return coeffs[:, 0, -1]
 
 
-class Triangle(Add):
+class Triangle(LowerUpper):
     """
     Triangle Distribution.
 
     Must have lower <= midpoint <= upper.
 
     Args:
-        lower (float, Dist):
+        lower (float, Distribution):
             Lower bound
-        midpoint (float, Dist):
+        midpoint (float, Distribution):
             Location of the top
-        upper (float, Dist):
+        upper (float, Distribution):
             Upper bound
 
     Examples:
@@ -84,6 +83,10 @@ class Triangle(Add):
     """
 
     def __init__(self, lower=-1, midpoint=0, upper=1):
-        self._repr = {"lower": lower, "midpoint": midpoint, "upper": upper}
         midpoint = (midpoint-lower)*1./(upper-lower)
-        Add.__init__(self, left=triangle(midpoint)*(upper-lower), right=lower)
+        super(Triangle, self).__init__(
+            dist=triangle(midpoint),
+            lower=lower,
+            upper=upper,
+            repr_args=["midpoint=%s" % midpoint],
+        )

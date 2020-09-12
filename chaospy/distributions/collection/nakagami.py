@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class nakagami(Dist):
+class nakagami(DistributionCore):
     """Nakagami-m distribution."""
 
     def __init__(self, nu):
-        Dist.__init__(self, nu=nu)
+        super(nakagami, self).__init__(nu=nu)
 
     def _pdf(self, x, nu):
         return 2*nu**nu/special.gamma(nu)*(x**(2*nu-1.0))*numpy.exp(-nu*x*x)
@@ -25,22 +24,22 @@ class nakagami(Dist):
         return 0.
 
 
-class Nakagami(Add):
+class Nakagami(ShiftScale):
     """
     Nakagami-m distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.Nakagami(2, 2, 2)
         >>> distribution
-        Nakagami(scale=2, shape=2, shift=2)
+        Nakagami(2, scale=2, shift=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([3.284 , 3.6592, 4.0111, 4.4472])
@@ -55,5 +54,9 @@ class Nakagami(Add):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, nakagami(shape)*scale, shift)
+        super(Nakagami, self).__init__(
+            dist=nakagami(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

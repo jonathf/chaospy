@@ -47,62 +47,59 @@ the Rosenblatt transformation allows for it, multiple copulas can be stacked
 together in `chaospy`.
 """
 import numpy
+import chaospy
 
-from ..baseclass import Dist, StochasticallyDependentError
-from .. import evaluation
+from .distribution import Distribution
 
 
-class Copula(Dist):
+class Copula(Distribution):
 
-    def __init__(self, dist, trans):
+    def __init__(self, dist, trans, rotation=None, repr_args=None):
         r"""
         Args:
-            dist (Dist):
+            dist (Distribution):
                 Distribution to wrap the copula around.
-            trans (Dist):
+            trans (Distribution):
                 The copula wrapper `[0,1]^D \into [0,1]^D`.
 
         """
         assert len(dist) == len(trans), "Copula length missmatch"
-
         accumulant = set()
-        self._dependencies = [deps.copy() for deps in dist._dependencies]
+        dependencies = [deps.copy() for deps in dist._dependencies]
         for idx, _ in sorted(enumerate(trans._dependencies), key=lambda x: len(x[1])):
             accumulant.update(dist._dependencies[idx])
-            self._dependencies[idx] = accumulant.copy()
+            dependencies[idx] = accumulant.copy()
 
-        Dist.__init__(self, dist=dist, trans=trans)
+        super(Copula, self).__init__(
+            parameters=dict(dist=dist, trans=trans),
+            dependencies=dependencies,
+            rotation=rotation,
+            repr_args=repr_args,
+        )
 
     def _cdf(self, x, dist, trans, cache):
-        output = evaluation.evaluate_forward(dist, x, cache=cache)
-        output = evaluation.evaluate_forward(trans, output, cache=cache)
+        output = dist._get_fwd(x, cache=cache)
+        output = trans._get_fwd(output, cache=cache)
         return output
 
     def _lower(self, dist, trans, cache):
-        return evaluation.evaluate_lower(dist, cache=cache)
+        return dist._get_lower(cache=cache)
 
     def _upper(self, dist, trans, cache):
-        return evaluation.evaluate_upper(dist, cache=cache)
+        return dist._get_upper(cache=cache)
 
     def _ppf(self, qloc, dist, trans, cache):
-        qloc = evaluation.evaluate_inverse(trans, qloc, cache=cache)
-        xloc = evaluation.evaluate_inverse(dist, qloc, cache=cache)
+        qloc = trans._get_inv(qloc, cache=cache)
+        xloc = dist._get_inv(qloc, cache=cache)
         return xloc
 
     def _pdf(self, x, dist, trans, cache):
-        density = evaluation.evaluate_density(dist, x, cache=cache.copy())
-        return evaluation.evaluate_density(
-            trans, evaluation.evaluate_forward(
-                dist, x, cache=cache), cache=cache)*density
+        density = dist._get_pdf(x, cache=cache.copy())
+        return trans._get_pdf(dist._get_fwd(x, cache=cache), cache=cache)*density
 
     def _mom(self, x, dist, trans, cache):
-        raise StochasticallyDependentError(
+        raise chaospy.UnsupportedFeature(
             "Joint distribution with dependencies not supported.")
 
-    def __len__(self):
-        return len(self.prm["dist"])
-
-    def __str__(self):
-        args = [key + "=" + str(self._repr[key]) for key in sorted(self._repr)]
-        return (self.__class__.__name__ + "(" + str(self.prm["dist"]) +
-                ", " + ", ".join(args) + ")")
+    def _value(self, dist, trans, cache):
+        return self

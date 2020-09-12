@@ -2,54 +2,54 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class generalized_half_logistic(Dist):
+class generalized_half_logistic(DistributionCore):
     """Generalized half-logistic distribution."""
 
     def __init__(self, c=1):
-        Dist.__init__(self, c=c)
+        super(generalized_half_logistic, self).__init__(c=c)
 
     def _pdf(self, x, c):
         limit = 1.0/c
         tmp = (1-c*x)
         tmp0 = tmp**(limit-1)
         tmp2 = tmp0*tmp
-        return 2*tmp0 / (1+tmp2)**2
+        return 2*tmp0/(1+tmp2)**2
 
     def _cdf(self, x, c):
         limit = 1.0/c
         tmp = (1-c*x)
         tmp2 = tmp**(limit)
-        return (1.0-tmp2) / (1+tmp2)
+        return (1.0-tmp2)/(1+tmp2)
 
     def _ppf(self, q, c):
         return 1.0/c*(1-((1.0-q)/(1.0+q))**c)
 
     def _lower(self, c):
         return 0.0
+
     def _upper(self, c):
         return 1/numpy.where(c < 10**-10, 10**-10, c)
 
 
-class GeneralizedHalfLogistic(Add):
+class GeneralizedHalfLogistic(ShiftScale):
     """
     Generalized half-logistic distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.GeneralizedHalfLogistic(1, 2, 2)
         >>> distribution
-        GeneralizedHalfLogistic(scale=2, shape=1, shift=2)
+        GeneralizedHalfLogistic(1, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.6667, 3.1429, 3.5   , 3.7778])
@@ -64,6 +64,9 @@ class GeneralizedHalfLogistic(Add):
     """
 
     def __init__(self, shape, scale, shift):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=generalized_half_logistic(shape)*scale, right=shift)
+        super(GeneralizedHalfLogistic, self).__init__(
+            dist=generalized_half_logistic(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

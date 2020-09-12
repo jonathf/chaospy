@@ -15,7 +15,7 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
         order (int, numpoly.ndpoly):
             The upper polynomial order. Alternative a custom polynomial basis
             can be used.
-        dist (Dist):
+        dist (Distribution):
             Weighting distribution(s) defining orthogonality.
         normed (bool):
             If True orthonormal polynomials will be used instead of monic.

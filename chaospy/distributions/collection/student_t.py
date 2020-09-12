@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class student_t(Dist):
+class student_t(DistributionCore):
     """Student-T distribution."""
 
     def __init__(self, a=1):
-        Dist.__init__(self, a=a)
+        super(student_t, self).__init__(a=a)
 
     def _pdf(self, x, a):
         return special.gamma(.5*a+.5)*(1+x*x/a)**(-.5*a-.5) /\
@@ -33,22 +32,22 @@ class student_t(Dist):
         return 0., k*a*(a-k+1.)/ ((a-2*k)*(a-2*k+2))
 
 
-class StudentT(Add):
+class StudentT(ShiftScale):
     """
     (Non-central) Student-t distribution.
 
     Args:
-        df (float, Dist):
-            Degrees of freedom
-        loc (float, Dist):
-            Location parameter
-        scale (float, Dist):
-            Scale parameter
+        df (float, Distribution):
+            Degrees of freedom.
+        loc (float, Distribution):
+            Location parameter.
+        scale (float, Distribution):
+            Scale parameter.
 
     Examples:
         >>> distribution = chaospy.StudentT(2, 2, 2)
         >>> distribution
-        StudentT(df=2, loc=2, scale=2)
+        StudentT(2, mu=2, sigma=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([-0.1213,  1.4226,  2.5774,  4.1213])
@@ -62,6 +61,10 @@ class StudentT(Add):
         array(2.)
     """
 
-    def __init__(self, df=1, loc=0, scale=1):
-        self._repr = {"df": df, "loc": loc, "scale": scale}
-        Add.__init__(self, left=student_t(df)*scale, right=loc)
+    def __init__(self, df=1, mu=0, sigma=1):
+        super(StudentT, self).__init__(
+            dist=student_t(df),
+            scale=sigma,
+            shift=mu,
+        )
+        self._repr_args = [df, "mu=%s" % mu, "sigma=%s" % sigma]

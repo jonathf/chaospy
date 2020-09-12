@@ -14,9 +14,9 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     Element by element 4rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (numpoly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Distribution):
             Input to take kurtosis on.
-        dist (Dist):
+        dist (Distribution):
             Defines the space the skewness is taken on. It is ignored if
             ``poly`` is a distribution.
         fisher (bool):

@@ -5,6 +5,7 @@ Mostly available to ensure that discrete distributions works along side
 continuous ones.
 """
 import numpy
+import chaospy
 
 from .combine import combine_quadrature
 
@@ -16,7 +17,7 @@ def quad_grid(order, domain=(0, 1)):
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
 
     Returns:
@@ -39,8 +40,7 @@ def quad_grid(order, domain=(0, 1)):
         array([0.25, 0.25, 0.25, 0.25])
 
     """
-    from ..distributions.baseclass import Dist
-    if isinstance(domain, Dist):
+    if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_grid(order, (domain.lower, domain.upper))
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)

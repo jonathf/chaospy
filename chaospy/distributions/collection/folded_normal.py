@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class folded_normal(Dist):
+class folded_normal(DistributionCore):
     """Folded normal distribution."""
 
     def __init__(self, c=1):
-        Dist.__init__(self, c=c)
+        super(folded_normal, self).__init__(c=c)
 
     def _pdf(self, x, c):
         return numpy.sqrt(2.0/numpy.pi)*numpy.cosh(c*x)*numpy.exp(-(x*x+c*c)/2.0)
@@ -25,22 +24,22 @@ class folded_normal(Dist):
         return 8+c
 
 
-class FoldedNormal(Add):
+class FoldedNormal(ShiftScale):
     """
     Folded normal distribution.
 
     Args:
-        mu (float, Dist):
-            Location parameter in normal distribution
-        sigma (float, Dist):
-            Scaling parameter (in both normal and fold)
-        loc (float, Dist):
-            Location of fold
+        mu (float, Distribution):
+            Location parameter in normal distribution.
+        scale (float, Distribution):
+            Scaling parameter (in both normal and fold).
+        shift (float, Distribution):
+            Location of fold.
 
     Examples:
         >>> distribution = chaospy.FoldedNormal(3, 2, 1)
         >>> distribution
-        FoldedNormal(loc=1, mu=3, sigma=2)
+        FoldedNormal(3, scale=2, shift=1)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([3.3224, 4.4938, 5.5067, 6.6832])
@@ -54,6 +53,10 @@ class FoldedNormal(Add):
         5.034
     """
 
-    def __init__(self, mu=0, sigma=1, loc=0):
-        self._repr = {"mu": mu, "sigma": sigma, "loc": loc}
-        Add.__init__(self, left=folded_normal(mu-loc)*sigma, right=loc)
+    def __init__(self, mu=0, scale=1, shift=0):
+        super(FoldedNormal, self).__init__(
+            dist=folded_normal(mu-shift),
+            scale=scale,
+            shift=shift,
+            repr_args=[mu],
+        )

@@ -1,21 +1,20 @@
 """Folded Cauchy distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class folded_cauchy(Dist):
+class folded_cauchy(DistributionCore):
     """Folded Cauchy distribution."""
 
     def __init__(self, c=0):
-        Dist.__init__(self, c=c)
+        super(folded_cauchy, self).__init__(c=c)
 
     def _pdf(self, x, c):
-        return 1./(numpy.pi*(1+(x-c)**2)) + 1./(numpy.pi*(1+(x+c)**2))
+        return 1./(numpy.pi*(1+(x-c)**2))+1/(numpy.pi*(1+(x+c)**2))
 
     def _cdf(self, x, c):
-        return (numpy.arctan(x-c) + numpy.arctan(x+c))/numpy.pi
+        return (numpy.arctan(x-c)+numpy.arctan(x+c))/numpy.pi
 
     def _lower(self, c):
         return 0.
@@ -24,22 +23,22 @@ class folded_cauchy(Dist):
         return 1e+16  # actually infinity
 
 
-class FoldedCauchy(Add):
+class FoldedCauchy(ShiftScale):
     """
     Folded Cauchy distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.FoldedCauchy(3, 2, 1)
         >>> distribution
-        FoldedCauchy(scale=2, shape=3, shift=1)
+        FoldedCauchy(3, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([ 5.1449,  6.708 ,  8.0077, 10.6502])
@@ -53,5 +52,9 @@ class FoldedCauchy(Add):
     """
 
     def __init__(self, shape=0, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=folded_cauchy(shape)*scale, right=shift)
+        super(FoldedCauchy, self).__init__(
+            dist=folded_cauchy(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

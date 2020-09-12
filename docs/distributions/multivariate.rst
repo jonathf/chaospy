@@ -3,6 +3,6 @@
 Joint Distributions
 -------------------
 
-.. automodule:: chaospy.distributions.operators.joint
-.. autoclass:: chaospy.distributions.operators.joint.J
-.. autoclass:: chaospy.distributions.operators.joint.Iid
+.. automodule:: chaospy.distributions.baseclass.joint
+.. autoclass:: chaospy.distributions.baseclass.joint.J
+.. autoclass:: chaospy.distributions.baseclass.iid.Iid

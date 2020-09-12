@@ -1,20 +1,15 @@
 import logging
-from functools import partial
 
 import numpy
 import chaospy
-
-from . import evaluation
 
 
 def approximate_inverse(
         distribution,
         qloc,
-        parameters=None,
         cache=None,
         iterations=300,
         tol=1e-5,
-        seed=None,
 ):
     """
     Calculate the approximation of the inverse Rosenblatt transformation.
@@ -23,16 +18,14 @@ def approximate_inverse(
     boundary function to apply hybrid Newton-Raphson and binary search method.
 
     Args:
-        distribution (Dist):
+        distribution (Distribution):
             Distribution to estimate inverse Rosenblatt.
         qloc (numpy.ndarray):
             Input values. All values must be on [0,1] and
             ``qloc.shape == (dim,size)`` where dim is the number of dimensions
             in distribution and size is the number of values to calculate
             simultaneously.
-        parameters (Optional[Dict[Dist, numpy.ndarray]]):
-            Parameters for the distribution.
-        cache (Optional[Dict[Dist, numpy.ndarray]]):
+        cache (Optional[Dict[Distribution, numpy.ndarray]]):
             Memory cache for the location in the evaluation so far.
         iterations (int):
             The number of iterations allowed to be performed
@@ -48,7 +41,7 @@ def approximate_inverse(
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> qloc = numpy.array([[0.1, 0.2, 0.9]])
-        >>> approximate_inverse(distribution, qloc, seed=1234).round(4)
+        >>> approximate_inverse(distribution, qloc).round(4)
         array([[ 987.1845,  991.5838, 1012.8152]])
         >>> distribution.inv(qloc).round(4)
         array([[ 987.1845,  991.5838, 1012.8155]])
@@ -75,9 +68,7 @@ def approximate_inverse(
         for idx in range(2*iterations):
 
             # evaluate function:
-            uloc[dim, indices] = (evaluation.evaluate_forward(
-                distribution, xloc, cache=cache.copy(),
-                parameters=parameters)-qloc)[dim, indices]
+            uloc[dim, indices] = (distribution._get_fwd(xloc, cache=cache.copy())-qloc)[dim, indices]
 
             # convergence criteria:
             indices[indices] = numpy.any(numpy.abs(uloc) > tol, 0)[indices]
@@ -95,9 +86,8 @@ def approximate_inverse(
             # Newton increment every second iteration:
             xloc_ = numpy.inf
             if idx % 2 == 0:
-                derivative = evaluation.evaluate_density(
-                    distribution, xloc, cache=cache.copy(),
-                    parameters=parameters)[dim, indices]
+                derivative = distribution._get_pdf(
+                    xloc, cache=cache.copy())[dim, indices]
                 derivative = numpy.where(derivative, derivative, numpy.inf)
 
                 xloc_ = xloc[dim, indices] - uloc[dim, indices] / derivative
@@ -118,7 +108,6 @@ def approximate_inverse(
     return xloc
 
 MOMENTS_QUADS = {}
-MOMENTS_RESULTS = {}
 
 
 def approximate_moment(
@@ -132,7 +121,7 @@ def approximate_moment(
     Approximation method for estimation of raw statistical moments.
 
     Args:
-        dist (Dist):
+        dist (Distribution):
             Distribution domain with dim=len(dist)
         k_loc (Sequence[int, ...]):
             The exponents of the moments of interest with shape (dim,).
@@ -147,42 +136,43 @@ def approximate_moment(
     if order is None:
         order = int(1000./numpy.log2(len(dist)+1))
     assert isinstance(order, int)
-    assert isinstance(dist, chaospy.Dist)
+    assert isinstance(dist, chaospy.Distribution)
     k_loc = numpy.asarray(k_loc, dtype=int)
-    assert k_loc.shape == (len(dist),), "incorrect size of exponents"
+    assert len(k_loc) == len(dist), "incorrect size of exponents"
     assert k_loc.dtype == int, "exponents have the wrong dtype"
 
-    if (tuple(k_loc), dist) in MOMENTS_RESULTS:
-        return MOMENTS_RESULTS[tuple(k_loc), dist]
-
-    if (tuple(k_loc), dist, order) not in MOMENTS_QUADS:
-        MOMENTS_QUADS[tuple(k_loc), dist, order] = chaospy.generate_quadrature(
+    if (dist, order) not in MOMENTS_QUADS:
+        MOMENTS_QUADS[dist, order] = chaospy.generate_quadrature(
             order, dist, rule=rule, **kws)
-    X, W = MOMENTS_QUADS[tuple(k_loc), dist, order]
+    X, W = MOMENTS_QUADS[dist, order]
 
-    out = numpy.sum(numpy.prod(X.T**k_loc, 1)*W)
-    MOMENTS_RESULTS[tuple(k_loc), dist] = out
-    return out
+    out = []
+    for k in k_loc.T:
+        assert len(k) == len(dist)
+        if tuple(k) in dist._mom_cache:
+            out.append(dist._mom_cache[tuple(k)])
+        else:
+            out.append(float(numpy.sum(numpy.prod(X.T**k, 1)*W)))
+            dist._mom_cache[tuple(k)] = out[-1]
+    return numpy.array(out)
 
 
 def approximate_density(
         dist,
         xloc,
-        parameters=None,
-        cache=None,
         eps=1.e-7
 ):
     """
     Approximate the probability density function.
 
     Args:
-        dist : Dist
+        dist (Distribution):
             Distribution in question. May not be an advanced variable.
-        xloc : numpy.ndarray
+        xloc (numpy.ndarray):
             Location coordinates. Requires that xloc.shape=(len(dist), K).
-        eps : float
+        eps (float):
             Acceptable error level for the approximations
-        retall : bool
+        retall (bool):
             If True return Graph with the next calculation state with the
             approximation.
 
@@ -198,25 +188,21 @@ def approximate_density(
         array([[0.0242, 0.0399, 0.0242]])
         >>> distribution.pdf(xloc).round(4)
         array([[0.0242, 0.0399, 0.0242]])
-    """
-    if parameters is None:
-        parameters = dist.prm.copy()
-    if cache is None:
-        cache = {}
 
+    """
     xloc = numpy.asfarray(xloc)
+    assert len(xloc) == len(dist)
     lo, up = numpy.min(xloc), numpy.max(xloc)
     mu = .5*(lo+up)
-    eps = numpy.where(xloc < mu, eps, -eps)*xloc
+    eps = numpy.where(xloc < mu, eps, -eps)*numpy.clip(numpy.abs(xloc), 1, None)
 
-    floc = evaluation.evaluate_forward(
-        dist, xloc, parameters=parameters.copy(), cache=cache.copy())
+    floc = dist._get_fwd(xloc, cache={})
     for d in range(len(dist)):
         xloc[d] += eps[d]
-        tmp = evaluation.evaluate_forward(
-            dist, xloc, parameters=parameters.copy(), cache=cache.copy())
+        tmp = dist._get_fwd(xloc, cache={})
         floc[d] -= tmp[d]
         xloc[d] -= eps[d]
 
-    floc = numpy.abs(floc / eps)
+    floc = numpy.abs(floc/eps)
+    assert floc.shape == xloc.shape
     return floc

@@ -55,7 +55,7 @@ def generate_expansion(
     Args:
         order (int):
             Order of polynomial expansion.
-        dist (Dist):
+        dist (Distribution):
             Distribution space where polynomials are orthogonal. If the method
             ``dist._ttr`` exists, it will be used.
         rule (str):

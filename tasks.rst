@@ -56,7 +56,7 @@ Optimization of Moment Approximations
 Difficulty: easy
 
 Currently if a distribution don't implement moment calculations,
-in ``chaospy.distributions.evaluation.moment``, a switch to numerical
+in ``chaospy.Distribution._get_mom``, a switch to numerical
 integration using the probability density function. If density is missing as
 well (which is the case for all Copulas), this estimation will be slow.
 In practice, calculating moments usually don't come alone (like ``orth_ttr``,

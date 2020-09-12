@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class burr(Dist):
+class burr(DistributionCore):
     """Stadard Burr distribution."""
 
     def __init__(self, alpha=1., kappa=1.):
-        Dist.__init__(self, alpha=alpha, kappa=kappa)
+        super(burr, self).__init__(alpha=alpha, kappa=kappa)
 
     def _pdf(self, x, alpha, kappa):
         output = numpy.zeros(x.shape)
@@ -35,24 +34,24 @@ class burr(Dist):
         return 0.
 
 
-class Burr(Add):
+class Burr(ShiftScale):
     """
     Burr Type XII or Singh-Maddala distribution.
 
     Args:
-        alpha (float, Dist):
+        alpha (float, Distribution):
             First shape parameter
-        kappa (float, Dist):
+        kappa (float, Distribution):
             Second shape parameter
-        loc (float, Dist):
+        loc (float, Distribution):
             Location parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Burr(100, 1.2, 4, 2)
+        >>> distribution = chaospy.Burr(100, 1.2, 2, 4)
         >>> distribution
-        Burr(alpha=100, kappa=1.2, loc=4, scale=2)
+        Burr(100, 1.2, scale=2, shift=4)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([5.9642, 5.9819, 5.9951, 6.0081, 6.0249])
@@ -66,7 +65,10 @@ class Burr(Add):
         6.0061
     """
 
-    def __init__(self, alpha=1, kappa=1, loc=0, scale=1):
-        self._repr = {
-            "alpha": alpha, "kappa": kappa, "loc": loc, "scale": scale}
-        Add.__init__(self, left=burr(alpha, kappa)*scale, right=loc)
+    def __init__(self, alpha=1, kappa=1, scale=1, shift=0):
+        super(Burr, self).__init__(
+            dist=burr(alpha, kappa),
+            scale=scale,
+            shift=shift,
+            repr_args=[alpha, kappa],
+        )

@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class wald(Dist):
+class wald(DistributionCore):
     """Wald distribution."""
 
     def __init__(self, mu):
-        Dist.__init__(self, mu=mu)
+        super(wald, self).__init__(mu=mu)
 
     def _pdf(self, x, mu):
         out = numpy.zeros(x.shape)
@@ -36,18 +35,18 @@ class wald(Dist):
         return 1e10
 
 
-class Wald(Add):
+class Wald(ShiftScale):
     """
     Wald distribution.
 
     Reciprocal inverse Gaussian distribution.
 
     Args:
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean of the normal distribution
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
@@ -66,5 +65,8 @@ class Wald(Add):
     """
 
     def __init__(self, mu=1, scale=1, shift=0):
-        self._repr = {"mu": mu, "scale": scale, "shift": shift}
-        Add.__init__(self, left=wald(mu)*scale, right=shift)
+        super(Wald, self).__init__(
+            dist=wald(mu),
+            scale=scale,
+            shift=shift,
+        )

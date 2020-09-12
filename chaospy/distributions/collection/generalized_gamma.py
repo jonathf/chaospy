@@ -2,22 +2,21 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class generalized_gamma(Dist):
+class generalized_gamma(DistributionCore):
     """Generalized gamma distribution."""
 
     def __init__(self, a, c):
-        Dist.__init__(self, a=a, c=c)
+        super(generalized_gamma, self).__init__(a=a, c=c)
 
     def _pdf(self, x, a, c):
-        return abs(c)* numpy.exp((c*a-1)*numpy.log(x)-x**c- special.gammaln(a))
+        return abs(c)*numpy.exp((c*a-1)*numpy.log(x)-x**c-special.gammaln(a))
 
     def _cdf(self, x, a, c):
         val = special.gammainc(a, x**c)
-        cond = c + 0*val
+        cond = c+0*val
         return numpy.where(cond > 0, val, 1-val)
 
     def _ppf(self, q, a, c):
@@ -34,24 +33,24 @@ class generalized_gamma(Dist):
         return 0.
 
 
-class GeneralizedGamma(Add):
+class GeneralizedGamma(ShiftScale):
     """
     Generalized gamma distribution
 
     Args:
-        shape1 (float, Dist):
+        shape1 (float, Distribution):
             Shape parameter 1
-        shape2 (float, Dist):
+        shape2 (float, Distribution):
             Shape parameter 2
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.GeneralizedGamma(3, 2, 2, 2)
         >>> distribution
-        GeneralizedGamma(scale=2, shape1=3, shape2=2, shift=2)
+        GeneralizedGamma(3, 2, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([4.4779, 5.0233, 5.5244, 6.1372])
@@ -66,7 +65,9 @@ class GeneralizedGamma(Add):
     """
 
     def __init__(self, shape1, shape2, scale, shift):
-        self._repr = {
-            "shape1": shape1, "shape2": shape2, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=generalized_gamma(shape1, shape2)*scale, right=shift)
+        super(GeneralizedGamma, self).__init__(
+            dist=generalized_gamma(shape1, shape2),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape1, shape2],
+        )

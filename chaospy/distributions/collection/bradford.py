@@ -1,21 +1,20 @@
 """Bradford distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, LowerUpper
 
 
-class bradford(Dist):
+class bradford(DistributionCore):
     """Standard Bradford distribution."""
 
     def __init__(self, c=1):
-        Dist.__init__(self, c=c)
+        super(bradford, self).__init__(c=c)
 
     def _pdf(self, x, c):
-        return  c / (c*x + 1.0) / numpy.log(1.0+c)
+        return  c/(c*x+1.0)/numpy.log(1.0+c)
 
     def _cdf(self, x, c):
-        return numpy.log(1.0+c*x) / numpy.log(c+1.0)
+        return numpy.log(1.0+c*x)/numpy.log(c+1.0)
 
     def _ppf(self, q, c):
         return ((1.0+c)**q-1)/c
@@ -27,22 +26,22 @@ class bradford(Dist):
         return 1
 
 
-class Bradford(Add):
+class Bradford(LowerUpper):
     """
     Bradford distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        lower (float, Dist):
+        lower (float, Distribution):
             Location of lower threshold
-        upper (float, Dist):
+        upper (float, Distribution):
             Location of upper threshold
 
     Examples:
         >>> distribution = chaospy.Bradford(0.8, 4, 6)
         >>> distribution
-        Bradford(lower=4, shape=0.8, upper=6)
+        Bradford(0.8, lower=4, upper=6)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([4.    , 4.3957, 4.8541, 5.385 , 6.    ])
@@ -56,5 +55,9 @@ class Bradford(Add):
         4.9026
     """
     def __init__(self, shape=1, lower=0, upper=1):
-        self._repr = {"shape": shape, "lower": lower, "upper": upper}
-        Add.__init__(self, left=bradford(shape)*(upper-lower), right=lower)
+        super(Bradford, self).__init__(
+            dist=bradford(shape),
+            lower=lower,
+            upper=upper,
+            repr_args=[shape],
+        )

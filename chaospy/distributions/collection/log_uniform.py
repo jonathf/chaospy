@@ -1,15 +1,14 @@
 """Log-uniform distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class log_uniform(Dist):
+class log_uniform(DistributionCore):
     """Log-uniform distribution."""
 
     def __init__(self, lo=0, up=1):
-        Dist.__init__(self, lo=lo, up=up)
+        super(log_uniform, self).__init__(lo=lo, up=up)
 
     def _pdf(self, x, lo, up):
         return 1./(x*(up-lo))
@@ -30,25 +29,25 @@ class log_uniform(Dist):
         return ((numpy.e**(up*k)-numpy.e**(lo*k))/((up-lo)*(k+(k==0))))**(k!=0)
 
 
-class LogUniform(Add):
+class LogUniform(ShiftScale):
     """
     Log-uniform distribution
 
     Args:
-        lower (float, Dist):
+        lower (float, Distribution):
             Location of lower threshold of uniform distribution.
-        upper (float, Dist):
+        upper (float, Distribution):
             Location of upper threshold of uniform distribution.
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.LogUniform(2, 3, 2, 3)
         >>> distribution
-        LogUniform(lower=2, scale=2, shift=3, upper=3)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
+        LogUniform(2, 3, scale=2, shift=3)
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([21.05  , 25.0464, 29.9275, 35.8893])
         >>> distribution.fwd(distribution.inv(q)).round(4)
@@ -62,5 +61,9 @@ class LogUniform(Add):
     """
 
     def __init__(self, lower=0, upper=1, scale=1, shift=0):
-        self._repr = {"lower": lower, "upper": upper, "scale": scale, "shift": shift}
-        Add.__init__(self, left=log_uniform(lower, upper)*scale, right=shift)
+        super(LogUniform, self).__init__(
+            dist=log_uniform(lower, upper),
+            scale=scale,
+            shift=shift,
+            repr_args=[lower, upper],
+        )

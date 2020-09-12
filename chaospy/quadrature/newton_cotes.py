@@ -63,7 +63,7 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
@@ -95,8 +95,8 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
         >>> weights.round(4)
         array([0.1667, 0.6667, 0.3333, 0.6667, 0.1667])
     """
-    from ..distributions.baseclass import Dist
-    if isinstance(domain, Dist):
+    from ..distributions.baseclass import Distribution
+    if isinstance(domain, Distribution):
         abscissas, weights = quad_newton_cotes(
             order, (domain.lower, domain.upper), growth, segments)
         weights *= domain.pdf(abscissas).flatten()

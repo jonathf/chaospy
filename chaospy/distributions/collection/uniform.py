@@ -1,13 +1,12 @@
 """Uniform probability distribution."""
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, LowerUpper
 
 
-class uniform(Dist):
+class uniform(DistributionCore):
     """Uniform distribution fixed on the [-1, 1] interval."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(uniform, self).__init__()
 
     def _pdf(self, x):
         return 0.5
@@ -25,20 +24,20 @@ class uniform(Dist):
         return 1.
 
     def _mom(self, k):
-        return 1./(k + 1)* (k % 2 == 0)
+        return 1./(k+1)*(k%2 == 0)
 
     def _ttr(self, n):
         return 0., n*n/(4.*n*n-1)
 
 
-class Uniform(Add):
+class Uniform(LowerUpper):
     r"""
     Uniform probability distribution.
 
     Args:
-        lower (float, Dist):
+        lower (float, Distribution):
             Lower threshold of distribution. Must be smaller than ``upper``.
-        upper (float, Dist):
+        upper (float, Distribution):
             Upper threshold of distribution.
 
     Examples:
@@ -61,8 +60,9 @@ class Uniform(Add):
                [0.3333, 0.2667, 0.2571]])
     """
 
-    def __init__(self, lower=0, upper=1):
-        self._repr = {"lower": lower, "upper": upper}
-        left = uniform()*((upper-lower)*.5)
-        right = 0.5*(upper+lower)
-        Add.__init__(self, left=left, right=right)
+    def __init__(self, lower=0., upper=1.):
+        super(Uniform, self).__init__(
+            dist=uniform(),
+            lower=lower,
+            upper=upper,
+        )

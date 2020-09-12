@@ -1,17 +1,16 @@
 """Laplace Probability Distribution."""
 import numpy
 from scipy import special
+import chaospy
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-
-class laplace(Dist):
+class laplace(DistributionCore):
     """Laplace Probability Distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(laplace, self).__init__()
 
     def _pdf(self, x):
         return numpy.e**-numpy.abs(x)/2
@@ -20,35 +19,36 @@ class laplace(Dist):
         return (1+numpy.sign(x)*(1-numpy.e**-abs(x)))/2
 
     def _mom(self, k):
-        return .5*special.factorial(k)*(1+(-1)**k)
+        return special.factorial(k)*((k+1)%2)
 
     def _ppf(self, x):
         return numpy.where(x>.5, -numpy.log(2*(1-x)), numpy.log(2*x))
 
     def _ttr(self, k):
-        from ...quadrature import quad_fejer, discretized_stieltjes
-        q1, w1 = quad_fejer(500, (self.lower, 0))
-        q2, w2 = quad_fejer(500, (0, self.upper))
+        q1, w1 = chaospy.quad_fejer(500, (self.lower, 0))
+        q2, w2 = chaospy.quad_fejer(500, (0, self.upper))
         q = numpy.concatenate([q1,q2], 1)
         w = numpy.concatenate([w1,w2])*self.pdf(q[0])
 
-        coeffs, _, _ = discretized_stieltjes(k, q, w)
+        coeffs, _, _ = chaospy.discretized_stieltjes(k, q, w)
         return coeffs[:, 0, -1]
 
 
-class Laplace(Add):
+class Laplace(ShiftScale):
     R"""
     Laplace Probability Distribution
 
     Args:
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean of the distribution.
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter. scale > 0.
 
     Examples:
         >>> distribution = chaospy.Laplace(2, 2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
+        >>> distribution
+        Laplace(mu=2, sigma=2)
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([0.1674, 1.5537, 2.4463, 3.8326])
         >>> distribution.fwd(distribution.inv(q)).round(4)
@@ -64,6 +64,10 @@ class Laplace(Add):
                [ 8.    , 39.9995, 86.3947]])
 
     """
-    def __init__(self, mu=0, scale=1):
-        self._repr = {"mu": mu, "scale": scale}
-        Add.__init__(self, left=laplace()*scale, right=mu)
+    def __init__(self, mu=0, sigma=1):
+        super(Laplace, self).__init__(
+            dist=laplace(),
+            scale=sigma,
+            shift=mu,
+        )
+        self._repr_args = ["mu=%s" % mu, "sigma=%s" % sigma]

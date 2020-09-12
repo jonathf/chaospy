@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class generalized_exponential(Dist):
+class generalized_exponential(DistributionCore):
     """Generalized exponential distribution."""
 
     def __init__(self, a=1, b=1, c=1):
-        Dist.__init__(self, a=a, b=b, c=c)
+        super(generalized_exponential, self).__init__(a=a, b=b, c=c)
 
     def _pdf(self, x, a, b, c):
         return (a+b*(-numpy.expm1(-c*x)))*numpy.exp((-a-b)*x+b*(-numpy.expm1(-c*x))/c)
@@ -27,20 +26,20 @@ class generalized_exponential(Dist):
         return 10**10
 
 
-class GeneralizedExponential(Add):
+class GeneralizedExponential(ShiftScale):
     """
     Generalized exponential distribution.
 
     Args:
-        a (float, Dist):
+        a (float, Distribution):
             First shape parameter
-        b (float, Dist):
+        b (float, Distribution):
             Second shape parameter
-        c (float, Dist):
+        c (float, Distribution):
             Third shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Note:
@@ -53,7 +52,7 @@ class GeneralizedExponential(Add):
     Examples:
         >>> distribution = chaospy.GeneralizedExponential(3, 2, 2, 2, 2)
         >>> distribution
-        GeneralizedExponential(a=3, b=2, c=2, scale=2, shift=2)
+        GeneralizedExponential(3, 2, 2, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.1423, 2.3113, 2.5314, 2.8774])
@@ -66,6 +65,9 @@ class GeneralizedExponential(Add):
     """
 
     def __init__(self, a=1, b=1, c=1, scale=1, shift=0):
-        self._repr = {"a": a, "b": b, "c": c, "scale": scale, "shift": shift}
-        Add.__init__(
-            self, left=generalized_exponential(a, b, c)*scale, right=shift)
+        super(GeneralizedExponential, self).__init__(
+            dist=generalized_exponential(a, b, c),
+            scale=scale,
+            shift=shift,
+            repr_args=[a, b, c],
+        )

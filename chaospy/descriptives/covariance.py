@@ -11,9 +11,9 @@ def Cov(poly, dist=None, **kws):
     Covariance matrix, or 2rd order statistics.
 
     Args:
-        poly (numpoly.ndpoly, Dist) :
+        poly (numpoly.ndpoly, Distribution) :
             Input to take covariance on. Must have `len(poly)>=2`.
-        dist (Dist) :
+        dist (Distribution) :
             Defines the space the covariance is taken on.  It is ignored if
             `poly` is a distribution.
 

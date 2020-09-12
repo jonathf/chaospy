@@ -1,18 +1,15 @@
 """Fisk or Log-logistic distribution."""
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class fisk(Dist):
+class fisk(DistributionCore):
     """Fisk or Log-logistic distribution."""
 
-    def __init__(self, c=1.):
-        Dist.__init__(self, c=c)
+    def __init__(self, c=1):
+        super(fisk, self).__init__(c=c)
 
     def _pdf(self, x, c):
-        output = c*x**(c-1.)
-        output /= (1+x**c)**2
-        return output
+        return c*x**(c-1.)/(1+x**c)**2
 
     def _cdf(self, x, c):
         return 1./(1+x**-c)
@@ -24,22 +21,22 @@ class fisk(Dist):
         return 0.
 
 
-class Fisk(Add):
+class Fisk(ShiftScale):
     """
     Fisk or Log-logistic distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.Fisk(3, 2, 1)
         >>> distribution
-        Fisk(scale=2, shape=3, shift=1)
+        Fisk(3, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.2599, 2.7472, 3.2894, 4.1748])
@@ -53,5 +50,9 @@ class Fisk(Add):
         3.4184
     """
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=fisk(shape)*scale, right=shift)
+        super(Fisk, self).__init__(
+            dist=fisk(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

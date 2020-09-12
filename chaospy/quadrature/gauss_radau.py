@@ -82,7 +82,7 @@ def quad_gauss_radau(
     Args:
         order (int):
             Quadrature order.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution weights to be used to create higher order nodes
             from.
         fixed_point (float):
@@ -107,11 +107,6 @@ def quad_gauss_radau(
                 number of samples.
             weights:
                 The quadrature weights with ``weights.shape == (N,)``.
-
-    Raises:
-        ValueError:
-            Error raised if Radau algorithm fails to find recurrence
-            coefficients.
 
     Example:
         >>> abscissas, weights = quad_gauss_radau(4, chaospy.Uniform(-1, 1))

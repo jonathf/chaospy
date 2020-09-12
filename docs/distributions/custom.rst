@@ -5,10 +5,10 @@ There are two ways to construct your own custom user-defined probability
 distribution in ``chaospy``: Through sub-classing and using a construction
 function.
 
-Sub-classing ``Dist``
-~~~~~~~~~~~~~~~~~~~~~
+Sub-classing ``DistributionCore``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: chaospy.distributions.baseclass
+.. automodule:: chaospy.distributions.baseclass.core
 
 Distribution Constructor
 ~~~~~~~~~~~~~~~~~~~~~~~~

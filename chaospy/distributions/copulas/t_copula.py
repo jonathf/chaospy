@@ -2,49 +2,50 @@
 import numpy
 from scipy import special
 
-from .baseclass import Copula
-from ..baseclass import Dist, declare_stochastic_dependencies
+from ..baseclass import Copula, Distribution
 
 
-class t_copula(Dist):
+class t_copula(Distribution):
     """T-Copula."""
 
     def __init__(self, df, R, rotation=None):
         if rotation is None:
             rotation = range(len(R))
-        self._rotation = numpy.array(rotation)
+        rotation = numpy.array(rotation)
 
         accumulant = set()
-        dependencies = declare_stochastic_dependencies(self, len(R))
-        self._dependencies = [None]*len(R)
-        for idx in self._rotation:
+        dependencies = self._declare_dependencies(len(R))
+        for idx in rotation:
             accumulant.add(dependencies[idx])
-            self._dependencies[idx] = accumulant.copy()
+            dependencies[idx] = accumulant.copy()
 
         P = numpy.eye(len(R))[rotation]
         R = numpy.dot(P, numpy.dot(R, P.T))
         R = numpy.linalg.cholesky(R)
         R = numpy.dot(P.T, numpy.dot(R, P))
         Ci = numpy.linalg.inv(R)
-        self.length = len(R)
-        Dist.__init__(self, df=df, C=R, Ci=Ci)
+        super(t_copula, self).__init__(
+            parameters=dict(df=df, C=R, Ci=Ci),
+            rotation=rotation,
+            dependencies=dependencies,
+        )
 
-    def __len__(self):
-        return self.length
-
-    def _cdf(self, x, df, C, Ci):
+    def _cdf(self, x, df, C, Ci, cache):
         out = special.stdtr(df, numpy.dot(Ci, special.stdtrit(df, x)))
         return out
 
-    def _ppf(self, q, df, C, Ci):
+    def _ppf(self, q, df, C, Ci, cache):
         out = special.stdtr(df, numpy.dot(C, special.stdtrit(df, q)))
         return out
 
-    def _lower(self, df, C, Ci):
-        return 0.
+    def _lower(self, df, C, Ci, cache):
+        return numpy.zeros(len(self))
 
-    def _upper(self, df, C, Ci):
-        return 1.
+    def _upper(self, df, C, Ci, cache):
+        return numpy.ones(len(self))
+
+    def _value(self, df, C, Ci, cache):
+        return self
 
 
 class TCopula(Copula):
@@ -52,8 +53,8 @@ class TCopula(Copula):
     T-Copula.
 
     Args:
-        dist (Dist):
-            The Distribution to wrap in a copula.
+        dist (Distribution):
+            The distribution to wrap in a copula.
         R (numpy.ndarray):
             Covariance matrix defining dependencies..
         df (float):
@@ -64,7 +65,7 @@ class TCopula(Copula):
         ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2),
         ...     df=5, R=[[1, .5], [.5, 1]])
         >>> distribution
-        TCopula(Iid(Uniform(lower=-1, upper=1), 2), R=[[1, 0.5], [0.5, 1]], df=5)
+        TCopula(Iid(Uniform(lower=-1, upper=1), 2), df=5, R=[[1, 0.5], [0.5, 1]])
         >>> samples = distribution.sample(3)
         >>> samples.round(4)
         array([[ 0.3072, -0.77  ,  0.9006],
@@ -88,6 +89,11 @@ class TCopula(Copula):
 
     """
 
-    def __init__(self, dist, df, R):
+    def __init__(self, dist, df, R, rotation=None):
         self._repr = {"df": df, "R": R}
-        Copula.__init__(self, dist=dist, trans=t_copula(df, R))
+        super(TCopula, self).__init__(
+            dist=dist,
+            trans=t_copula(df, R),
+            rotation=rotation,
+            repr_args=[dist, "df=%s" % df, "R=%s" % R],
+        )

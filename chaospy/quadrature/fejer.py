@@ -54,6 +54,7 @@ except ImportError:
     from functools32 import lru_cache
 
 import numpy
+import chaospy
 
 from .combine import combine_quadrature
 
@@ -65,7 +66,7 @@ def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
@@ -97,8 +98,7 @@ def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
         >>> weights.round(4)
         array([0.2222, 0.2222, 0.2222, 0.2222])
     """
-    from ..distributions.baseclass import Dist
-    if isinstance(domain, Dist):
+    if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_fejer(
             order, (domain.lower, domain.upper), growth)
         weights *= domain.pdf(abscissas).flatten()

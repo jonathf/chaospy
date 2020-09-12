@@ -36,7 +36,7 @@ class Saltelli(object):
         """
         Initialize the matrix generator.
 
-        dist (chaopy.Dist):
+        dist (chaopy.Distribution):
             distribution to sample from.
         samples (int):
             The number of samples to draw for each matrix.
@@ -88,7 +88,7 @@ def Sens_m_sample(poly, dist, samples, rule="random"):
     Args:
         poly (numpoly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
-        dist (chaopy.Dist):
+        dist (chaopy.Distribution):
             distribution to sample from.
         samples (int):
             The number of samples to draw for each matrix.
@@ -142,7 +142,7 @@ def Sens_m2_sample(poly, dist, samples, rule="random"):
     Args:
         poly (numpoly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
-        dist (chaopy.Dist):
+        dist (chaopy.Distribution):
             distribution to sample from.
         samples (int):
             The number of samples to draw for each matrix.
@@ -221,7 +221,7 @@ def Sens_t_sample(poly, dist, samples, rule="random"):
     Args:
         poly (numpoly.ndpoly):
             If provided, evaluated samples through polynomials before returned.
-        dist (chaopy.Dist):
+        dist (chaopy.Distribution):
             distribution to sample from.
         samples (int):
             The number of samples to draw for each matrix.

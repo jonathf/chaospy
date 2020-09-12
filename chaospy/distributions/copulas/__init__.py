@@ -15,7 +15,6 @@ The resulting copula is then ready for use::
      [0.6286 0.0654 0.96   0.5073 0.9705]]
 
 """
-from .baseclass import Copula
 from .archimedean import Archimedean
 
 from .gumbel import Gumbel

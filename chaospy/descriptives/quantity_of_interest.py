@@ -18,7 +18,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
     Args:
         poly (numpoly.ndpoly):
             Polynomial of interest.
-        dist (Dist):
+        dist (Distribution):
             Defines the space where the samples for the KDE is taken from the
             poly.
         sample (int):
@@ -61,7 +61,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         qoi_dists.append(qoi_dist)
 
     #reshape the qoi_dists to match the shape of the inumpyut poly
-    qoi_dists = numpy.array(qoi_dists, distributions.Dist)
+    qoi_dists = numpy.array(qoi_dists, distributions.Distribution)
     qoi_dists = qoi_dists.reshape(shape)
 
     if not shape:

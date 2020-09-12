@@ -92,7 +92,7 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
     Args:
         order (int):
             Sample order. Determines the number of samples to create.
-        domain (Dist, int, numpy.ndarray):
+        domain (Distribution, int, numpy.ndarray):
             Defines the space where the samples are generated. If integer is
             provided, the space ``[0, 1]^domain`` will be used. If array-like
             object is provided, a hypercube it defines will be used. If

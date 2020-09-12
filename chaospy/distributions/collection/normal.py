@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class normal(Dist):
+class normal(DistributionCore):
     """Standard normal distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(normal, self).__init__()
 
     def _pdf(self, x):
         return (2*numpy.pi)**(-.5)*numpy.e**(-x**2/2.)
@@ -28,14 +27,14 @@ class normal(Dist):
         return 0., 1.*n
 
 
-class Normal(Add):
+class Normal(ShiftScale):
     R"""
     Normal (Gaussian) distribution
 
     Args:
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean of the distribution.
-        sigma (float, Dist):
+        sigma (float, Distribution):
             Standard deviation.  sigma > 0
 
     Examples:
@@ -59,5 +58,7 @@ class Normal(Add):
     """
 
     def __init__(self, mu=0, sigma=1):
-        self._repr = {"mu": mu, "sigma": sigma}
-        Add.__init__(self, left=normal()*sigma, right=mu)
+        super(Normal, self).__init__(
+            dist=normal(), scale=sigma, shift=mu,
+        )
+        self._repr_args = ["mu=%s" % mu, "sigma=%s" % sigma]

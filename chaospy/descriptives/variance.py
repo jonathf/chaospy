@@ -10,9 +10,9 @@ def Var(poly, dist=None, **kws):
     Element by element 2nd order statistics.
 
     Args:
-        poly (numpoly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Distribution):
             Input to take variance on.
-        dist (Dist):
+        dist (Distribution):
             Defines the space the variance is taken on. It is ignored if
             ``poly`` is a distribution.
 

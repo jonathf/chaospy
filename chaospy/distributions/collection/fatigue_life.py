@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class fatigue_life(Dist):
+class fatigue_life(DistributionCore):
     """Fatigue-life distribution."""
 
     def __init__(self, c=0):
-        Dist.__init__(self, c=c)
+        super(fatigue_life, self).__init__(c=c)
 
     def _pdf(self, x, c):
         output = (x+1)/(2*c*numpy.sqrt(2*numpy.pi*x**3))
@@ -26,22 +25,22 @@ class fatigue_life(Dist):
         return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
 
 
-class FatigueLife(Add):
+class FatigueLife(ShiftScale):
     """
     Fatigue-Life or Birmbaum-Sanders distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.FatigueLife(2, 2, 1)
         >>> distribution
-        FatigueLife(scale=2, shape=2, shift=1)
+        FatigueLife(2, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([ 1.4332,  2.2113,  4.3021, 10.2334])
@@ -55,5 +54,9 @@ class FatigueLife(Add):
         7.0
     """
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=fatigue_life(shape)*scale, right=shift)
+        super(FatigueLife, self).__init__(
+            dist=fatigue_life(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

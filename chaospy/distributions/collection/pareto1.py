@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class pareto1(Dist):
+class pareto1(DistributionCore):
     """Pareto type 1 distribution."""
 
     def __init__(self, b):
-        Dist.__init__(self, b=b)
+        super(pareto1, self).__init__(b=b)
 
     def _pdf(self, x, b):
         return b * x**(-b-1)
@@ -25,24 +24,24 @@ class pareto1(Dist):
         return 1.0
 
 
-class Pareto1(Add):
+class Pareto1(ShiftScale):
     """
     Pareto type 1 distribution.
 
     Lower threshold at scale+loc and survival: x^-shape
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Tail index parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.Pareto1(2, 2, 2)
         >>> distribution
-        Pareto1(loc=2, scale=2, shape=2)
+        Pareto1(2, scale=2, shift=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([4.2361, 4.582 , 5.1623, 6.4721])
@@ -54,6 +53,10 @@ class Pareto1(Add):
         array([ 5.3981,  4.126 , 10.9697,  4.7794])
     """
 
-    def __init__(self, shape=1, scale=1, loc=0):
-        self._repr = {"shape": shape, "scale": scale, "loc": loc}
-        Add.__init__(self, left=pareto1(shape)*scale, right=loc)
+    def __init__(self, shape=1, scale=1, shift=0):
+        super(Pareto1, self).__init__(
+            dist=pareto1(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

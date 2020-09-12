@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class chi_squared(Dist):
+class chi_squared(DistributionCore):
     """Central Chi-squared distribution."""
 
     def __init__(self, df, nc):
-        Dist.__init__(self, df=df, nc=nc)
+        super(chi_squared, self).__init__(df=df, nc=nc)
 
     def _pdf(self, x, df, nc):
         output = 0.5*numpy.e**(-0.5*(x+nc))
@@ -34,24 +33,24 @@ class chi_squared(Dist):
                 return upper.item()
 
 
-class ChiSquared(Add):
+class ChiSquared(ShiftScale):
     """
     (Non-central) Chi-squared distribution.
 
     Args:
-        df (float, Dist):
+        df (float, Distribution):
             Degrees of freedom
-        scale (float, Dist):
-            Scaling parameter
-        shift (float, Dist):
-            Location parameter
-        nc (float, Dist):
+        nc (float, Distribution):
             Non-centrality parameter
+        scale (float, Distribution):
+            Scaling parameter
+        shift (float, Distribution):
+            Location parameter
 
     Examples:
-        >>> distribution = chaospy.ChiSquared(2, 4, 1, 1)
+        >>> distribution = chaospy.ChiSquared(2, 1, scale=4, shift=1)
         >>> distribution
-        ChiSquared(df=2, nc=1, scale=4, shift=1)
+        ChiSquared(2, nc=1, scale=4, shift=1)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([ 3.369 ,  6.1849,  9.7082, 14.5166, 22.4295])
@@ -65,6 +64,10 @@ class ChiSquared(Add):
         13.0001
     """
 
-    def __init__(self, df=1, scale=1, shift=0, nc=0):
-        self._repr = {"df": df, "scale": scale, "shift": shift, "nc": nc}
-        Add.__init__(self, left=chi_squared(df, nc)*scale, right=shift)
+    def __init__(self, df=1, nc=0, scale=1, shift=0):
+        super(ChiSquared, self).__init__(
+            dist=chi_squared(df, nc),
+            scale=scale,
+            shift=shift,
+            repr_args=[df, "nc=%s" % nc],
+        )

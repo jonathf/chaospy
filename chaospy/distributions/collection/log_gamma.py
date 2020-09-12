@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class log_gamma(Dist):
+class log_gamma(DistributionCore):
     """Log-gamma distribution."""
 
     def __init__(self, c):
-        Dist.__init__(self, c=c)
+        super(log_gamma, self).__init__(c=c)
 
     def _pdf(self, x, c):
         return numpy.exp(c*x-numpy.exp(x)-special.gammaln(c))
@@ -22,22 +21,22 @@ class log_gamma(Dist):
         return numpy.log(special.gammaincinv(c,q))
 
 
-class LogGamma(Add):
+class LogGamma(ShiftScale):
     """
     Log-gamma distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.LogGamma(2, 2, 1)
         >>> distribution
-        LogGamma(scale=2, shape=2, shift=1)
+        LogGamma(2, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([0.6138, 1.639 , 2.4085, 3.1934])
@@ -52,5 +51,9 @@ class LogGamma(Add):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        Add.__init__(self, left=log_gamma(shape)*scale, right=shift)
+        super(LogGamma, self).__init__(
+            dist=log_gamma(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

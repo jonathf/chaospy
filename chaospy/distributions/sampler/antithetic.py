@@ -8,7 +8,7 @@ a very large number of sample paths is required to obtain an accurate result.
 The antithetic variates method reduces the variance of the simulation results.
 
 Antithetic variate can be accessed as a flag ``antithetic`` in the method
-``Dist.sample`` It can either be set to ``True``, for activation, or as an
+``Distribution.sample`` It can either be set to ``True``, for activation, or as an
 array of boolean values, which implies it will be used as the flag ``axes`` in
 the examples below.
 

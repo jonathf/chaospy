@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators.addition import Add
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class hyperbolic_secant(Dist):
+class hyperbolic_secant(DistributionCore):
     """Hyperbolic secant distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(hyperbolic_secant, self).__init__()
 
     def _pdf(self, x):
         return .5*numpy.cosh(numpy.pi*x/2.)**-1
@@ -27,21 +26,21 @@ class hyperbolic_secant(Dist):
         return output.reshape(shape)
 
 
-class HyperbolicSecant(Add):
+class HyperbolicSecant(ShiftScale):
     """
     Hyperbolic secant distribution
 
     Args:
-        loc (float, Dist):
-            Location parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scale parameter
+        shift (float, Distribution):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.HyperbolicSecant(2, 2)
         >>> distribution
-        HyperbolicSecant(loc=2, scale=2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
+        HyperbolicSecant(scale=2, shift=2)
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([0.5687, 1.5933, 2.4067, 3.4313])
         >>> distribution.fwd(distribution.inv(q)).round(4)
@@ -54,6 +53,9 @@ class HyperbolicSecant(Add):
         2.0
     """
 
-    def __init__(self, loc=0, scale=1):
-        self._repr = {"loc": loc, "scale": scale}
-        Add.__init__(self, left=hyperbolic_secant()*scale, right=loc)
+    def __init__(self, scale=1, shift=0):
+        super(HyperbolicSecant, self).__init__(
+            dist=hyperbolic_secant(),
+            scale=scale,
+            shift=shift,
+        )

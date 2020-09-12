@@ -19,7 +19,7 @@ Evaluate distribution::
     array([0. , 0. , 0. , 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0. , 0. , 0. ])
 """
 import types
-from .baseclass import Dist
+from .baseclass import DistributionCore
 
 LEGAL_ATTRS = {
     "cdf": "_cdf", "lower": "_lower", "upper": "_upper",
@@ -28,6 +28,10 @@ LEGAL_ATTRS = {
     "doc": "__doc__",
     "str": "_str"
 }
+
+class ConstructedDistribution(DistributionCore):
+    def _cdf(self, xloc, **kwargs):
+        pass
 
 def construct(parent=None, defaults=None, **kwargs):
     """
@@ -40,7 +44,7 @@ def construct(parent=None, defaults=None, **kwargs):
             Lower boundary. Optional if ``parent`` or ``ppf`` is present.
         upper:
             Upper boundary. Optional if ``parent`` or ``ppf`` is present.
-        parent (Dist):
+        parent (DistributionCore):
             Distribution used as basis for new distribution. Any other argument
             that is omitted will instead take is function from ``parent``.
         doc (str):
@@ -61,12 +65,12 @@ def construct(parent=None, defaults=None, **kwargs):
             Default values to provide to initialiser.
 
     Returns:
-        (Dist):
+        (DistributionCore):
             New custom distribution.
     """
+
     for key in kwargs:
         assert key in LEGAL_ATTRS, "{} is not legal input".format(key)
-
     if parent is not None:
         for key, value in LEGAL_ATTRS.items():
             if key not in kwargs and hasattr(parent, value):
@@ -79,16 +83,16 @@ def construct(parent=None, defaults=None, **kwargs):
     if "str" in kwargs and isinstance(kwargs["str"], str):
         string = kwargs.pop("str")
         kwargs["str"] = lambda *args, **kwargs: string
-
     defaults = defaults if defaults else {}
     for key in defaults:
         assert key in LEGAL_ATTRS, "invalid default value {}".format(key)
+
 
     def custom_distribution(**kws):
 
         prm = defaults.copy()
         prm.update(kws)
-        dist = Dist(**prm)
+        dist = ConstructedDistribution(**prm)
 
         for key, function in kwargs.items():
             attr_name = LEGAL_ATTRS[key]
