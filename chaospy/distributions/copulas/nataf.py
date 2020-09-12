@@ -2,8 +2,7 @@
 import numpy
 from scipy import special
 
-from .baseclass import Copula
-from ..baseclass import Distribution, DistributionCore
+from ..baseclass import Copula, Distribution, DistributionCore
 
 
 

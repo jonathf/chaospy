@@ -18,7 +18,7 @@ The calculation of the derivative of the ``iphi`` function:
 import numpy
 from scipy import special
 
-from .baseclass import Copula
+from ..baseclass import Copula
 from .archimedean import Archimedean
 
 

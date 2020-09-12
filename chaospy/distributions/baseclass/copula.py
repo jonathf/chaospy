@@ -49,7 +49,7 @@ together in `chaospy`.
 import numpy
 import chaospy
 
-from ..baseclass import Distribution
+from .distribution import Distribution
 
 
 class Copula(Distribution):

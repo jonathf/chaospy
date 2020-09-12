@@ -1,5 +1,6 @@
 from .distribution import Distribution
 from .core import DistributionCore
+from .copula import Copula
 
 from .joint import J
 from .iid import Iid

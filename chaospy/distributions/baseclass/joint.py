@@ -1,7 +1,7 @@
 """
 There are three ways to create a multivariate probability distribution in
 ``chaospy``: Using the joint constructor
-:class:`~chaospy.distributions.operators.joint.J`, the identical independent
+:class:`~chaospy.distributions.baseclass.joint.J`, the identical independent
 distribution constructor: :class:`~chaospy.distributions.baseclass.iid.Iid`,
 and to one of the pre-constructed multivariate distribution defined in
 :ref:`listdistributions`.

@@ -18,6 +18,7 @@ import numpy
 import chaospy
 
 from ..baseclass import Distribution, J
+from .operator import OperatorDistribution
 
 
 class Trunc(Distribution):
@@ -33,6 +34,7 @@ class Trunc(Distribution):
             right (Distribution, numpy.ndarray):
                 Right hand side.
         """
+        repr_args = [left, right]
         if isinstance(left, Distribution):
             if left.stochastic_dependent:
                 raise chaospy.StochasticallyDependentError(
@@ -56,7 +58,7 @@ class Trunc(Distribution):
             parameters=dict(left=left, right=right),
             dependencies=dependencies,
             exclusion=exclusion,
-            repr_args=[left, right]
+            repr_args=repr_args,
         )
 
     def _lower(self, left, right, cache):

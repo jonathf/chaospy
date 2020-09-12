@@ -1,16 +1,17 @@
 """Abstract baseclass for all distributions."""
 import logging
 import abc
+import six
 from itertools import permutations
 import numpy
 
 import chaospy
 
-
 DISTRIBUTION_IDENTIFIERS = {}
 
 
-class Distribution(abc.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class Distribution():
     """Baseclass for all probability distributions."""
 
     __array_priority__ = 9000
