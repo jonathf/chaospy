@@ -15,7 +15,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
         q (numpy.ndarray):
             positions where percentiles are taken. Must be a number or an
             array, where all values are on the interval ``[0, 100]``.
-        dist (Dist):
+        dist (Distribution):
             Defines the space where percentile is taken.
         sample (int):
             Number of samples used in estimation.

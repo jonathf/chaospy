@@ -45,7 +45,7 @@ def quad_gauss_patterson(order, domain):
     Args:
         order (int):
             The quadrature order. Must be in the interval (0, 8).
-        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
 
     Returns:
@@ -65,8 +65,8 @@ def quad_gauss_patterson(order, domain):
         >>> weights.round(4)
         array([0.0523, 0.1342, 0.2007, 0.2255, 0.2007, 0.1342, 0.0523])
     """
-    from ..distributions.baseclass import Dist
-    if isinstance(domain, Dist):
+    from ..distributions.baseclass import Distribution
+    if isinstance(domain, Distribution):
         abscissas, weights = quad_gauss_patterson(
             order, (domain.lower, domain.upper))
         weights *= domain.pdf(abscissas).flatten()

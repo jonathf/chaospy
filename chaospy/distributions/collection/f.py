@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class f(Dist):
+class f(DistributionCore):
     """F distribution."""
 
     def __init__(self, dfn, dfd, nc):
-        Dist.__init__(self, dfn=dfn, dfd=dfd, nc=nc)
+        super(f, self).__init__(dfn=dfn, dfd=dfd, nc=nc)
 
     def _pdf(self, x, dfn, dfd, nc):
         n1, n2 = dfn, dfd
@@ -38,21 +37,21 @@ class F(ShiftScale):
     (Non-central) F or Fisher-Snedecor distribution.
 
     Args:
-        n (float, Dist):
+        n (float, Distribution):
             Degres of freedom for numerator
-        m (float, Dist):
+        m (float, Distribution):
             Degres of freedom for denominator
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
-        nc (float, Dist):
+        nc (float, Distribution):
             Non-centrality parameter
 
     Examples:
-        >>> distribution = chaospy.F(3, 3, 2, 1, 1)
+        >>> distribution = chaospy.F(3, 3, 1, scale=2, shift=1)
         >>> distribution
-        F(m=3, n=3, nc=1, scale=2, shift=1)
+        F(3, 3, nc=1, scale=2, shift=1)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([1.9336, 2.9751, 4.7028, 8.8521])
@@ -66,6 +65,10 @@ class F(ShiftScale):
         True
     """
 
-    def __init__(self, n=1, m=1, scale=1, shift=0, nc=0):
-        self._repr = {"n": n, "m": m, "scale": scale, "shift": shift, "nc": nc}
-        super(F, self).__init__(dist=f(n, m, nc), scale=scale, shift=shift)
+    def __init__(self, n=1, m=1, nc=0, shift=0, scale=1):
+        super(F, self).__init__(
+            dist=f(n, m, nc),
+            shift=shift,
+            scale=scale,
+            repr_args=[n, m, "nc=%s" % nc],
+        )

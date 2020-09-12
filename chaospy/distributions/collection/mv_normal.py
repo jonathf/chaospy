@@ -4,9 +4,7 @@ import numpy
 from scipy import special
 
 from .normal import normal
-
-from ..baseclass import Dist
-from ..operators import MeanCovariance
+from ..baseclass import MeanCovariance
 
 
 class MvNormal(MeanCovariance):
@@ -61,28 +59,20 @@ class MvNormal(MeanCovariance):
             mu,
             sigma=None,
             rotation=None,
-            scale=None,
     ):
-        logger = logging.getLogger(__name__)
-        assert scale is None or sigma is None, (
-            "Parameters 'scale' and 'sigma' can not be provided at the same time")
-        self._repr = {"mu": numpy.array(mu).tolist()}
-        if scale is not None:
-            logger.warning("Argument `scale` is to be deprecated. "
-                           "Use argument `sigma=scale**2` instead.")
-            sigma = scale**2
-            self._repr["scale"] = numpy.array(scale).tolist()
-        elif sigma is not None:
-            self._repr["sigma"] = numpy.array(sigma).tolist()
+        repr_args = ["mu=%s" % numpy.array(mu).tolist()]
+        if sigma is not None:
+            repr_args += ["sigma=%s" % numpy.array(sigma).tolist()]
 
         super(MvNormal, self).__init__(
             dist=normal(),
             mean=mu,
             covariance=sigma,
             rotation=rotation,
+            repr_args=repr_args,
         )
 
-    def _mom(self, k, mean, covariance):
+    def _mom(self, k, mean, covariance, cache):
         out = 0.
         for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)

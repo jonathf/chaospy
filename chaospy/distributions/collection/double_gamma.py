@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class double_gamma(Dist):
+class double_gamma(DistributionCore):
     """Double gamma distribution."""
 
     def __init__(self, a):
-        Dist.__init__(self, a=a)
+        super(double_gamma, self).__init__(a=a)
 
     def _pdf(self, x, a):
         ax = abs(x)
@@ -30,17 +29,17 @@ class DoubleGamma(ShiftScale):
     Double gamma distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.DoubleGamma(2, 4, 2)
         >>> distribution
-        DoubleGamma(scale=4, shape=2, shift=2)
+        DoubleGamma(2, scale=4, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([-100.4566,   -4.7134,    2.    ,    8.7134,  104.4566])
@@ -55,5 +54,9 @@ class DoubleGamma(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(DoubleGamma, self).__init__(dist=double_gamma(shape), scale=scale, shift=shift)
+        super(DoubleGamma, self).__init__(
+            dist=double_gamma(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

@@ -60,7 +60,7 @@ def quad_gauss_lobatto(
     Args:
         order (int):
             Quadrature order.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution weights to be used to create higher order nodes
             from.
         rule (str):
@@ -82,11 +82,6 @@ def quad_gauss_lobatto(
                 number of samples.
             weights:
                 The quadrature weights with ``weights.shape == (N,)``.
-
-    Raises:
-        ValueError:
-            Error raised if Loboto algorithm results in negative recurrence
-            coefficients.
 
     Example:
         >>> abscissas, weights = quad_gauss_lobatto(

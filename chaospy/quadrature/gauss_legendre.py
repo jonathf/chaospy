@@ -73,7 +73,7 @@ def quad_gauss_legendre(
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
@@ -102,9 +102,9 @@ def quad_gauss_legendre(
         >>> weights.round(4)
         array([0.1739, 0.3261, 0.3261, 0.1739])
     """
-    from ..distributions.baseclass import Dist
+    from ..distributions.baseclass import Distribution
     from ..distributions.collection import Uniform
-    if isinstance(domain, Dist):
+    if isinstance(domain, Distribution):
         abscissas, weights = quad_gauss_legendre(
             order, (domain.lower, domain.upper),
             rule, accuracy, recurrence_algorithm)

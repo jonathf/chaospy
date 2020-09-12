@@ -11,7 +11,7 @@ the ``scipy.stats`` distributions as input argument::
     >>> st_distribution = norm(0, 1)
     >>> distribution = chaospy.ScipyStatsDist(st_distribution)
     >>> distribution
-    ScipyStatsDist(norm(0, 1))
+    ScipyStatsDist(scipy.stats.norm(0, 1))
 
 This distribution then behaves as a normal ``chaospy`` distribution::
 
@@ -23,11 +23,12 @@ This distribution then behaves as a normal ``chaospy`` distribution::
 Currently the wrapper is limited to only support univariate distributions.
 """
 import numpy
+from scipy.stats._distn_infrastructure import rv_frozen
 
-from ..distributions import Dist
+from ..distributions import DistributionCore
 
 
-class ScipyStatsDist(Dist):
+class ScipyStatsDist(DistributionCore):
     """
     One dimensional ``scipy.stats`` distribution.
 
@@ -37,12 +38,15 @@ class ScipyStatsDist(Dist):
     """
 
     def __init__(self, distribution):
-        from scipy.stats._distn_infrastructure import rv_frozen
         assert isinstance(distribution, rv_frozen), (
             "Expected frozen distribution from ``scipy.stats``.")
         assert not hasattr(distribution, "dim") or distribution.dim == 1, (
             "Only one-dimensional ``scipy.stats`` models supported.")
-        Dist.__init__(self)
+        name = distribution.dist.__class__.__name__.replace("_gen", "")
+        args = ", ".join([str(arg) for arg in distribution.args])
+        super(ScipyStatsDist, self).__init__(
+            repr_args=["scipy.stats.%s(%s)" % (name, args)],
+        )
         self.distribution = distribution
 
     def _pdf(self, x_loc):
@@ -62,9 +66,3 @@ class ScipyStatsDist(Dist):
 
     def _mom(self, k_loc):
         return self.distribution.moment(int(k_loc))
-
-    def __str__(self):
-        name = self.distribution.dist.__class__.__name__
-        name = name.replace("_gen", "")
-        args = ", ".join([str(arg) for arg in self.distribution.args])
-        return "%s(%s(%s))" % (self.__class__.__name__, name, args)

@@ -1,15 +1,14 @@
 """Gumbel or Log-Weibull distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class log_weibull(Dist):
+class log_weibull(DistributionCore):
     """Gumbel or Log-Weibull distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(log_weibull, self).__init__()
 
     def _pdf(self, x):
         ex = numpy.exp(-x)
@@ -27,16 +26,16 @@ class LogWeibull(ShiftScale):
     Gumbel or Log-Weibull distribution.
 
     Args:
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        loc (float, Dist):
+        loc (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.LogWeibull(2, 2)
         >>> distribution
-        LogWeibull(loc=2, scale=2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
+        LogWeibull(scale=2, shift=2)
+        >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([1.0482, 2.1748, 3.3435, 4.9999])
         >>> distribution.fwd(distribution.inv(q)).round(4)
@@ -48,6 +47,9 @@ class LogWeibull(ShiftScale):
         >>> distribution.mom(1).round(4)
         3.1544
     """
-    def __init__(self, scale=1, loc=0):
-        self._repr = {"scale": scale, "loc": loc}
-        super(LogWeibull, self).__init__(dist=log_weibull(), scale=scale, shift=loc)
+    def __init__(self, scale=1, shift=0):
+        super(LogWeibull, self).__init__(
+            dist=log_weibull(),
+            scale=scale,
+            shift=shift,
+        )

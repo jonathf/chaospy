@@ -2,27 +2,28 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
+from ..baseclass import DistributionCore
 
 
-class TruncNormal(Dist):
+
+class TruncNormal(DistributionCore):
     """
     Truncated normal distribution
 
     Args:
-        lower (float, Dist):
+        lower (float, Distribution):
             Location of lower threshold
-        upper (float, Dist):
+        upper (float, Distribution):
             Location of upper threshold
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean of normal distribution
-        sigma (float, Dist):
+        sigma (float, Distribution):
             Standard deviation of normal distribution
 
     Examples:
         >>> distribution = chaospy.TruncNormal(2, 4, 2, 2)
         >>> distribution
-        TruncNormal(lower=2, mu=2, sigma=2, upper=4)
+        TruncNormal(lower=2, upper=4, mu=2, sigma=2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([2.    , 2.4311, 2.8835, 3.387 , 4.    ])
@@ -32,11 +33,18 @@ class TruncNormal(Dist):
         array([1.1687, 1.1419, 1.0601, 0.9189, 0.7089])
         >>> distribution.sample(4).round(4)
         array([3.1841, 2.1971, 3.8643, 2.8501])
+
     """
 
     def __init__(self, lower=-1, upper=1, mu=0, sigma=1):
-        self._repr = {"lower": lower, "upper": upper, "mu": mu, "sigma": sigma}
-        Dist.__init__(self, a=lower, b=upper, sigma=sigma, mu=mu)
+        super(TruncNormal, self).__init__(
+            a=lower,
+            b=upper,
+            mu=mu,
+            sigma=sigma,
+            repr_args=["lower=%s" % lower, "upper=%s" % upper ,
+                       "mu=%s" % mu, "sigma=%s" % sigma],
+        )
 
     def _pdf(self, x, a, b, mu, sigma):
         fa = special.ndtr((a-mu)/sigma)

@@ -2,11 +2,10 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class normal(Dist):
+class normal(DistributionCore):
     """Standard normal distribution."""
 
     def __init__(self):
@@ -33,9 +32,9 @@ class Normal(ShiftScale):
     Normal (Gaussian) distribution
 
     Args:
-        mu (float, Dist):
+        mu (float, Distribution):
             Mean of the distribution.
-        sigma (float, Dist):
+        sigma (float, Distribution):
             Standard deviation.  sigma > 0
 
     Examples:
@@ -59,5 +58,7 @@ class Normal(ShiftScale):
     """
 
     def __init__(self, mu=0, sigma=1):
-        self._repr = {"mu": mu, "sigma": sigma}
-        super(Normal, self).__init__(dist=normal(), scale=sigma, shift=mu)
+        super(Normal, self).__init__(
+            dist=normal(), scale=sigma, shift=mu,
+        )
+        self._repr_args = ["mu=%s" % mu, "sigma=%s" % sigma]

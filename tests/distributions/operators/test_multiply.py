@@ -14,15 +14,18 @@ EPS = 1E-10
 
 
 def test_dist_multiply_illigals():
-    with raises(ValueError):
-        _ = UNIVARIATE * [1, 1]
-    with raises(ValueError):
-        _ = [1, 1] * UNIVARIATE
-    with raises(ValueError):
-        _ = MULTIVARIATE * [[1, 1], [0, 1]]
-    with raises(ValueError):
-        _ = [[1, 1], [0, 1]] * MULTIVARIATE
-    with raises(ValueError):
+    # Too large dim on const:
+    with raises(chaospy.UnsupportedFeature):
+        _ = MULTIVARIATE*[[1, 1], [0, 1]]
+    with raises(chaospy.UnsupportedFeature):
+        _ = [[1, 1], [0, 1]]*MULTIVARIATE
+    # 2-D object, 1-D var:
+    with raises(chaospy.StochasticallyDependentError):
+        _ = UNIVARIATE*[1, 1]
+    with raises(chaospy.StochasticallyDependentError):
+        _ = [1, 1]*UNIVARIATE
+    # 0-D object:
+    with raises(chaospy.StochasticallyDependentError):
         chaospy.Mul(2, 3)
 
 

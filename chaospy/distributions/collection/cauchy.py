@@ -1,15 +1,14 @@
 """Cauchy distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class cauchy(Dist):
+class cauchy(DistributionCore):
     """Standard Cauchy distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(cauchy, self).__init__()
 
     def _pdf(self, x):
         return 1.0/numpy.pi/(1.0+x*x)
@@ -26,15 +25,15 @@ class Cauchy(ShiftScale):
     Cauchy distribution.
 
     Args:
-        loc (float, Dist):
+        shift (float, Distribution):
             Location parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Cauchy(2, 4)
+        >>> distribution = chaospy.Cauchy(4, 2)
         >>> distribution
-        Cauchy(loc=2, scale=4)
+        Cauchy(scale=4, shift=2)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([-4.9282, -0.3094,  2.    ,  4.3094,  8.9282])
@@ -48,6 +47,9 @@ class Cauchy(ShiftScale):
         2.0
     """
 
-    def __init__(self, loc=0, scale=1):
-        self._repr = {"loc": loc, "scale": scale}
-        super(Cauchy, self).__init__(dist=cauchy(), scale=scale, shift=loc)
+    def __init__(self, scale=1, shift=0):
+        super(Cauchy, self).__init__(
+            dist=cauchy(),
+            scale=scale,
+            shift=shift,
+        )

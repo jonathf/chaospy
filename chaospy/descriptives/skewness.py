@@ -12,9 +12,9 @@ def Skew(poly, dist=None, **kws):
     Element by element 3rd order statistics of a distribution or polynomial.
 
     Args:
-        poly (numpoly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Distribution):
             Input to take skewness on.
-        dist (Dist):
+        dist (Distribution):
             Defines the space the skewness is taken on. It is ignored if
             ``poly`` is a distribution.
 

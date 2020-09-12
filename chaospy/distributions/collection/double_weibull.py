@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class double_weibull(Dist):
+class double_weibull(DistributionCore):
     """Double weibull distribution."""
 
     def __init__(self, c):
-        Dist.__init__(self, c=c)
+        super(double_weibull, self).__init__(c=c)
 
     def _pdf(self, x, c):
         ax = numpy.abs(x)
@@ -37,17 +36,17 @@ class DoubleWeibull(ShiftScale):
     Double Weibull distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.DoubleWeibull(2, 4, 2)
         >>> distribution
-        DoubleWeibull(scale=4, shape=2, shift=2)
+        DoubleWeibull(2, scale=4, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([-16.903 ,  -1.3302,   2.    ,   5.3302,  20.903 ])
@@ -62,5 +61,9 @@ class DoubleWeibull(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(DoubleWeibull, self).__init__(dist=double_weibull(shape), scale=scale, shift=shift)
+        super(DoubleWeibull, self).__init__(
+            dist=double_weibull(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

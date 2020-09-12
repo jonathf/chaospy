@@ -54,27 +54,28 @@ It has the convenient property:
 """
 import numpy
 
-from ..baseclass import Dist, declare_stochastic_dependencies
+from ..baseclass import Distribution
 
 
-class Archimedean(Dist):
+class Archimedean(Distribution):
 
     def __init__(self, length, theta=1.):
-        self.length = length
-        self._dependencies = [
-            {idx} for idx in declare_stochastic_dependencies(self, length)]
-        Dist.__init__(self, theta=float(theta))
+        dependencies = [{idx} for idx in self._declare_dependencies(length)]
+        super(Archimedean, self).__init__(
+            parameters=dict(theta=float(theta)),
+            dependencies=dependencies,
+        )
 
-    def _lower(self, theta):
-        return 0.
+    def _lower(self, theta, cache):
+        return numpy.zeros(len(self))
 
-    def _upper(self, theta):
-        return 1.
+    def _upper(self, theta, cache):
+        return numpy.ones(len(self))
 
-    def _cdf(self, x_loc, theta):
+    def _cdf(self, x_loc, theta, cache):
         out = numpy.zeros(x_loc.shape)
         loc = numpy.ones(x_loc.shape)
-        for order in range(self.length):
+        for order in range(len(self)):
             out[order] = self._copula(loc, theta, order)
             loc[order] = x_loc[order]
             index = out[order] != 0
@@ -82,10 +83,10 @@ class Archimedean(Dist):
             out[order, ~index] = 1
         return out
 
-    def _pdf(self, x_loc, theta):
+    def _pdf(self, x_loc, theta, cache):
         out = numpy.zeros(x_loc.shape)
         loc = numpy.ones(x_loc.shape)
-        for order in range(self.length):
+        for order in range(len(self)):
             out[order] = self._copula(loc, theta, order)
             loc[order] = x_loc[order]
             index = out[order] != 0
@@ -110,3 +111,6 @@ class Archimedean(Dist):
             out *= (-1/theta-dim)
         out = out*u_loc**(-1/theta-order)
         return out
+
+    def _value(self, dist, trans, cache):
+        return self

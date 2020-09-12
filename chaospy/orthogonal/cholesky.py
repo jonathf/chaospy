@@ -36,7 +36,7 @@ def orth_chol(order, dist, normed=False, graded=True, reverse=True,
     Args:
         order (int):
             Order of polynomial expansion
-        dist (Dist):
+        dist (Distribution):
             Distribution space where polynomials are orthogonal
         normed (bool):
             If True orthonormal polynomials will be used instead of monic.

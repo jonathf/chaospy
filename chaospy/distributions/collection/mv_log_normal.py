@@ -2,17 +2,18 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist, declare_stochastic_dependencies
+from ..baseclass import Distribution
 
 
-class MvLogNormal(Dist):
+
+class MvLogNormal(Distribution):
     """
     Multivariate Log-Normal Distribution.
 
     Args:
-        loc (float, Dist):
+        loc (float, Distribution):
             Mean vector
-        scale (float, Dist):
+        scale (float, Distribution):
             Covariance matrix or variance vector if scale is a 1-d vector.
 
     Examples:
@@ -51,35 +52,38 @@ class MvLogNormal(Dist):
         loc = numpy.asfarray(loc)
         scale = numpy.asfarray(scale)
         assert len(loc) == len(scale)
-        self._repr = {"loc": str(loc.tolist()), "scale": str(scale.tolist())}
 
         C = numpy.linalg.cholesky(scale)
         Ci = numpy.linalg.inv(C)
 
-        indinces = declare_stochastic_dependencies(self, len(C))
-        self._dependencies = [set(indinces[:idx+1]) for idx in range(len(C))]
+        indinces = self._declare_dependencies(len(C))
+        dependencies = [set(indinces[:idx+1]) for idx in range(len(C))]
 
-        Dist.__init__(self, loc=loc, C=C, Ci=Ci, scale=scale)
+        super(MvLogNormal, self).__init__(
+            parameters=dict(loc=loc, C=C, Ci=Ci, scale=scale),
+            dependencies=dependencies,
+            repr_args=["loc=%s" % loc.tolist(), "scale=%s" % scale.tolist()],
+        )
 
-    def _cdf(self, x, loc, C, Ci, scale):
+    def _cdf(self, x, loc, C, Ci, scale, cache):
         y = numpy.log(numpy.abs(x) + 1.*(x<=0))
         out = special.ndtr(numpy.dot(Ci, (y.T-loc.T).T))
         return numpy.where(x <= 0, 0., out)
 
-    def _ppf(self, q, loc, C, Ci, scale):
+    def _ppf(self, q, loc, C, Ci, scale, cache):
         return numpy.e**(numpy.dot(C, special.ndtri(q)).T+loc.T).T
 
-    def _mom(self, k, loc, C, Ci, scale):
+    def _mom(self, k, loc, C, Ci, scale, cache):
         output =  numpy.dot(k, loc)
         output += .5*numpy.dot(numpy.dot(k, scale), k)
         output =  numpy.e**(output)
         return output
 
-    def _lower(self, loc, C, Ci, scale):
-        return 0.
+    def _lower(self, loc, C, Ci, scale, cache):
+        return numpy.zeros(len(self))
 
-    def _upper(self, loc, C, Ci, scale):
-        return numpy.e**(7.1*numpy.sqrt(numpy.diag(scale)) + loc.T).T
+    def _upper(self, loc, C, Ci, scale, cache):
+        return numpy.exp(7.1*numpy.sqrt(numpy.diag(scale)) + loc.T).T
 
-    def __len__(self):
-        return len(self.prm["C"])
+    def _value(self, loc, C, Ci, scale, cache):
+        return self

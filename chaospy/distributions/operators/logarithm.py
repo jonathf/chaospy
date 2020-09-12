@@ -1,16 +1,17 @@
 """Logarithm of another distribution."""
 import numpy
+import chaospy
 
-from ..baseclass import Dist
-from .unary import UnaryOperator
+from ..baseclass import Distribution
+from .operator import OperatorDistribution
 
 
-class Logn(UnaryOperator):
+class Logn(OperatorDistribution):
     """
     Logarithm with base N.
 
     Args:
-        dist (Dist):
+        dist (Distribution):
             Distribution to perform transformation on.
         base (int, float):
             the logarithm base.
@@ -30,30 +31,46 @@ class Logn(UnaryOperator):
         [0.4578 0.0991 0.608  0.3582]
         >>> print(numpy.around(distribution.mom(1), 4))
         0.3516
+
     """
 
     def __init__(self, dist, base=2):
-        assert isinstance(dist, Dist)
+        assert isinstance(dist, Distribution)
         assert numpy.all(dist.lower > 0)
         assert base > 0 and base != 1
-        self._dependencies = [deps.copy() for deps in dist._dependencies]
-        self._repr = {"_": [dist, base]}
-        Dist.__init__(self, dist=dist, base=base)
+        super(Logn, self).__init__(
+            left=dist,
+            right=base,
+            repr_args=[dist, base],
+        )
 
-    def _post_pdf(self, xloc, base):
-        return base**xloc*numpy.log(base)
+    def _lower(self, left, right, cache):
+        return numpy.log(left._get_lower(cache))/numpy.log(right.item(0))
 
-    def _pre_fwd(self, xloc, base):
-        return base**xloc
+    def _upper(self, left, right, cache):
+        return numpy.log(left._get_upper(cache))/numpy.log(right.item(0))
 
-    def _post_fwd(self, uloc, base):
-        return uloc
+    def _pdf(self, xloc, left, right, cache):
+        base = right.item(0)
+        return left._get_pdf(base**xloc, cache)*base**xloc*numpy.log(base)
 
-    def _pre_inv(self, qloc, base):
-        return qloc
+    def _cdf(self, xloc, left, right, cache):
+        return left._get_fwd(right.item(0)**xloc, cache)
 
-    def _post_inv(self, uloc, base):
-        return numpy.log(uloc)/numpy.log(base)
+    def _ppf(self, uloc, left, right, cache):
+        return numpy.log(left._get_inv(uloc, cache))/numpy.log(right.item(0))
+
+    def _mom(self, kloc, left, right, cache):
+        raise chaospy.UnsupportedFeature("%s: Analytical moments for logarithm not supported", self)
+
+    def _ttr(self, kloc, left, right, cache):
+        raise chaospy.UnsupportedFeature("%s: Analytical TTR for logarithm not supported", self)
+
+    def _value(self, left, right, cache):
+        if isinstance(left, Distribution):
+            return self
+        return numpy.log(left)/numpy.log(right.item(0))
+
 
 
 class Log(Logn):
@@ -61,18 +78,19 @@ class Log(Logn):
     Logarithm with base Euler's constant.
 
     Args:
-        dist (Dist):
+        dist (Distribution):
             Distribution to perform transformation on.
 
     Example:
         >>> distribution = chaospy.Log(chaospy.Uniform(1, 2))
-        >>> print(distribution)
+        >>> distribution
         Log(Uniform(lower=1, upper=2))
+
     """
 
     def __init__(self, dist):
         super(Log, self).__init__(dist=dist, base=numpy.e)
-        self._repr = {"_": [dist]}
+        self._repr_args = [dist]
 
 
 class Log10(Logn):
@@ -80,14 +98,15 @@ class Log10(Logn):
     Logarithm with base 10.
 
     Args:
-        dist (Dist): Distribution to perform transformation on.
+        dist (Distribution): Distribution to perform transformation on.
 
     Example:
         >>> distribution = chaospy.Log10(chaospy.Uniform(1, 2))
         >>> print(distribution)
         Log10(Uniform(lower=1, upper=2))
+
     """
 
     def __init__(self, dist):
         super(Log10, self).__init__(dist=dist, base=10)
-        self._repr = {"_": [dist]}
+        self._repr_args = [dist]

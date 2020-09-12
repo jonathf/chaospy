@@ -2,9 +2,7 @@
 import numpy
 from scipy.stats import spearmanr
 import numpoly
-
-from ... import distributions
-from ..covariance import Cov
+import chaospy
 
 
 def Corr(poly, dist=None, **kws):
@@ -12,9 +10,9 @@ def Corr(poly, dist=None, **kws):
     Correlation matrix of a distribution or polynomial.
 
     Args:
-        poly (numpoly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Distribution):
             Input to take correlation on. Must have ``len(poly)>=2``.
-        dist (Dist):
+        dist (Distribution):
             Defines the space the correlation is taken on.  It is ignored if
             ``poly`` is a distribution.
 
@@ -37,7 +35,7 @@ def Corr(poly, dist=None, **kws):
                [0., 1.]])
 
     """
-    if isinstance(poly, distributions.Dist):
+    if isinstance(poly, chaospy.Distribution):
         poly, dist = numpoly.variable(len(poly)), poly
     else:
         poly = numpoly.polynomial(poly)
@@ -45,7 +43,7 @@ def Corr(poly, dist=None, **kws):
     if not poly.shape:
         return numpy.ones((1, 1))
 
-    cov = Cov(poly, dist, **kws)
+    cov = chaospy.Cov(poly, dist, **kws)
     var = numpy.diag(cov)
     vvar = numpy.sqrt(numpy.outer(var, var))
     return numpy.where(vvar > 0, cov/vvar, 0)

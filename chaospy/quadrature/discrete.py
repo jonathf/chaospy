@@ -39,6 +39,7 @@ The first few orders with exponential growth rule where the nodes are nested::
     4 [[ 0  1  2  3  4  5  6  7  8  9 10]]
 """
 import numpy
+import chaospy
 
 from .combine import combine_quadrature
 from .grid import quad_grid
@@ -55,7 +56,7 @@ def quad_discrete(order, domain=(0, 1), growth=False, segments=1):
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Dist, numpy.ndarray):
+        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             if true sets the growth rule for the quadrature rule to only
@@ -82,8 +83,7 @@ def quad_discrete(order, domain=(0, 1), growth=False, segments=1):
         array([0.2, 0.2, 0.2, 0.2, 0.2])
 
     """
-    from ..distributions.baseclass import Dist
-    if isinstance(domain, Dist):
+    if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_discrete(order, (domain.lower, domain.upper), growth=growth, segments=segments)
         weights *= domain.pdf(abscissas).flatten()
         weights /= numpy.sum(weights)

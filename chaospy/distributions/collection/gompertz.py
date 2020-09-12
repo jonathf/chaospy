@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class gompertz(Dist):
+class gompertz(DistributionCore):
     """Gompertz distribution."""
 
     def __init__(self, c):
-        Dist.__init__(self, c=c)
+        super(gompertz, self).__init__(c=c)
 
     def _pdf(self, x, c):
         ex = numpy.exp(x)
@@ -31,17 +30,17 @@ class Gompertz(ShiftScale):
     Gompertz distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.Gompertz(3, 2, 2)
         >>> distribution
-        Gompertz(scale=2, shape=3, shift=2)
+        Gompertz(3, scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.1435, 2.3145, 2.5331, 2.859 ])
@@ -56,5 +55,9 @@ class Gompertz(ShiftScale):
     """
 
     def __init__(self, shape, scale, shift):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(Gompertz, self).__init__(dist=gompertz(shape), scale=scale, shift=shift)
+        super(Gompertz, self).__init__(
+            dist=gompertz(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

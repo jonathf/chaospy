@@ -2,19 +2,17 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class chi(Dist):
+class chi(DistributionCore):
     """Chi distribution."""
 
     def __init__(self, df=1):
-        Dist.__init__(self, df=df)
+        super(chi, self).__init__(df=df)
 
     def _pdf(self, x, df):
-        return x**(df-1.)*numpy.exp(-x*x*0.5)/(2.0)**(df*0.5-1)\
-                /special.gamma(df*0.5)
+        return x**(df-1)*numpy.exp(-x*x*.5)/2**(df*.5-1)/special.gamma(df*.5)
 
     def _cdf(self, x, df):
         return special.gammainc(df*0.5,0.5*x*x)
@@ -23,8 +21,7 @@ class chi(Dist):
         return numpy.sqrt(2*special.gammaincinv(df*0.5, q))
 
     def _mom(self, k, df):
-        return 2**(.5*k)*special.gamma(.5*(df+k))\
-                /special.gamma(.5*df)
+        return 2**(.5*k)*special.gamma(.5*(df+k))/special.gamma(.5*df)
 
 
 class Chi(ShiftScale):
@@ -32,17 +29,17 @@ class Chi(ShiftScale):
     Chi distribution.
 
     Args:
-        df (float, Dist):
+        df (float, Distribution):
             Degrees of freedom
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.Chi(2, 4, 1)
         >>> distribution
-        Chi(df=2, scale=4, shift=1)
+        Chi(2, scale=4, shift=1)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([ 1.0001,  4.0341,  5.7096,  7.6604, 28.1446])
@@ -58,8 +55,12 @@ class Chi(ShiftScale):
     """
 
     def __init__(self, df=1, scale=1, shift=0):
-        self._repr = {"df": df, "scale": scale, "shift": shift}
-        super(Chi, self).__init__(dist=chi(df), scale=scale, shift=shift)
+        super(Chi, self).__init__(
+            dist=chi(df),
+            scale=scale,
+            shift=shift,
+            repr_args=[df],
+        )
 
 
 class Maxwell(ShiftScale):
@@ -68,9 +69,9 @@ class Maxwell(ShiftScale):
     Chi distribution with 3 degrees of freedom
 
     Args:
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
@@ -91,8 +92,12 @@ class Maxwell(ShiftScale):
     """
 
     def __init__(self, scale=1, shift=0):
-        self._repr = {"scale": scale, "shift": shift}
-        super(Maxwell, self).__init__(dist=chi(3), scale=scale, shift=shift)
+        super(Maxwell, self).__init__(
+            dist=chi(3),
+            scale=scale,
+            shift=shift,
+            repr_args=[],
+        )
 
 
 class Rayleigh(ShiftScale):
@@ -100,9 +105,9 @@ class Rayleigh(ShiftScale):
     Rayleigh distribution
 
     Args:
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
@@ -122,5 +127,9 @@ class Rayleigh(ShiftScale):
         5.5066
     """
     def __init__(self, scale=1, shift=0):
-        self._repr = {"scale": scale, "shift": shift}
-        super(Rayleigh, self).__init__(dist=chi(2), scale=scale, shift=shift)
+        super(Rayleigh, self).__init__(
+            dist=chi(2),
+            scale=scale,
+            shift=shift,
+            repr_args=[],
+        )

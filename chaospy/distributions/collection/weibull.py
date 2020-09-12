@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class weibull(Dist):
+class weibull(DistributionCore):
     """Weibull Distribution."""
 
     def __init__(self, a=1):
-        Dist.__init__(self, a=a)
+        super(weibull, self).__init__(a=a)
 
     def _pdf(self, x, a):
         return a*x**(a-1)*numpy.e**(-x**a)
@@ -36,17 +35,17 @@ class Weibull(ShiftScale):
     Weibull Distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter.
-        scale (float, Dist):
+        scale (float, Distribution):
             Scale parameter.
-        shift (float, Dist):
+        shift (float, Distribution):
             Location of lower bound.
 
     Examples:
         >>> distribution = chaospy.Weibull(2)
         >>> distribution
-        Weibull(scale=1, shape=2, shift=0)
+        Weibull(2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([0.4724, 0.7147, 0.9572, 1.2686])
@@ -61,5 +60,9 @@ class Weibull(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(Weibull, self).__init__(dist=weibull(shape), scale=scale, shift=shift)
+        super(Weibull, self).__init__(
+            dist=weibull(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

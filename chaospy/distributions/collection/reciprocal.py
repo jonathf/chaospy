@@ -1,18 +1,17 @@
 """Reciprocal distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore
 
 
-class Reciprocal(Dist):
+class Reciprocal(DistributionCore):
     """
     Reciprocal distribution.
 
     Args:
-        lower (float, Dist):
+        lower (float, Distribution):
             Lower threshold of distribution. Must be smaller than ``upper``.
-        upper (float, Dist):
+        upper (float, Distribution):
             Upper threshold of distribution.
 
     Examples:
@@ -33,8 +32,7 @@ class Reciprocal(Dist):
     """
 
     def __init__(self, lower=1, upper=2):
-        self._repr = {"lower": lower, "upper": upper}
-        Dist.__init__(self, lower=lower, upper=upper)
+        super(Reciprocal, self).__init__(lower=lower, upper=upper)
 
     def _pdf(self, x, lower, upper):
         return 1./(x*numpy.log(upper/lower))
@@ -43,7 +41,7 @@ class Reciprocal(Dist):
         return numpy.log(x/lower)/numpy.log(upper/lower)
 
     def _ppf(self, q, lower, upper):
-        return numpy.e**(q*numpy.log(upper/lower) + numpy.log(lower))
+        return numpy.e**(q*numpy.log(upper/lower)+numpy.log(lower))
 
     def _lower(self, lower, upper):
         return lower

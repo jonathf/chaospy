@@ -1,15 +1,14 @@
 """Exponential Weibull distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class exponential_weibull(Dist):
+class exponential_weibull(DistributionCore):
     """Exponential Weibull distribution."""
 
     def __init__(self, a=1, c=1):
-        Dist.__init__(self, a=a, c=c)
+        super(exponential_weibull, self).__init__(a=a, c=c)
 
     def _pdf(self, x, a, c):
         exc = numpy.exp(-x**c)
@@ -31,19 +30,19 @@ class ExponentialWeibull(ShiftScale):
     Exponential Weibull distribution.
 
     Args:
-        alpha (float, Dist):
+        alpha (float, Distribution):
             First shape parameter
-        kappa (float, Dist):
+        kappa (float, Distribution):
             Second shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.ExponentialWeibull(2, 2, 2, 1)
         >>> distribution
-        ExponentialWeibull(alpha=2, kappa=2, scale=2, shift=1)
+        ExponentialWeibull(2, 2, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.5398, 3.0009, 3.4412, 3.9989])
@@ -57,6 +56,9 @@ class ExponentialWeibull(ShiftScale):
         3.2916
     """
     def __init__(self, alpha=1, kappa=1, scale=1, shift=0):
-        self._repr = {
-            "alpha": alpha, "kappa": kappa, "scale": scale, "shift": shift}
-        super(ExponentialWeibull, self).__init__(dist=exponential_weibull(alpha, kappa), scale=scale, shift=shift)
+        super(ExponentialWeibull, self).__init__(
+            dist=exponential_weibull(alpha, kappa),
+            scale=scale,
+            shift=shift,
+            repr_args=[alpha, kappa],
+        )

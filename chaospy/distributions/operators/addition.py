@@ -6,9 +6,9 @@ Example usage
 
 Distribution and a constant::
 
-    >>> distribution = chaospy.Normal(0, 1) + 10
+    >>> distribution = chaospy.Normal(0, 1)+10
     >>> distribution
-    Add(Normal(mu=0, sigma=1), [10])
+    Add(Normal(mu=0, sigma=1), 10)
     >>> distribution.sample(5).round(4)
     array([10.395 ,  8.7997, 11.6476,  9.9553, 11.1382])
     >>> distribution.fwd([9, 10, 11]).round(4)
@@ -65,21 +65,28 @@ Inverse transformations::
 Raw moments::
 
     >>> joint1.mom([(0, 1, 1), (1, 0, 1)]).round(4)
-    array([ 6.0006,  2.5002, 15.0847])
+    array([ 6.    ,  2.5   , 15.0833])
     >>> joint2.mom([(0, 1, 1), (1, 0, 1)]).round(4)
-    array([ 6.0006,  3.5003, 21.0853])
+    array([ 6.    ,  3.5   , 21.0833])
 """
 from __future__ import division
 from scipy.special import comb
 import numpy
+import chaospy
 
-from ..baseclass import Dist, StochasticallyDependentError
-from .. import evaluation
-from .binary import BinaryOperator
+from ..baseclass import Distribution
+from .operator import OperatorDistribution
 
 
-class Add(BinaryOperator):
+class Add(OperatorDistribution):
     """Addition."""
+
+    def __init__(self, left, right):
+        super(Add, self).__init__(
+            left=left,
+            right=right,
+            repr_args=[left, right],
+        )
 
     def _lower(self, left, right, cache):
         """
@@ -93,13 +100,11 @@ class Add(BinaryOperator):
             >>> chaospy.Add(2, chaospy.Uniform()).lower
             array([2.])
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-        if isinstance(left, Dist):
-            left = evaluation.evaluate_lower(left, cache=cache)
-        if isinstance(right, Dist):
-            right = evaluation.evaluate_lower(right, cache=cache)
-        return left+right
+        if isinstance(left, Distribution):
+            left = left._get_lower(cache=cache)
+        if isinstance(right, Distribution):
+            right = right._get_lower(cache=cache)
+        return (left.T+right.T).T
 
     def _upper(self, left, right, cache):
         """
@@ -114,28 +119,18 @@ class Add(BinaryOperator):
             array([3.])
 
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-        if isinstance(left, Dist):
-            left = evaluation.evaluate_upper(left, cache=cache)
-        if isinstance(right, Dist):
-            right = evaluation.evaluate_upper(right, cache=cache)
-        return left+right
+        if isinstance(left, Distribution):
+            left = left._get_upper(cache=cache)
+        if isinstance(right, Distribution):
+            right = right._get_upper(cache=cache)
+        return (left.T+right.T).T
 
-    def _pre_fwd_left(self, xloc, other):
-        xloc = (xloc.T-numpy.asfarray(other).T).T
-        return xloc
-
-    def _pre_fwd_right(self, xloc, other):
-        xloc = (xloc.T-numpy.asfarray(other).T).T
-        return xloc
-
-    def _post_fwd(self, uloc, other):
-        del other
+    def _cdf(self, xloc, left, right, cache):
+        if isinstance(right, Distribution):
+            left, right = right, left
+        xloc = (xloc.T-numpy.asfarray(right).T).T
+        uloc = left._get_fwd(xloc, cache=cache)
         return uloc
-
-    def _alt_fwd(self, xloc, left, right):
-        return numpy.asfarray(left+right <= xloc)
 
     def _pdf(self, xloc, left, right, cache):
         """
@@ -150,22 +145,10 @@ class Add(BinaryOperator):
             [0. 0. 1. 0.]
 
         """
-        left = evaluation.get_forward_cache(left, cache)
-        right = evaluation.get_forward_cache(right, cache)
-
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
-        elif not isinstance(right, Dist):
-            return numpy.inf
-        else:
+        if isinstance(right, Distribution):
             left, right = right, left
-
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        output = evaluation.evaluate_density(left, xloc, cache=cache)
-        assert output.shape == xloc.shape
-        return output
+        return left._get_pdf(xloc, cache=cache)
 
     def _ppf(self, uloc, left, right, cache):
         """
@@ -179,21 +162,10 @@ class Add(BinaryOperator):
             >>> print(chaospy.Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
             [2.1 2.2 2.9]
         """
-        left = evaluation.get_inverse_cache(left, cache)
-        right = evaluation.get_inverse_cache(right, cache)
-
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise evaluation.DependencyError(
-                    "under-defined distribution {} or {}".format(left, right))
-        elif not isinstance(right, Dist):
-            return left+right
-        else:
+        if isinstance(right, Distribution):
             left, right = right, left
-
-        xloc = evaluation.evaluate_inverse(left, uloc, cache=cache)
-        output = (xloc.T + numpy.asfarray(right).T).T
-        return output
+        xloc = left._get_inv(uloc, cache=cache)
+        return (xloc.T+numpy.asfarray(right).T).T
 
     def _mom(self, keys, left, right, cache):
         """
@@ -207,27 +179,20 @@ class Add(BinaryOperator):
             >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
             [ 1.      2.5     6.3333 16.25  ]
         """
-        if evaluation.get_dependencies(left, right):
-            raise evaluation.DependencyError(
-                "sum of dependent distributions not feasible: "
-                "{} and {}".format(left, right)
-            )
-
+        del cache
         keys_ = numpy.mgrid[tuple(slice(0, key+1, 1) for key in keys)]
         keys_ = keys_.reshape(len(self), -1)
 
-        if isinstance(left, Dist):
-            left = [
-                evaluation.evaluate_moment(left, key, cache=cache)
-                for key in keys_.T
-            ]
+        if isinstance(left, Distribution):
+            if left.shares_dependencies(right):
+                raise chaospy.StochasticallyDependentError(
+                    "%s: left and right side of sum stochastically dependent." % self)
+            left = [left._get_mom(key) for key in keys_.T]
         else:
             left = list(reversed(numpy.array(left).T**keys_.T))
-        if isinstance(right, Dist):
-            right = [
-                evaluation.evaluate_moment(right, key, cache=cache)
-                for key in keys_.T
-            ]
+
+        if isinstance(right, Distribution):
+            right = [right._get_mom(key) for key in keys_.T]
         else:
             right = list(reversed(numpy.array(right).T**keys_.T))
 
@@ -257,43 +222,17 @@ class Add(BinaryOperator):
              [-0.      0.0833  0.0667  0.0643]]
 
         """
-        if isinstance(left, Dist):
-            if isinstance(right, Dist):
-                raise StochasticallyDependentError(
-                    "sum of distributions not feasible: "
-                    "{} and {}".format(left, right)
-                )
-        else:
-            if not isinstance(right, Dist):
-                raise StochasticallyDependentError(
-                    "recurrence coefficients for constants not feasible: "
-                    "{}".format(left+right)
-                )
+        del cache
+        if isinstance(right, Distribution):
             left, right = right, left
+        coeff0, coeff1 = left._get_ttr(kloc)
+        return coeff0+numpy.asarray(right), coeff1
 
-        coeff0, coeff1 = evaluation.evaluate_recurrence_coefficients(
-            left, kloc, cache=cache)
-        return coeff0 + numpy.asarray(right), coeff1
-
-    def __str__(self):
-        if self._repr is None:
-            return (self.__class__.__name__ + "(" + str(self.prm["left"]) +
-                    ", " + str(self.prm["right"]) + ")")
-        return super(Add, self).__str__()
-
-    def _fwd_cache(self, cache):
-        left = evaluation.get_forward_cache(self.prm["left"], cache)
-        right = evaluation.get_forward_cache(self.prm["right"], cache)
-        if not isinstance(left, Dist) and not isinstance(right, Dist):
-            return left+right
-        return self
-
-    def _inv_cache(self, cache):
-        left = evaluation.get_forward_cache(self.prm["left"], cache)
-        right = evaluation.get_forward_cache(self.prm["right"], cache)
-        if not isinstance(left, Dist) and not isinstance(right, Dist):
-            return left+right
-        return self
+    def _value(self, left, right, cache):
+        del cache
+        if isinstance(left, Distribution) or isinstance(right, Distribution):
+            return self
+        return left+right
 
 
 def add(left, right):

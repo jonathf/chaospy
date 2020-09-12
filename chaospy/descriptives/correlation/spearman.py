@@ -9,7 +9,7 @@ def Spearman(poly, dist, sample=10000, retall=False, **kws):
     Args:
         poly (numpoly.ndpoly):
             Polynomial of interest.
-        dist (Dist):
+        dist (Distribution):
             Defines the space where correlation is taken.
         sample (int):
             Number of samples used in estimation.

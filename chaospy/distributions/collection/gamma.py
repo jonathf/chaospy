@@ -2,17 +2,16 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class gamma(Dist):
+class gamma(DistributionCore):
 
     def __init__(self, a=1):
-        Dist.__init__(self, a=a)
+        super(gamma, self).__init__(a=a)
 
     def _pdf(self, x, a):
-        return x**(a-1)*numpy.e**(-x) / special.gamma(a)
+        return x**(a-1)*numpy.e**(-x)/special.gamma(a)
 
     def _cdf(self, x, a):
         return special.gammainc(a, x)
@@ -37,17 +36,17 @@ class Gamma(ShiftScale):
     Also an Erlang distribution when shape=k and scale=1./lamb.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter. a>0.
-        scale (float, Dist):
+        scale (float, Distribution):
             Scale parameter. scale!=0
-        shift (float, Dist):
+        shift (float, Distribution):
             Location of the lower bound.
 
     Examples:
-        >>> distribution = chaospy.Gamma(1, 1, 1)
+        >>> distribution = chaospy.Gamma(1, shift=1)
         >>> distribution
-        Gamma(scale=1, shape=1, shift=1)
+        Gamma(1, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([1.2231, 1.5108, 1.9163, 2.6094])
@@ -65,8 +64,12 @@ class Gamma(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(Gamma, self).__init__(dist=gamma(shape), scale=scale, shift=shift)
+        super(Gamma, self).__init__(
+            dist=gamma(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )
 
 
 class Exponential(ShiftScale):
@@ -74,9 +77,9 @@ class Exponential(ShiftScale):
     Exponential Probability Distribution
 
     Args:
-        scale (float, Dist):
+        scale (float, Distribution):
             Scale parameter. scale!=0
-        shift (float, Dist):
+        shift (float, Distribution):
             Location of the lower bound.
 
     Examples;:
@@ -98,5 +101,9 @@ class Exponential(ShiftScale):
     """
 
     def __init__(self, scale=1, shift=0):
-        self._repr = {"scale": scale, "shift": shift}
-        super(Exponential, self).__init__(dist=gamma(1), scale=scale, shift=shift)
+        super(Exponential, self).__init__(
+            dist=gamma(1),
+            scale=scale,
+            shift=shift,
+            repr_args=[],
+        )

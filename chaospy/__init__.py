@@ -23,6 +23,7 @@ import chaospy.regression
 from .basis import basis
 from .prange import prange
 
+from .exceptions import StochasticallyDependentError, UnsupportedFeature
 from chaospy.distributions import *
 from chaospy.orthogonal import *
 from chaospy.spectral import *

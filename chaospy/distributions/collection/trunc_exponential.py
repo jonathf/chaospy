@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class truncexpon(Dist):
+class truncexpon(DistributionCore):
     """Truncated exponential distribution."""
 
     def __init__(self, b):
-        Dist.__init__(self, b=b)
+        super(truncexpon, self).__init__(b=b)
 
     def _pdf(self, x, b):
         return numpy.exp(-x)/(1-numpy.exp(-b))
@@ -33,17 +32,17 @@ class TruncExponential(ShiftScale):
     Truncated exponential distribution.
 
     Args:
-        upper (float, Dist):
+        upper (float, Distribution):
             Location of upper threshold
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter in the exponential distribution
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.TruncExponential(2, 4)
         >>> distribution
-        TruncExponential(scale=4, shift=0, upper=2)
+        TruncExponential(2, scale=4)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([0.    , 0.4142, 0.8763, 1.3988, 2.    ])
@@ -58,6 +57,9 @@ class TruncExponential(ShiftScale):
     """
 
     def __init__(self, upper=1, scale=1, shift=0):
-        self._repr = {"upper": upper, "scale": scale, "shift": shift}
         super(TruncExponential, self).__init__(
-            dist=truncexpon((upper-shift)*1./scale), scale=scale, shift=shift)
+            dist=truncexpon((upper-shift)*1./scale),
+            scale=scale,
+            shift=shift,
+            repr_args=[upper],
+        )

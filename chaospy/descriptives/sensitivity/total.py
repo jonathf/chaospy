@@ -16,7 +16,7 @@ def Sens_t(poly, dist, **kws):
     Args:
         poly (numpoly.ndpoly):
             Polynomial to find first order Sobol indices on.
-        dist (Dist):
+        dist (Distribution):
             The distributions of the input used in ``poly``.
 
     Returns:

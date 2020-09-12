@@ -59,7 +59,7 @@ def bastos_ohagen(mat, eps=1e-16):
         if mat[idx_max, idx_max] <= numpy.abs(diag_max*eps):
 
             if not idx:
-                raise ValueError("Purly negative definite")
+                raise numpy.linalg.LinAlgError("Purly negative definite")
 
             for j in range(idx, size):
                 hitri[j, j] = hitri[j-1, j-1]/float(j)

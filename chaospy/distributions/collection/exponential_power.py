@@ -1,29 +1,28 @@
 """Exponential power distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class exponential_power(Dist):
+class exponential_power(DistributionCore):
     """Exponential power distribution."""
 
     def __init__(self, b=1):
-        Dist.__init__(self, b=b)
+        super(exponential_power, self).__init__(b=b)
 
     def _pdf(self, x, b):
         xbm1 = x**(b-1.0)
-        xb = xbm1 * x
-        return numpy.exp(1)*b*xbm1 * numpy.exp(xb - numpy.exp(xb))
+        xb = xbm1*x
+        return numpy.exp(1)*b*xbm1*numpy.exp(xb-numpy.exp(xb))
 
     def _cdf(self, x, b):
-        xb = x**b
-        return -numpy.expm1(-numpy.expm1(xb))
+        return -numpy.expm1(-numpy.expm1(x**b))
 
     def _ppf(self, q, b):
-        return pow(numpy.log1p(-numpy.log1p(-q)), 1.0/b)
+        return pow(numpy.log1p(-numpy.log1p(-q)), 1./b)
 
     def _lower(self, b):
+        del b
         return 0.
 
 
@@ -35,17 +34,17 @@ class ExponentialPower(ShiftScale):
     distribution version 1.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.ExponentialPower(2, 2, 1)
         >>> distribution
-        ExponentialPower(scale=2, shape=2, shift=1)
+        ExponentialPower(2, scale=2, shift=1)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([1.8976, 2.2848, 2.6129, 2.9587])
@@ -60,5 +59,9 @@ class ExponentialPower(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(ExponentialPower, self).__init__(dist=exponential_power(shape), scale=scale, shift=shift)
+        super(ExponentialPower, self).__init__(
+            dist=exponential_power(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

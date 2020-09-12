@@ -73,7 +73,6 @@ from scipy import special
 
 from .baseclass import Copula
 from .archimedean import Archimedean
-from ..baseclass import Dist
 
 
 class gumbel(Archimedean):
@@ -109,8 +108,8 @@ class Gumbel(Copula):
     where `th` (or theta) is defined on the interval `[1,inf)`.
 
     Args:
-        dist (Dist):
-            The Distribution to wrap
+        dist (Distribution):
+            The distribution to wrap
         theta (float):
             Copula parameter
 
@@ -143,5 +142,8 @@ class Gumbel(Copula):
     """
 
     def __init__(self, dist, theta, eps=1e-6):
-        self._repr = {"theta": theta}
-        Copula.__init__(self, dist=dist, trans=gumbel(len(dist), theta))
+        super(Gumbel, self).__init__(
+            dist=dist,
+            trans=gumbel(len(dist), theta),
+            repr_args=[dist, "theta=%s" % theta],
+        )

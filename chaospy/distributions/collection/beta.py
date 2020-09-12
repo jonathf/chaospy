@@ -2,11 +2,10 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, LowerUpper, ShiftScale
 
 
-class beta_(Dist):
+class beta_(DistributionCore):
 
     def __init__(self, a=1, b=1):
         super(beta_, self).__init__(a=a, b=b)
@@ -41,24 +40,24 @@ class beta_(Dist):
         return 1.
 
 
-class Beta(ShiftScale):
+class Beta(LowerUpper):
     R"""
     Beta Probability Distribution.
 
     Args:
-        alpha (float, Dist):
+        alpha (float, Distribution):
             First shape parameter, alpha > 0
-        beta (float, Dist):
+        beta (float, Distribution):
             Second shape parameter, b > 0
-        lower (float, Dist):
+        lower (float, Distribution):
             Lower threshold
-        upper (float, Dist):
+        upper (float, Distribution):
             Upper threshold
 
     Examples:
         >>> distribution = chaospy.Beta(2, 2, 2, 3)
         >>> distribution
-        Beta(alpha=2, beta=2, lower=2, upper=3)
+        Beta(2, 2, lower=2, upper=3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.2871, 2.4329, 2.5671, 2.7129])
@@ -76,28 +75,31 @@ class Beta(ShiftScale):
     """
 
     def __init__(self, alpha, beta, lower=0, upper=1):
-        self._repr = {
-            "alpha": alpha, "beta": beta, "lower": lower, "upper": upper}
-        super(Beta, self).__init__(dist=beta_(alpha, beta), scale=upper-lower, shift=lower)
+        super(Beta, self).__init__(
+            dist=beta_(alpha, beta),
+            lower=lower,
+            upper=upper,
+            repr_args=[alpha, beta],
+        )
 
 
-class ArcSinus(ShiftScale):
+class ArcSinus(LowerUpper):
     """
     Generalized Arc-sinus distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter where 0.5 is the default non-generalized case.
             Defined on the interval ``[0, 1]``.
-        lower (float, Dist):
+        lower (float, Distribution):
             Lower threshold
-        upper (float, Dist):
+        upper (float, Distribution):
             Upper threshold
 
     Examples:
         >>> distribution = chaospy.ArcSinus(0.8, 4, 6)
         >>> distribution
-        ArcSinus(lower=4, shape=0.8, upper=6)
+        ArcSinus(0.8, lower=4, upper=6)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([4.9875, 5.6438, 5.9134, 5.9885, 5.9996])
@@ -112,26 +114,30 @@ class ArcSinus(ShiftScale):
     """
 
     def __init__(self, shape=0.5, lower=0, upper=1):
-        self._repr = {"shape": shape, "lower": lower, "upper": upper}
-        super(ArcSinus, self).__init__(dist=beta_(shape, 1-shape), scale=upper-lower, shift=lower)
+        super(ArcSinus, self).__init__(
+            dist=beta_(shape, 1-shape),
+            lower=lower,
+            upper=upper,
+            repr_args=[shape],
+        )
 
 
-class PowerLaw(ShiftScale):
+class PowerLaw(LowerUpper):
     """
     Powerlaw distribution
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        lower (float, Dist):
+        lower (float, Distribution):
             Location of lower threshold
-        upper (float, Dist):
+        upper (float, Distribution):
             Location of upper threshold
 
     Examples:
         >>> distribution = chaospy.PowerLaw(0.8, 4, 6)
         >>> distribution
-        PowerLaw(lower=4, shape=0.8, upper=6)
+        PowerLaw(0.8, lower=4, upper=6)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([4.213 , 4.5066, 4.8409, 5.2048, 5.5924])
@@ -146,8 +152,12 @@ class PowerLaw(ShiftScale):
     """
 
     def __init__(self, shape=1, lower=0, upper=1):
-        self._repr = {"shape": shape, "lower": lower, "upper": upper}
-        super(PowerLaw, self).__init__(dist=beta_(shape, 1), scale=(upper-lower), shift=lower)
+        super(PowerLaw, self).__init__(
+            dist=beta_(shape, 1),
+            lower=lower,
+            upper=upper,
+            repr_args=[shape],
+        )
 
 
 class Wigner(ShiftScale):
@@ -155,15 +165,15 @@ class Wigner(ShiftScale):
     Wigner (semi-circle) distribution
 
     Args:
-        radius (float, Dist):
+        radius (float, Distribution):
             Radius of the semi-circle (scale)
-        shift (float, Dist):
+        shift (float, Distribution):
             Location of the circle origin (location)
 
     Examples:
         >>> distribution = chaospy.Wigner(2, 3)
         >>> distribution
-        Wigner(radius=2, shift=3)
+        Wigner(2, 3)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([1.8934, 2.4701, 3.    , 3.5299, 4.1066])
@@ -178,9 +188,10 @@ class Wigner(ShiftScale):
     """
 
     def __init__(self, radius=1, shift=0):
-        self._repr = {"radius": radius, "shift": shift}
         super(Wigner, self).__init__(
-            dist=beta_(1.5, 1.5), scale=2*radius, shift=shift-radius)
+            dist=beta_(1.5, 1.5),
+            scale=2*radius, shift=shift-radius)
+        self._repr_args = [radius, shift]  # tiny hack
 
 
 class PERT(Beta):
@@ -197,18 +208,18 @@ class PERT(Beta):
     Args:
         lower (float):
             The lower bounds for the distribution.
-        mode (float, Dist):
+        mode (float, Distribution):
             The mode of the distribution.
         upper (float):
             The upper bounds for the distribution.
-        gamma (flat, Dist):
+        gamma (flat, Distribution):
             Modify the PERT distribution to make more emphasis on the
             distribution mode instead of the distribution tails.
 
     Examples:
         >>> distribution = chaospy.PERT(-1, 0, 1)
         >>> distribution
-        PERT(gamma=4, lower=-1, mode=0, upper=1)
+        PERT(mode=0, gamma=4, lower=-1, upper=1)
         >>> q = numpy.linspace(0, 1, 7)[1:-1]
         >>> distribution.inv(q).round(4)
         array([-0.3946, -0.1817,  0.    ,  0.1817,  0.3946])
@@ -226,5 +237,10 @@ class PERT(Beta):
         mu = (lower+4*mode+upper)/6.
         alpha = 1+gamma*(mu-lower)/(upper-lower)
         beta = 1+gamma*(upper-mu)/(upper-lower)
-        super(PERT, self).__init__(alpha=alpha, beta=beta, lower=lower, upper=upper)
-        self._repr = {"lower": lower, "mode": mode, "upper": upper, "gamma": gamma}
+        LowerUpper.__init__(
+            self,
+            dist=beta_(alpha, beta),
+            lower=lower,
+            upper=upper,
+            repr_args=["mode=%s" % mode, "gamma=%s" % gamma],
+        )

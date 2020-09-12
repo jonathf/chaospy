@@ -102,7 +102,7 @@ def generate_quadrature(
     Args:
         order (int):
             The order of the quadrature.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
         rule (str, Sequence[str]):
             Rule for generating abscissas and weights. If one name is provided,
@@ -114,7 +114,7 @@ def generate_quadrature(
             If True used Smolyak's sparse grid instead of normal tensor product
             grid.
         accuracy (int):
-            If gaussian is set, but the Dist provieded in domain does not
+            If gaussian is set, but the dist provided in domain does not
             provide an analytical TTR, ac sets the approximation order for the
             descitized Stieltje's method.
         growth (bool, None):
@@ -166,89 +166,68 @@ def generate_quadrature(
         return sparse_grid.construct_sparse_grid(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
-    if isinstance(dist, (chaospy.J, chaospy.Iid)):
+    if isinstance(dist, (chaospy.J, chaospy.Iid)) and not dist.stochastic_dependent:
 
         order = numpy.ones(len(dist), dtype=int)*order
-        from ..distributions.evaluation import get_dependencies
-        if get_dependencies(*dist):
-            abscissas, weights = generate_quadrature(
-                order=order,
-                dist=(dist.lower, dist.upper),
-                rule=rule,
+        abscissas, weights = zip(*[
+            generate_quadrature(
+                order=order_,
+                dist=dist_,
+                rule=rule_,
                 growth=growth,
                 segments=segments,
                 recurrence_algorithm=recurrence_algorithm,
             )
-            weights *= dist.pdf(abscissas)
-        else:
-            abscissas, weights = zip(*[
-                generate_quadrature(
-                    order=order_,
-                    dist=dist_,
-                    rule=rule_,
-                    growth=growth,
-                    segments=segments,
-                    recurrence_algorithm=recurrence_algorithm,
-                )
-                for order_, dist_, rule_ in zip(order, dist, rule)
-            ])
-            abscissas = combine([abscissa.T for abscissa in abscissas]).T
-            weights = numpy.prod(combine([weight.T for weight in weights]), -1)
-
-        return abscissas, weights
+            for order_, dist_, rule_ in zip(order, dist, rule)
+        ])
+        abscissas = combine([abscissa.T for abscissa in abscissas]).T
+        weights = numpy.prod(combine([weight.T for weight in weights]), -1)
 
     elif isinstance(dist, chaospy.Add):
-        if isinstance(dist.prm["left"], chaospy.Dist):
-            const = numpy.asarray(dist.prm["right"])
-            dist_ = dist.prm["left"]
+        parameters= dist.get_parameters(cache={})
+        if isinstance(parameters["left"], chaospy.Distribution):
+            const = numpy.asarray(parameters["right"])
+            dist_ = parameters["left"]
         else:
-            const = numpy.asarray(dist.prm["left"])
-            dist_ = dist.prm["right"]
+            const = numpy.asarray(parameters["left"])
+            dist_ = parameters["right"]
         abscissas, weights = generate_quadrature(
             order=order, dist=dist_, rule=rule, accuracy=accuracy,
             growth=growth, segments=segments,
             recurrence_algorithm=recurrence_algorithm,
         )
-        return (abscissas.T+const.T).T, weights
+        abscissas = (abscissas.T+const.T).T
 
-    if isinstance(dist, chaospy.Mul):
-        if isinstance(dist.prm["left"], chaospy.Dist):
-            const = numpy.asarray(dist.prm["right"])
-            dist_ = dist.prm["left"]
+    elif isinstance(dist, chaospy.Mul):
+        parameters= dist.get_parameters(cache={})
+        if isinstance(parameters["left"], chaospy.Distribution):
+            const = numpy.asarray(parameters["right"])
+            dist_ = parameters["left"]
         else:
-            const = numpy.asarray(dist.prm["left"])
-            dist_ = dist.prm["right"]
+            const = numpy.asarray(parameters["left"])
+            dist_ = parameters["right"]
         abscissas, weights = generate_quadrature(
             order=order, dist=dist_, rule=rule, accuracy=accuracy,
             growth=growth, segments=segments,
             recurrence_algorithm=recurrence_algorithm,
         )
-        return (abscissas.T*const.T).T, weights
+        abscissas = (abscissas.T*const.T).T
 
-    rule = QUAD_NAMES[rule[0].lower()]
-    kwargs = {}
+    else:
+        rule = QUAD_NAMES[rule[0].lower()]
+        kwargs = {}
 
-    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
-        kwargs.update(growth=growth, segments=segments)
+        if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
+            kwargs.update(growth=growth, segments=segments)
 
-    if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
-        kwargs.update(accuracy=accuracy,
-                      recurrence_algorithm=recurrence_algorithm)
+        if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
+            kwargs.update(accuracy=accuracy,
+                        recurrence_algorithm=recurrence_algorithm)
 
-    quad_function = QUAD_FUNCTIONS[rule]
-    abscissas, weights = quad_function(order, dist, **kwargs)
+        quad_function = QUAD_FUNCTIONS[rule]
+        abscissas, weights = quad_function(order, dist, **kwargs)
 
     assert abscissas.shape == (len(dist), len(weights))
-
-    from ..distributions.operators.joint import J
-    from ..distributions.evaluation import sorted_dependencies
-    if isinstance(dist, chaospy.Dist) and dist.interpret_as_integer:
-        abscissas = numpy.around(abscissas).astype(int)
-    elif isinstance(dist, J):
-        for dist_ in sorted_dependencies(dist):
-            if dist_ in dist.inverse_map and dist_.interpret_as_integer:
-                idx = dist.inverse_map[dist_]
-                abscissas[idx:idx+len(dist_)] = numpy.around(
-                    abscissas[idx:idx+len(dist_)])
-
+    if dist.interpret_as_integer:
+        abscissas = numpy.round(abscissas).astype(int)
     return abscissas, weights

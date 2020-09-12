@@ -22,6 +22,7 @@ The first few orders::
 """
 import numpy
 from scipy.optimize import fminbound
+import chaospy
 
 from .combine import combine
 from .recurrence import analytical_stieljes, discretized_stieltjes
@@ -40,7 +41,7 @@ def quad_leja(
     Args:
         order (int):
             The order of the quadrature.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
@@ -69,11 +70,9 @@ def quad_leja(
         >>> weights.round(4)
         array([0.022 , 0.1629, 0.6506, 0.1645])
     """
-    from chaospy.distributions import evaluation
-
     if len(dist) > 1:
-        if evaluation.get_dependencies(*list(dist)):
-            raise evaluation.DependencyError(
+        if dist.stochastic_depedent:
+            raise chaospy.StochasticallyDependentError(
                 "Leja quadrature do not supper distribution with dependencies.")
         if isinstance(order, int):
             out = [quad_leja(order, _) for _ in dist]

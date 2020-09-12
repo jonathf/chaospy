@@ -3,47 +3,51 @@ import numpy
 from scipy import special
 
 from .baseclass import Copula
-from ..baseclass import Dist, declare_stochastic_dependencies
+from ..baseclass import Distribution, DistributionCore
 
-class nataf(Dist):
+
+
+class nataf(Distribution):
     """Nataf (normal) copula."""
 
     def __init__(self, R, rotation=None):
         if rotation is None:
             rotation = range(len(R))
-        self._rotation = numpy.array(rotation)
+        rotation = numpy.array(rotation)
 
         accumulant = set()
-        dependencies = declare_stochastic_dependencies(self, len(R))
-        self._dependencies = [None]*len(R)
-        for idx in self._rotation:
+        dependencies = self._declare_dependencies(len(R))
+        for idx in rotation:
             accumulant.add(dependencies[idx])
-            self._dependencies[idx] = accumulant.copy()
+            dependencies[idx] = accumulant.copy()
 
         P = numpy.eye(len(R))[rotation]
         R = numpy.dot(P, numpy.dot(R, P.T))
         R = numpy.linalg.cholesky(R)
         R = numpy.dot(P.T, numpy.dot(R, P))
         Ci = numpy.linalg.inv(R)
-        self.length = len(R)
-        Dist.__init__(self, C=R, Ci=Ci)
+        super(nataf, self).__init__(
+            parameters=dict(C=R, Ci=Ci),
+            rotation=rotation,
+            dependencies=dependencies,
+        )
 
-    def __len__(self):
-        return self.length
-
-    def _cdf(self, x, C, Ci):
+    def _cdf(self, x, C, Ci, cache):
         out = special.ndtr(numpy.dot(Ci, special.ndtri(x)))
         return out
 
-    def _ppf(self, q, C, Ci):
+    def _ppf(self, q, C, Ci, cache):
         out = special.ndtr(numpy.dot(C, special.ndtri(q)))
         return out
 
-    def _lower(self, C, Ci):
-        return 0.
+    def _lower(self, C, Ci, cache):
+        return numpy.zeros(len(self))
 
-    def _upper(self, C, Ci):
-        return 1.
+    def _upper(self, C, Ci, cache):
+        return numpy.ones(len(self))
+
+    def _value(self, C, Ci, cache):
+        return self
 
 
 class Nataf(Copula):
@@ -51,8 +55,8 @@ class Nataf(Copula):
     Nataf (normal) copula.
 
     Args:
-        dist (Dist):
-            The Distribution to wrap.
+        dist (Distribution):
+            The distribution to wrap.
         R (numpy.ndarray):
             Covariance matrix.
 
@@ -87,4 +91,8 @@ class Nataf(Copula):
     def __init__(self, dist, R, rotation=None):
         self._repr = {"R": R}
         assert len(dist) == len(R)
-        return Copula.__init__(self, dist=dist, trans=nataf(R, rotation))
+        return super(Nataf, self).__init__(
+            dist=dist,
+            trans=nataf(R, rotation),
+            repr_args=[dist, "R=%s" % R],
+        )

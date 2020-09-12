@@ -1,18 +1,18 @@
 """Discrete uniform probability distribution."""
 import numpy
 
-from ..baseclass import Dist
+from ..baseclass import DistributionCore
 
 
-class DiscreteUniform(Dist):
+class DiscreteUniform(DistributionCore):
     """
     Discrete uniform probability distribution.
 
     Args:
-        lower (float, chaospy.Dist):
+        lower (float, chaospy.Distribution):
             Lower threshold of distribution. Must be smaller than ``upper``.
             Value will be rounded up to closes integer.
-        upper (float, chaospy.Dist):
+        upper (float, chaospy.Distribution):
             Upper threshold of distribution. Value will be rouned down to
             closes integer.
 
@@ -40,8 +40,7 @@ class DiscreteUniform(Dist):
     interpret_as_integer = True
 
     def __init__(self, lower, upper):
-        self._repr = {"lower": lower, "upper": upper}
-        Dist.__init__(self, lower=lower, upper=upper)
+        super(DiscreteUniform, self).__init__(lower=lower, upper=upper)
 
     def _cdf(self, x_data, lower, upper):
         """Cumulative distribution function."""
@@ -65,7 +64,7 @@ class DiscreteUniform(Dist):
     def _ppf(self, q_data, lower, upper):
         """Point percentile function."""
         lower = numpy.round(lower)
-        upper = numpy.round(upper)
+        upper = numpy.rint(upper)
         return q_data*(upper-lower+1)+lower-0.5
 
     def _mom(self, k_data, lower, upper):

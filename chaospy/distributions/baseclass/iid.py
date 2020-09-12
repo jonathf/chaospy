@@ -1,17 +1,17 @@
 """Independent identical distributed vector of random variables."""
 import numpy
 
-from ..baseclass import Dist, declare_stochastic_dependencies
+from .distribution import Distribution
 from copy import deepcopy
 
 
-class Iid(Dist):
+class Iid(Distribution):
     """
     Opaque method for creating independent identical distributed random
     variables from an univariate variable.
 
     Args:
-        dist (Dist):
+        dist (Distribution):
             Distribution to make into i.i.d. vector. The
             distribution will be copied so to not become a part of
             the dependency graph.
@@ -46,12 +46,19 @@ class Iid(Dist):
 
     def __init__(self, dist, length, rotation=None):
         assert len(dist) == 1 and length >= 1
-        self._dependencies = [set([idx]) for idx in declare_stochastic_dependencies(self, length)]
+        dependencies = [set([idx]) for idx in self._declare_dependencies(length)]
         if rotation is not None:
-            self._rotation = list(rotation)
-        self._dist = deepcopy(dist)
-        self._repr = {"_": [dist, length]}
-        Dist.__init__(self)
+            rotation = list(rotation)
+        exclusion = dist._dependencies[0].copy()
+        self._dist = dist
+        Distribution.__init__(
+            self,
+            parameters={},
+            dependencies=dependencies,
+            rotation=rotation,
+            exclusion=exclusion,
+            repr_args=[dist, length],
+        )
 
     def __getitem__(self, index):
         if isinstance(index, int):
@@ -88,3 +95,6 @@ class Iid(Dist):
     def _ttr(self, kloc, cache):
         del cache
         return self._dist.ttr(kloc)
+
+    def _value(self, cache):
+        return self

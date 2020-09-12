@@ -1,13 +1,12 @@
 """Pareto type 2 distribution."""
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class pareto2(Dist):
+class pareto2(DistributionCore):
     """Pareto type 2 distribution."""
 
     def __init__(self, c):
-        Dist.__init__(self, c=c)
+        super(pareto2, self).__init__(c=c)
 
     def _pdf(self, x, c):
         return c*1.0/(1.0+x)**(c+1.0)
@@ -31,17 +30,17 @@ class Pareto2(ShiftScale):
     Lower threshold at loc and survival: (1+x)^-shape.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
-        loc (float, Dist):
+        loc (float, Distribution):
             Location parameter
 
     Examples:
         >>> distribution = chaospy.Pareto2(2, 2, 2)
         >>> distribution
-        Pareto2(loc=2, scale=2, shape=2)
+        Pareto2(2, scale=2, shift=2)
         >>> q = numpy.linspace(0,1,6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.2361, 2.582 , 3.1623, 4.4721])
@@ -53,6 +52,10 @@ class Pareto2(ShiftScale):
         array([3.3981, 2.126 , 8.9697, 2.7794])
     """
 
-    def __init__(self, shape=1, scale=1, loc=0):
-        self._repr = {"shape": shape, "scale": scale, "loc": loc}
-        super(Pareto2, self).__init__(dist=pareto2(shape), scale=scale, shift=loc)
+    def __init__(self, shape=1, scale=1, shift=0):
+        super(Pareto2, self).__init__(
+            dist=pareto2(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

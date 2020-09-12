@@ -3,11 +3,10 @@ import numpy
 from scipy import special
 
 import chaospy
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class alpha(Dist):
+class alpha(DistributionCore):
     """Standard Alpha distribution."""
 
     def __init__(self, a=1):
@@ -32,17 +31,17 @@ class Alpha(ShiftScale):
     Alpha distribution.
 
     Args:
-        shape (float, Dist):
+        shape (float, Distribution):
             Shape parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scale Parameter
-        shift (float, Dist):
+        shift (float, Distribution):
             Location of lower threshold
 
     Examples:
-        >>> distribution = chaospy.Alpha(shape=[1, 2], scale=0.5)
+        >>> distribution = chaospy.Alpha([1, 2], scale=0.5)
         >>> distribution
-        Alpha(scale=0.5, shape=[1, 2], shift=0)
+        Alpha([1, 2], scale=0.5)
         >>> mesh = numpy.mgrid[0.25:0.75:3j, 0.25:0.75:3j].reshape(2, -1)
         >>> mapped_mesh = distribution.inv(mesh)
         >>> mapped_mesh.round(2)
@@ -51,7 +50,7 @@ class Alpha(ShiftScale):
         >>> numpy.allclose(distribution.fwd(mapped_mesh), mesh)
         True
         >>> distribution.pdf(mapped_mesh).round(2)
-        array([14.37, 10.48,  8.04,  1.49, 32.15,  0.84,  4.68,  3.34,  2.62])
+        array([32.15, 14.37,  8.04, 10.48,  4.68,  2.62,  3.34,  1.49,  0.84])
         >>> distribution.sample(4).round(4)
         array([[0.5717, 0.2174, 3.1229, 0.4037],
                [0.5251, 0.1776, 0.1332, 0.2189]])
@@ -59,5 +58,9 @@ class Alpha(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(Alpha, self).__init__(dist=alpha(shape), scale=scale, shift=shift)
+        super(Alpha, self).__init__(
+            dist=alpha(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

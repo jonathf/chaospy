@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class frechet(Dist):
+class frechet(DistributionCore):
     """Frechet or Extreme value distribution type 2."""
 
     def __init__(self, c=1):
-        Dist.__init__(self, c=c)
+        super(frechet, self).__init__(c=c)
 
     def _pdf(self, x, c):
         return c*pow(x,c-1)*numpy.exp(-pow(x,c))
@@ -33,17 +32,17 @@ class Frechet(ShiftScale):
     Frechet or Extreme value distribution type 2.
 
     Args:
-        shape (float, Dist):
-            Shape parameter
-        scale (float, Dist):
-            Scaling parameter
-        shift (float, Dist):
-            Location parameter
+        shape (float, Distribution):
+            Shape parameter.
+        scale (float, Distribution):
+            Scaling parameter.
+        shift (float, Distribution):
+            Location parameter.
 
     Examples:
         >>> distribution = chaospy.Frechet(3, 2, 1)
         >>> distribution
-        Frechet(scale=2, shape=3, shift=1)
+        Frechet(3, scale=2, shift=1)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([2.2131, 2.5988, 2.9426, 3.3438])
@@ -58,5 +57,9 @@ class Frechet(ShiftScale):
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
-        self._repr = {"shape": shape, "scale": scale, "shift": shift}
-        super(Frechet, self).__init__(dist=frechet(shape), scale=scale, shift=shift)
+        super(Frechet, self).__init__(
+            dist=frechet(shape),
+            scale=scale,
+            shift=shift,
+            repr_args=[shape],
+        )

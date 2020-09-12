@@ -15,7 +15,7 @@ def Sens_m2(poly, dist, **kws):
     Args:
         poly (numpoly.ndpoly):
             Polynomial to find second order Sobol indices on.
-        dist (Dist):
+        dist (Distribution):
             The distributions of the input used in ``poly``.
 
     Returns:

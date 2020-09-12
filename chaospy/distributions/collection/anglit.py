@@ -1,11 +1,10 @@
 """Anglit distribution."""
 import numpy
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class anglit(Dist):
+class anglit(DistributionCore):
     """Anglit distribution."""
 
     def __init__(self):
@@ -32,15 +31,15 @@ class Anglit(ShiftScale):
     Anglit distribution.
 
     Args:
-        loc (float, Dist):
+        loc (float, Distribution):
             Location parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Anglit(2, 4)
+        >>> distribution = chaospy.Anglit(4, 2)
         >>> distribution
-        Anglit(loc=2, scale=4)
+        Anglit(scale=4, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([-1.1416,  0.9528,  2.    ,  3.0472,  5.1416])
@@ -54,6 +53,5 @@ class Anglit(ShiftScale):
         array([ 2.    ,  5.8696, 19.2176])
     """
 
-    def __init__(self, loc=0, scale=1):
-        self._repr = {"scale": scale, "loc": loc}
-        super(Anglit, self).__init__(dist=anglit(), scale=scale, shift=loc)
+    def __init__(self, scale=1, shift=0):
+        super(Anglit, self).__init__(dist=anglit(), scale=scale, shift=shift)

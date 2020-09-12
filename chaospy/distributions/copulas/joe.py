@@ -56,7 +56,6 @@ from scipy import special
 
 from .baseclass import Copula
 from .archimedean import Archimedean
-from ..baseclass import Dist
 
 
 class joe(Archimedean):
@@ -84,8 +83,8 @@ class Joe(Copula):
     Joe Copula
 
     Args:
-        dist (Dist):
-            The Distribution to wrap
+        dist (Distribution):
+            The distribution to wrap
         theta (float):
             Copula parameter. Required to be above 1.
 
@@ -118,5 +117,8 @@ class Joe(Copula):
     """
 
     def __init__(self, dist, theta=2.):
-        self._repr = {"theta": theta}
-        Copula.__init__(self, dist, joe(len(dist), theta))
+        super(Joe, self).__init__(
+            dist=dist,
+            trans=joe(len(dist), theta),
+            repr_args=[dist, "theta=%s" % theta],
+        )

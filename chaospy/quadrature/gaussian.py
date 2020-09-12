@@ -111,7 +111,6 @@ For example, to mention a few:
     >>> weights.round(4)
     array([9.600e-02, 3.591e-01, 3.891e-01, 1.412e-01, 1.430e-02, 2.000e-04])
 """
-from ..distributions import evaluation
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
 from .combine import combine_quadrature
@@ -134,7 +133,7 @@ def quad_gaussian(
     algorithms exists.
 
     Args:
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
         order (int):
             The order of the quadrature.

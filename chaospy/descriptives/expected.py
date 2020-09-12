@@ -11,9 +11,9 @@ def E(poly, dist=None, **kws):
     probability space.
 
     Args:
-        poly (numpoly.ndpoly, Dist):
+        poly (numpoly.ndpoly, Distribution):
             Input to take expected value on.
-        dist (Dist):
+        dist (Distribution):
             Defines the space the expected value is taken on. It is ignored if
             ``poly`` is a distribution.
 

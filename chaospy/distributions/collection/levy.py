@@ -2,15 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import Dist
-from ..operators import ShiftScale
+from ..baseclass import DistributionCore, ShiftScale
 
 
-class levy(Dist):
+class levy(DistributionCore):
     """Levy distribution."""
 
     def __init__(self):
-        Dist.__init__(self)
+        super(levy, self).__init__()
 
     def _pdf(self, x):
         return 1/numpy.sqrt(2*numpy.pi*x)/x*numpy.exp(-1/(2*x))
@@ -31,15 +30,15 @@ class Levy(ShiftScale):
     Levy distribution
 
     Args:
-        loc (float, Dist):
-            Location parameter
-        scale (float, Dist):
+        scale (float, Distribution):
             Scaling parameter
+        shift (float, Distribution):
+            Location parameter
 
     Examples:
         >>> distribution = chaospy.Levy(2, 2)
         >>> distribution
-        Levy(loc=2, scale=2)
+        Levy(scale=2, shift=2)
         >>> q = numpy.linspace(0, 1, 6)[1:-1]
         >>> distribution.inv(q).round(4)
         array([ 3.2177,  4.8236,  9.2728, 33.16  ])
@@ -50,6 +49,10 @@ class Levy(ShiftScale):
         >>> distribution.sample(4).round(4)
         array([ 11.9303,   2.8051, 516.4406,   6.0494])
     """
-    def __init__(self, loc=0, scale=1):
-        self._repr = {"loc": loc, "scale": scale}
-        super(Levy, self).__init__(dist=levy(), scale=scale, shift=loc)
+
+    def __init__(self, scale=1, shift=0):
+        super(Levy, self).__init__(
+            dist=levy(),
+            scale=scale,
+            shift=shift,
+        )

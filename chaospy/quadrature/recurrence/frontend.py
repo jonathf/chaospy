@@ -44,7 +44,7 @@ def construct_recurrence_coefficients(
     Args:
         order (int):
             The order of the quadrature.
-        dist (chaospy.distributions.baseclass.Dist):
+        dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
             Assumed to one-dimensional.
         rule (str):

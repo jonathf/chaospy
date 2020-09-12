@@ -25,6 +25,7 @@ from .generalized_gamma import GeneralizedGamma
 from .generalized_half_logistic import GeneralizedHalfLogistic
 from .gompertz import Gompertz
 from .hyperbolic_secant import HyperbolicSecant
+from .inverse_gamma import InverseGamma
 from .kumaraswamy import Kumaraswamy
 from .laplace import Laplace
 from .levy import Levy
