@@ -52,7 +52,7 @@ discretized model as long as it is compatible with ``numpy`` shapes.
 As mentioned in section :ref:`orthogonality`, moment based construction of
 polynomials can be unstable. This might also be the case for the
 denominator :math:`\mathbb E{\Phi_n^2}`. So when using three terms
-recursion, it is common to use the recurrence coefficients to estimated
+recurrence, it is common to use the recurrence coefficients to estimated
 the denominator.
 
 One caveat with using pseudo-spectral projection is that the calculations of

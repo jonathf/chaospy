@@ -60,26 +60,26 @@ Algorithms
 
 There are three algorithms available:
 
-+-----------------------+--------------------------------------------------+
-| Algorithm             | Description                                      |
-+-----------------------+--------------------------------------------------+
-| three_terms_recursion | Three terms recurrence coefficients generated    |
-|                       | using Stieltjes and Golub-Welsch method. The     |
-|                       | most stable of the methods, but do not work on   |
-|                       | dependent distributions.                         |
-+-----------------------+--------------------------------------------------+
-| gram_schmidt          | Gram-Schmidt orthogonalization method applied on |
-|                       | polynomial expansions. Know for being            |
-|                       | numerically unstable.                            |
-+-----------------------+--------------------------------------------------+
-| cholesky              | Orthogonalization through decorrelation of the   |
-|                       | covariance matrix. Uses Gill-King's Cholesky     |
-|                       | decomposition method for higher numerical        |
-|                       | stability. Still not scalable to high number of  |
-|                       | dimensions.                                      |
-+-----------------------+--------------------------------------------------+
++------------------------+--------------------------------------------------+
+| Algorithm              | Description                                      |
++------------------------+--------------------------------------------------+
+| three_terms_recurrence | Three terms recurrence coefficients generated    |
+|                        | using Stieltjes and Golub-Welsch method. The     |
+|                        | most stable of the methods, but do not work on   |
+|                        | dependent distributions.                         |
++------------------------+--------------------------------------------------+
+| gram_schmidt           | Gram-Schmidt orthogonalization method applied on |
+|                        | polynomial expansions. Know for being            |
+|                        | numerically unstable.                            |
++------------------------+--------------------------------------------------+
+| cholesky               | Orthogonalization through decorrelation of the   |
+|                        | covariance matrix. Uses Gill-King's Cholesky     |
+|                        | decomposition method for higher numerical        |
+|                        | stability. Still not scalable to high number of  |
+|                        | dimensions.                                      |
++------------------------+--------------------------------------------------+
 
 .. autofunction:: chaospy.orthogonal.frontend.generate_expansion
-.. autofunction:: chaospy.orthogonal.three_terms_recursion.orth_ttr
+.. autofunction:: chaospy.orthogonal.three_terms_recurrence.orth_ttr
 .. autofunction:: chaospy.orthogonal.cholesky.orth_chol
 .. autofunction:: chaospy.orthogonal.gram_schmidt.orth_gs

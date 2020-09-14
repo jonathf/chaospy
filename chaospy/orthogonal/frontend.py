@@ -1,16 +1,16 @@
 """Frontend function for generating polynomial expansions."""
-from .three_terms_recursion import orth_ttr
+from .three_terms_recurrence import orth_ttr
 from .cholesky import orth_chol
 from .gram_schmidt import orth_gs
 from .lagrange import lagrange_polynomial
 
 EXPANSION_NAMES = {
-    "ttr": "three_terms_recursion", "three_terms_recursion": "three_terms_recursion",
+    "ttr": "three_terms_recurrence", "three_terms_recurrence": "three_terms_recurrence",
     "chol": "cholesky", "cholesky": "cholesky",
     "gs": "gram_schmidt", "gram_schmidt": "gram_schmidt",
 }
 EXPANSION_FUNCTIONS = {
-    "three_terms_recursion": orth_ttr,
+    "three_terms_recurrence": orth_ttr,
     "cholesky": orth_chol,
     "gram_schmidt": orth_gs,
 }
@@ -19,7 +19,7 @@ EXPANSION_FUNCTIONS = {
 def generate_expansion(
         order,
         dist,
-        rule="three_terms_recursion",
+        rule="three_terms_recurrence",
         normed=False,
         graded=True,
         reverse=True,
@@ -33,24 +33,24 @@ def generate_expansion(
     This function is a frontend wrapper for the three methods for creating
     orthogonal polynomials:
 
-    +-----------------------+--------------------------------------------------+
-    | Algorithm             | Description                                      |
-    +-----------------------+--------------------------------------------------+
-    | three_terms_recursion | Three terms recurrence coefficients generated    |
-    |                       | using Stieltjes and Golub-Welsch method. The     |
-    |                       | most stable of the methods, but do not work on   |
-    |                       | dependent distributions.                         |
-    +-----------------------+--------------------------------------------------+
-    | gram_schmidt          | Gram-Schmidt orthogonalization method applied on |
-    |                       | polynomial expansions. Know for being            |
-    |                       | numerically unstable.                            |
-    +-----------------------+--------------------------------------------------+
-    | cholesky              | Orthogonalization through decorrelation of the   |
-    |                       | covariance matrix. Uses Gill-King's Cholesky     |
-    |                       | decomposition method for higher numerical        |
-    |                       | stability. Still not scalable to high number of  |
-    |                       | dimensions.                                      |
-    +-----------------------+--------------------------------------------------+
+    +------------------------+-------------------------------------------------+
+    | Algorithm              | Description                                     |
+    +------------------------+-------------------------------------------------+
+    | three_terms_recurrence | Three terms recurrence coefficients generated   |
+    |                        | using Stieltjes and Golub-Welsch method. The    |
+    |                        | most stable of the methods, but do not work on  |
+    |                        | dependent distributions.                        |
+    +------------------------+-------------------------------------------------+
+    | gram_schmidt           | Gram-Schmidt orthogonalization method applied   |
+    |                        | on polynomial expansions. Know for being        |
+    |                        | numerically unstable.                           |
+    +------------------------+-------------------------------------------------+
+    | cholesky               | Orthogonalization through decorrelation of the  |
+    |                        | covariance matrix. Uses Gill-King's Cholesky    |
+    |                        | decomposition method for higher numerical       |
+    |                        | stability. Still not scalable to high number of |
+    |                        | dimensions.                                     |
+    +------------------------+-------------------------------------------------+
 
     Args:
         order (int):

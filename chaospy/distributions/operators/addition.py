@@ -208,7 +208,7 @@ class Add(OperatorDistribution):
 
     def _ttr(self, kloc, left, right, cache):
         """
-        Three terms recursion coefficients.
+        Three terms recurrence coefficients.
 
         Example:
             >>> print(numpy.around(chaospy.Uniform().ttr([0, 1, 2, 3]), 4))

@@ -58,7 +58,7 @@ def construct(parent=None, defaults=None, **kwargs):
         mom:
             Raw moment generator.
         ttr:
-            Three terms recursion coefficient generator.
+            Three terms recurrence coefficient generator.
         init:
             Custom initialiser method.
         defaults (dict):

@@ -4,7 +4,7 @@ when using raw statistical moments as input (see `paper by Gautschi`_ for
 details). This can be a problem if constructing large expansions since the
 error blows up. Given that the distribution is univariate it is instead
 possible to create orthogonal polynomials stabilized using the three terms
-recursion relation:
+recurrence relation:
 
 .. math::
     \Phi_{n+1}(q) = \Phi_{n}(q) (q-A_n) - \Phi_{n-1}(q) B_n,
@@ -24,7 +24,7 @@ A multivariate polynomial expansion can be created using tensor product
 rule of univariate polynomials expansions. This assumes that the
 distribution is stochastically independent.
 
-In the ``chaospy`` toolbox three terms recursion coefficient can be
+In the ``chaospy`` toolbox three terms recurrence coefficient can be
 generating by calling the ``ttr`` instance method::
 
     >>> dist = chaospy.Uniform(-1, 1)
@@ -33,12 +33,12 @@ generating by calling the ``ttr`` instance method::
            [-0.    ,  0.3333,  0.2667,  0.2571]])
 
 In many of the pre-defined probability distributions in ``chaospy``, the three
-terms recursion coefficients are calculated analytically. If the distribution
+terms recurrence coefficients are calculated analytically. If the distribution
 does not support the method, the coefficients are instead calculated using the
 discretized Stieltjes method (described in the `paper by Golub and Welsch`_).
 
 In ``chaospy`` constructing orthogonal polynomial using the three term
-recursion scheme can be done through ``orth_ttr``. For example::
+recurrence scheme can be done through ``orth_ttr``. For example::
 
     >>> dist = chaospy.Iid(chaospy.Gamma(1), 2)
     >>> orths = chaospy.orth_ttr(2, dist)
@@ -62,7 +62,7 @@ import chaospy
 def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
              retall=False, cross_truncation=1., sort=None, **kws):
     """
-    Create orthogonal polynomial expansion from three terms recursion formula.
+    Create orthogonal polynomial expansion from three terms recurrence formula.
 
     Args:
         order (int):

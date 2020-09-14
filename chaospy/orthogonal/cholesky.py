@@ -1,5 +1,5 @@
 """
-Even though orthogonal polynomials created using three terms recursion is
+Even though orthogonal polynomials created using three terms recurrence is
 the recommended approach as it is the most numerical stable method, it can not
 be used directly on stochastically dependent random variables. On method that
 bypasses this problem is Cholesky decomposition method.

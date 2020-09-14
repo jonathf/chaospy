@@ -287,7 +287,7 @@ class Mul(OperatorDistribution):
         return numpy.prod(left)*numpy.prod(right)
 
     def _ttr(self, kloc, left, right, cache):
-        """Three terms recursion coefficients."""
+        """Three terms recurrence coefficients."""
         del cache
         if isinstance(right, Distribution):
             if isinstance(left, Distribution):

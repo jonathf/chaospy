@@ -72,7 +72,7 @@ class Neg(OperatorDistribution):
         return (-1)**numpy.sum(kloc)*left._get_mom(kloc)
 
     def _ttr(self, kloc, left, right, cache):
-        """Three terms recursion coefficients."""
+        """Three terms recurrence coefficients."""
         del right
         del cache
         alpha, beta = left._get_ttr(kloc)

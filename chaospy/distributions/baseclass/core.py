@@ -37,7 +37,7 @@ possible to define the following methods:
 ``_mom``
     Method for creating raw statistical moments, used by the ``mom`` method.
 ``_ttr``
-    Method for creating coefficients from three terms recursion method, used to
+    Method for creating coefficients from three terms recurrence method, used to
     perform "analytical" Stiltjes' method.
 """
 import numpy
