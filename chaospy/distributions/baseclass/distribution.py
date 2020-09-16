@@ -705,18 +705,22 @@ class Distribution():
         """Y.__rpow__(X) <==> X**Y"""
         return chaospy.Pow(X, self)
 
-    def __le__(self, X):
-        """Y.__le__(X) <==> Y<=X"""
-        return chaospy.Trunc(self, X)
+    # def __eq__(self, other):
+    #     if not isinstance(other, Distribution):
+    #         return False
+    #     if len(other) != len(self):
+    #         return False
+    #     if len(other) > 1:
+    #         if len(self) > 1:
+    #             return all([d1 == d2 for d1, d2 in zip(self, other)])
+    #         return all([self == d for d in other])
+    #     elif len(self) > 1:
+    #         return all([d == other for d in self])
+    #     while isinstance(self, chaospy.J):
+    #         self = self._parameters["_000"]
+    #     while isinstance(other, chaospy.J):
+    #         other = other._parameters["_000"]
+    #     return self is other
 
-    def __lt__(self, X):
-        """Y.__lt__(X) <==> Y<X"""
-        return chaospy.Trunc(self, X)
-
-    def __ge__(self, X):
-        """Y.__ge__(X) <==> Y>=X"""
-        return chaospy.Trunc(X, self)
-
-    def __gt__(self, X):
-        """Y.__gt__(X) <==> Y>X"""
-        return chaospy.Trunc(X, self)
+    # def __hash__(self):
+    #     return id(self)

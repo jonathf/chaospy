@@ -153,22 +153,32 @@ class J(Distribution):
     """
 
     def __init__(self, *args, **kwargs):
-        repr_args = args[:]
-        args = [dist for arg in args
-                for dist in (arg if isinstance(arg, J) else [arg])]
-        assert all(isinstance(dist, Distribution) for dist in args)
-        self.interpret_as_integer = all([dist.interpret_as_integer for dist in args])
-        self.indices = [0] + numpy.cumsum([len(dist) for dist in args[:-1]]).tolist()
-        self.inverse_map = {dist: idx for idx, dist in zip(self.indices, args)}
+        dists = []
+        repr_args = []
+        for arg in args:
+            if isinstance(arg, J):
+                repr_args.extend(arg._repr_args)
+                dists.extend(arg)
+            elif len(arg) > 1:
+                repr_args.append(arg)
+                dists.extend(arg)
+            else:
+                repr_args.append(arg)
+                dists.append(arg)
+
+        assert all(isinstance(dist, Distribution) for dist in dists)
+        self.interpret_as_integer = all([dist.interpret_as_integer for dist in dists])
+        self.indices = [0] + numpy.cumsum([len(dist) for dist in dists[:-1]]).tolist()
+        self.inverse_map = {dist: idx for idx, dist in zip(self.indices, dists)}
         dependencies = [
             deps.copy()
-            for dist in args
+            for dist in dists
             for deps in dist._dependencies
         ]
         rotation = kwargs.pop("rotation", None)
         assert not kwargs, "'rotation' is the only allowed keyword."
 
-        parameters = {"_%03d" % idx: dist for idx, dist in zip(self.indices, args)}
+        parameters = {"_%03d" % idx: dist for idx, dist in zip(self.indices, dists)}
         super(J, self).__init__(
             parameters=parameters,
             dependencies=dependencies,
@@ -366,7 +376,12 @@ class J(Distribution):
             for i in range(start, stop, step):
                 out.append(parameters["_%03d" % i])
             return J(*out)
-        raise IndexError("index not recognised.")
+        if isinstance(i, list):
+            return J(*[parameters["_%03d" % idx] for idx in i])
+        raise IndexError("index not recognised")
 
     def _value(self, cache, **kwargs):
+        values = [kwargs[key]._get_value(cache) for key in sorted(kwargs)]
+        if not any([isinstance(value, Distribution) for value in values]):
+            return numpy.vstack(values)
         return self

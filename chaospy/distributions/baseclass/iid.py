@@ -1,11 +1,13 @@
 """Independent identical distributed vector of random variables."""
+from copy import deepcopy
 import numpy
+import chaospy
 
 from .distribution import Distribution
-from copy import deepcopy
+from .joint import J
 
 
-class Iid(Distribution):
+class Iid(J):
     """
     Opaque method for creating independent identical distributed random
     variables from an univariate variable.
@@ -43,58 +45,14 @@ class Iid(Distribution):
 
     """
 
-
     def __init__(self, dist, length, rotation=None):
+        assert isinstance(dist, Distribution)
         assert len(dist) == 1 and length >= 1
-        dependencies = [set([idx]) for idx in self._declare_dependencies(length)]
-        if rotation is not None:
-            rotation = list(rotation)
+        assert len(dist._dependencies[0]) == 1
         exclusion = dist._dependencies[0].copy()
-        self._dist = dist
-        Distribution.__init__(
-            self,
-            parameters={},
-            dependencies=dependencies,
-            rotation=rotation,
-            exclusion=exclusion,
-            repr_args=[dist, length],
-        )
-
-    def __getitem__(self, index):
-        if isinstance(index, int):
-            if index >= len(self) or index < -len(self):
-                raise IndexError("index out of bounds.")
-            dist = deepcopy(self._dist)
-            dist._dependencies = [self._dependencies[index].copy()]
-            return dist
-
-    def _cdf(self, xloc, cache):
-        del cache
-        return self._dist.fwd(xloc)
-
-    def _ppf(self, uloc, cache):
-        del cache
-        return self._dist.inv(uloc)
-
-    def _lower(self, cache):
-        del cache
-        return numpy.ones(len(self))*self._dist.lower
-
-    def _upper(self, cache):
-        del cache
-        return numpy.ones(len(self))*self._dist.upper
-
-    def _pdf(self, xloc, cache):
-        del cache
-        return self._dist.pdf(xloc, decompose=True)
-
-    def _mom(self, kloc, cache):
-        del cache
-        return numpy.prod([self._dist.mom(k) for k in kloc])
-
-    def _ttr(self, kloc, cache):
-        del cache
-        return self._dist.ttr(kloc)
-
-    def _value(self, cache):
-        return self
+        dists = [deepcopy(dist) for _ in range(length)]
+        for dist in dists:
+            dist._dependencies = [{dist._declare_dependencies(1)[0]}]
+        super(Iid, self).__init__(*dists, rotation=rotation)
+        self._exclusion.update(exclusion)
+        self._repr_args = [dist, length]

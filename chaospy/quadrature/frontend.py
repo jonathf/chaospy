@@ -166,7 +166,7 @@ def generate_quadrature(
         return sparse_grid.construct_sparse_grid(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
-    if isinstance(dist, (chaospy.J, chaospy.Iid)) and not dist.stochastic_dependent:
+    if isinstance(dist, chaospy.J) and not dist.stochastic_dependent:
 
         order = numpy.ones(len(dist), dtype=int)*order
         abscissas, weights = zip(*[
