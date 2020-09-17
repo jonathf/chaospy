@@ -3,6 +3,7 @@ from scipy.special import comb
 import numpoly
 import chaospy
 
+from .conditional import Conditional
 from .distribution import Distribution
 
 
@@ -157,7 +158,7 @@ class MeanCovariance(Distribution):
         std_bound = numpy.sqrt(numpy.diag(covariance))
         return self._dist.upper*std_bound+mean
 
-    def _value(self, mean, covariance, cache):
+    def _cache(self, mean, covariance, cache):
         return self
 
     def __getitem__(self, index):
@@ -171,9 +172,9 @@ class MeanCovariance(Distribution):
                 if idx not in self._conditionals:
                     if conditions:
                         self._conditionals[idx] = MeanCovarianceConditional(
-                            dist=self, conditions=chaospy.J(*conditions))
+                            parent=self, conditions=chaospy.J(*conditions))
                     else:
-                        self._conditionals[idx] = MeanCovarianceConditional(dist=self)
+                        self._conditionals[idx] = MeanCovarianceConditional(parent=self)
                 if idx == index:
                     return self._conditionals[idx]
                 conditions.append(self._conditionals[idx])
@@ -186,29 +187,29 @@ class MeanCovariance(Distribution):
         raise IndexError("unrecognized key")
 
 
-class MeanCovarianceConditional(Distribution):
+class MeanCovarianceConditional(Conditional):
     """The conditional structure for the MeanCovariance baseclass."""
 
-    def __init__(self, dist, conditions=()):
-        assert isinstance(dist, MeanCovariance)
-        idx = dist._rotation[len(conditions)]
+    def __init__(self, parent, conditions=()):
+        assert isinstance(parent, MeanCovariance)
+        idx = parent._rotation[len(conditions)]
         if conditions:
             assert isinstance(conditions, chaospy.J)
-            parameters = dict(dist=dist, idx=idx, conditions=conditions)
-            repr_args = [dist, conditions]
+            parameters = dict(parent=parent, idx=idx, conditions=conditions)
+            repr_args = [parent, conditions]
         else:
-            parameters = dict(dist=dist, idx=idx)
-            repr_args = [dist]
+            parameters = dict(parent=parent, idx=idx)
+            repr_args = [parent]
 
         super(MeanCovarianceConditional, self).__init__(
             parameters=parameters,
-            dependencies=[dist._dependencies[idx].copy()],
+            dependencies=[parent._dependencies[idx].copy()],
             rotation=[0],
             repr_args=repr_args,
         )
-        self._covariance = dist._covariance[:len(conditions)+1, :len(conditions)+1]
-        self._fwd_transform = dist._fwd_transform[idx]
-        self._inv_transform = dist._inv_transform[idx]
+        self._covariance = parent._covariance[:len(conditions)+1, :len(conditions)+1]
+        self._fwd_transform = parent._fwd_transform[idx]
+        self._inv_transform = parent._inv_transform[idx]
         covinv = numpy.linalg.inv(self._covariance[:-1, :-1])
         self._mu_transform = self._covariance[-1, :-1].dot(covinv)
         if conditions:
@@ -219,62 +220,79 @@ class MeanCovarianceConditional(Distribution):
         else:
             self._sigma = numpy.sqrt(self._covariance[0, 0])
 
-    def _get_mean(self, dist, cache):
-        mean = dist._parameters["mean"]
+    def _get_mean(self, parent, cache):
+        mean = parent._parameters["mean"]
         if isinstance(mean, Distribution):
-            mean = mean._get_value(cache)
+            mean = mean._get_cache_1(cache)
             assert not isinstance(mean, Distribution)
         if len(mean) == 1:
-            mean = mean*numpy.ones((len(dist),)+mean.shape[1:])
-        mean = mean[numpy.array(dist._rotation)]
+            mean = mean*numpy.ones((len(parent),)+mean.shape[1:])
+        mean = mean[numpy.array(parent._rotation)]
         return mean
 
-    def _lower(self, idx, dist, conditions=(), cache=None):
-        dist = dist._get_value(cache)
-        if isinstance(dist, Distribution):
-            return dist.lower[idx]
-        return dist[idx]
+    def _lower(self, idx, parent, conditions, cache):
+        out = parent._get_cache_1(cache)
+        if isinstance(out, Distribution):
+            out = out.lower
+        return out[idx]
 
-    def _upper(self, idx, dist, conditions=(), cache=None):
-        dist = dist._get_value(cache)
-        if isinstance(dist, Distribution):
-            return dist.upper[idx]
-        return dist[idx]
+    def _upper(self, idx, parent, conditions, cache):
+        out = parent._get_cache_1(cache)
+        if isinstance(out, Distribution):
+            out = out.upper
+        return out[idx]
 
-    def _ppf(self, uloc, idx, dist, conditions=(), cache=None):
-        cache[int(idx)] = uloc
-        conditions = [cache[i] for i in dist._rotation[:len(conditions)+1]]
-        uloc = numpy.vstack(conditions)
-        mean = self._get_mean(dist, cache)
-        zloc = dist._dist[self._rotation[:len(conditions)+1]].inv(uloc)
-        xloc = (self._inv_transform[:len(zloc)].dot(zloc)+mean[len(zloc)-1])
+    def _ppf(self, uloc, idx, parent, conditions, cache):
+        conditions = [condition._get_cache_2(cache) for condition in conditions]
+        if any([isinstance(condition, Distribution) for condition in conditions]):
+            raise chaospy.UnsupportedFeature("Conditions not resolved!")
+        uloc = numpy.vstack(conditions+[uloc])
+        mean = self._get_mean(parent, cache)
+        zloc = parent._dist[parent._rotation[:len(uloc)]]._get_inv(uloc, cache)
+        xloc = (self._inv_transform[:len(uloc)].dot(zloc)+mean[len(uloc)-1])
         return xloc
 
-    def _cdf(self, xloc, idx, dist, conditions=(), cache=None):
-        conditions = [dist_._get_value(cache) for dist_ in conditions]
-        mean = self._get_mean(dist, cache)
+    def _cdf(self, xloc, idx, parent, conditions, cache):
+        conditions = [condition._get_cache_1(cache) for condition in conditions]
+        if any([isinstance(condition, Distribution) for condition in conditions]):
+            raise chaospy.UnsupportedFeature("Conditions not resolved!")
+        mean = self._get_mean(parent, cache)
         xloc = numpy.vstack(conditions+[xloc])
         zloc = self._fwd_transform[:len(xloc)].dot((xloc[:len(xloc)].T-mean[:len(xloc)]).T)
-        uloc = dist._dist[int(idx)].fwd(zloc)
+        uloc = parent._dist[int(idx)]._get_fwd(zloc[numpy.newaxis], cache)
         return uloc
 
-    def _pdf(self, xloc, idx, dist, conditions=(), cache=None):
-        conditions = [dist_._get_value(cache) for dist_ in conditions]
-        mean = self._get_mean(dist, cache)
+    def _pdf(self, xloc, idx, parent, conditions, cache):
+        conditions = [condition._get_cache_1(cache) for condition in conditions]
+        if any([isinstance(condition, Distribution) for condition in conditions]):
+            raise chaospy.UnsupportedFeature("Conditions not resolved!")
         xloc = numpy.vstack(conditions+[xloc])
+        mean = self._get_mean(parent, cache)
+        mu = mean[len(conditions)]
+        if conditions:
+            mu += self._mu_transform.dot((xloc[:-1].T-mean[:len(conditions)].T).T)
+        zloc = (xloc[-1]-mu)/self._sigma
+        out = parent._dist[int(idx)]._get_pdf(zloc[numpy.newaxis], cache)/self._sigma
+        return out
 
-        if not conditions:
-            zloc = (xloc-mean[0])/self._sigma
-            return (dist._dist[int(idx)].pdf(zloc)/self._sigma).flatten()
-        else:
-            l = len(xloc)-1
-            covinv = numpy.linalg.inv(self._covariance[:-1, :-1])
-            mu_ = mean[l]+self._mu_transform.dot((xloc[:l].T-mean[:l].T).T)
-            zloc = (xloc[l]-mu_)/self._sigma
-            return (dist._dist[int(idx)].pdf(zloc, decompose=True)/self._sigma)
+    def _mom(self, kloc, idx, parent, conditions, cache):
+        if conditions:
+            raise chaospy.UnsupportedFeature(
+                "Analytical moment of a conditional not supported")
+        mean = self._get_mean(parent, cache)
+        poly = numpoly.variable(1)
+        poly = numpoly.sum(self._sigma*poly, axis=-1)+mean[len(conditions)]
+        poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
+        out = sum(parent._dist[int(idx)]._get_mom(key)*coeff
+                  for key, coeff in zip(poly.exponents, poly.coefficients))
+        return out
 
-    def _value(self, idx, dist, conditions=(), cache=None):
-        dist = dist._get_value()
-        if not isinstance(dist, Distribution):
-            return dist[idx]
+    def _ttr(self, kloc, idx, parent, conditions, cache):
+        mean = self._get_mean(parent, cache)
+        coeff0, coeff1 = parent._dist[int(idx)]._get_ttr(kloc)
+        coeff0 = coeff0*self._sigma+mean[len(conditions)]
+        coeff1 = coeff1*self._sigma*self._sigma
+        return coeff0, coeff1
+
+    def _cache(self, idx, parent, conditions, cache):
         return self

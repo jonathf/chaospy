@@ -85,5 +85,5 @@ class MvLogNormal(Distribution):
     def _upper(self, loc, C, Ci, scale, cache):
         return numpy.exp(7.1*numpy.sqrt(numpy.diag(scale)) + loc.T).T
 
-    def _value(self, loc, C, Ci, scale, cache):
+    def _cache(self, loc, C, Ci, scale, cache):
         return self

@@ -380,8 +380,10 @@ class J(Distribution):
             return J(*[parameters["_%03d" % idx] for idx in i])
         raise IndexError("index not recognised")
 
-    def _value(self, cache, **kwargs):
-        values = [kwargs[key]._get_value(cache) for key in sorted(kwargs)]
+    def _cache(self, cache, **kwargs):
+        indices = sorted(kwargs)
+        keys = [kwargs[idx]._get_cache_1(cache) for idx in indices]
+        values = [kwargs[idx]._get_cache_2(cache) for idx in indices]
         if not any([isinstance(value, Distribution) for value in values]):
-            return numpy.vstack(values)
+            return numpy.vstack(keys), numpy.vstack(values)
         return self

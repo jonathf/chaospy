@@ -114,5 +114,5 @@ class Archimedean(Distribution):
         out = out*u_loc**(-1/theta-order)
         return out
 
-    def _value(self, dist, trans, cache):
+    def _cache(self, dist, trans, cache):
         return self

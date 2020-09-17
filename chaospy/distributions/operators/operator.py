@@ -52,7 +52,7 @@ class OperatorDistribution(Distribution):
         parameters = super(OperatorDistribution, self).get_parameters(**kwargs)
         assert set(parameters) == {"cache", "left", "right"}
         if isinstance(parameters["left"], Distribution):
-            parameters["left"] = parameters["left"]._get_value(cache=parameters["cache"])
+            parameters["left"] = parameters["left"]._get_cache_1(cache=parameters["cache"])
         if isinstance(parameters["right"], Distribution):
-            parameters["right"] = parameters["right"]._get_value(cache=parameters["cache"])
+            parameters["right"] = parameters["right"]._get_cache_1(cache=parameters["cache"])
         return parameters

@@ -173,13 +173,14 @@ class Distribution():
         return self._get_lower(cache={})
 
     def _get_lower(self, cache):
+        """In-processes function for getting lower bounds."""
         if self in cache:
-            return cache[self]
+            return cache[self][0]
         out = self._lower(**self.get_parameters(cache=cache))
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert len(out) == len(self), (self, out)
-        cache[self] = out
+        cache[self] = (out, None)
         return out
 
     def _lower(self, **kwargs):
@@ -193,13 +194,14 @@ class Distribution():
         return self._get_upper(cache=cache)
 
     def _get_upper(self, cache):
+        """In-processes function for getting upper bounds."""
         if self in cache:
-            return cache[self]
+            return cache[self][0]
         out = self._upper(**self.get_parameters(cache=cache))
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert len(out) == len(self), (self, out)
-        cache[self] = out
+        cache[self] = (out, None)
         return out
 
     def _upper(self, **kwargs):
@@ -247,8 +249,9 @@ class Distribution():
         return q_data
 
     def _get_fwd(self, x_data, cache):
+        """In-process function for getting cdf-values."""
         if self in cache:
-            return cache[self]
+            return cache[self][1]
         assert len(x_data) == len(self), (
             "distribution %s is not of length %d" % (self, len(x_data)))
         lower = self._get_lower(cache=cache.copy())
@@ -261,11 +264,12 @@ class Distribution():
         out[:] = ret_val
         out[(x_data.T < lower.T).T] = 0
         out[(x_data.T > upper.T).T] = 1
-        cache[self] = x_data
+        cache[self] = (x_data, out)
         return out
 
     @abc.abstractmethod
     def _cdf(self, *args, **kwargs):
+        """Backend function for getting cdf-values."""
         pass
 
     def cdf(self, x_data):
@@ -348,8 +352,9 @@ class Distribution():
         return x_data
 
     def _get_inv(self, q_data, cache):
+        """In-process function for getting ppf-values."""
         if self in cache:
-            return cache[self]
+            return cache[self][0]
         if hasattr(self, "_ppf"):
             parameters = self.get_parameters(cache=cache)
             self._check_parameters(parameters)
@@ -359,7 +364,7 @@ class Distribution():
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         out = numpy.zeros(q_data.shape)
         out[:] = ret_val
-        cache[self] = out
+        cache[self] = (out, q_data)
         return out
 
     def pdf(self, x_data, decompose=False):
@@ -431,8 +436,9 @@ class Distribution():
         return f_data
 
     def _get_pdf(self, x_data, cache):
+        """In-process function for getting pdf-values."""
         if self in cache:
-            return cache[self]
+            return cache[self][1]
         lower = self._get_lower(cache=cache.copy())
         upper = self._get_upper(cache=cache.copy())
         index = numpy.all((x_data.T >= lower.T) & (x_data.T <= upper.T), axis=1)
@@ -448,8 +454,8 @@ class Distribution():
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         out[:, index] = ret_val[:, index]
         if self in cache:
-            out = numpy.where(x_data == cache[self], out, 0)
-        cache[self] = x_data
+            out = numpy.where(x_data == cache[self][0], out, 0)
+        cache[self] = (x_data, out)
         return out
 
     def sample(self, size=(), rule="random", antithetic=None):
@@ -580,6 +586,7 @@ class Distribution():
         return out.reshape(shape)
 
     def _get_mom(self, kdata):
+        """In-process function for getting moments."""
         if tuple(kdata) in self._mom_cache:
             return self._mom_cache[tuple(kdata)]
         parameters = self.get_parameters(cache={})
@@ -590,7 +597,7 @@ class Distribution():
 
     def ttr(self, kloc):
         """
-        Three terms relation's coefficient generator
+        Three terms relation's coefficient generator.
 
         Args:
             k (numpy.ndarray, int):
@@ -611,6 +618,7 @@ class Distribution():
         return out.reshape((2,)+shape)
 
     def _get_ttr(self, kdata):
+        """In-process function for getting TTR-values."""
         if tuple(kdata) in self._ttr_cache:
             return self._ttr_cache[tuple(kdata)]
         parameters = self.get_parameters(cache={})
@@ -622,14 +630,87 @@ class Distribution():
         self._ttr_cache[tuple(kdata)] = (alpha, beta)
         return alpha, beta
 
-    def _get_value(self, cache):
+    def _get_cache_1(self, cache):
+        """
+        In-process function for getting cached values.
+
+        Each time a distribution has been processed, the input and output
+        values are stored in the cache.
+        This checks if a distribution has been processed before and return a
+        cache value if it is.
+
+        The cached values are as follows:
+
+        -----------  -------------
+        Context      Content
+        -----------  -------------
+        pdf          Input values
+        cdf/fwd      Input values
+        ppf/inv      Output values
+        lower/upper  Output values
+        -----------  -------------
+
+        Args:
+            cache (Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]):
+                Collection of cached values. Keys are distributions that has
+                been processed earlier, values consist of up to two cache
+                value.
+
+        Returns:
+            (numpy.ndarray, Distribution):
+                The content of the first cache, if any. Else return self.
+        """
         if self in cache:
-            return cache[self]
-        parameters = self.get_parameters(cache=cache)
-        return self._value(**parameters)
+            out = cache[self]
+        else:
+            parameters = self.get_parameters(cache=cache)
+            out = self._cache(**parameters)
+        if not isinstance(out, Distribution):
+            out = out[0]
+        return out
+
+    def _get_cache_2(self, cache):
+        """
+        In-process function for getting cached values.
+
+        Each time a distribution has been processed, the input and output
+        values are stored in the cache.
+        This checks if a distribution has been processed before and return a
+        cache value if it is.
+
+        The cached values are as follows:
+
+        -----------  -------------
+        Context      Content
+        -----------  -------------
+        pdf          Output values
+        cdf/fwd      Output values
+        ppf/inv      Input values
+        lower/upper  N/A
+        -----------  -------------
+
+        Args:
+            cache (Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]):
+                Collection of cached values. Keys are distributions that has
+                been processed earlier, values consist of up to two cache
+                value.
+
+        Returns:
+            (numpy.ndarray, Distribution):
+                The content of the second cache, if any. Else return self.
+        """
+        if self in cache:
+            out = cache[self]
+        else:
+            parameters = self.get_parameters(cache=cache)
+            out = self._cache(**parameters)
+        if not isinstance(out, Distribution):
+            out = out[1]
+        return out
 
     @abc.abstractmethod
-    def _value(self, cache):
+    def _cache(self, cache):
+        """Backend function of retrieving cache values."""
         pass
 
     def __len__(self):

@@ -78,7 +78,7 @@ class Neg(OperatorDistribution):
         alpha, beta = left._get_ttr(kloc)
         return -alpha, beta
 
-    def _value(self, left, right, cache):
+    def _cache(self, left, right, cache):
         del right
         del cache
         if isinstance(left, Distribution):
