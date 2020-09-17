@@ -1,6 +1,25 @@
 Master Branch
 =============
 
+Version 4.0.2 (2020-09-17)
+==========================
+
+ADDED:
+  * list slicing of `J` objects: `dist[[0, 2, 4]]` is now allowed and returns a
+    new `J` object, same as striding.
+  * Slicing of the `MeanCovariance` object is now allowed. Each part are
+    conditionals currently supporting `fwd`, `inv` and `pdf`.
+  * Lets of testing for the new slice-able distribution.
+REMOVED:
+  * Comparison operators `<`, `<=`, `>` and `=>` for distributions. These were
+    used as syntactic sugar referencing `chaospy.Trunc`. However, with
+    distribution equality `==` on the horizon, these need to go.
+CHANGED:
+  * `Iid` is changed from being a function wrapper to a subclass wrapper,
+    allowing once again `isinstance(dist, Iid)`.
+  * Better REPR for `J`: Nested `J` get flatten, while other objects get left
+    in place.
+
 Version 4.0.1 (2020-09-12)
 ==========================
 

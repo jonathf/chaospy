@@ -24,12 +24,12 @@ And thereby density functions:
               d/dx_1 d/dx_2 C(x_1, x_2, 1, 1, ...)}
   \end{eqnarray}
 
-The general definition of an Archemedean is:
+The general definition of an Archimedean is:
 
 .. math::
     C(x_1, x_2, x_3, ...) = iphi( phi(x_1) + phi(x_2) + phi(x_3) + ... )
 
-Applying the Copula to CDF formula on the Archemedean, we need various partial
+Applying the Copula to CDF formula on the Archimedean, we need various partial
 derivatives:
 
 .. math::
@@ -59,11 +59,12 @@ from ..baseclass import Distribution
 
 class Archimedean(Distribution):
 
-    def __init__(self, length, theta=1.):
+    def __init__(self, length, theta=1., rotation=None):
         dependencies = [{idx} for idx in self._declare_dependencies(length)]
         super(Archimedean, self).__init__(
             parameters=dict(theta=float(theta)),
             dependencies=dependencies,
+            rotation=rotation,
         )
 
     def _lower(self, theta, cache):
@@ -73,25 +74,26 @@ class Archimedean(Distribution):
         return numpy.ones(len(self))
 
     def _cdf(self, x_loc, theta, cache):
+        x_loc = x_loc[self._rotation]
         out = numpy.zeros(x_loc.shape)
         loc = numpy.ones(x_loc.shape)
         for order in range(len(self)):
             out[order] = self._copula(loc, theta, order)
             loc[order] = x_loc[order]
-            index = out[order] != 0
-            out[order, index] = self._copula(loc, theta, order)[index]/out[order, index]
-            out[order, ~index] = 1
+            ret_val = self._copula(loc, theta, order)
+            out[order] = numpy.where(out[order] != 0, ret_val/numpy.where(out[order] != 0, out[order], 1), 1)
         return out
 
     def _pdf(self, x_loc, theta, cache):
+        x_loc = x_loc[self._rotation]
         out = numpy.zeros(x_loc.shape)
         loc = numpy.ones(x_loc.shape)
-        for order in range(len(self)):
-            out[order] = self._copula(loc, theta, order)
-            loc[order] = x_loc[order]
-            index = out[order] != 0
-            out[order, index] = self._copula(loc, theta, order+1)[index]/out[order, index]
-            out[order, ~index] = 1
+        for idx in range(len(self)):
+            out[idx] = self._copula(loc, theta, idx)
+            loc[idx] = x_loc[idx]
+            index = out[idx] != 0
+            ret_val = self._copula(loc, theta, idx+1)
+            out[idx] = numpy.where(index, ret_val/out[idx], 1)
         return out
 
     def _copula(self, x_loc, theta, order=0):
