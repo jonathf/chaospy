@@ -110,8 +110,7 @@ class DistributionCore(Distribution):
         parameters.pop("cache")
         for key, value in parameters.items():
             if isinstance(value, Distribution):
-                if value in cache:
-                    parameters[key] = cache[value]
+                parameters[key] = value._get_cache_1(cache)
         return parameters
 
     def _check_parameters(self, parameters):
@@ -149,5 +148,5 @@ class DistributionCore(Distribution):
         raise chaospy.UnsupportedFeature(
             "%s: does not support analytical recurrence coefficients." % self)
 
-    def _value(self, **kwargs):
+    def _cache(self, **kwargs):
         return self

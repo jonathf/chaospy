@@ -45,7 +45,7 @@ class nataf(Distribution):
     def _upper(self, C, Ci, cache):
         return numpy.ones(len(self))
 
-    def _value(self, C, Ci, cache):
+    def _cache(self, C, Ci, cache):
         return self
 
 

@@ -44,7 +44,7 @@ class t_copula(Distribution):
     def _upper(self, df, C, Ci, cache):
         return numpy.ones(len(self))
 
-    def _value(self, df, C, Ci, cache):
+    def _cache(self, df, C, Ci, cache):
         return self
 
 

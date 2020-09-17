@@ -66,7 +66,7 @@ class Logn(OperatorDistribution):
     def _ttr(self, kloc, left, right, cache):
         raise chaospy.UnsupportedFeature("%s: Analytical TTR for logarithm not supported", self)
 
-    def _value(self, left, right, cache):
+    def _cache(self, left, right, cache):
         if isinstance(left, Distribution):
             return self
         return numpy.log(left)/numpy.log(right.item(0))

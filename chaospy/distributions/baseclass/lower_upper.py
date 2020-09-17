@@ -120,5 +120,5 @@ class LowerUpper(DistributionCore):
         coeff1 = coeff1*scale*scale
         return coeff0, coeff1
 
-    def _value(self, **kwargs):
+    def _cache(self, **kwargs):
         return self

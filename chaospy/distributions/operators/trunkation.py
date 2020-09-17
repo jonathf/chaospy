@@ -104,9 +104,9 @@ class Trunc(Distribution):
             [0.  0.  0.5 1. ]
         """
         if isinstance(left, Distribution):
-            left = left._get_value(cache)
+            left = left._get_cache_1(cache)
         if isinstance(right, Distribution):
-            right = right._get_value(cache)
+            right = right._get_cache_1(cache)
         if isinstance(left, Distribution):
             right = (numpy.array(right).T*numpy.ones(xloc.shape).T).T
             uloc1 = left._get_fwd(right, cache=cache.copy())
@@ -138,9 +138,9 @@ class Trunc(Distribution):
             [0.  0.  0.  2.5 0. ]
         """
         if isinstance(left, Distribution):
-            left = left._get_value(cache)
+            left = left._get_cache_1(cache)
         if isinstance(right, Distribution):
-            right = right._get_value(cache)
+            right = right._get_cache_1(cache)
         if isinstance(left, Distribution):
             right = (numpy.array(right).T*numpy.ones(xloc.shape).T).T
             uloc1 = left._get_fwd(right, cache=cache.copy())
@@ -166,9 +166,9 @@ class Trunc(Distribution):
             [0.64 0.68 0.96]
         """
         if isinstance(left, Distribution):
-            left = left._get_value(cache)
+            left = left._get_cache_1(cache)
         if isinstance(right, Distribution):
-            right = right._get_value(cache)
+            right = right._get_cache_1(cache)
         if isinstance(left, Distribution):
             right = (numpy.array(right).T*numpy.ones(q.shape).T).T
             uloc = left._get_fwd(right, cache=cache.copy())
@@ -179,7 +179,7 @@ class Trunc(Distribution):
             out = right._get_inv(q*(1-uloc)+uloc, cache=cache)
         return out
 
-    def _value(self, **kwargs):
+    def _cache(self, **kwargs):
         raise chaospy.UnsupportedFeature(
             "%s: does not support value retrieval." % self)
 

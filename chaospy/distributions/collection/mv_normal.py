@@ -2,6 +2,7 @@
 import logging
 import numpy
 from scipy import special
+import chaospy
 
 from .normal import normal
 from ..baseclass import MeanCovariance
@@ -73,6 +74,11 @@ class MvNormal(MeanCovariance):
         )
 
     def _mom(self, k, mean, covariance, cache):
+        if isinstance(mean, chaospy.Distribution):
+            mean = mean._get_cache_1(cache)
+            if isinstance(mean, chaospy.Distribution):
+                raise chaospy.UnsupportedFeature(
+                    "Analytical moment of a conditional not supported")
         out = 0.
         for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)

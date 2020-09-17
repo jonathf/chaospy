@@ -101,5 +101,5 @@ class Copula(Distribution):
         raise chaospy.UnsupportedFeature(
             "Joint distribution with dependencies not supported.")
 
-    def _value(self, dist, trans, cache):
+    def _cache(self, dist, trans, cache):
         return self

@@ -1,6 +1,21 @@
 Master Branch
 =============
 
+Version 4.0.3 (2020-09-17)
+==========================
+
+ADDED:
+  * New baseclass `Conditional` representing slices of multivariate
+    distributions.
+  * Support for `ConditionalMeanCovariance` moments given no conditional.
+CHANGED:
+  * Backend interface `_get_value` replaced with `_get_cache_1` and
+    `_get_cache_2`. For former is new, the latter is a renaming.
+  * Cache content changed from `Dict[Distribution, ndarray]` to
+    `Dict[Distribution, Tuple[ndarray, ndarray]]` to store both inputs and
+    outputs for each calculations.
+  * backend function `_value` replaced with `_cache` for consistency.
+
 Version 4.0.2 (2020-09-17)
 ==========================
 

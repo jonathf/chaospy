@@ -237,7 +237,7 @@ class Pow(OperatorDistribution):
                 "distribution to fractional power not supported.")
         return left._get_mom(k*right)
 
-    def _value(self, left, right, cache):
+    def _cache(self, left, right, cache):
         if isinstance(left, Distribution) or isinstance(right, Distribution):
             return self
         return left**right

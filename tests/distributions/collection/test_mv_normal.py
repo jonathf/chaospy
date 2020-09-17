@@ -79,6 +79,9 @@ def test_dependencies_1d():
     dist = chaospy.MvNormal(mu=mu, sigma=[[1, 0.5], [0.5, 1]])
     joint = chaospy.J(mu, dist)
 
+    with pytest.raises(chaospy.StochasticallyDependentError):
+        dist.mom((1, 1))
+
     samples = joint.sample(10000)
     mean = numpy.array([1/2., 1/2., 1/2.])
     covariance = numpy.array([[1/12.,  1/12.,  1/12.],
@@ -93,6 +96,9 @@ def test_dependencies_2d():
     mu = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(1, 2))
     dist = chaospy.MvNormal(mu=mu, sigma=[[1, 0.5], [0.5, 1]])
     joint = chaospy.J(mu, dist)
+
+    with pytest.raises(chaospy.StochasticallyDependentError):
+        dist.mom((1, 1))
 
     samples = joint.sample(10000)
     mean = numpy.array([1/2., 3/2., 1/2., 3/2.])
@@ -116,22 +122,42 @@ def test_segmented_mappings():
         isamples = dist.fwd(samples)
         density = dist.pdf(samples, decompose=True)
 
-        dependencies = [(), chaospy.J(dist[rot[0]]), chaospy.J(dist[rot[0]], dist[rot[1]])]
-        caches = [{}, {dist[rot[0]]: samples[rot[0]], rot[0]: isamples[rot[0]]},
-                  {dist[rot[0]]: samples[rot[0]], rot[0]: isamples[rot[0]],
-                   dist[rot[1]]: samples[rot[1]], rot[1]: isamples[rot[1]]}]
-        for idx, deps, cache in zip(rot, dependencies, caches):
-            assert numpy.allclose(dist[idx]._cdf(samples[idx], idx, dist, deps, cache=cache), isamples[idx])
-            assert numpy.allclose(dist[idx]._ppf(isamples[idx], idx, dist, deps, cache=cache), samples[idx])
-            assert numpy.allclose(dist[idx]._pdf(samples[idx], idx, dist, deps, cache=cache), density[idx])
+        caches = [{}, {dist[rot[0]]: (samples[rot[0]], isamples[rot[0]])},
+                  {dist[rot[0]]: (samples[rot[0]], isamples[rot[0]]),
+                   dist[rot[1]]: (samples[rot[1]], isamples[rot[1]])}]
+        for idx, cache in zip(rot, caches):
+            assert numpy.allclose(dist[idx]._get_fwd(samples[idx][numpy.newaxis], cache=cache.copy()), isamples[idx])
+            assert numpy.allclose(dist[idx]._get_inv(isamples[idx][numpy.newaxis], cache=cache.copy()), samples[idx])
+            assert numpy.allclose(dist[idx]._get_pdf(samples[idx][numpy.newaxis], cache=cache.copy()), density[idx])
+            if cache:
+                with pytest.raises(chaospy.StochasticallyDependentError):
+                    dist[idx].fwd(samples[idx])
+                with pytest.raises(chaospy.StochasticallyDependentError):
+                    dist[idx].inv(isamples[idx])
+                with pytest.raises(chaospy.StochasticallyDependentError):
+                    dist[idx].pdf(samples[idx])
+                with pytest.raises(chaospy.UnsupportedFeature):
+                    dist[idx].mom(1, allow_approx=False)
+                with pytest.raises(chaospy.StochasticallyDependentError):
+                    dist[idx].ttr(1)
+            else:
+                assert numpy.allclose(dist[idx].fwd(samples[idx]), isamples[idx])
+                assert numpy.allclose(dist[idx].inv(isamples[idx]), samples[idx])
+                assert numpy.allclose(dist[idx].pdf(samples[idx]), density[idx])
+                assert dist[idx].mom(1, allow_approx=False) == mean_ref[idx]
+                assert numpy.allclose(dist[idx].ttr(0), [mean_ref[idx], 0])
+                assert numpy.allclose(dist[idx].ttr(1), [mean_ref[idx], covariance[idx, idx]])
 
 
 def test_slicing():
     """Test if slicing of distribution works as expected."""
-    dist = chaospy.MvNormal(mu=[0, 0], sigma=[[1, 0.5], [0.5, 1]])
+    dist = chaospy.MvNormal(mu=[1, 2], sigma=[[4, -1], [-1, 3]], rotation=[1, 0])
     with pytest.raises(IndexError):
         dist[-2]
     with pytest.raises(IndexError):
         dist[2]
+    with pytest.raises(IndexError):
+        dist["illigal_index"]
     assert dist[-1] == dist[1]
+    assert dist[1].mom(1) == 2
     # assert dist[:1] == dist[0]
