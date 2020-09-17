@@ -99,7 +99,7 @@ Derive statistics from model approximation:
 
 For a more extensive guides on what is going on, see the `tutorial collection`_.
 
-.. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorals
+.. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorials
 
 Related Projects
 ----------------
