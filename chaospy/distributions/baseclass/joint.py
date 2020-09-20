@@ -361,7 +361,7 @@ class J(Distribution):
                 ...
             IndexError: index out of bounds.
         """
-        parameters = self.get_parameters(cache={})
+        parameters = self.get_parameters(cache={}, assert_numerical=False)
         if isinstance(i, int):
             i = "_%03d" % i
             if i in parameters:

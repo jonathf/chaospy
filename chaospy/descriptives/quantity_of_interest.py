@@ -1,4 +1,7 @@
 """Constructs distributions for the quantity of interests."""
+from __future__ import division
+from functools import reduce
+from operator import mul
 import numpy
 
 from .. import distributions
@@ -60,9 +63,16 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         qoi_dist = SampleDist(dataset, lo, up)
         qoi_dists.append(qoi_dist)
 
-    #reshape the qoi_dists to match the shape of the inumpyut poly
-    qoi_dists = numpy.array(qoi_dists, distributions.Distribution)
-    qoi_dists = qoi_dists.reshape(shape)
+    # reshape the qoi_dists to match the shape of the input poly
+    if shape:
+        def reshape(lst, shape):
+            if len(shape) == 1:
+                return lst
+            n = reduce(mul, shape[1:])
+            return [reshape(lst[i*n:(i+1)*n], shape[1:]) for i in range(len(lst)//n)]
+        qoi_dists = reshape(qoi_dists, shape)
+    else:
+        qoi_dists = qoi_dists[0]
 
     if not shape:
         qoi_dists = qoi_dists.item()

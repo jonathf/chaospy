@@ -54,7 +54,7 @@ It has the convenient property:
 """
 import numpy
 
-from ..baseclass import Distribution
+from ..baseclass import Distribution, Index
 
 
 class Archimedean(Distribution):
@@ -65,6 +65,7 @@ class Archimedean(Distribution):
             parameters=dict(theta=float(theta)),
             dependencies=dependencies,
             rotation=rotation,
+            index_cls=ArchimedeanIndex,
         )
 
     def _lower(self, theta, cache):
@@ -74,29 +75,25 @@ class Archimedean(Distribution):
         return numpy.ones(len(self))
 
     def _cdf(self, x_loc, theta, cache):
-        x_loc = x_loc[self._rotation]
         out = numpy.zeros(x_loc.shape)
-        loc = numpy.ones(x_loc.shape)
-        for order in range(len(self)):
-            out[order] = self._copula(loc, theta, order)
-            loc[order] = x_loc[order]
-            ret_val = self._copula(loc, theta, order)
-            out[order] = numpy.where(out[order] != 0, ret_val/numpy.where(out[order] != 0, out[order], 1), 1)
+        for idx in self._rotation:
+            xloc_ = x_loc[idx].reshape(1, -1)
+            out[idx] = self[idx]._get_fwd(xloc_, cache)
         return out
 
     def _pdf(self, x_loc, theta, cache):
-        x_loc = x_loc[self._rotation]
         out = numpy.zeros(x_loc.shape)
-        loc = numpy.ones(x_loc.shape)
-        for idx in range(len(self)):
-            out[idx] = self._copula(loc, theta, idx)
-            loc[idx] = x_loc[idx]
-            index = out[idx] != 0
-            ret_val = self._copula(loc, theta, idx+1)
-            out[idx] = numpy.where(index, ret_val/out[idx], 1)
+        for idx in self._rotation:
+            xloc_ = x_loc[idx].reshape(1, -1)
+            out[idx] = self[idx]._get_pdf(xloc_, cache)
         return out
 
     def _copula(self, x_loc, theta, order=0):
+        assert isinstance(x_loc, numpy.ndarray)
+        assert len(x_loc) == len(self)
+        theta = float(theta)
+        order = int(order)
+
         out = numpy.sum(self._phi(x_loc, theta), 0)
         out = self._inverse_phi(out, theta, order)
         if order:
@@ -114,5 +111,38 @@ class Archimedean(Distribution):
         out = out*u_loc**(-1/theta-order)
         return out
 
-    def _cache(self, dist, trans, cache):
+    def _cache(self, theta, cache):
+        return self
+
+
+class ArchimedeanIndex(Index):
+
+    def __init__(self, parent, conditions=()):
+        assert isinstance(parent, Archimedean)
+        super(ArchimedeanIndex, self).__init__(
+            parent=parent, conditions=conditions)
+
+    def _cdf(self, xloc, idx, parent, conditions, cache):
+        theta = parent.get_parameters(cache, assert_numerical=True)["theta"]
+        conditions = [condition._get_cache_1(cache) for condition in conditions]
+        ones = numpy.ones((len(parent)-len(conditions), xloc.shape[-1]))
+        xloc1 = numpy.vstack(conditions+[xloc, ones[:-1]])
+        xloc2 = numpy.vstack(conditions+[ones])
+        out1 = parent._copula(xloc1, theta, order=idx)
+        out2 = parent._copula(xloc2, theta, order=idx)
+        out = numpy.where(out2, out1, 0)/numpy.where(out2, out2, 1)
+        return out
+
+    def _pdf(self, xloc, idx, parent, conditions, cache):
+        theta = parent.get_parameters(cache, assert_numerical=True)["theta"]
+        conditions = [condition._get_cache_1(cache) for condition in conditions]
+        ones = numpy.ones((len(parent)-len(conditions), xloc.shape[-1]))
+        xloc1 = numpy.vstack(conditions+[xloc, ones[:-1]])
+        xloc2 = numpy.vstack(conditions+[ones])
+        out1 = parent._copula(xloc1, theta, order=idx+1)
+        out2 = parent._copula(xloc2, theta, order=idx)
+        out = numpy.where(out2, out1, 0)/numpy.where(out2, out2, 1)
+        return out
+
+    def _cache(self, idx, parent, conditions, cache):
         return self

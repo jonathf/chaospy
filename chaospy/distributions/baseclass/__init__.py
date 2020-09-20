@@ -1,5 +1,5 @@
 from .distribution import Distribution
-from .conditional import Conditional
+from .index import Index
 from .core import DistributionCore
 from .copula import Copula
 

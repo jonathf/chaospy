@@ -1,6 +1,21 @@
 Master Branch
 =============
 
+Version 4.0.4 (2020-09-20)
+==========================
+
+All distributions are now slice-able!
+
+ADDED:
+  * Index of multivariate stuff: `CopulaIndex`
+  * `get_parameters` have a new `assert_numerical` argument to differentiate
+    between loose and strict parameter extraction.
+CHANGED:
+  * The name `Conditional` replaced with the more apt `Index`:
+    ``
+  * `Qoi_Dist` will no longer returns a numpy array in the multivariate case.
+    This is because `Distribution` no play will as a numpy object type.
+
 Version 4.0.3 (2020-09-17)
 ==========================
 

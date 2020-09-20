@@ -30,6 +30,7 @@ def test_roundtrip():
     dist3 = chaospy.MvNormal(mean, cov, rotation=[2, 0, 1])
 
     mesh = numpy.mgrid[0.25:0.75:3j, 0.25:0.75:5j, 0.25:0.75:4j].reshape(3, -1)
+    assert not numpy.allclose(dist1.fwd(dist2.inv(mesh)), mesh)
     assert numpy.allclose(dist1.fwd(dist1.inv(mesh)), mesh)
     assert numpy.allclose(dist2.fwd(dist2.inv(mesh)), mesh)
     assert numpy.allclose(dist3.fwd(dist3.inv(mesh)), mesh)
@@ -41,7 +42,7 @@ def test_rotation():
     cov = numpy.array([[ 1.0, -0.2, 0.3],
                        [-0.2,  1.0, 0.0],
                        [ 0.3,  0.0, 1.0]])
-    mesh = numpy.mgrid[-1:1:2j, 9:11:2j, -1:1:2j]
+    mesh = numpy.mgrid[-1:1:2j, 9:11:3j, -1:1:4j]
     dist1 = chaospy.MvNormal(mean, cov, rotation=[0, 1, 2])
     dist2 = chaospy.MvNormal(mean, cov, rotation=[2, 1, 0])
     dist3 = chaospy.MvNormal(mean, cov, rotation=[2, 0, 1])
@@ -67,10 +68,8 @@ def test_sampling():
     for rotation in [(0, 1, 2), (2, 1, 0), (2, 0, 1)]:
         dist = chaospy.MvNormal(mean, cov, rotation=rotation)
         samples_ = dist.inv(samples_u)
-        mean_ = numpy.mean(samples_, axis=-1)
-        assert numpy.allclose(mean_, mean, atol=1e-3, rtol=1e-3)
-        cov_ = numpy.cov(samples_)
-        assert numpy.allclose(cov_, cov, atol=1e-2, rtol=1e-2)
+        assert numpy.allclose(numpy.mean(samples_, axis=-1), mean, atol=1e-3, rtol=1e-3)
+        assert numpy.allclose(numpy.cov(samples_), cov, atol=1e-2, rtol=1e-2)
 
 
 def test_dependencies_1d():

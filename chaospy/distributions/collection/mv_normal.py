@@ -61,7 +61,7 @@ class MvNormal(MeanCovariance):
             sigma=None,
             rotation=None,
     ):
-        repr_args = ["mu=%s" % numpy.array(mu).tolist()]
+        repr_args = ["mu=%s" % mu]
         if sigma is not None:
             repr_args += ["sigma=%s" % numpy.array(sigma).tolist()]
 

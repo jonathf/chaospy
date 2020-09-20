@@ -3,7 +3,7 @@ from scipy.special import comb
 import numpoly
 import chaospy
 
-from .conditional import Conditional
+from .index import Index
 from .distribution import Distribution
 
 
@@ -67,13 +67,15 @@ class MeanCovariance(Distribution):
         if rotation is not None:
             rotation = list(rotation)
         else:
-            rotation = [key for key, _ in sorted(enumerate(dist._dependencies), key=lambda x: len(x[1]))]
+            rotation = [key for key, _ in sorted(enumerate(dist._dependencies),
+                                                 key=lambda x: len(x[1]))]
 
         accumulant = set()
         dependencies = [deps.copy() for deps in dist._dependencies]
         for idx in rotation:
             accumulant.update(dist._dependencies[idx])
             dependencies[idx] = accumulant.copy()
+
         if isinstance(mean, Distribution):
             if len(mean) == 1:
                 for dependency in dependencies:
@@ -82,17 +84,12 @@ class MeanCovariance(Distribution):
                 for dep1, dep2 in zip(dependencies, mean._dependencies):
                     dep1.update(dep2)
 
-        permute = numpy.zeros((len(rotation), len(rotation)), dtype=int)
-        permute[numpy.arange(len(rotation), dtype=int), rotation] = 1
-
-        self._covariance = permute.dot(covariance).dot(permute.T)
+        self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
+        self._covariance = self._permute.dot(covariance).dot(self._permute.T)
         cholesky = numpy.linalg.cholesky(self._covariance)
-        self._fwd_transform = permute.T.dot(numpy.linalg.inv(cholesky))
-        self._inv_transform = permute.T.dot(cholesky)
-        self._conditionals = {}
-
+        self._fwd_transform = self._permute.T.dot(numpy.linalg.inv(cholesky))
+        self._inv_transform = self._permute.T.dot(cholesky)
         self._dist = dist
-        self._permute = permute
 
         super(MeanCovariance, self).__init__(
             parameters=dict(mean=mean, covariance=covariance),
@@ -100,6 +97,7 @@ class MeanCovariance(Distribution):
             rotation=rotation,
             exclusion=exclusion,
             repr_args=repr_args,
+            index_cls=MeanCovarianceIndex,
         )
 
     def _ppf(self, qloc, mean, covariance, cache):
@@ -161,52 +159,16 @@ class MeanCovariance(Distribution):
     def _cache(self, mean, covariance, cache):
         return self
 
-    def __getitem__(self, index):
-        if isinstance(index, int):
-            if not -len(self) < index < len(self):
-                raise IndexError("index out of bounds: %s" % index)
-            if index < 0:
-                index += len(self)
-            conditions = []
-            for idx in self._rotation:
-                if idx not in self._conditionals:
-                    if conditions:
-                        self._conditionals[idx] = MeanCovarianceConditional(
-                            parent=self, conditions=chaospy.J(*conditions))
-                    else:
-                        self._conditionals[idx] = MeanCovarianceConditional(parent=self)
-                if idx == index:
-                    return self._conditionals[idx]
-                conditions.append(self._conditionals[idx])
-            return MeanCovarianceConditional(self, chaospy.J(*conditions))
-        if isinstance(index, slice):
-            start = 0 if index.start is None else index.start
-            stop = len(self) if index.stop is None else index.stop
-            step = 1 if index.step is None else index.step
-            return chaospy.J(*[self[idx] for idx in range(start, stop, step)])
-        raise IndexError("unrecognized key")
 
-
-class MeanCovarianceConditional(Conditional):
+class MeanCovarianceIndex(Index):
     """The conditional structure for the MeanCovariance baseclass."""
 
     def __init__(self, parent, conditions=()):
         assert isinstance(parent, MeanCovariance)
-        idx = parent._rotation[len(conditions)]
-        if conditions:
-            assert isinstance(conditions, chaospy.J)
-            parameters = dict(parent=parent, idx=idx, conditions=conditions)
-            repr_args = [parent, conditions]
-        else:
-            parameters = dict(parent=parent, idx=idx)
-            repr_args = [parent]
+        super(MeanCovarianceIndex, self).__init__(
+            parent=parent, conditions=conditions)
 
-        super(MeanCovarianceConditional, self).__init__(
-            parameters=parameters,
-            dependencies=[parent._dependencies[idx].copy()],
-            rotation=[0],
-            repr_args=repr_args,
-        )
+        idx = parent._rotation[len(conditions)]
         self._covariance = parent._covariance[:len(conditions)+1, :len(conditions)+1]
         self._fwd_transform = parent._fwd_transform[idx]
         self._inv_transform = parent._inv_transform[idx]
@@ -230,22 +192,8 @@ class MeanCovarianceConditional(Conditional):
         mean = mean[numpy.array(parent._rotation)]
         return mean
 
-    def _lower(self, idx, parent, conditions, cache):
-        out = parent._get_cache_1(cache)
-        if isinstance(out, Distribution):
-            out = out.lower
-        return out[idx]
-
-    def _upper(self, idx, parent, conditions, cache):
-        out = parent._get_cache_1(cache)
-        if isinstance(out, Distribution):
-            out = out.upper
-        return out[idx]
-
     def _ppf(self, uloc, idx, parent, conditions, cache):
         conditions = [condition._get_cache_2(cache) for condition in conditions]
-        if any([isinstance(condition, Distribution) for condition in conditions]):
-            raise chaospy.UnsupportedFeature("Conditions not resolved!")
         uloc = numpy.vstack(conditions+[uloc])
         mean = self._get_mean(parent, cache)
         zloc = parent._dist[parent._rotation[:len(uloc)]]._get_inv(uloc, cache)
@@ -254,18 +202,14 @@ class MeanCovarianceConditional(Conditional):
 
     def _cdf(self, xloc, idx, parent, conditions, cache):
         conditions = [condition._get_cache_1(cache) for condition in conditions]
-        if any([isinstance(condition, Distribution) for condition in conditions]):
-            raise chaospy.UnsupportedFeature("Conditions not resolved!")
-        mean = self._get_mean(parent, cache)
         xloc = numpy.vstack(conditions+[xloc])
-        zloc = self._fwd_transform[:len(xloc)].dot((xloc[:len(xloc)].T-mean[:len(xloc)]).T)
+        mean = self._get_mean(parent, cache)
+        zloc = self._fwd_transform[:len(xloc)].dot((xloc.T-mean[:len(xloc)]).T)
         uloc = parent._dist[int(idx)]._get_fwd(zloc[numpy.newaxis], cache)
         return uloc
 
     def _pdf(self, xloc, idx, parent, conditions, cache):
         conditions = [condition._get_cache_1(cache) for condition in conditions]
-        if any([isinstance(condition, Distribution) for condition in conditions]):
-            raise chaospy.UnsupportedFeature("Conditions not resolved!")
         xloc = numpy.vstack(conditions+[xloc])
         mean = self._get_mean(parent, cache)
         mu = mean[len(conditions)]

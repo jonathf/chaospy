@@ -83,7 +83,7 @@ class DistributionCore(Distribution):
             repr_args=repr_args,
         )
 
-    def get_parameters(self, cache):
+    def get_parameters(self, cache, assert_numerical=True):
         """
         Get distribution parameters.
 
@@ -106,11 +106,13 @@ class DistributionCore(Distribution):
                 unresolved.
 
         """
-        parameters = super(DistributionCore, self).get_parameters(cache)
+        parameters = super(DistributionCore, self).get_parameters(cache, assert_numerical=True)
         parameters.pop("cache")
         for key, value in parameters.items():
             if isinstance(value, Distribution):
-                parameters[key] = value._get_cache_1(cache)
+                value = value._get_cache_1(cache)
+                assert not assert_numerical or not isinstance(value, Distribution)
+                parameters[key] = value
         return parameters
 
     def _check_parameters(self, parameters):

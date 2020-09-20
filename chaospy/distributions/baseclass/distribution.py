@@ -47,6 +47,7 @@ class Distribution():
             rotation=None,
             exclusion=None,
             repr_args=None,
+            index_cls=None,
     ):
         """
         Distribution initializer.
@@ -69,6 +70,9 @@ class Distribution():
                 Positional arguments to place in the object string
                 representation. The repr output will then be:
                 `<class name>(<arg1>, <arg2>, ...)`.
+            index_cls (Optional[Type[Index]]):
+                Class to instantiate when array is indexed. If omitted then
+                object is assumed to not be sliceable.
 
         Raises:
             StochasticallyDependentError:
@@ -97,6 +101,8 @@ class Distribution():
         self._repr_args = list(repr_args)
         self._mom_cache = {(0,)*len(self): 1.}
         self._ttr_cache = {}
+        self._index_cls = index_cls
+        self._indices = {}
 
         all_dependencies = {dep for deps in self._dependencies for dep in deps}
         if len(all_dependencies) < len(self):
@@ -142,8 +148,9 @@ class Distribution():
         """
         del parameters
 
-    def get_parameters(self, cache):
+    def get_parameters(self, cache, assert_numerical=True):
         """Get distribution parameters."""
+        del assert_numerical
         out = self._parameters.copy()
         out["cache"] = cache
         return out
@@ -176,7 +183,7 @@ class Distribution():
         """In-processes function for getting lower bounds."""
         if self in cache:
             return cache[self][0]
-        out = self._lower(**self.get_parameters(cache=cache))
+        out = self._lower(**self.get_parameters(cache=cache, assert_numerical=False))
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert len(out) == len(self), (self, out)
@@ -197,7 +204,7 @@ class Distribution():
         """In-processes function for getting upper bounds."""
         if self in cache:
             return cache[self][0]
-        out = self._upper(**self.get_parameters(cache=cache))
+        out = self._upper(**self.get_parameters(cache=cache, assert_numerical=False))
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert len(out) == len(self), (self, out)
@@ -256,7 +263,7 @@ class Distribution():
             "distribution %s is not of length %d" % (self, len(x_data)))
         lower = self._get_lower(cache=cache.copy())
         upper = self._get_upper(cache=cache.copy())
-        parameters = self.get_parameters(cache=cache)
+        parameters = self.get_parameters(cache=cache, assert_numerical=True)
         self._check_parameters(parameters)
         ret_val = self._cdf(x_data, **parameters)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
@@ -356,7 +363,7 @@ class Distribution():
         if self in cache:
             return cache[self][0]
         if hasattr(self, "_ppf"):
-            parameters = self.get_parameters(cache=cache)
+            parameters = self.get_parameters(cache=cache, assert_numerical=True)
             self._check_parameters(parameters)
             ret_val = self._ppf(q_data, **parameters)
         else:
@@ -442,7 +449,7 @@ class Distribution():
         lower = self._get_lower(cache=cache.copy())
         upper = self._get_upper(cache=cache.copy())
         index = numpy.all((x_data.T >= lower.T) & (x_data.T <= upper.T), axis=1)
-        parameters = self.get_parameters(cache=cache)
+        parameters = self.get_parameters(cache=cache, assert_numerical=True)
         self._check_parameters(parameters)
         out = numpy.zeros(x_data.shape)
         if hasattr(self, "_pdf"):
@@ -589,7 +596,7 @@ class Distribution():
         """In-process function for getting moments."""
         if tuple(kdata) in self._mom_cache:
             return self._mom_cache[tuple(kdata)]
-        parameters = self.get_parameters(cache={})
+        parameters = self.get_parameters(cache={}, assert_numerical=False)
         ret_val = float(self._mom(kdata, **parameters))
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         self._mom_cache[tuple(kdata)] = ret_val
@@ -621,7 +628,7 @@ class Distribution():
         """In-process function for getting TTR-values."""
         if tuple(kdata) in self._ttr_cache:
             return self._ttr_cache[tuple(kdata)]
-        parameters = self.get_parameters(cache={})
+        parameters = self.get_parameters(cache={}, assert_numerical=True)
         alpha, beta = self._ttr(kdata, **parameters)
         assert not isinstance(alpha, Distribution), (self, alpha)
         assert not isinstance(beta, Distribution), (self, beta)
@@ -663,7 +670,7 @@ class Distribution():
         if self in cache:
             out = cache[self]
         else:
-            parameters = self.get_parameters(cache=cache)
+            parameters = self.get_parameters(cache=cache, assert_numerical=False)
             out = self._cache(**parameters)
         if not isinstance(out, Distribution):
             out = out[0]
@@ -702,7 +709,7 @@ class Distribution():
         if self in cache:
             out = cache[self]
         else:
-            parameters = self.get_parameters(cache=cache)
+            parameters = self.get_parameters(cache=cache, assert_numerical=False)
             out = self._cache(**parameters)
         if not isinstance(out, Distribution):
             out = out[1]
@@ -712,6 +719,33 @@ class Distribution():
     def _cache(self, cache):
         """Backend function of retrieving cache values."""
         pass
+
+    def __getitem__(self, index):
+        if not hasattr(self, "_index_cls"):
+            raise IndexError("indexing not supported")
+        if isinstance(index, int):
+            if not -len(self) < index < len(self):
+                raise IndexError("index out of bounds: %s" % index)
+            if index < 0:
+                index += len(self)
+            conditions = []
+            for idx in self._rotation:
+                if idx not in self._indices:
+                    if conditions:
+                        self._indices[idx] = self._index_cls(
+                            parent=self, conditions=chaospy.J(*conditions))
+                    else:
+                        self._indices[idx] = self._index_cls(parent=self)
+                if idx == index:
+                    return self._indices[idx]
+                conditions.append(self._indices[idx])
+            return self._index_cls(self, chaospy.J(*conditions))
+        if isinstance(index, slice):
+            start = 0 if index.start is None else index.start
+            stop = len(self) if index.stop is None else index.stop
+            step = 1 if index.step is None else index.step
+            return chaospy.J(*[self[idx] for idx in range(start, stop, step)])
+        raise IndexError("unrecognized key")
 
     def __len__(self):
         """Distribution length."""

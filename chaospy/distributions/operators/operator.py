@@ -48,11 +48,15 @@ class OperatorDistribution(Distribution):
             repr_args=repr_args,
         )
 
-    def get_parameters(self, **kwargs):
-        parameters = super(OperatorDistribution, self).get_parameters(**kwargs)
+    def get_parameters(self, cache, assert_numerical=True):
+        parameters = super(OperatorDistribution, self).get_parameters(
+            cache, assert_numerical=assert_numerical)
         assert set(parameters) == {"cache", "left", "right"}
         if isinstance(parameters["left"], Distribution):
             parameters["left"] = parameters["left"]._get_cache_1(cache=parameters["cache"])
         if isinstance(parameters["right"], Distribution):
             parameters["right"] = parameters["right"]._get_cache_1(cache=parameters["cache"])
+        if assert_numerical:
+            assert (not isinstance(parameters["left"], Distribution) or
+                    not isinstance(parameters["right"], Distribution))
         return parameters
