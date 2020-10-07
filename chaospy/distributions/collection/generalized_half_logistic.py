@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class generalized_half_logistic(DistributionCore):
+class generalized_half_logistic(SimpleDistribution):
     """Generalized half-logistic distribution."""
 
     def __init__(self, c=1):
-        super(generalized_half_logistic, self).__init__(c=c)
+        super(generalized_half_logistic, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         limit = 1.0/c
@@ -34,7 +34,7 @@ class generalized_half_logistic(DistributionCore):
         return 1/numpy.where(c < 10**-10, 10**-10, c)
 
 
-class GeneralizedHalfLogistic(ShiftScale):
+class GeneralizedHalfLogistic(ShiftScaleDistribution):
     """
     Generalized half-logistic distribution
 

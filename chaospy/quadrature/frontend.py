@@ -155,27 +155,39 @@ def generate_quadrature(
         else:
             rule = ("discrete" if dist.interpret_as_integer
                     else "clenshaw_curtis")
-    if isinstance(rule, str):
-        rule = [rule]*len(dist)
-    assert len(rule) == len(dist), (
-        "rules and distribution length does not match.")
-    assert all(isinstance(rule_, str) for rule_ in rule)
-
     if sparse:
         from . import sparse_grid
         return sparse_grid.construct_sparse_grid(
             order, dist, rule=rule, accuracy=accuracy, growth=growth)
 
-    if isinstance(dist, chaospy.J) and not dist.stochastic_dependent:
+    if len(dist) == 1 or dist.stochastic_dependent:
+        assert isinstance(rule, str), "dependencies require rule consistency"
+        abscissas, weights = _generate_quadrature(
+            order=order,
+            dist=dist,
+            rule=rule,
+            growth=growth,
+            segments=segments,
+            accuracy=accuracy,
+            recurrence_algorithm=recurrence_algorithm,
+        )
+
+    else:
+        if isinstance(rule, str):
+            rule = [rule]*len(dist)
+        assert len(rule) == len(dist), (
+            "rules and distribution length does not match.")
+        assert all(isinstance(rule_, str) for rule_ in rule)
 
         order = numpy.ones(len(dist), dtype=int)*order
         abscissas, weights = zip(*[
-            generate_quadrature(
+            _generate_quadrature(
                 order=order_,
                 dist=dist_,
                 rule=rule_,
                 growth=growth,
                 segments=segments,
+                accuracy=accuracy,
                 recurrence_algorithm=recurrence_algorithm,
             )
             for order_, dist_, rule_ in zip(order, dist, rule)
@@ -183,51 +195,46 @@ def generate_quadrature(
         abscissas = combine([abscissa.T for abscissa in abscissas]).T
         weights = numpy.prod(combine([weight.T for weight in weights]), -1)
 
-    elif isinstance(dist, chaospy.Add):
-        parameters= dist.get_parameters(cache={})
-        if isinstance(parameters["left"], chaospy.Distribution):
-            const = numpy.asarray(parameters["right"])
-            dist_ = parameters["left"]
-        else:
-            const = numpy.asarray(parameters["left"])
-            dist_ = parameters["right"]
-        abscissas, weights = generate_quadrature(
-            order=order, dist=dist_, rule=rule, accuracy=accuracy,
-            growth=growth, segments=segments,
-            recurrence_algorithm=recurrence_algorithm,
-        )
-        abscissas = (abscissas.T+const.T).T
-
-    elif isinstance(dist, chaospy.Mul):
-        parameters= dist.get_parameters(cache={})
-        if isinstance(parameters["left"], chaospy.Distribution):
-            const = numpy.asarray(parameters["right"])
-            dist_ = parameters["left"]
-        else:
-            const = numpy.asarray(parameters["left"])
-            dist_ = parameters["right"]
-        abscissas, weights = generate_quadrature(
-            order=order, dist=dist_, rule=rule, accuracy=accuracy,
-            growth=growth, segments=segments,
-            recurrence_algorithm=recurrence_algorithm,
-        )
-        abscissas = (abscissas.T*const.T).T
-
-    else:
-        rule = QUAD_NAMES[rule[0].lower()]
-        kwargs = {}
-
-        if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
-            kwargs.update(growth=growth, segments=segments)
-
-        if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
-            kwargs.update(accuracy=accuracy,
-                        recurrence_algorithm=recurrence_algorithm)
-
-        quad_function = QUAD_FUNCTIONS[rule]
-        abscissas, weights = quad_function(order, dist, **kwargs)
-
     assert abscissas.shape == (len(dist), len(weights))
     if dist.interpret_as_integer:
         abscissas = numpy.round(abscissas).astype(int)
+    return abscissas, weights
+
+
+def _generate_quadrature(order, dist, rule, **kwargs):
+
+    if isinstance(dist, chaospy.OperatorDistribution):
+
+        args = ("left", "right")
+        right_dist = isinstance(dist._parameters["right"], chaospy.Distribution)
+        args = args if right_dist else args[::-1]
+        assert not isinstance(dist._parameters[args[0]], chaospy.Distribution)
+        const = numpy.asarray(dist._parameters[args[0]])
+
+        if isinstance(dist, chaospy.Add):
+            dist = dist._parameters[args[1]]
+            abscissas, weights = _generate_quadrature(
+                order=order, dist=dist, rule=rule, **kwargs)
+            abscissas = (abscissas.T+const.T).T
+            return abscissas, weights
+
+        elif isinstance(dist, chaospy.Multiply):
+            dist = dist._parameters[args[1]]
+            abscissas, weights = _generate_quadrature(
+                order=order, dist=dist, rule=rule, **kwargs)
+            abscissas = (abscissas.T*const.T).T
+            return abscissas, weights
+
+    rule = QUAD_NAMES[rule.lower()]
+    parameters = {}
+
+    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
+        parameters.update(growth=kwargs["growth"], segments=kwargs["segments"])
+
+    if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
+        parameters.update(accuracy=kwargs["accuracy"],
+                          recurrence_algorithm=kwargs["recurrence_algorithm"])
+
+    quad_function = QUAD_FUNCTIONS[rule]
+    abscissas, weights = quad_function(order, dist, **parameters)
     return abscissas, weights

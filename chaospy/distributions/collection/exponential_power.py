@@ -1,14 +1,14 @@
 """Exponential power distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class exponential_power(DistributionCore):
+class exponential_power(SimpleDistribution):
     """Exponential power distribution."""
 
     def __init__(self, b=1):
-        super(exponential_power, self).__init__(b=b)
+        super(exponential_power, self).__init__(dict(b=b))
 
     def _pdf(self, x, b):
         xbm1 = x**(b-1.0)
@@ -26,7 +26,7 @@ class exponential_power(DistributionCore):
         return 0.
 
 
-class ExponentialPower(ShiftScale):
+class ExponentialPower(ShiftScaleDistribution):
     """
     Exponential power distribution.
 

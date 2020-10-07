@@ -81,6 +81,7 @@ def construct_recurrence_coefficients(
         array([[0.5   , 0.5   , 0.5   , 0.5   , 0.5   ],
                [1.    , 0.0833, 0.0667, 0.0643, 0.0635]])
     """
+    import chaospy
     if not recurrence_algorithm:
         try:
             return construct_recurrence_coefficients(

@@ -72,25 +72,7 @@ def test_sampling():
         assert numpy.allclose(numpy.cov(samples_), cov, atol=1e-2, rtol=1e-2)
 
 
-def test_dependencies_1d():
-    """Assert that mu being a 1-D distribution is fine."""
-    mu = chaospy.Uniform(0, 1)
-    dist = chaospy.MvNormal(mu=mu, sigma=[[1, 0.5], [0.5, 1]])
-    joint = chaospy.J(mu, dist)
-
-    with pytest.raises(chaospy.StochasticallyDependentError):
-        dist.mom((1, 1))
-
-    samples = joint.sample(10000)
-    mean = numpy.array([1/2., 1/2., 1/2.])
-    covariance = numpy.array([[1/12.,  1/12.,  1/12.],
-                              [1/12., 13/12.,  7/12.],
-                              [1/12.,  7/12., 13/12.]])
-    assert numpy.allclose(numpy.mean(samples, axis=-1), mean, rtol=1e-2, atol=1e-2)
-    assert numpy.allclose(numpy.cov(samples), covariance, rtol=1e-2, atol=1e-2)
-
-
-def test_dependencies_2d():
+def test_dependencies():
     """Assert that mu being a 2-D distribution is fine."""
     mu = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(1, 2))
     dist = chaospy.MvNormal(mu=mu, sigma=[[1, 0.5], [0.5, 1]])
@@ -99,7 +81,7 @@ def test_dependencies_2d():
     with pytest.raises(chaospy.StochasticallyDependentError):
         dist.mom((1, 1))
 
-    samples = joint.sample(10000)
+    samples = joint.sample(100000)
     mean = numpy.array([1/2., 3/2., 1/2., 3/2.])
     covariance = numpy.array([[1/12.,    0.,  1/12.,     0.],
                               [   0., 1/12.,      0,  1/12.],
@@ -121,13 +103,13 @@ def test_segmented_mappings():
         isamples = dist.fwd(samples)
         density = dist.pdf(samples, decompose=True)
 
-        caches = [{}, {dist[rot[0]]: (samples[rot[0]], isamples[rot[0]])},
-                  {dist[rot[0]]: (samples[rot[0]], isamples[rot[0]]),
-                   dist[rot[1]]: (samples[rot[1]], isamples[rot[1]])}]
+        caches = [{}, {(rot[0], dist): (samples[rot[0]], isamples[rot[0]])},
+                  {(rot[0], dist): (samples[rot[0]], isamples[rot[0]]),
+                   (rot[1], dist): (samples[rot[1]], isamples[rot[1]])}]
         for idx, cache in zip(rot, caches):
-            assert numpy.allclose(dist[idx]._get_fwd(samples[idx][numpy.newaxis], cache=cache.copy()), isamples[idx])
-            assert numpy.allclose(dist[idx]._get_inv(isamples[idx][numpy.newaxis], cache=cache.copy()), samples[idx])
-            assert numpy.allclose(dist[idx]._get_pdf(samples[idx][numpy.newaxis], cache=cache.copy()), density[idx])
+            assert numpy.allclose(dist._get_fwd(samples[idx], idx, cache=cache.copy()), isamples[idx])
+            assert numpy.allclose(dist._get_inv(isamples[idx], idx, cache=cache.copy()), samples[idx])
+            assert numpy.allclose(dist._get_pdf(samples[idx], idx, cache=cache.copy()), density[idx])
             if cache:
                 with pytest.raises(chaospy.StochasticallyDependentError):
                     dist[idx].fwd(samples[idx])
@@ -135,17 +117,14 @@ def test_segmented_mappings():
                     dist[idx].inv(isamples[idx])
                 with pytest.raises(chaospy.StochasticallyDependentError):
                     dist[idx].pdf(samples[idx])
-                with pytest.raises(chaospy.UnsupportedFeature):
-                    dist[idx].mom(1, allow_approx=False)
-                with pytest.raises(chaospy.StochasticallyDependentError):
-                    dist[idx].ttr(1)
             else:
                 assert numpy.allclose(dist[idx].fwd(samples[idx]), isamples[idx])
                 assert numpy.allclose(dist[idx].inv(isamples[idx]), samples[idx])
                 assert numpy.allclose(dist[idx].pdf(samples[idx]), density[idx])
                 assert dist[idx].mom(1, allow_approx=False) == mean_ref[idx]
-                assert numpy.allclose(dist[idx].ttr(0), [mean_ref[idx], 0])
-                assert numpy.allclose(dist[idx].ttr(1), [mean_ref[idx], covariance[idx, idx]])
+            assert numpy.isclose(dist[idx].mom(1, allow_approx=False), mean_ref[idx])
+            with pytest.raises(chaospy.StochasticallyDependentError):
+                dist[idx].ttr(1)
 
 
 def test_slicing():

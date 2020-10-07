@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class fatigue_life(DistributionCore):
+class fatigue_life(SimpleDistribution):
     """Fatigue-life distribution."""
 
     def __init__(self, c=0):
-        super(fatigue_life, self).__init__(c=c)
+        super(fatigue_life, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         output = (x+1)/(2*c*numpy.sqrt(2*numpy.pi*x**3))
@@ -22,10 +22,12 @@ class fatigue_life(DistributionCore):
 
     def _ppf(self, q, c):
         tmp = c*special.ndtri(q)
-        return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
+        out = numpy.where(
+            numpy.isfinite(tmp), 0.25*(tmp+numpy.sqrt(tmp**2+4))**2, tmp)
+        return out
 
 
-class FatigueLife(ShiftScale):
+class FatigueLife(ShiftScaleDistribution):
     """
     Fatigue-Life or Birmbaum-Sanders distribution
 

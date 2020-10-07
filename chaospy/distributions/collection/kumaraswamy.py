@@ -2,15 +2,15 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, LowerUpper
+from ..baseclass import SimpleDistribution, LowerUpperDistribution
 
 
-class kumaraswamy(DistributionCore):
+class kumaraswamy(SimpleDistribution):
     """Kumaraswamy's double bounded distribution."""
 
     def __init__(self, a=1, b=1):
         # assert numpy.all(a > 0) and numpy.all(b > 0)
-        super(kumaraswamy, self).__init__(a=a, b=b)
+        super(kumaraswamy, self).__init__(dict(a=a, b=b))
 
     def _pdf(self, x, a, b):
         return a*b*x**(a-1)*(1-x**a)**(b-1)
@@ -32,7 +32,7 @@ class kumaraswamy(DistributionCore):
         return 1.
 
 
-class Kumaraswamy(LowerUpper):
+class Kumaraswamy(LowerUpperDistribution):
     """
     Kumaraswamy's double bounded distribution
 

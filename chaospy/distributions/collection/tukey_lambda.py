@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class tukey_lambda(DistributionCore):
+class tukey_lambda(SimpleDistribution):
     """Tukey-lambda distribution."""
 
     def __init__(self, lam):
-        super(tukey_lambda, self).__init__(lam=lam)
+        super(tukey_lambda, self).__init__(dict(lam=lam))
 
     def _pdf(self, x, lam):
         lam = numpy.zeros(x.shape) + lam
@@ -36,7 +36,7 @@ class tukey_lambda(DistributionCore):
         return output
 
 
-class TukeyLambda(ShiftScale):
+class TukeyLambda(ShiftScaleDistribution):
     """
     Tukey-lambda distribution.
 

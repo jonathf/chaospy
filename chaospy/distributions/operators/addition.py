@@ -74,12 +74,11 @@ from scipy.special import comb
 import numpy
 import chaospy
 
-from ..baseclass import Distribution
-from .operator import OperatorDistribution
+from ..baseclass import Distribution, OperatorDistribution
 
 
 class Add(OperatorDistribution):
-    """Addition."""
+    """Addition operator."""
 
     def __init__(self, left, right):
         super(Add, self).__init__(
@@ -88,7 +87,7 @@ class Add(OperatorDistribution):
             repr_args=[left, right],
         )
 
-    def _lower(self, left, right, cache):
+    def _lower(self, idx, left, right, cache):
         """
         Distribution bounds.
 
@@ -101,12 +100,12 @@ class Add(OperatorDistribution):
             array([2.])
         """
         if isinstance(left, Distribution):
-            left = left._get_lower(cache=cache)
+            left = left._get_lower(idx, cache=cache)
         if isinstance(right, Distribution):
-            right = right._get_lower(cache=cache)
-        return (left.T+right.T).T
+            right = right._get_lower(idx, cache=cache)
+        return left+right
 
-    def _upper(self, left, right, cache):
+    def _upper(self, idx, left, right, cache):
         """
         Distribution bounds.
 
@@ -120,19 +119,19 @@ class Add(OperatorDistribution):
 
         """
         if isinstance(left, Distribution):
-            left = left._get_upper(cache=cache)
+            left = left._get_upper(idx, cache=cache)
         if isinstance(right, Distribution):
-            right = right._get_upper(cache=cache)
+            right = right._get_upper(idx, cache=cache)
         return (left.T+right.T).T
 
-    def _cdf(self, xloc, left, right, cache):
+    def _cdf(self, xloc, idx, left, right, cache):
         if isinstance(right, Distribution):
             left, right = right, left
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        uloc = left._get_fwd(xloc, cache=cache)
+        uloc = left._get_fwd(xloc, idx, cache=cache)
         return uloc
 
-    def _pdf(self, xloc, left, right, cache):
+    def _pdf(self, xloc, idx, left, right, cache):
         """
         Probability density function.
 
@@ -148,9 +147,9 @@ class Add(OperatorDistribution):
         if isinstance(right, Distribution):
             left, right = right, left
         xloc = (xloc.T-numpy.asfarray(right).T).T
-        return left._get_pdf(xloc, cache=cache)
+        return left._get_pdf(xloc, idx, cache=cache)
 
-    def _ppf(self, uloc, left, right, cache):
+    def _ppf(self, uloc, idx, left, right, cache):
         """
         Point percentile function.
 
@@ -164,7 +163,7 @@ class Add(OperatorDistribution):
         """
         if isinstance(right, Distribution):
             left, right = right, left
-        xloc = left._get_inv(uloc, cache=cache)
+        xloc = left._get_inv(uloc, idx, cache=cache)
         return (xloc.T+numpy.asfarray(right).T).T
 
     def _mom(self, keys, left, right, cache):
@@ -184,7 +183,7 @@ class Add(OperatorDistribution):
         keys_ = keys_.reshape(len(self), -1)
 
         if isinstance(left, Distribution):
-            if left.shares_dependencies(right):
+            if chaospy.shares_dependencies(left, right):
                 raise chaospy.StochasticallyDependentError(
                     "%s: left and right side of sum stochastically dependent." % self)
             left = [left._get_mom(key) for key in keys_.T]
@@ -194,19 +193,16 @@ class Add(OperatorDistribution):
         if isinstance(right, Distribution):
             right = [right._get_mom(key) for key in keys_.T]
         else:
-            right = list(reversed(numpy.array(right).T**keys_.T))
+            right = list(reversed(numpy.prod(numpy.array(right).T**keys_.T, -1)))
 
-        out = numpy.zeros(keys.shape)
+        out = 0.
         for idx in range(keys_.shape[1]):
             key = keys_.T[idx]
-            coef = comb(keys.T, key)
-            out += coef*left[idx]*right[idx]*(key <= keys.T)
-
-        if numpy.asarray(out).shape:
-            out = numpy.prod(out)
+            coef = numpy.prod(comb(keys, key))
+            out += coef*left[idx]*right[idx]*numpy.all(key <= keys)
         return out
 
-    def _ttr(self, kloc, left, right, cache):
+    def _ttr(self, kloc, idx, left, right, cache):
         """
         Three terms recurrence coefficients.
 
@@ -225,14 +221,8 @@ class Add(OperatorDistribution):
         del cache
         if isinstance(right, Distribution):
             left, right = right, left
-        coeff0, coeff1 = left._get_ttr(kloc)
+        coeff0, coeff1 = left._get_ttr(kloc, idx)
         return coeff0+numpy.asarray(right), coeff1
-
-    def _cache(self, left, right, cache):
-        del cache
-        if isinstance(left, Distribution) or isinstance(right, Distribution):
-            return self
-        return left+right
 
 
 def add(left, right):

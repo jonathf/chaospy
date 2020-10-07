@@ -49,11 +49,11 @@ together in `chaospy`.
 import numpy
 import chaospy
 
-from .index import Index
 from .distribution import Distribution
 
 
-class Copula(Distribution):
+class CopulaDistribution(Distribution):
+    """Baseclass for all Copulas."""
 
     def __init__(self, dist, trans, rotation=None, repr_args=None):
         r"""
@@ -71,85 +71,43 @@ class Copula(Distribution):
             accumulant.update(dist._dependencies[idx])
             dependencies[idx] = accumulant.copy()
 
-        super(Copula, self).__init__(
+        super(CopulaDistribution, self).__init__(
             parameters=dict(dist=dist, trans=trans),
             dependencies=dependencies,
             rotation=rotation,
             repr_args=repr_args,
-            index_cls=CopulaIndex,
         )
 
-    def _cdf(self, xloc, dist, trans, cache):
-        out = numpy.zeros(xloc.shape)
-        for idx in self._rotation:
-            xloc_ = xloc[idx].reshape(1, -1)
-            out[idx] = self[int(idx)]._get_fwd(xloc_, cache)
-        return out
-        output = dist._get_fwd(xloc, cache=cache)
-        output = trans._get_fwd(output, cache=cache)
+    def get_parameters(self, idx, cache, assert_numerical=True):
+        parameters = super(CopulaDistribution, self).get_parameters(
+            idx, cache, assert_numerical=assert_numerical)
+        if idx is None:
+            del parameters["idx"]
+        return parameters
+
+    def _lower(self, idx, dist, trans, cache):
+        return dist._get_lower(idx, cache=cache)
+
+    def _upper(self, idx, dist, trans, cache):
+        return dist._get_upper(idx, cache=cache)
+
+    def _cdf(self, xloc, idx, dist, trans, cache):
+        output = dist._get_fwd(xloc, idx, cache=cache)
+        output = trans._get_fwd(output, idx, cache=cache)
         return output
 
-    def _lower(self, dist, trans, cache):
-        return dist._get_lower(cache=cache)
-
-    def _upper(self, dist, trans, cache):
-        return dist._get_upper(cache=cache)
-
-    def _ppf(self, qloc, dist, trans, cache):
-        out = numpy.zeros(qloc.shape)
-        for idx in self._rotation:
-            qloc_ = qloc[idx].reshape(1, -1)
-            out[idx] = self[int(idx)]._get_inv(qloc_, cache)
-        return out
-        qloc = trans._get_inv(qloc, cache=cache)
-        xloc = dist._get_inv(qloc, cache=cache)
+    def _ppf(self, qloc, idx, dist, trans, cache):
+        qloc = trans._get_inv(qloc, idx, cache=cache)
+        xloc = dist._get_inv(qloc, idx, cache=cache)
         return xloc
 
-    def _pdf(self, x, dist, trans, cache):
-        density = dist._get_pdf(x, cache=cache.copy())
-        return trans._get_pdf(dist._get_fwd(x, cache=cache), cache=cache)*density
+    def _pdf(self, xloc, idx, dist, trans, cache):
+        density = dist._get_pdf(xloc, idx, cache=cache.copy())
+        return trans._get_pdf(
+            dist._get_fwd(xloc, idx, cache=cache), idx, cache=cache)*density
 
-    def _mom(self, x, dist, trans, cache):
+    def _mom(self, xloc, dist, trans, cache):
         raise chaospy.UnsupportedFeature("Copula not supported.")
 
-    def _ttr(self, x, dist, trans, cache):
+    def _ttr(self, xloc, idx, dist, trans, cache):
         raise chaospy.UnsupportedFeature("Copula not supported.")
-
-    def _cache(self, dist, trans, cache):
-        return self
-
-
-class CopulaIndex(Index):
-
-    def __init__(self, parent, conditions=()):
-        assert isinstance(parent, Copula)
-        super(CopulaIndex, self).__init__(
-            parent=parent, conditions=conditions)
-
-    def _ppf(self, qloc, idx, parent, conditions, cache):
-        parameters = parent.get_parameters(cache, assert_numerical=False)
-        qloc = parameters["trans"][int(idx)]._get_inv(qloc, cache=cache)
-        xloc = parameters["dist"][int(idx)]._get_inv(qloc, cache=cache)
-        return xloc
-
-    def _cdf(self, xloc, idx, parent, conditions, cache):
-        parameters = parent.get_parameters(cache, assert_numerical=False)
-        output = parameters["dist"][int(idx)]._get_fwd(xloc, cache=cache)
-        output = parameters["trans"][int(idx)]._get_fwd(output, cache=cache)
-        return output
-
-    def _pdf(self, xloc, idx, parent, conditions, cache):
-        parameters = parent.get_parameters(cache, assert_numerical=False)
-        density = parameters["dist"][int(idx)]._get_pdf(xloc, cache=cache.copy())
-        zloc = parameters["dist"][int(idx)]._get_fwd(xloc, cache=cache)
-        output = parameters["trans"][int(idx)]._get_pdf(zloc, cache=cache)*density
-        return output
-
-    def _mom(self, kloc, idx, parent, conditions, cache):
-        raise chaospy.UnsupportedFeature("Copula not supported.")
-
-    def _ttr(self, kloc, idx, parent, conditions, cache):
-        raise chaospy.UnsupportedFeature("Copula not supported.")
-
-    def _cache(self, idx, parent, conditions, cache):
-        return self

@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class folded_normal(DistributionCore):
+class folded_normal(SimpleDistribution):
     """Folded normal distribution."""
 
     def __init__(self, c=1):
-        super(folded_normal, self).__init__(c=c)
+        super(folded_normal, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return numpy.sqrt(2.0/numpy.pi)*numpy.cosh(c*x)*numpy.exp(-(x*x+c*c)/2.0)
@@ -24,7 +24,7 @@ class folded_normal(DistributionCore):
         return 8+c
 
 
-class FoldedNormal(ShiftScale):
+class FoldedNormal(ShiftScaleDistribution):
     """
     Folded normal distribution.
 

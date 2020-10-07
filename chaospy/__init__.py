@@ -23,7 +23,6 @@ import chaospy.regression
 from .basis import basis
 from .prange import prange
 
-from .exceptions import StochasticallyDependentError, UnsupportedFeature
 from chaospy.distributions import *
 from chaospy.orthogonal import *
 from chaospy.spectral import *
@@ -44,7 +43,7 @@ def configure_logging():
     logpath = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
     logging.basicConfig(level=logging.DEBUG, filename=logpath, filemode="w")
     streamer = logging.StreamHandler()
-    loglevel = logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") else logging.WARNING
+    loglevel = logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") == "1" else logging.WARNING
     streamer.setLevel(loglevel)
 
     logger = logging.getLogger("chaospy")
@@ -53,3 +52,11 @@ def configure_logging():
     logger.addHandler(streamer)
 
 configure_logging()
+
+
+class StochasticallyDependentError(ValueError):
+    """Error related to stochastically dependent variables."""
+
+
+class UnsupportedFeature(NotImplementedError):
+    """Error when dependencies are not correctly handled."""

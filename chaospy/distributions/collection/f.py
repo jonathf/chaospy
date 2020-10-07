@@ -2,14 +2,17 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class f(DistributionCore):
+class f(SimpleDistribution):
     """F distribution."""
 
     def __init__(self, dfn, dfd, nc):
-        super(f, self).__init__(dfn=dfn, dfd=dfd, nc=nc)
+        super(f, self).__init__(
+            parameters=dict(dfn=dfn, dfd=dfd, nc=nc),
+            repr_args=[dfn, dfd, "nc=%s" % nc],
+        )
 
     def _pdf(self, x, dfn, dfd, nc):
         n1, n2 = dfn, dfd
@@ -32,7 +35,7 @@ class f(DistributionCore):
         return 0.
 
 
-class F(ShiftScale):
+class F(ShiftScaleDistribution):
     """
     (Non-central) F or Fisher-Snedecor distribution.
 
@@ -65,7 +68,7 @@ class F(ShiftScale):
         True
     """
 
-    def __init__(self, n=1, m=1, nc=0, shift=0, scale=1):
+    def __init__(self, n=2, m=10, nc=0, shift=0, scale=1):
         super(F, self).__init__(
             dist=f(n, m, nc),
             shift=shift,

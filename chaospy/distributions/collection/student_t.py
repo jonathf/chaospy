@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class student_t(DistributionCore):
+class student_t(SimpleDistribution):
     """Student-T distribution."""
 
     def __init__(self, a=1):
-        super(student_t, self).__init__(a=a)
+        super(student_t, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         return special.gamma(.5*a+.5)*(1+x*x/a)**(-.5*a-.5) /\
@@ -32,7 +32,7 @@ class student_t(DistributionCore):
         return 0., k*a*(a-k+1.)/ ((a-2*k)*(a-2*k+2))
 
 
-class StudentT(ShiftScale):
+class StudentT(ShiftScaleDistribution):
     """
     (Non-central) Student-t distribution.
 

@@ -2,14 +2,14 @@
 import numpy
 from scipy import special, misc
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class log_laplace(DistributionCore):
+class log_laplace(SimpleDistribution):
     """Log-laplace distribution."""
 
     def __init__(self, c):
-        super(log_laplace, self).__init__(c=c)
+        super(log_laplace, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         cd2 = c/2.0
@@ -25,7 +25,7 @@ class log_laplace(DistributionCore):
     def _lower(self, c):
         return 0.0
 
-class LogLaplace(ShiftScale):
+class LogLaplace(ShiftScaleDistribution):
     """
     Log-laplace distribution
 

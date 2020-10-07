@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class gompertz(DistributionCore):
+class gompertz(SimpleDistribution):
     """Gompertz distribution."""
 
     def __init__(self, c):
-        super(gompertz, self).__init__(c=c)
+        super(gompertz, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         ex = numpy.exp(x)
@@ -25,7 +25,7 @@ class gompertz(DistributionCore):
         return 0.
 
 
-class Gompertz(ShiftScale):
+class Gompertz(ShiftScaleDistribution):
     """
     Gompertz distribution
 

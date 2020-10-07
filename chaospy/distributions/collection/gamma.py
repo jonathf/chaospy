@@ -2,13 +2,13 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class gamma(DistributionCore):
+class gamma(SimpleDistribution):
 
     def __init__(self, a=1):
-        super(gamma, self).__init__(a=a)
+        super(gamma, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         return x**(a-1)*numpy.e**(-x)/special.gamma(a)
@@ -29,7 +29,7 @@ class gamma(DistributionCore):
         return 0.
 
 
-class Gamma(ShiftScale):
+class Gamma(ShiftScaleDistribution):
     """
     Gamma distribution.
 
@@ -72,7 +72,7 @@ class Gamma(ShiftScale):
         )
 
 
-class Exponential(ShiftScale):
+class Exponential(ShiftScaleDistribution):
     R"""
     Exponential Probability Distribution
 

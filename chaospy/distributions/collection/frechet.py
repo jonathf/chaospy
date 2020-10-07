@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class frechet(DistributionCore):
+class frechet(SimpleDistribution):
     """Frechet or Extreme value distribution type 2."""
 
     def __init__(self, c=1):
-        super(frechet, self).__init__(c=c)
+        super(frechet, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return c*pow(x,c-1)*numpy.exp(-pow(x,c))
@@ -27,7 +27,7 @@ class frechet(DistributionCore):
         return 0.
 
 
-class Frechet(ShiftScale):
+class Frechet(ShiftScaleDistribution):
     """
     Frechet or Extreme value distribution type 2.
 

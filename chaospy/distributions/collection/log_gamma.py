@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class log_gamma(DistributionCore):
+class log_gamma(SimpleDistribution):
     """Log-gamma distribution."""
 
     def __init__(self, c):
-        super(log_gamma, self).__init__(c=c)
+        super(log_gamma, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return numpy.exp(c*x-numpy.exp(x)-special.gammaln(c))
@@ -21,7 +21,7 @@ class log_gamma(DistributionCore):
         return numpy.log(special.gammaincinv(c,q))
 
 
-class LogGamma(ShiftScale):
+class LogGamma(ShiftScaleDistribution):
     """
     Log-gamma distribution
 

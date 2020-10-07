@@ -1,12 +1,12 @@
 """Pareto type 2 distribution."""
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class pareto2(DistributionCore):
+class pareto2(SimpleDistribution):
     """Pareto type 2 distribution."""
 
     def __init__(self, c):
-        super(pareto2, self).__init__(c=c)
+        super(pareto2, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return c*1.0/(1.0+x)**(c+1.0)
@@ -21,7 +21,7 @@ class pareto2(DistributionCore):
         return 0.0
 
 
-class Pareto2(ShiftScale):
+class Pareto2(ShiftScaleDistribution):
     """
     Pareto type 2 distribution.
 

@@ -3,10 +3,10 @@ import numpy
 from scipy import special
 
 from .student_t import student_t
-from ..baseclass import MeanCovariance
+from ..baseclass import MeanCovarianceDistribution
 
 
-class MvStudentT(MeanCovariance):
+class MvStudentT(MeanCovarianceDistribution):
     """
     Multivariate Student-T Distribution.
 

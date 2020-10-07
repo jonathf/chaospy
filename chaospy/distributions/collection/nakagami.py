@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class nakagami(DistributionCore):
+class nakagami(SimpleDistribution):
     """Nakagami-m distribution."""
 
     def __init__(self, nu):
-        super(nakagami, self).__init__(nu=nu)
+        super(nakagami, self).__init__(dict(nu=nu))
 
     def _pdf(self, x, nu):
         return 2*nu**nu/special.gamma(nu)*(x**(2*nu-1.0))*numpy.exp(-nu*x*x)
@@ -24,7 +24,7 @@ class nakagami(DistributionCore):
         return 0.
 
 
-class Nakagami(ShiftScale):
+class Nakagami(ShiftScaleDistribution):
     """
     Nakagami-m distribution.
 

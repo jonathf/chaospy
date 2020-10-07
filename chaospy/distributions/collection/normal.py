@@ -2,10 +2,10 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class normal(DistributionCore):
+class normal(SimpleDistribution):
     """Standard normal distribution."""
 
     def __init__(self):
@@ -27,7 +27,7 @@ class normal(DistributionCore):
         return 0., 1.*n
 
 
-class Normal(ShiftScale):
+class Normal(ShiftScaleDistribution):
     R"""
     Normal (Gaussian) distribution
 

@@ -2,10 +2,10 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class hyperbolic_secant(DistributionCore):
+class hyperbolic_secant(SimpleDistribution):
     """Hyperbolic secant distribution."""
 
     def __init__(self):
@@ -26,7 +26,7 @@ class hyperbolic_secant(DistributionCore):
         return output.reshape(shape)
 
 
-class HyperbolicSecant(ShiftScale):
+class HyperbolicSecant(ShiftScaleDistribution):
     """
     Hyperbolic secant distribution
 

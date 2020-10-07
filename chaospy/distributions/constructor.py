@@ -19,7 +19,9 @@ Evaluate distribution::
     array([0. , 0. , 0. , 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0. , 0. , 0. ])
 """
 import types
-from .baseclass import DistributionCore
+
+import chaospy
+from .baseclass import SimpleDistribution
 
 LEGAL_ATTRS = {
     "cdf": "_cdf", "lower": "_lower", "upper": "_upper",
@@ -29,7 +31,12 @@ LEGAL_ATTRS = {
     "str": "_str"
 }
 
-class ConstructedDistribution(DistributionCore):
+class ConstructedDistribution(SimpleDistribution):
+
+    def __init__(self, **kwargs):
+        super(ConstructedDistribution, self).__init__(
+            parameters=kwargs)
+
     def _cdf(self, xloc, **kwargs):
         pass
 
@@ -44,7 +51,7 @@ def construct(parent=None, defaults=None, **kwargs):
             Lower boundary. Optional if ``parent`` or ``ppf`` is present.
         upper:
             Upper boundary. Optional if ``parent`` or ``ppf`` is present.
-        parent (DistributionCore):
+        parent (SimpleDistribution):
             Distribution used as basis for new distribution. Any other argument
             that is omitted will instead take is function from ``parent``.
         doc (str):
@@ -65,7 +72,7 @@ def construct(parent=None, defaults=None, **kwargs):
             Default values to provide to initialiser.
 
     Returns:
-        (DistributionCore):
+        (SimpleDistribution):
             New custom distribution.
     """
 
@@ -97,7 +104,7 @@ def construct(parent=None, defaults=None, **kwargs):
         for key, function in kwargs.items():
             attr_name = LEGAL_ATTRS[key]
             setattr(dist, attr_name, types.MethodType(function, dist))
-        return dist
+        return chaospy.J(dist)
 
     if "doc" in kwargs:
         custom_distribution.__doc__ = kwargs["doc"]

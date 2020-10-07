@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class burr(DistributionCore):
+class burr(SimpleDistribution):
     """Stadard Burr distribution."""
 
     def __init__(self, alpha=1., kappa=1.):
-        super(burr, self).__init__(alpha=alpha, kappa=kappa)
+        super(burr, self).__init__(dict(alpha=alpha, kappa=kappa))
 
     def _pdf(self, x, alpha, kappa):
         output = numpy.zeros(x.shape)
@@ -34,7 +34,7 @@ class burr(DistributionCore):
         return 0.
 
 
-class Burr(ShiftScale):
+class Burr(ShiftScaleDistribution):
     """
     Burr Type XII or Singh-Maddala distribution.
 

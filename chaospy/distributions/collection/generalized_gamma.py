@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class generalized_gamma(DistributionCore):
+class generalized_gamma(SimpleDistribution):
     """Generalized gamma distribution."""
 
     def __init__(self, a, c):
-        super(generalized_gamma, self).__init__(a=a, c=c)
+        super(generalized_gamma, self).__init__(dict(a=a, c=c))
 
     def _pdf(self, x, a, c):
         return abs(c)*numpy.exp((c*a-1)*numpy.log(x)-x**c-special.gammaln(a))
@@ -33,7 +33,7 @@ class generalized_gamma(DistributionCore):
         return 0.
 
 
-class GeneralizedGamma(ShiftScale):
+class GeneralizedGamma(ShiftScaleDistribution):
     """
     Generalized gamma distribution
 

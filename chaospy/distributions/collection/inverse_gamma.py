@@ -2,13 +2,13 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class inverse_gamma(DistributionCore):
+class inverse_gamma(SimpleDistribution):
 
     def __init__(self, a):
-        super(inverse_gamma, self).__init__(a=a)
+        super(inverse_gamma, self).__init__(dict(a=a))
 
     def _lower(self, a):
         return 0.
@@ -29,7 +29,7 @@ class inverse_gamma(DistributionCore):
         return numpy.prod(a-numpy.arange(1, k.item()+1))
 
 
-class InverseGamma(ShiftScale):
+class InverseGamma(ShiftScaleDistribution):
     """
     Inverse-Gamma distribution.
 

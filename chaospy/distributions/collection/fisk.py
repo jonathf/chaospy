@@ -1,12 +1,12 @@
 """Fisk or Log-logistic distribution."""
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class fisk(DistributionCore):
+class fisk(SimpleDistribution):
     """Fisk or Log-logistic distribution."""
 
     def __init__(self, c=1):
-        super(fisk, self).__init__(c=c)
+        super(fisk, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return c*x**(c-1.)/(1+x**c)**2
@@ -21,7 +21,7 @@ class fisk(DistributionCore):
         return 0.
 
 
-class Fisk(ShiftScale):
+class Fisk(ShiftScaleDistribution):
     """
     Fisk or Log-logistic distribution.
 
@@ -47,7 +47,8 @@ class Fisk(ShiftScale):
         >>> distribution.sample(4).round(4)
         array([3.4714, 2.013 , 6.3474, 2.9531])
         >>> distribution.mom(1).round(4)
-        3.4184
+        3.5577
+
     """
     def __init__(self, shape=1, scale=1, shift=0):
         super(Fisk, self).__init__(

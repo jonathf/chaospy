@@ -18,7 +18,7 @@ The calculation of the derivative of the ``iphi`` function:
 import numpy
 from scipy import special
 
-from ..baseclass import Copula
+from ..baseclass import CopulaDistribution
 from .archimedean import Archimedean
 
 
@@ -35,7 +35,7 @@ class clayton(Archimedean):
         return theta**order*self._sigma(1+theta*u_loc, theta, order)
 
 
-class Clayton(Copula):
+class Clayton(CopulaDistribution):
     """
     Clayton Copula.
 
@@ -68,8 +68,6 @@ class Clayton(Copula):
                [[-0.2008, -0.0431,  0.0945],
                 [-0.0746,  0.0928,  0.2329],
                 [ 0.0636,  0.2349,  0.3713]]])
-        >>> distribution.mom([1, 2]).round(4)
-        -0.0311
 
     """
 

@@ -10,9 +10,9 @@ Copula wrapper::
 
 The resulting copula is then ready for use::
 
-    >>> print(numpy.around(copula.sample(5), 4))
-    [[0.6536 0.115  0.9503 0.4822 0.8725]
-     [0.6286 0.0654 0.96   0.5073 0.9705]]
+    >>> copula.sample(5).round(4)
+    array([[0.6536, 0.115 , 0.9503, 0.4822, 0.8725],
+           [0.6286, 0.0654, 0.96  , 0.5073, 0.9705]])
 
 """
 from .archimedean import Archimedean

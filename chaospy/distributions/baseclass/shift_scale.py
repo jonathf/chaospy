@@ -4,10 +4,9 @@ import numpoly
 import chaospy
 
 from .distribution import Distribution
-from .core import DistributionCore
 
 
-class ShiftScale(DistributionCore):
+class ShiftScaleDistribution(Distribution):
     """
     Shift-Scaling transformation.
 
@@ -41,72 +40,73 @@ class ShiftScale(DistributionCore):
         assert isinstance(dist, Distribution), "'dist' should be a distribution"
         if repr_args is None:
             repr_args = dist._repr_args[:]
-        if not isinstance(scale, (int, float)) or scale != 1:
-            repr_args += ["scale=%s" % scale]
-        if not isinstance(shift, (int, float)) or shift != 0:
-            repr_args += ["shift=%s" % shift]
-        if rotation is not None:
-            repr_args += ["rotation=%s" % list(rotation)]
-        length = max([(len(param) if isinstance(param, Distribution)
-                        else len(numpy.atleast_1d(param)))
-                        for param in [dist, shift, scale]]+[1])
-        dependencies = [set([idx]) for idx in self._declare_dependencies(length)]
-
-        super(ShiftScale, self).__init__(
-            shift=shift,
-            scale=scale,
+        repr_args += chaospy.format_repr_kwargs(scale=(scale, 1))
+        repr_args += chaospy.format_repr_kwargs(shift=(shift, 0))
+        length = len(dist) if len(dist) > 1 else None
+        dependencies, parameters, rotation = chaospy.declare_dependencies(
+            distribution=self,
+            parameters=dict(shift=shift, scale=scale),
+            rotation=rotation,
+            length=length,
+        )
+        super(ShiftScaleDistribution, self).__init__(
+            parameters=parameters,
             rotation=rotation,
             dependencies=dependencies,
             repr_args=repr_args,
         )
-        if len(dist) == 1 and len(self) > 1:
-            dist = chaospy.Iid(dist, len(self))
+        self._dist = dist
         permute = numpy.zeros((len(self._rotation), len(self._rotation)), dtype=int)
         permute[numpy.arange(len(self._rotation), dtype=int), self._rotation] = 1
         self._permute = permute
-        self._dist = dist
 
-    def _ppf(self, qloc, shift, scale):
-        zloc = self._dist.inv(qloc)
-        out = (scale.T*zloc.T+shift.T).T
-        return out
+    def get_parameters(self, idx, cache, assert_numerical=True):
 
-    def _cdf(self, xloc, shift, scale):
-        zloc = ((xloc.T-shift.T)/scale.T).T
-        out = self._dist.fwd(zloc)
-        return out
+        shift = self._parameters["shift"]
+        if isinstance(shift, Distribution):
+            shift = shift._get_cache(idx, cache, get=0)
+        elif idx is not None and len(shift) > 1:
+            shift = shift[idx]
 
-    def _pdf(self, xloc, shift, scale):
-        zloc = ((xloc.T-shift.T)/scale.T).T
-        out = (self._dist.pdf(zloc, decompose=True).T/scale.T).T
-        assert xloc.shape == out.shape
-        return out
+        scale = self._parameters["scale"]
+        if isinstance(scale, Distribution):
+            scale = scale._get_cache(idx, cache, get=0)
+        elif idx is not None and len(scale) > 1:
+            scale = scale[idx]
 
-    def _mom(self, kloc, shift, scale):
-        assert not isinstance(scale, Distribution)
+        assert not assert_numerical or not (isinstance(shift, Distribution) or
+                                            isinstance(scale, Distribution))
+
+        return dict(dist=self._dist, shift=shift, scale=scale,
+                    parameters=self._dist.get_parameters(
+                        idx, cache, assert_numerical=assert_numerical))
+
+    def _ppf(self, qloc, dist, shift, scale, parameters):
+        return dist._ppf(qloc, **parameters)*scale+shift
+
+    def _cdf(self, xloc, dist, shift, scale, parameters):
+        return dist._cdf((xloc-shift)/scale, **parameters)
+
+    def _pdf(self, xloc, dist, shift, scale, parameters):
+        return dist._pdf((xloc-shift)/scale, **parameters)/scale
+
+    def _mom(self, kloc, dist, shift, scale, parameters):
+        del parameters
         poly = numpoly.variable(len(self))
         poly = numpoly.sum(scale*poly, axis=-1)+shift
         poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
-        out = sum(self._dist.mom(key)*coeff
+        out = sum(dist._get_mom(key)*coeff
                   for key, coeff in zip(poly.exponents, poly.coefficients))
         return out
 
-    def _ttr(self, kloc, shift, scale):
-        coeff0, coeff1 = self._dist._get_ttr(kloc)
+    def _ttr(self, kloc, dist, shift, scale, parameters):
+        coeff0, coeff1 = dist._ttr(kloc, **parameters)
         coeff0 = coeff0*scale+shift
         coeff1 = coeff1*scale*scale
         return coeff0, coeff1
 
-    def _lower(self, shift, scale):
-        if isinstance(shift, Distribution):
-            shift = shift._get_lower(cache={})
-        if isinstance(scale, Distribution):
-            scale = scale._get_lower(cache={})
-        return scale.dot(self._dist.lower)+shift
+    def _lower(self, dist, shift, scale, parameters):
+        return dist._lower(**parameters)*scale+shift
 
-    def _upper(self, shift, scale):
-        if isinstance(shift, Distribution):
-            shift = shift._get_upper(cache={})
-        if isinstance(scale, Distribution):
-            scale = scale._get_upper(cache={})
-        return scale.dot(self._dist.upper)+shift
+    def _upper(self, dist, shift, scale, parameters):
+        return dist._upper(**parameters)*scale+shift

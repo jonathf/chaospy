@@ -1,10 +1,11 @@
 """Discrete uniform probability distribution."""
 import numpy
 
-from ..baseclass import DistributionCore
+from ..baseclass import SimpleDistribution
+from ..operators import J
 
 
-class DiscreteUniform(DistributionCore):
+class discrete_uniform(SimpleDistribution):
     """
     Discrete uniform probability distribution.
 
@@ -19,7 +20,7 @@ class DiscreteUniform(DistributionCore):
     Examples:
         >>> distribution = chaospy.DiscreteUniform(2, 4)
         >>> distribution
-        DiscreteUniform(lower=2, upper=4)
+        DiscreteUniform(2, 4)
         >>> q = numpy.linspace(0, 1, 9)
         >>> q.round(2)
         array([0.  , 0.12, 0.25, 0.38, 0.5 , 0.62, 0.75, 0.88, 1.  ])
@@ -40,7 +41,7 @@ class DiscreteUniform(DistributionCore):
     interpret_as_integer = True
 
     def __init__(self, lower, upper):
-        super(DiscreteUniform, self).__init__(lower=lower, upper=upper)
+        super(discrete_uniform, self).__init__(dict(lower=lower, upper=upper))
 
     def _cdf(self, x_data, lower, upper):
         """Cumulative distribution function."""
@@ -79,3 +80,12 @@ class DiscreteUniform(DistributionCore):
         weights = numpy.repeat(1./len(abscissas), len(abscissas))
         (alpha, beta), _, _ = discretized_stieltjes(k_data, [abscissas], weights)
         return alpha[0, -1], beta[0, -1]
+
+
+class DiscreteUniform(J):
+
+    interpret_as_integer = True
+
+    def __init__(self, lower, upper):
+        super(DiscreteUniform, self).__init__(discrete_uniform(lower=lower, upper=upper))
+        self._repr_args = [lower, upper]

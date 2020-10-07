@@ -8,7 +8,7 @@ Invert sign of a distribution::
 
     >>> distribution = -chaospy.Uniform()
     >>> distribution
-    Neg(Uniform())
+    Negative(Uniform())
     >>> distribution.sample(5).round(4)
     array([-0.3464, -0.885 , -0.0497, -0.5178, -0.1275])
     >>> distribution.fwd([-0.3, -0.2, -0.1])
@@ -25,11 +25,11 @@ Invert sign of a distribution::
 
 """
 import numpy
-from ..baseclass import Distribution
-from .operator import OperatorDistribution
+
+from ..baseclass import Distribution, OperatorDistribution
 
 
-class Neg(OperatorDistribution):
+class Negative(OperatorDistribution):
     """Negative of a distribution."""
 
     def __init__(self, dist):
@@ -39,31 +39,31 @@ class Neg(OperatorDistribution):
         Args:
             dist (Distribution) : distribution.
         """
-        super(Neg, self).__init__(
+        super(Negative, self).__init__(
             left=dist,
             right=0,
         )
         self._repr_args = [dist]
 
-    def _lower(self, left, right, cache):
+    def _lower(self, idx, left, right, cache):
         del right
-        return -left._get_upper(cache)
+        return -left._get_upper(idx, cache)
 
-    def _upper(self, left, right, cache):
+    def _upper(self, idx, left, right, cache):
         del right
-        return -left._get_lower(cache)
+        return -left._get_lower(idx, cache)
 
-    def _pdf(self, xloc, left, right, cache):
+    def _pdf(self, xloc, idx, left, right, cache):
         del right
-        return left._get_pdf(-xloc, cache)
+        return left._get_pdf(-xloc, idx, cache)
 
-    def _cdf(self, xloc, left, right, cache):
+    def _cdf(self, xloc, idx, left, right, cache):
         del right
-        return 1-left._get_fwd(-xloc, cache)
+        return 1-left._get_fwd(-xloc, idx, cache)
 
-    def _ppf(self, uloc, left, right, cache):
+    def _ppf(self, uloc, idx, left, right, cache):
         del right
-        return -left._get_inv(1-uloc, cache)
+        return -left._get_inv(1-uloc, idx, cache)
 
     def _mom(self, kloc, left, right, cache):
         """Statistical moments."""
@@ -71,19 +71,12 @@ class Neg(OperatorDistribution):
         del cache
         return (-1)**numpy.sum(kloc)*left._get_mom(kloc)
 
-    def _ttr(self, kloc, left, right, cache):
+    def _ttr(self, kloc, idx, left, right, cache):
         """Three terms recurrence coefficients."""
         del right
         del cache
-        alpha, beta = left._get_ttr(kloc)
+        alpha, beta = left._get_ttr(kloc, idx)
         return -alpha, beta
-
-    def _cache(self, left, right, cache):
-        del right
-        del cache
-        if isinstance(left, Distribution):
-            return self
-        return -left
 
 
 def neg(left):
@@ -93,4 +86,4 @@ def neg(left):
     Args:
         dist (Distribution) : distribution.
     """
-    return Neg(left)
+    return Negative(left)

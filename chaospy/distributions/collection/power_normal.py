@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class power_normal(DistributionCore):
+class power_normal(SimpleDistribution):
     """Power normal or Box-Cox distribution."""
 
     def __init__(self, c):
-        super(power_normal, self).__init__(c=c)
+        super(power_normal, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         norm = (2*numpy.pi)**-.5*numpy.exp(-x**2/2.)
@@ -22,7 +22,7 @@ class power_normal(DistributionCore):
         return -special.ndtri(pow(1-q, 1./c))
 
 
-class PowerNormal(ShiftScale):
+class PowerNormal(ShiftScaleDistribution):
     """
     Power normal or Box-Cox distribution.
 

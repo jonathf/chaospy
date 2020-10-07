@@ -2,16 +2,16 @@
 import numpy
 from scipy import special, misc
 
-from ..baseclass import DistributionCore, LowerUpper
+from ..baseclass import SimpleDistribution, LowerUpperDistribution
 from .beta import beta_
 
 
-class triangle(DistributionCore):
+class triangle(SimpleDistribution):
     """Triangle probability distribution."""
 
     def __init__(self, a=.5):
         # assert numpy.all(a>=0) and numpy.all(a<=1)
-        super(triangle, self).__init__(a=a)
+        super(triangle, self).__init__(dict(a=a))
 
     def _pdf(self, D, a):
         return numpy.where(D<a, 2*D/a, 2*(1-D)/(1-a))
@@ -44,13 +44,13 @@ class triangle(DistributionCore):
         q1, w1 = quad_fejer(int(1000*a), (0, a))
         q2, w2 = quad_fejer(int(1000*(1-a)), (a, 1))
         q = numpy.concatenate([q1,q2], 1)
-        w = numpy.concatenate([w1,w2])*self.pdf(q[0])
+        w = numpy.concatenate([w1,w2])*self._pdf(q[0], a)
 
         coeffs, _, _ = discretized_stieltjes(k, q, w)
         return coeffs[:, 0, -1]
 
 
-class Triangle(LowerUpper):
+class Triangle(LowerUpperDistribution):
     """
     Triangle Distribution.
 

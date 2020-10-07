@@ -2,8 +2,7 @@
 import numpy
 import chaospy
 
-from ..baseclass import Distribution
-from .operator import OperatorDistribution
+from ..baseclass import Distribution, OperatorDistribution
 
 
 class Logn(OperatorDistribution):
@@ -44,33 +43,26 @@ class Logn(OperatorDistribution):
             repr_args=[dist, base],
         )
 
-    def _lower(self, left, right, cache):
-        return numpy.log(left._get_lower(cache))/numpy.log(right.item(0))
+    def _lower(self, idx, left, right, cache):
+        return numpy.log(left._get_lower(idx, cache))/numpy.log(right)
 
-    def _upper(self, left, right, cache):
-        return numpy.log(left._get_upper(cache))/numpy.log(right.item(0))
+    def _upper(self, idx, left, right, cache):
+        return numpy.log(left._get_upper(idx, cache))/numpy.log(right)
 
-    def _pdf(self, xloc, left, right, cache):
-        base = right.item(0)
-        return left._get_pdf(base**xloc, cache)*base**xloc*numpy.log(base)
+    def _pdf(self, xloc, idx, left, right, cache):
+        return left._get_pdf(right**xloc, idx, cache)*right**xloc*numpy.log(right)
 
-    def _cdf(self, xloc, left, right, cache):
-        return left._get_fwd(right.item(0)**xloc, cache)
+    def _cdf(self, xloc, idx, left, right, cache):
+        return left._get_fwd(right.item(0)**xloc, idx, cache)
 
-    def _ppf(self, uloc, left, right, cache):
-        return numpy.log(left._get_inv(uloc, cache))/numpy.log(right.item(0))
+    def _ppf(self, uloc, idx, left, right, cache):
+        return numpy.log(left._get_inv(uloc, idx, cache))/numpy.log(right)
 
     def _mom(self, kloc, left, right, cache):
         raise chaospy.UnsupportedFeature("%s: Analytical moments for logarithm not supported", self)
 
-    def _ttr(self, kloc, left, right, cache):
+    def _ttr(self, kloc, idx, left, right, cache):
         raise chaospy.UnsupportedFeature("%s: Analytical TTR for logarithm not supported", self)
-
-    def _cache(self, left, right, cache):
-        if isinstance(left, Distribution):
-            return self
-        return numpy.log(left)/numpy.log(right.item(0))
-
 
 
 class Log(Logn):

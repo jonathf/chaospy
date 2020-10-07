@@ -39,28 +39,31 @@ https://en.wikipedia.org/wiki/Kernel_density_estimation
 """
 import numpy
 from scipy.stats import gaussian_kde
+import chaospy
 
-from chaospy.distributions import DistributionCore, Nataf, Add, J, Uniform
+from chaospy.distributions import SimpleDistribution
 
 
-class sample_dist(DistributionCore):
+class sample_dist(SimpleDistribution):
     """A distribution that is based on a kernel density estimator (KDE)."""
 
     def __init__(self, samples, lo, up):
+        samples = numpy.asarray(samples)
         self.samples = samples
         self.kernel = gaussian_kde(samples, bw_method="scott")
         self.flo = self.kernel.integrate_box_1d(0, lo)
         self.fup = self.kernel.integrate_box_1d(0, up)
         self.unbound = numpy.all(lo == samples.min())
         self.unbound &= numpy.all(up == samples.max())
-        super(sample_dist, self).__init__(lo=lo, up=up)
+        super(sample_dist, self).__init__(
+            parameters=dict(lo=lo, up=up),
+            repr_args=[repr(samples), lo, up],
+        )
 
-    def _cdf(self, x, lo, up):
-        cdf_vals = numpy.zeros(x.shape)
-        for i in range(0, len(x)):
-            cdf_vals[i] = [self.kernel.integrate_box_1d(0, x_i) for x_i in x[i]]
-        cdf_vals = (cdf_vals - self.flo) / (self.fup - self.flo)
-        return cdf_vals
+    def _cdf(self, xloc, lo, up):
+        cdf_vals = numpy.array([self.kernel.integrate_box_1d(0, x)
+                                for x in xloc])
+        return (cdf_vals-self.flo)/(self.fup-self.flo)
 
     def _pdf(self, x, lo, up):
         return self.kernel(x)
@@ -102,7 +105,7 @@ def SampleDist(samples, lo=None, up=None, threshold=1e-5):
     Example:
         >>> distribution = chaospy.SampleDist([0, 1, 1, 1, 2])
         >>> distribution
-        sample_dist(lo=0, up=2)
+        sample_dist(array([0, 1, 1, 1, 2]), 0, 2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
         array([0.    , 0.6016, 1.    , 1.3984, 2.    ])
@@ -121,9 +124,12 @@ def SampleDist(samples, lo=None, up=None, threshold=1e-5):
 
     if lo is None:
         lo = samples.min(axis=-1)
+    else:
+        lo = numpy.broadcast_to(lo, len(samples))
     if up is None:
         up = samples.max(axis=-1)
-    lo, up, _ = numpy.broadcast_arrays(lo, up, samples[:, 0])
+    else:
+        up = numpy.broadcast_to(up, len(samples))
 
     # construct vector of marginals
     distributions = []
@@ -133,19 +139,19 @@ def SampleDist(samples, lo=None, up=None, threshold=1e-5):
             dist = sample_dist(samples_, lo_, up_)
         #raised by gaussian_kde if dataset is singular matrix
         except numpy.linalg.LinAlgError:
-            dist = Uniform(lower=-numpy.inf, upper=numpy.inf)
+            dist = chaospy.Uniform(lower=-numpy.inf, upper=numpy.inf)
         distributions.append(dist)
 
     if len(samples) == 1:
         distributions = distributions[0]
 
     else:
-        distributions = J(*distributions)
+        distributions = chaospy.J(*distributions)
 
         # Attach dependencies to data.
         correlation = numpy.corrcoef(samples)
         correlation[numpy.abs(correlation) <= threshold] = 0
         if numpy.any(correlation != numpy.diag(numpy.diag(correlation))):
-            distributions = Nataf(distributions, correlation)
+            distributions = chaospy.Nataf(distributions, correlation)
 
     return distributions

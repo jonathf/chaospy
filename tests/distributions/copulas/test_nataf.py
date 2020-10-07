@@ -97,13 +97,13 @@ def test_segmented_mappings():
         assert numpy.all(isamples < 1) and numpy.all(isamples > 0)
         density = copula.pdf(samples, decompose=True)
 
-        caches = [{}, {copula[rot[0]]: (samples[rot[0]], isamples[rot[0]])},
-                  {copula[rot[0]]: (samples[rot[0]], isamples[rot[0]]),
-                   copula[rot[1]]: (samples[rot[1]], isamples[rot[1]])}]
+        caches = [{}, {(rot[0], copula): (samples[rot[0]], isamples[rot[0]])},
+                  {(rot[0], copula): (samples[rot[0]], isamples[rot[0]]),
+                   (rot[1], copula): (samples[rot[1]], isamples[rot[1]])}]
         for idx, cache in zip(rot, caches):
-            assert numpy.allclose(copula[idx]._get_fwd(samples[idx][numpy.newaxis], cache=cache.copy()), isamples[idx])
-            assert numpy.allclose(copula[idx]._get_inv(isamples[idx][numpy.newaxis], cache=cache.copy()), samples[idx])
-            # assert numpy.allclose(copula[idx]._get_pdf(samples[idx][numpy.newaxis], cache=cache.copy()), density[idx])
+            assert numpy.allclose(copula._get_fwd(samples[idx], idx, cache=cache.copy()), isamples[idx])
+            assert numpy.allclose(copula._get_inv(isamples[idx], idx, cache=cache.copy()), samples[idx])
+            assert numpy.allclose(copula._get_pdf(samples[idx], idx, cache=cache.copy()), density[idx])
             if cache:
                 with pytest.raises(chaospy.StochasticallyDependentError):
                     copula[idx].fwd(samples[idx])
@@ -111,15 +111,13 @@ def test_segmented_mappings():
                     copula[idx].inv(isamples[idx])
                 with pytest.raises(chaospy.StochasticallyDependentError):
                     copula[idx].pdf(samples[idx])
-                with pytest.raises(chaospy.StochasticallyDependentError):
-                    copula[idx].ttr(0)
             else:
                 assert numpy.allclose(copula[idx].fwd(samples[idx]), isamples[idx])
                 assert numpy.allclose(copula[idx].inv(isamples[idx]), samples[idx])
                 assert numpy.allclose(copula[idx].pdf(samples[idx]), density[idx])
-                with pytest.raises(chaospy.UnsupportedFeature):
-                    copula[idx].ttr(0)
 
+            with pytest.raises(chaospy.StochasticallyDependentError):
+                copula[idx].ttr(0)
             with pytest.raises(chaospy.UnsupportedFeature):
                 copula[idx].mom(1, allow_approx=False)
 

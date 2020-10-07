@@ -87,7 +87,7 @@ For example, to mention a few:
     >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
     >>> abscissas.round(4)
-    array([[-10.5386,  -4.6581,  -1.0418,   1.0418,   4.6581,  10.5386]])
+    array([[-10.5537,  -4.6619,  -1.0423,   1.0423,   4.6619,  10.5537]])
     >>> weights.round(4)
     array([1.000e-04, 2.160e-02, 4.783e-01, 4.783e-01, 2.160e-02, 1.000e-04])
 

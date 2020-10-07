@@ -71,7 +71,7 @@ except ImportError:
 import numpy
 from scipy import special
 
-from ..baseclass import Copula
+from ..baseclass import CopulaDistribution
 from .archimedean import Archimedean
 
 
@@ -97,7 +97,7 @@ class gumbel(Archimedean):
         return iphi(order)
 
 
-class Gumbel(Copula):
+class Gumbel(CopulaDistribution):
     r"""
     Gumbel Copula.
 
@@ -136,8 +136,6 @@ class Gumbel(Copula):
                [[-0.0022,  0.1573,  0.3174],
                 [ 0.109 ,  0.2591,  0.4062],
                 [ 0.2181,  0.3564,  0.489 ]]])
-        >>> distribution.mom([1, 1]).round(4)
-        1.0
 
     """
 

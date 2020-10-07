@@ -1,6 +1,45 @@
 Master Branch
 =============
 
+Distribution operations are now all one-dimensional. One pass per dimension.
+
+ADDED:
+  * New approx methods: `approximate_lower`, `approximate_upper` which allow
+    finding bounds from a conservative estimates.
+  * New `report_on_error` decorator to get more understandable error output.
+  * New helper functions: `format_repr_kwargs`, `init_dependencies`
+  * Lots of new tests.
+CHANGED:
+  * Lots and lots of positional `idx` arguments everywhere to indicate the
+    dimensions worked on. Except for `_mom` which is kept as is.
+  * Call signature update to all `approximate_*` functions.
+  * Adding consistent baseclass naming convention:
+    * `Copula -> CopulaDistribution`
+    * `Index -> ItemDistribution`
+    * `LowerUpper -> LowerUpperDistribution`
+    * `MeanCovariance -> MeanCovarianceDistribution`
+    * `Mul -> Multiply`
+    * `Neg -> Negative`
+    * `Operator -> OperatorDistribution`
+    * `ShiftScale -> ShiftScaleDistribution`
+    * `DistributionCore -> SimpleDistribution`
+  * Baseclass `Distribution` no longer a metaclass, as the form no longer
+    fits.
+  * Method to function changes:
+    `self.shares_dependencies ->
+    chaospy.shares_dependencies`
+    `self._check_dependencies -> chaospy.check_dependencies`
+    `self._declare_dependencies -> chaospy.declare_dependencies`
+  * Cache system update to `Dict[Distribution, Tuple[numpy.ndarray,
+    numpy.ndarray]]` to be able to utilize forward and inverse cache during
+    bounds calculations.
+  * `self._cache` and everything `Conditional` replaced with the filling of
+    the cache iterative and carefully setting evaluation order.
+REMOVED:
+  * Deprecating topological soring in `J`, as this is now handled by the
+    evaluation order.
+  * Old function interfaces `add, mul, neg, trunk, trunc, pow`.
+
 Version 4.0.4 (2020-09-20)
 ==========================
 

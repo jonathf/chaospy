@@ -1,10 +1,10 @@
 """Gumbel or Log-Weibull distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class log_weibull(DistributionCore):
+class log_weibull(SimpleDistribution):
     """Gumbel or Log-Weibull distribution."""
 
     def __init__(self):
@@ -21,7 +21,7 @@ class log_weibull(DistributionCore):
         return -numpy.log(-numpy.log(q))
 
 
-class LogWeibull(ShiftScale):
+class LogWeibull(ShiftScaleDistribution):
     """
     Gumbel or Log-Weibull distribution.
 

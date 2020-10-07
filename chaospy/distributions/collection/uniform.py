@@ -1,8 +1,8 @@
 """Uniform probability distribution."""
-from ..baseclass import DistributionCore, LowerUpper
+from ..baseclass import SimpleDistribution, LowerUpperDistribution
 
 
-class uniform(DistributionCore):
+class uniform(SimpleDistribution):
     """Uniform distribution fixed on the [-1, 1] interval."""
 
     def __init__(self):
@@ -30,7 +30,7 @@ class uniform(DistributionCore):
         return 0., n*n/(4.*n*n-1)
 
 
-class Uniform(LowerUpper):
+class Uniform(LowerUpperDistribution):
     r"""
     Uniform probability distribution.
 

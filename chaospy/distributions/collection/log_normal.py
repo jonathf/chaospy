@@ -2,13 +2,13 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class log_normal(DistributionCore):
+class log_normal(SimpleDistribution):
 
     def __init__(self, a=1):
-        super(log_normal, self).__init__(a=a)
+        super(log_normal, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         out = (numpy.e**(-numpy.log(x+(1-x)*(x<=0))**2/(2*a*a))/
@@ -35,7 +35,7 @@ class log_normal(DistributionCore):
         return 0.
 
 
-class LogNormal(ShiftScale):
+class LogNormal(ShiftScaleDistribution):
     R"""
     Log-normal distribution
 
@@ -71,7 +71,7 @@ class LogNormal(ShiftScale):
     """
 
     def __init__(self, mu=0, sigma=1, shift=0, scale=1):
-        dist = ShiftScale(dist=log_normal(sigma), scale=numpy.e**mu)
+        dist = ShiftScaleDistribution(dist=log_normal(sigma), scale=numpy.e**mu)
         super(LogNormal, self).__init__(
             dist=dist,
             scale=scale,
@@ -80,7 +80,7 @@ class LogNormal(ShiftScale):
         )
 
 
-class Gilbrat(ShiftScale):
+class Gilbrat(ShiftScaleDistribution):
     """
     Gilbrat distribution.
 

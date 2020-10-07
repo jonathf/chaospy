@@ -2,13 +2,13 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, LowerUpper, ShiftScale
+from ..baseclass import SimpleDistribution, LowerUpperDistribution, ShiftScaleDistribution
 
 
-class beta_(DistributionCore):
+class beta_(SimpleDistribution):
 
     def __init__(self, a=1, b=1):
-        super(beta_, self).__init__(a=a, b=b)
+        super(beta_, self).__init__(dict(a=a, b=b))
 
     def _pdf(self, x, a, b):
         return x**(a-1)*(1-x)**(b-1)/ \
@@ -40,7 +40,7 @@ class beta_(DistributionCore):
         return 1.
 
 
-class Beta(LowerUpper):
+class Beta(LowerUpperDistribution):
     R"""
     Beta Probability Distribution.
 
@@ -83,7 +83,7 @@ class Beta(LowerUpper):
         )
 
 
-class ArcSinus(LowerUpper):
+class ArcSinus(LowerUpperDistribution):
     """
     Generalized Arc-sinus distribution
 
@@ -122,7 +122,7 @@ class ArcSinus(LowerUpper):
         )
 
 
-class PowerLaw(LowerUpper):
+class PowerLaw(LowerUpperDistribution):
     """
     Powerlaw distribution
 
@@ -160,7 +160,7 @@ class PowerLaw(LowerUpper):
         )
 
 
-class Wigner(ShiftScale):
+class Wigner(ShiftScaleDistribution):
     """
     Wigner (semi-circle) distribution
 
@@ -237,7 +237,7 @@ class PERT(Beta):
         mu = (lower+4*mode+upper)/6.
         alpha = 1+gamma*(mu-lower)/(upper-lower)
         beta = 1+gamma*(upper-mu)/(upper-lower)
-        LowerUpper.__init__(
+        LowerUpperDistribution.__init__(
             self,
             dist=beta_(alpha, beta),
             lower=lower,

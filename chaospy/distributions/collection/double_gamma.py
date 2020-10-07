@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class double_gamma(DistributionCore):
+class double_gamma(SimpleDistribution):
     """Double gamma distribution."""
 
     def __init__(self, a):
-        super(double_gamma, self).__init__(a=a)
+        super(double_gamma, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         ax = abs(x)
@@ -20,11 +20,12 @@ class double_gamma(DistributionCore):
         return numpy.where(x>0,0.5+fac,0.5-fac)
 
     def _ppf(self, q, a):
-        fac = special.gammainccinv(a,1-abs(2*q-1))
-        return numpy.where(q>0.5, fac, -fac)
+        fac = special.gammainccinv(a, 1-abs(2*q-1))
+        out = numpy.where(q>0.5, fac, -fac)
+        return out
 
 
-class DoubleGamma(ShiftScale):
+class DoubleGamma(ShiftScaleDistribution):
     """
     Double gamma distribution.
 
@@ -42,7 +43,7 @@ class DoubleGamma(ShiftScale):
         DoubleGamma(2, scale=4, shift=2)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
-        array([-100.4566,   -4.7134,    2.    ,    8.7134,  104.4566])
+        array([-157.0045,   -4.7134,    2.    ,    8.7134,  161.0045])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)

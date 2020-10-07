@@ -1,14 +1,14 @@
 """Exponential Weibull distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class exponential_weibull(DistributionCore):
+class exponential_weibull(SimpleDistribution):
     """Exponential Weibull distribution."""
 
     def __init__(self, a=1, c=1):
-        super(exponential_weibull, self).__init__(a=a, c=c)
+        super(exponential_weibull, self).__init__(dict(a=a, c=c))
 
     def _pdf(self, x, a, c):
         exc = numpy.exp(-x**c)
@@ -25,7 +25,7 @@ class exponential_weibull(DistributionCore):
         return 0.
 
 
-class ExponentialWeibull(ShiftScale):
+class ExponentialWeibull(ShiftScaleDistribution):
     """
     Exponential Weibull distribution.
 

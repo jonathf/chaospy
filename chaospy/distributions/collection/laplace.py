@@ -3,10 +3,10 @@ import numpy
 from scipy import special
 import chaospy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class laplace(DistributionCore):
+class laplace(SimpleDistribution):
     """Laplace Probability Distribution."""
 
     def __init__(self):
@@ -25,16 +25,16 @@ class laplace(DistributionCore):
         return numpy.where(x>.5, -numpy.log(2*(1-x)), numpy.log(2*x))
 
     def _ttr(self, k):
-        q1, w1 = chaospy.quad_fejer(500, (self.lower, 0))
-        q2, w2 = chaospy.quad_fejer(500, (0, self.upper))
+        q1, w1 = chaospy.quad_fejer(500, (-25, 0))
+        q2, w2 = chaospy.quad_fejer(500, (0, 25))
         q = numpy.concatenate([q1,q2], 1)
-        w = numpy.concatenate([w1,w2])*self.pdf(q[0])
+        w = numpy.concatenate([w1,w2])*self._pdf(q[0])
 
         coeffs, _, _ = chaospy.discretized_stieltjes(k, q, w)
         return coeffs[:, 0, -1]
 
 
-class Laplace(ShiftScale):
+class Laplace(ShiftScaleDistribution):
     R"""
     Laplace Probability Distribution
 
@@ -61,7 +61,7 @@ class Laplace(ShiftScale):
         2.0
         >>> distribution.ttr([1, 2, 3]).round(4)
         array([[ 2.    ,  2.    ,  2.    ],
-               [ 8.    , 39.9995, 86.3947]])
+               [ 8.    , 39.9996, 86.4   ]])
 
     """
     def __init__(self, mu=0, sigma=1):

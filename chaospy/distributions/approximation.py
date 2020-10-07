@@ -6,33 +6,43 @@ import chaospy
 
 def approximate_inverse(
         distribution,
+        idx,
         qloc,
+        bounds=None,
         cache=None,
+        parameters=None,
         iterations=300,
-        tol=1e-5,
+        tolerance=1e-5,
 ):
     """
     Calculate the approximation of the inverse Rosenblatt transformation.
 
-    Uses forward Rosenblatt, probability density function (derivative) and
-    boundary function to apply hybrid Newton-Raphson and binary search method.
+    Uses a hybrid Newton-Raphson and binary search method to converge to the
+    inverse values. Includes forward Rosenblatt transformations, probability
+    density function (its derivative), and if not provided, boundary function.
 
     Args:
         distribution (Distribution):
-            Distribution to estimate inverse Rosenblatt.
+            Distribution to estimate inverse Rosenblatt on.
+        idx (int):
+            The dimension to take approximation along.
         qloc (numpy.ndarray):
-            Input values. All values must be on [0,1] and
+            Input values. All values must be on unit interval ``(0, 1)`` and
             ``qloc.shape == (dim,size)`` where dim is the number of dimensions
             in distribution and size is the number of values to calculate
             simultaneously.
+        bounds (Optional[Tuple[numpy.ndarray, numpy.ndarray]]):
+            Assuming lower and upper bounds is not available, this provides
+            outer bounds for lower and upper to use instead.
         cache (Optional[Dict[Distribution, numpy.ndarray]]):
             Memory cache for the location in the evaluation so far.
+        parameters (Optional[Dict[str, Any]]):
+            The parameters to use. If omitted, get the parameters from
+            distribution.
         iterations (int):
-            The number of iterations allowed to be performed
-        tol (float):
-            Tolerance parameter determining convergence.
-        seed (Optional[int]):
-            Fix random seed.
+            The maximum number of iterations allowed.
+        tolerance (float):
+            Tolerance criterion determining convergence.
 
     Returns:
         (numpy.ndarray):
@@ -40,141 +50,161 @@ def approximate_inverse(
 
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
-        >>> qloc = numpy.array([[0.1, 0.2, 0.9]])
-        >>> approximate_inverse(distribution, qloc).round(4)
-        array([[ 987.1845,  991.5838, 1012.8152]])
+        >>> qloc = numpy.array([0.1, 0.2, 0.9])
+        >>> approximate_inverse(distribution, 0, qloc).round(4)
+        array([ 987.1845,  991.5839, 1012.8153])
         >>> distribution.inv(qloc).round(4)
-        array([[ 987.1845,  991.5838, 1012.8155]])
+        array([ 987.1845,  991.5838, 1012.8155])
+
     """
     logger = logging.getLogger(__name__)
     logger.debug("init approximate_inverse: %s", distribution)
+    logger.debug("cache: %s", cache)
 
     # lots of initial values:
     if cache is None:
         cache = {}
-    xlower = distribution.lower
-    xupper = distribution.upper
+    if bounds is None:
+        xlower = distribution._get_lower(idx, cache.copy())
+        xupper = distribution._get_upper(idx, cache.copy())
+    else:
+        xlower, xupper = bounds
+    xlower = numpy.broadcast_to(xlower, qloc.shape)
+    xupper = numpy.broadcast_to(xupper, qloc.shape)
     xloc = 0.5*(xlower+xupper)
-    xloc = (xloc.T + numpy.zeros(qloc.shape).T).T
-    xlower = (xlower.T + numpy.zeros(qloc.shape).T).T
-    xupper = (xupper.T + numpy.zeros(qloc.shape).T).T
     uloc = numpy.zeros(qloc.shape)
     ulower = -qloc
     uupper = 1-qloc
+    indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
-    for dim in range(len(distribution)):
-        indices = numpy.ones(qloc.shape[-1], dtype=bool)
+    if parameters is None:
+        parameters = distribution.get_parameters(idx, cache, assert_numerical=True)
+    else:
+        assert not any([isinstance(value, chaospy.Distribution)
+                        for value in parameters.values()])
+        for name, param in parameters.items():
+            if isinstance(distribution._parameters[name], chaospy.Distribution):
+                cache[(idx, distribution._parameters[name])] = param
 
-        for idx in range(2*iterations):
+    for idx_ in range(2*iterations):
 
-            # evaluate function:
-            uloc[dim, indices] = (distribution._get_fwd(xloc, cache=cache.copy())-qloc)[dim, indices]
+        # evaluate function:
+        uloc = numpy.where(
+            indices, distribution._cdf(xloc, **parameters)-qloc, uloc)
 
-            # convergence criteria:
-            indices[indices] = numpy.any(numpy.abs(uloc) > tol, 0)[indices]
-            if not numpy.any(indices):
-                break
+        # convergence criteria:
+        indices &= numpy.abs(uloc) > tolerance
+        if not numpy.any(indices):
+            break
 
-            # narrow down lower boundary:
-            ulower[dim, indices] = numpy.where(uloc < 0, uloc, ulower)[dim, indices]
-            xlower[dim, indices] = numpy.where(uloc < 0, xloc, xlower)[dim, indices]
+        # narrow down boundaries:
+        ulower = numpy.where(indices & (uloc < 0), uloc, ulower)
+        xlower = numpy.where(indices & (uloc < 0), xloc, xlower)
+        uupper = numpy.where(indices & (uloc > 0), uloc, uupper)
+        xupper = numpy.where(indices & (uloc > 0), xloc, xupper)
 
-            # narrow down upper boundary:
-            uupper[dim, indices] = numpy.where(uloc > 0, uloc, uupper)[dim, indices]
-            xupper[dim, indices] = numpy.where(uloc > 0, xloc, xupper)[dim, indices]
+        # Newton increment every second iteration:
+        xloc_ = numpy.inf
+        if idx_ % 2 == 0:
+            derivative = distribution._pdf(xloc, **parameters)
+            derivative = numpy.where(derivative, derivative, 1)
+            xloc_ = xloc-uloc/derivative
 
-            # Newton increment every second iteration:
-            xloc_ = numpy.inf
-            if idx % 2 == 0:
-                derivative = distribution._get_pdf(
-                    xloc, cache=cache.copy())[dim, indices]
-                derivative = numpy.where(derivative, derivative, numpy.inf)
+        # use binary search if Newton increment is outside bounds:
+        weight = numpy.random.random()
+        xloc_ = numpy.where((xloc_ < xupper) & (xloc_ > xlower),
+                            xloc_, weight*xupper+(1-weight)*xlower)
+        xloc = numpy.where(indices, xloc_, xloc)
 
-                xloc_ = xloc[dim, indices] - uloc[dim, indices] / derivative
+    else:
+        logger.warning(
+            "Too many iterations required to estimate inverse.")
+        logger.info("%d out of %d did not converge.",
+            numpy.sum(indices), len(indices))
 
-            # use binary search if Newton increment is outside bounds:
-            weight = numpy.random.random()
-            xloc[dim, indices] = numpy.where(
-                (xloc_ < xupper[dim, indices]) & (xloc_ > xlower[dim, indices]),
-                xloc_, (weight*xupper+(1-weight)*xlower)[dim, indices])
-
-        else:
-            logger.warning(
-                "Too many iterations (dim %d) required to estimate inverse.", dim)
-            logger.info("%d out of %d did not converge.",
-                numpy.sum(indices), len(indices))
-
-    logger.debug("end approximate_inverse: %s", distribution)
+    logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
     return xloc
 
 MOMENTS_QUADS = {}
 
 
 def approximate_moment(
-        dist,
+        distribution,
         k_loc,
         order=None,
         rule="fejer",
-        **kws
+        **kwargs
 ):
     """
     Approximation method for estimation of raw statistical moments.
 
+    Uses quadrature integration to estimate the values.
+
     Args:
-        dist (Distribution):
-            Distribution domain with dim=len(dist)
+        distribution (Distribution):
+            Distribution domain with dim=len(distribution)
         k_loc (Sequence[int, ...]):
-            The exponents of the moments of interest with shape (dim,).
+            The exponents of the moments of interest with ``shape == (dim,)``.
         order (int):
             The quadrature order used in approximation. If omitted, calculated
-            to be ``1000/log2(len(dist)+1)``.
+            to be ``1000/log2(len(distribution)+1)``.
         rule (str):
             Quadrature rule for integrating moments.
-        kws:
+        kwargs:
             Extra args passed to `chaospy.generate_quadrature`.
+
+    Examples:
+        >>> distribution = chaospy.Uniform(1, 4)
+        >>> round(chaospy.approximate_moment(distribution, (1,)), 4)
+        2.5
+        >>> round(chaospy.approximate_moment(distribution, (2,)), 4)
+        7.0
+
     """
     if order is None:
-        order = int(1000./numpy.log2(len(dist)+1))
+        order = int(1000./numpy.log2(len(distribution)+1))
     assert isinstance(order, int)
-    assert isinstance(dist, chaospy.Distribution)
-    k_loc = numpy.asarray(k_loc, dtype=int)
-    assert len(k_loc) == len(dist), "incorrect size of exponents"
-    assert k_loc.dtype == int, "exponents have the wrong dtype"
+    assert isinstance(distribution, chaospy.Distribution)
+    k_loc = tuple(numpy.asarray(k_loc).tolist())
+    assert len(k_loc) == len(distribution), "incorrect size of exponents"
+    assert all([isinstance(k, int) for k in k_loc]), (
+        "exponents must be integers: %s found" % type(k_loc[0]))
 
-    if (dist, order) not in MOMENTS_QUADS:
-        MOMENTS_QUADS[dist, order] = chaospy.generate_quadrature(
-            order, dist, rule=rule, **kws)
-    X, W = MOMENTS_QUADS[dist, order]
+    if (distribution, order) not in MOMENTS_QUADS:
+        MOMENTS_QUADS[distribution, order] = chaospy.generate_quadrature(
+            order, distribution, rule=rule, **kwargs)
+    X, W = MOMENTS_QUADS[distribution, order]
 
-    out = []
-    for k in k_loc.T:
-        assert len(k) == len(dist)
-        if tuple(k) in dist._mom_cache:
-            out.append(dist._mom_cache[tuple(k)])
-        else:
-            out.append(float(numpy.sum(numpy.prod(X.T**k, 1)*W)))
-            dist._mom_cache[tuple(k)] = out[-1]
-    return numpy.array(out)
+    if k_loc in distribution._mom_cache:
+        return distribution._mom_cache[k_loc]
+
+    out = float(numpy.sum(numpy.prod(X.T**k_loc, 1)*W))
+    distribution._mom_cache[k_loc] = out
+    return out
 
 
 def approximate_density(
-        dist,
+        distribution,
+        idx,
         xloc,
-        eps=1.e-7
+        cache=None,
+        tolerance=1e-7
 ):
     """
     Approximate the probability density function.
 
     Args:
-        dist (Distribution):
+        distribution (Distribution):
             Distribution in question. May not be an advanced variable.
+        idx (int):
+            The dimension to take approximation along.
         xloc (numpy.ndarray):
-            Location coordinates. Requires that xloc.shape=(len(dist), K).
-        eps (float):
+            Location coordinates. Requires that xloc.shape=(len(distribution), K).
+        cache (Optional[Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]]):
+            Current state in the evaluation graph. If omitted, assume that
+            evaluations should be done from scratch.
+        tolerance (float):
             Acceptable error level for the approximations
-        retall (bool):
-            If True return Graph with the next calculation state with the
-            approximation.
 
     Returns:
         numpy.ndarray: Local probability density function with
@@ -183,26 +213,120 @@ def approximate_density(
 
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
-        >>> xloc = numpy.array([[990, 1000, 1010]])
-        >>> approximate_density(distribution, xloc).round(4)
-        array([[0.0242, 0.0399, 0.0242]])
+        >>> xloc = numpy.array([990, 1000, 1010])
+        >>> approximate_density(distribution, 0, xloc).round(4)
+        array([0.0242, 0.0399, 0.0242])
         >>> distribution.pdf(xloc).round(4)
-        array([[0.0242, 0.0399, 0.0242]])
+        array([0.0242, 0.0399, 0.0242])
 
     """
+    cache = cache or {}
     xloc = numpy.asfarray(xloc)
-    assert len(xloc) == len(dist)
+    assert xloc.ndim == 1
     lo, up = numpy.min(xloc), numpy.max(xloc)
     mu = .5*(lo+up)
-    eps = numpy.where(xloc < mu, eps, -eps)*numpy.clip(numpy.abs(xloc), 1, None)
+    tolerance = (numpy.where(xloc < mu, tolerance, -tolerance)*
+                 numpy.clip(numpy.abs(xloc), 1, None))
 
-    floc = dist._get_fwd(xloc, cache={})
-    for d in range(len(dist)):
-        xloc[d] += eps[d]
-        tmp = dist._get_fwd(xloc, cache={})
-        floc[d] -= tmp[d]
-        xloc[d] -= eps[d]
+    floc1 = distribution._get_fwd(xloc, idx, cache=cache.copy())
+    floc2 = distribution._get_fwd(xloc+tolerance, idx, cache=cache.copy())
+    floc = numpy.abs((floc2-floc1)/tolerance)
 
-    floc = numpy.abs(floc/eps)
     assert floc.shape == xloc.shape
     return floc
+
+
+def approximate_lower(distribution, idx, cache=None, tolerance=1e-3):
+    """
+    Approximate lower bounds using inverse transformation.
+
+    Args:
+        distribution (chaospy.Distribution):
+            Distribution to estimate lower bounds on.
+        idx (int):
+            The dimension to take approximation along.
+        cache (Optional[Dict[str, Tuple[numpy.ndarray, numpy.ndarray]]]):
+            Memory cache for the location in the evaluation so far.
+        tolerance (float):
+            Acceptable error level for the approximations
+
+    Returns:
+        (numpy.ndarray):
+            The approximation of the lower bounds. Should return an array of
+            length one, unless there is cache, where it decides the length.
+
+    Examples:
+        >>> distribution = chaospy.Normal(0, 1)
+        >>> chaospy.approximate_lower(distribution, 0).round(4)
+        array([-8.2221])
+
+    """
+    logger = logging.getLogger(__name__)
+    logger.debug("init approximate_lower: %s", distribution)
+    if cache is None:
+        cache = {}
+    length = max([len(cache_[0]) for cache_ in cache.values()]+[1])
+    zeros = numpy.zeros(length)
+    parameters = distribution.get_parameters(idx, cache, assert_numerical=True)
+    proposal = distribution._ppf(numpy.repeat(10**-8, length), **parameters)
+    for step in range(10, 17, 2):
+        old_value, proposal = proposal, distribution._ppf(numpy.repeat(10**-step, length), **parameters)
+        if not numpy.all(numpy.isfinite(proposal)):
+            proposal = old_value
+            logger.info(
+                "%s: Approx lower bounds diverged", distribution)
+            break
+        if numpy.allclose(old_value, proposal, rtol=tolerance, atol=tolerance):
+            break
+    else:
+        logger.debug("%s: Approx upper bounds failed to converge.", distribution)
+        logger.debug("Difference between steps: %g", numpy.mean(old_value-proposal))
+    return proposal
+
+
+def approximate_upper(distribution, idx, cache=None, tolerance=1e-3):
+    """
+    Approximate upper bounds using inverse transformation.
+
+    Args:
+        distribution (chaospy.Distribution):
+            Distribution to estimate upper bounds on.
+        idx (int):
+            The dimension to take approximation along.
+        cache (Optional[Dict[str, Tuple[numpy.ndarray, numpy.ndarray]]]):
+            Memory cache for the location in the evaluation so far.
+        tolerance (float):
+            Acceptable error level for the approximations
+
+    Returns:
+        (numpy.ndarray):
+            The approximation of the upper bounds. Should return an array of
+            length one, unless there is cache, where it decides the length.
+
+    Examples:
+        >>> distribution = chaospy.Normal(0, 1)
+        >>> chaospy.approximate_upper(distribution, 0).round(4)
+        array([8.2095])
+
+    """
+    logger = logging.getLogger(__name__)
+    logger.debug("init approximate_upper: %s", distribution)
+    if cache is None:
+        cache = {}
+    length = max([len(cache_[0]) for cache_ in cache.values()]+[1])
+    parameters = distribution.get_parameters(idx, cache, assert_numerical=True)
+    proposal = distribution._ppf(numpy.repeat(1-10**-8, length), **parameters)
+    for step in range(10, 17, 2):
+        old_value, proposal = proposal, distribution._ppf(
+            numpy.repeat(1-10**-step, length), **parameters)
+        if not numpy.all(numpy.isfinite(proposal)):
+            proposal = old_value
+            logger.info(
+                "%s: Approx upper bounds diverged", distribution)
+            break
+        if numpy.allclose(old_value, proposal, rtol=tolerance, atol=tolerance):
+            break
+    else:
+        logger.debug("%s: Approx upper bounds failed to converge.", distribution)
+        logger.debug("Difference between steps: %g", numpy.mean(proposal-old_value))
+    return proposal

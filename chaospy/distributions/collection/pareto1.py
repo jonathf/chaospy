@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class pareto1(DistributionCore):
+class pareto1(SimpleDistribution):
     """Pareto type 1 distribution."""
 
     def __init__(self, b):
-        super(pareto1, self).__init__(b=b)
+        super(pareto1, self).__init__(dict(b=b))
 
     def _pdf(self, x, b):
         return b * x**(-b-1)
@@ -24,7 +24,7 @@ class pareto1(DistributionCore):
         return 1.0
 
 
-class Pareto1(ShiftScale):
+class Pareto1(ShiftScaleDistribution):
     """
     Pareto type 1 distribution.
 

@@ -2,13 +2,13 @@
 import numpy
 from scipy import special, misc
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
-class logistic(DistributionCore):
+class logistic(SimpleDistribution):
     """Generalized logistic type 1 distribution."""
 
     def __init__(self, c=1):
-        super(logistic, self).__init__(c=c)
+        super(logistic, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return numpy.e**-x/(1+numpy.e**-x)**(c+1)
@@ -20,7 +20,7 @@ class logistic(DistributionCore):
         return -numpy.log(q**(-1./c)-1)
 
 
-class Logistic(ShiftScale):
+class Logistic(ShiftScaleDistribution):
     """
     Generalized logistic type 1 distribution
     Sech squared distribution

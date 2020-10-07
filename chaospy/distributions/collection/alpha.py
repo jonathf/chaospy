@@ -3,14 +3,14 @@ import numpy
 from scipy import special
 
 import chaospy
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class alpha(DistributionCore):
+class alpha(SimpleDistribution):
     """Standard Alpha distribution."""
 
     def __init__(self, a=1):
-        super(alpha, self).__init__(a=a)
+        super(alpha, self).__init__(dict(a=a))
 
     def _cdf(self, x, a):
         return (special.ndtr(a.T-1./x.T)/special.ndtr(a.T)).T
@@ -26,7 +26,7 @@ class alpha(DistributionCore):
         return numpy.zeros(a.size)
 
 
-class Alpha(ShiftScale):
+class Alpha(ShiftScaleDistribution):
     """
     Alpha distribution.
 

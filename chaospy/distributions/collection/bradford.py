@@ -1,14 +1,14 @@
 """Bradford distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, LowerUpper
+from ..baseclass import SimpleDistribution, LowerUpperDistribution
 
 
-class bradford(DistributionCore):
+class bradford(SimpleDistribution):
     """Standard Bradford distribution."""
 
     def __init__(self, c=1):
-        super(bradford, self).__init__(c=c)
+        super(bradford, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return  c/(c*x+1.0)/numpy.log(1.0+c)
@@ -26,7 +26,7 @@ class bradford(DistributionCore):
         return 1
 
 
-class Bradford(LowerUpper):
+class Bradford(LowerUpperDistribution):
     """
     Bradford distribution.
 

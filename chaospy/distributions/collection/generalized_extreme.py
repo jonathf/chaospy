@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class generalized_extreme(DistributionCore):
+class generalized_extreme(SimpleDistribution):
     """Generalized extreme value distribution."""
 
     def __init__(self, c=1):
-        super(generalized_extreme, self).__init__(c=c)
+        super(generalized_extreme, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         cx = c*x
@@ -29,7 +29,7 @@ class generalized_extreme(DistributionCore):
         return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
 
 
-class GeneralizedExtreme(ShiftScale):
+class GeneralizedExtreme(ShiftScaleDistribution):
     """
     Generalized extreme value distribution
     Fisher-Tippett distribution
@@ -56,7 +56,8 @@ class GeneralizedExtreme(ShiftScale):
         >>> distribution.sample(4).round(4)
         array([ 2.6154, -4.0776,  2.6666,  2.4079])
         >>> distribution.mom(1).round(4)
-        -2.2584
+        -2.9235
+
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

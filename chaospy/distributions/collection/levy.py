@@ -2,10 +2,10 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class levy(DistributionCore):
+class levy(SimpleDistribution):
     """Levy distribution."""
 
     def __init__(self):
@@ -25,7 +25,7 @@ class levy(DistributionCore):
         return 0.
 
 
-class Levy(ShiftScale):
+class Levy(ShiftScaleDistribution):
     """
     Levy distribution
 

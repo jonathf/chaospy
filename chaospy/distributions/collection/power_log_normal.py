@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class power_log_normal(DistributionCore):
+class power_log_normal(SimpleDistribution):
     """Power log-Normal probability distribution."""
 
     def __init__(self, c, s):
-        super(power_log_normal, self).__init__(c=c, s=s)
+        super(power_log_normal, self).__init__(dict(c=c, s=s))
 
     def _pdf(self, x, c, s):
         norm = (2*numpy.pi)**-.5*numpy.exp(-(numpy.log(x)/s)**2/2.)
@@ -25,7 +25,7 @@ class power_log_normal(DistributionCore):
         return 0.
 
 
-class PowerLogNormal(ShiftScale):
+class PowerLogNormal(ShiftScaleDistribution):
     """
     Power log-normal distribution
 
@@ -58,7 +58,7 @@ class PowerLogNormal(ShiftScale):
 
     """
     def __init__(self, shape=1, mu=0, sigma=1, scale=1, shift=0):
-        dist = ShiftScale(
+        dist = ShiftScaleDistribution(
             dist=power_log_normal(shape, sigma), scale=numpy.e**mu)
         super(PowerLogNormal, self).__init__(
             dist=dist,

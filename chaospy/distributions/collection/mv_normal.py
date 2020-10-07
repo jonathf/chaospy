@@ -5,10 +5,10 @@ from scipy import special
 import chaospy
 
 from .normal import normal
-from ..baseclass import MeanCovariance
+from ..baseclass import MeanCovarianceDistribution
 
 
-class MvNormal(MeanCovariance):
+class MvNormal(MeanCovarianceDistribution):
     r"""
     Multivariate Normal Distribution.
 
@@ -73,9 +73,9 @@ class MvNormal(MeanCovariance):
             repr_args=repr_args,
         )
 
-    def _mom(self, k, mean, covariance, cache):
+    def _mom(self, k, mean, sigma, cache):
         if isinstance(mean, chaospy.Distribution):
-            mean = mean._get_cache_1(cache)
+            mean = mean._get_cache(None, cache=cache, get=0)
             if isinstance(mean, chaospy.Distribution):
                 raise chaospy.UnsupportedFeature(
                     "Analytical moment of a conditional not supported")
@@ -88,7 +88,7 @@ class MvNormal(MeanCovariance):
             pos = numpy.all(pos)
             location_ = numpy.prod(mean**diff)
 
-            out += pos*coef*location_*isserlis_moment(tuple(kdx), covariance)
+            out += pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
 
         return float(out)
 

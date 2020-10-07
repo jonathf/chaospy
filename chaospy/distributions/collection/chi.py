@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class chi(DistributionCore):
+class chi(SimpleDistribution):
     """Chi distribution."""
 
     def __init__(self, df=1):
-        super(chi, self).__init__(df=df)
+        super(chi, self).__init__(dict(df=df))
 
     def _pdf(self, x, df):
         return x**(df-1)*numpy.exp(-x*x*.5)/2**(df*.5-1)/special.gamma(df*.5)
@@ -24,7 +24,7 @@ class chi(DistributionCore):
         return 2**(.5*k)*special.gamma(.5*(df+k))/special.gamma(.5*df)
 
 
-class Chi(ShiftScale):
+class Chi(ShiftScaleDistribution):
     """
     Chi distribution.
 
@@ -42,7 +42,7 @@ class Chi(ShiftScale):
         Chi(2, scale=4, shift=1)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
-        array([ 1.0001,  4.0341,  5.7096,  7.6604, 28.1446])
+        array([ 1.0001,  4.0341,  5.7096,  7.6604, 35.2867])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)
@@ -63,7 +63,7 @@ class Chi(ShiftScale):
         )
 
 
-class Maxwell(ShiftScale):
+class Maxwell(ShiftScaleDistribution):
     """
     Maxwell-Boltzmann distribution
     Chi distribution with 3 degrees of freedom
@@ -80,7 +80,7 @@ class Maxwell(ShiftScale):
         Maxwell(scale=2, shift=3)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
-        array([ 3.0014,  5.2023,  6.0763,  7.0538, 17.0772])
+        array([ 3.0003,  5.2023,  6.0763,  7.0538, 20.595 ])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)
@@ -100,7 +100,7 @@ class Maxwell(ShiftScale):
         )
 
 
-class Rayleigh(ShiftScale):
+class Rayleigh(ShiftScaleDistribution):
     """
     Rayleigh distribution
 
@@ -116,7 +116,7 @@ class Rayleigh(ShiftScale):
         Rayleigh(scale=2, shift=3)
         >>> q = numpy.linspace(0, 1, 5)
         >>> distribution.inv(q).round(4)
-        array([ 3.    ,  4.5171,  5.3548,  6.3302, 16.5723])
+        array([ 3.    ,  4.5171,  5.3548,  6.3302, 20.1433])
         >>> distribution.fwd(distribution.inv(q)).round(4)
         array([0.  , 0.25, 0.5 , 0.75, 1.  ])
         >>> distribution.pdf(distribution.inv(q)).round(4)

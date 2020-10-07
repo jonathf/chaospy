@@ -1,15 +1,16 @@
 """Generalized exponential distribution."""
 import numpy
 from scipy import special
+import chaospy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class generalized_exponential(DistributionCore):
+class generalized_exponential(SimpleDistribution):
     """Generalized exponential distribution."""
 
     def __init__(self, a=1, b=1, c=1):
-        super(generalized_exponential, self).__init__(a=a, b=b, c=c)
+        super(generalized_exponential, self).__init__(dict(a=a, b=b, c=c))
 
     def _pdf(self, x, a, b, c):
         return (a+b*(-numpy.expm1(-c*x)))*numpy.exp((-a-b)*x+b*(-numpy.expm1(-c*x))/c)
@@ -23,10 +24,16 @@ class generalized_exponential(DistributionCore):
         return 0.
 
     def _upper(self, a, b, c):
-        return 10**10
+        return chaospy.approximate_inverse(
+            distribution=self,
+            idx=0,
+            qloc=numpy.array([1.]),
+            parameters=dict(a=a, b=b, c=c),
+            bounds=(0., 100./a/b/c),
+        )
 
 
-class GeneralizedExponential(ShiftScale):
+class GeneralizedExponential(ShiftScaleDistribution):
     """
     Generalized exponential distribution.
 
@@ -61,7 +68,8 @@ class GeneralizedExponential(ShiftScale):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([1.3061, 1.0605, 0.7649, 0.4168])
         >>> distribution.sample(4).round(4)
-        array([3.3106, 2.0498, 3.3575, 2.7079])
+        array([2.3802, 2.0889, 3.1627, 3.2915])
+
     """
 
     def __init__(self, a=1, b=1, c=1, scale=1, shift=0):

@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class mielke(DistributionCore):
+class mielke(SimpleDistribution):
     """Mielke's beta-kappa distribution."""
 
     def __init__(self, k, s):
-        super(mielke, self).__init__(k=k, s=s)
+        super(mielke, self).__init__(dict(k=k, s=s))
 
     def _pdf(self, x, k, s):
         return k*x**(k-1.0)/(1.0+x**s)**(1.0+k*1.0/s)
@@ -25,7 +25,7 @@ class mielke(DistributionCore):
         return 0.
 
 
-class Mielke(ShiftScale):
+class Mielke(ShiftScaleDistribution):
     """
     Mielke's beta-kappa distribution
 
