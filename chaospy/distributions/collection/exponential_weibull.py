@@ -1,31 +1,34 @@
 """Exponential Weibull distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class exponential_weibull(DistributionCore):
+class exponential_weibull(SimpleDistribution):
     """Exponential Weibull distribution."""
 
     def __init__(self, a=1, c=1):
-        super(exponential_weibull, self).__init__(a=a, c=c)
+        super(exponential_weibull, self).__init__(dict(a=a, c=c))
 
     def _pdf(self, x, a, c):
         exc = numpy.exp(-x**c)
-        return a*c*(1-exc)**(a-1) * exc * x**(c-1)
+        return a*c*(1-exc)**(a-1)*exc*x**(c-1)
 
     def _cdf(self, x, a, c):
         exm1c = -numpy.expm1(-x**c)
         return (exm1c)**a
 
     def _ppf(self, q, a, c):
-        return (-numpy.log1p(-q**(1.0/a)))**(1.0/c)
+        return (-numpy.log1p(-q**(1./a)))**(1./c)
 
     def _lower(self, a, c):
         return 0.
 
+    def _upper(self, a, c):
+        return (-numpy.log1p(-(1-1e-15)**(1./a)))**(1./c)
 
-class ExponentialWeibull(ShiftScale):
+
+class ExponentialWeibull(ShiftScaleDistribution):
     """
     Exponential Weibull distribution.
 
@@ -40,20 +43,22 @@ class ExponentialWeibull(ShiftScale):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.ExponentialWeibull(2, 2, 2, 1)
+        >>> distribution = chaospy.ExponentialWeibull(alpha=2, kappa=3)
         >>> distribution
-        ExponentialWeibull(2, 2, scale=2, shift=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.5398, 3.0009, 3.4412, 3.9989])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.3807, 0.4651, 0.4262, 0.2832])
-        >>> distribution.sample(4).round(4)
-        array([3.5711, 2.2872, 4.8376, 3.1776])
-        >>> distribution.mom(1).round(4)
-        3.2916
+        ExponentialWeibull(2, 3)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.84 , 1.   , 1.142, 1.31 , 3.275])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 1.047, 1.396, 1.367, 0.972, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.182, 0.745, 1.544, 1.058])
+
     """
     def __init__(self, alpha=1, kappa=1, scale=1, shift=0):
         super(ExponentialWeibull, self).__init__(

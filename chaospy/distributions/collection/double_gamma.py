@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class double_gamma(DistributionCore):
+class double_gamma(SimpleDistribution):
     """Double gamma distribution."""
 
     def __init__(self, a):
-        super(double_gamma, self).__init__(a=a)
+        super(double_gamma, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         ax = abs(x)
@@ -20,11 +20,18 @@ class double_gamma(DistributionCore):
         return numpy.where(x>0,0.5+fac,0.5-fac)
 
     def _ppf(self, q, a):
-        fac = special.gammainccinv(a,1-abs(2*q-1))
-        return numpy.where(q>0.5, fac, -fac)
+        fac = special.gammainccinv(a, 1-abs(2*q-1))
+        out = numpy.where(q > 0.5, fac, -fac)
+        return out
+
+    def _lower(self, a):
+        return -special.gammainccinv(a, 2e-15)
+
+    def _upper(self, a):
+        return special.gammainccinv(a, 2e-15)
 
 
-class DoubleGamma(ShiftScale):
+class DoubleGamma(ShiftScaleDistribution):
     """
     Double gamma distribution.
 
@@ -37,20 +44,22 @@ class DoubleGamma(ShiftScale):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.DoubleGamma(2, 4, 2)
+        >>> distribution = chaospy.DoubleGamma(shape=1.5)
         >>> distribution
-        DoubleGamma(2, scale=4, shift=2)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([-100.4566,   -4.7134,    2.    ,    8.7134,  104.4566])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.    , 0.0392, 0.    , 0.0392, 0.    ])
-        >>> distribution.sample(4).round(4)
-        array([ 6.4679, -9.2251, 17.5874,  0.8239])
-        >>> distribution.mom(1).round(4)
-        2.0
+        DoubleGamma(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-35.769,  -1.473,  -0.503,   0.503,   1.473,  35.769])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.157, 0.242, 0.242, 0.157, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.727, -2.154,  3.132, -0.138])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

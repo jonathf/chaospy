@@ -4,10 +4,9 @@ import numpoly
 import chaospy
 
 from .distribution import Distribution
-from .core import DistributionCore
 
 
-class LowerUpper(DistributionCore):
+class LowerUpperDistribution(Distribution):
     """
     Lower-Upper transformation.
 
@@ -20,11 +19,6 @@ class LowerUpper(DistributionCore):
             Lower bounds.
         upper (float, Sequence[float], Distribution):
             Upper bounds.
-        rotation (Sequence[int], Sequence[Sequence[bool]]):
-            The order of which to resolve conditionals. Either as a sequence of
-            column rotations, or as a permutation matrix.
-            Defaults to `range(len(distribution))` which is the same as
-            `p(x0), p(x1|x0), p(x2|x0,x1), ...`.
 
     Attributes:
         shift (numpy.ndarray):
@@ -45,80 +39,68 @@ class LowerUpper(DistributionCore):
         assert isinstance(dist, Distribution), "'dist' should be a distribution"
         if repr_args is None:
             repr_args = dist._repr_args[:]
-        if not ((isinstance(lower, (int, float)) and lower == 0) and
-                (isinstance(upper, (int, float)) and upper == 1)):
-            repr_args += ["lower=%s" % lower, "upper=%s" % upper]
-        if rotation is not None:
-            repr_args += ["rotation=%s" % list(rotation)]
+        repr_args += chaospy.format_repr_kwargs(lower=(lower, 0), upper=(upper, 1))
 
-        super(LowerUpper, self).__init__(
-            lower=lower,
-            upper=upper,
+        dependencies, parameters, rotation, = chaospy.declare_dependencies(
+            distribution=self,
+            parameters=dict(lower=lower, upper=upper),
+            rotation=rotation,
+        )
+        super(LowerUpperDistribution, self).__init__(
+            parameters=parameters,
+            dependencies=dependencies,
             repr_args=repr_args,
         )
-        if len(dist) == 1 and len(self) > 1:
-            dist = chaospy.Iid(dist, len(self))
-        if rotation is not None:
-            rotation = list(rotation)
-        else:
-            rotation = [key for key, _ in sorted(enumerate(dist._dependencies), key=lambda x: len(x[1]))]
-        permute = numpy.zeros((len(rotation), len(rotation)), dtype=int)
-        permute[numpy.arange(len(rotation), dtype=int), rotation] = 1
-        self._rotation = rotation
-        self._permute = permute
         self._dist = dist
 
-    def _lower(self, lower, upper):
-        del upper
+    def get_parameters(self, idx, cache, assert_numerical=True):
+        parameters = super(LowerUpperDistribution, self).get_parameters(
+            idx, cache, assert_numerical=assert_numerical)
+        lower = parameters["lower"]
         if isinstance(lower, Distribution):
-            lower = lower._get_lower(cache={})
-        return numpy.asfarray(lower)
-
-    def _upper(self, lower, upper):
-        del lower
+            lower = lower._get_cache(idx, cache, get=0)
+        if idx is not None and len(lower) > 1:
+            lower = lower[idx]
+        upper = parameters["upper"]
         if isinstance(upper, Distribution):
-            upper = upper._get_upper(cache={})
-        return numpy.asfarray(upper)
+            upper = upper._get_cache(idx, cache, get=0)
+        if idx is not None and len(upper) > 1:
+            upper = upper[idx]
+        assert not assert_numerical or not (isinstance(lower, Distribution) or
+                                            isinstance(upper, Distribution))
 
-    def _ppf(self, qloc, lower, upper):
-        scale = (upper-lower)/(self._dist.upper-self._dist.lower)
-        shift = lower-self._dist.lower*(upper-lower)/(self._dist.upper-self._dist.lower)
-        zloc = self._dist.inv(qloc)
-        out = (scale.T*zloc.T+shift.T).T
-        return out
+        lower0 = self._dist._get_lower(idx, cache.copy())
+        upper0 = self._dist._get_upper(idx, cache.copy())
+        scale = (upper-lower)/(upper0-lower0)
+        shift = lower-lower0*(upper-lower)/(upper0-lower0)
+        parameters = self._dist.get_parameters(idx, cache, assert_numerical=assert_numerical)
+        return dict(dist=self._dist, scale=scale, shift=shift, parameters=parameters)
 
-    def _cdf(self, xloc, lower, upper):
-        scale = (upper-lower)/(self._dist.upper-self._dist.lower)
-        shift = lower-self._dist.lower*(upper-lower)/(self._dist.upper-self._dist.lower)
-        zloc = ((xloc.T-shift.T)/scale.T).T
-        out = self._dist.fwd(zloc)
-        return out
+    def _lower(self, dist, scale, shift, parameters):
+        return dist._lower(**parameters)*scale+shift
 
-    def _pdf(self, xloc, lower, upper):
-        scale = (upper-lower)/(self._dist.upper-self._dist.lower)
-        shift = lower-self._dist.lower*(upper-lower)/(self._dist.upper-self._dist.lower)
-        zloc = ((xloc.T-shift.T)/scale.T).T
-        out = (self._dist.pdf(zloc, decompose=True).T/scale.T).T
-        assert xloc.shape == out.shape
-        return out
+    def _upper(self, dist, scale, shift, parameters):
+        return dist._upper(**parameters)*scale+shift
 
-    def _mom(self, kloc, lower, upper):
-        scale = (upper-lower)/(self._dist.upper-self._dist.lower)
-        shift = lower-self._dist.lower*(upper-lower)/(self._dist.upper-self._dist.lower)
+    def _ppf(self, qloc, dist, scale, shift, parameters):
+        return dist._ppf(qloc, **parameters)*scale+shift
+
+    def _cdf(self, xloc, dist, scale, shift, parameters):
+        return dist._cdf((xloc-shift)/scale, **parameters)
+
+    def _pdf(self, xloc, dist, scale, shift, parameters):
+        return dist._pdf((xloc-shift)/scale, **parameters)/scale
+
+    def _mom(self, kloc, dist, scale, shift, parameters):
         poly = numpoly.variable(len(self))
         poly = numpoly.sum(scale*poly, axis=-1)+shift
         poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
-        out = sum(self._dist.mom(key)*coeff
+        out = sum(dist._get_mom(key)*coeff
                   for key, coeff in zip(poly.exponents, poly.coefficients))
         return out
 
-    def _ttr(self, kloc, lower, upper):
-        scale = (upper-lower)/(self._dist.upper-self._dist.lower)
-        shift = lower-self._dist.lower*(upper-lower)/(self._dist.upper-self._dist.lower)
-        coeff0, coeff1 = self._dist._get_ttr(kloc)
+    def _ttr(self, kloc, dist, scale, shift, parameters):
+        coeff0, coeff1 = dist._ttr(kloc, **parameters)
         coeff0 = coeff0*scale+shift
         coeff1 = coeff1*scale*scale
         return coeff0, coeff1
-
-    def _cache(self, **kwargs):
-        return self

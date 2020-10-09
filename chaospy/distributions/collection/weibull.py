@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class weibull(DistributionCore):
+class weibull(SimpleDistribution):
     """Weibull Distribution."""
 
     def __init__(self, a=1):
-        super(weibull, self).__init__(a=a)
+        super(weibull, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         return a*x**(a-1)*numpy.e**(-x**a)
@@ -30,7 +30,7 @@ class weibull(DistributionCore):
         return 30.**(1./a)
 
 
-class Weibull(ShiftScale):
+class Weibull(ShiftScaleDistribution):
     """
     Weibull Distribution
 

@@ -1,10 +1,10 @@
 """Anglit distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class anglit(DistributionCore):
+class anglit(SimpleDistribution):
     """Anglit distribution."""
 
     def __init__(self):
@@ -26,7 +26,7 @@ class anglit(DistributionCore):
         return numpy.pi/4
 
 
-class Anglit(ShiftScale):
+class Anglit(ShiftScaleDistribution):
     """
     Anglit distribution.
 

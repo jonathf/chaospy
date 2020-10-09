@@ -1,61 +1,54 @@
 Master Branch
 =============
 
-Version 4.0.3 (2020-09-17)
-==========================
+Version 4.0-beta1 (2020-10-09)
+==============================
+
+Distribution operations are now all one-dimensional. One pass per dimension.
 
 ADDED:
-  * New baseclass `Conditional` representing slices of multivariate
-    distributions.
-  * Support for `ConditionalMeanCovariance` moments given no conditional.
-CHANGED:
-  * Backend interface `_get_value` replaced with `_get_cache_1` and
-    `_get_cache_2`. For former is new, the latter is a renaming.
-  * Cache content changed from `Dict[Distribution, ndarray]` to
-    `Dict[Distribution, Tuple[ndarray, ndarray]]` to store both inputs and
-    outputs for each calculations.
-  * backend function `_value` replaced with `_cache` for consistency.
-
-Version 4.0.2 (2020-09-17)
-==========================
-
-ADDED:
-  * list slicing of `J` objects: `dist[[0, 2, 4]]` is now allowed and returns a
-    new `J` object, same as striding.
-  * Slicing of the `MeanCovariance` object is now allowed. Each part are
-    conditionals currently supporting `fwd`, `inv` and `pdf`.
-  * Lets of testing for the new slice-able distribution.
-REMOVED:
-  * Comparison operators `<`, `<=`, `>` and `=>` for distributions. These were
-    used as syntactic sugar referencing `chaospy.Trunc`. However, with
-    distribution equality `==` on the horizon, these need to go.
-CHANGED:
-  * `Iid` is changed from being a function wrapper to a subclass wrapper,
-    allowing once again `isinstance(dist, Iid)`.
-  * Better REPR for `J`: Nested `J` get flatten, while other objects get left
-    in place.
-
-Version 4.0.1 (2020-09-12)
-==========================
-
-Adding rotation: changing dist backend.
-
-ADDED:
-  * Attributes to distributions:
-    * `.shares_dependencies`: Checking for dependencies between distributions.
-    * `.get_parameters`: Standardized way to get distribution parameters.
-  * New distribution "middle-ware":
-    * `OperatorDistribution`: Operator baseclass.
-    * `LowerUpper`: Convenience distribution class for distributions with
-      lower/upper bounds.
-    * `MeanCovariance`: Convenience distribution class for distributions with
-      mean-covariance structure.
-    * `ShiftScale`: Convenience distribution class for distributions with
-      shift-scale structure.
+  * New `report_on_error` decorator to get more understandable error output.
+  * New helper functions: `format_repr_kwargs`, `init_dependencies`,
+    `declare_dependencies`, `check_dependencies`.
+  * New intermediate distribution baseclasses:
+    `ItemDistribution`, `LowerUpperDistribution`, `MeanCovarianceDistribution`,
+    `OperatorDistribution`, `ShiftScaleDistribution`.
   * New basic distribution: `InverseGamma`.
   * New error type of error `UnsupportedFeatureError` to differentiate illegal
     operations (covered by `StochasticallyDependentError`) and unsupported
     features.
+  * Lots of new tests.
+CHANGED:
+  * Lots and lots of positional `idx` arguments everywhere to indicate the
+    dimensions worked on. Except for `_mom` which is kept as is.
+  * Adding consistent baseclass naming convention:
+    `Copula{->Distribution}`, `Mul->Multiply`, `Neg->Negative`,
+    `DistributionCore->SimpleDistribution`.
+  * `Qoi_Dist` will no longer returns a numpy array in the multivariate case.
+    This is because `Distribution` no play will as a numpy object type.
+  * Changes to cache system:
+    * Cache content changed from `Dict[Distribution, ndarray]` to
+      `Dict[Distribution, Tuple[ndarray, ndarray]]` to store both inputs and
+      outputs for each calculations.
+    * backend function `_value` replaced with `_cache` for consistency.
+    * Backend interface `_get_value` replaced with `_get_cache_1` and
+      `_get_cache_2`. For former is new, the latter is a renaming.
+  * `Iid` is changed from being a function wrapper to a subclass wrapper,
+    allowing once again `isinstance(dist, Iid)`.
+REMOVED:
+  * Deprecating topological soring in `J`, as this is now handled by the
+    evaluation order.
+  * Old function interfaces `add, mul, neg, trunk, trunc, pow`.
+  * Comparison operators `<`, `<=`, `>` and `=>` for distributions. These were
+    used as syntactic sugar referencing `chaospy.Trunc`. This to support `==`
+    operator.
+
+Version 4.0-alpha2 (2020-09-12)
+===============================
+
+Adding rotation: changing dist backend.
+
+ADDED:
 CHANGED:
   * Baseclass distribution baseclass refactoring:
       * Split old `Dist` into two: Abstract baseclass `Distribution` and
@@ -81,8 +74,8 @@ REMOVED:
     incompatible with the rotation idea. If linear map is needed, use
     `MeanCovariance`.
 
-Version 4.0.0 (2020-09-04)
-==========================
+Version 4.0-alpha1 (2020-09-04)
+===============================
 
 Adding rotation: the fundamentals.
 

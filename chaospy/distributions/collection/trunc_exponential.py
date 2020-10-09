@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class truncexpon(DistributionCore):
+class truncexpon(SimpleDistribution):
     """Truncated exponential distribution."""
 
     def __init__(self, b):
-        super(truncexpon, self).__init__(b=b)
+        super(truncexpon, self).__init__(dict(b=b))
 
     def _pdf(self, x, b):
         return numpy.exp(-x)/(1-numpy.exp(-b))
@@ -27,7 +27,7 @@ class truncexpon(DistributionCore):
         return b
 
 
-class TruncExponential(ShiftScale):
+class TruncExponential(ShiftScaleDistribution):
     """
     Truncated exponential distribution.
 

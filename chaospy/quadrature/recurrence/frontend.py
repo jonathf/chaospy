@@ -69,7 +69,7 @@ def construct_recurrence_coefficients(
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     4, distribution, recurrence_algorithm="stieltjes")
         >>> coefficients[0].round(3)
-        array([[-0., -0., -0., -0., -0.],
+        array([[-0.,  0., -0.,  0., -0.],
                [ 1.,  1.,  2.,  3.,  4.]])
         >>> distribution = chaospy.J(chaospy.Exponential(), chaospy.Uniform())
         >>> coefficients = chaospy.construct_recurrence_coefficients(
@@ -81,6 +81,7 @@ def construct_recurrence_coefficients(
         array([[0.5   , 0.5   , 0.5   , 0.5   , 0.5   ],
                [1.    , 0.0833, 0.0667, 0.0643, 0.0635]])
     """
+    import chaospy
     if not recurrence_algorithm:
         try:
             return construct_recurrence_coefficients(

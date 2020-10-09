@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class burr(DistributionCore):
+class burr(SimpleDistribution):
     """Stadard Burr distribution."""
 
     def __init__(self, alpha=1., kappa=1.):
-        super(burr, self).__init__(alpha=alpha, kappa=kappa)
+        super(burr, self).__init__(dict(alpha=alpha, kappa=kappa))
 
     def _pdf(self, x, alpha, kappa):
         output = numpy.zeros(x.shape)
@@ -31,10 +31,15 @@ class burr(DistributionCore):
         return kappa*special.beta(1-k*1./alpha, kappa+k*1./alpha)
 
     def _lower(self, alpha, kappa):
+        del alpha
+        del kappa
         return 0.
 
+    def _upper(self, alpha, kappa):
+        return (1e12**(1./kappa)-1)**(1./alpha)
 
-class Burr(ShiftScale):
+
+class Burr(ShiftScaleDistribution):
     """
     Burr Type XII or Singh-Maddala distribution.
 
@@ -49,20 +54,24 @@ class Burr(ShiftScale):
             Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Burr(100, 1.2, 2, 4)
+        >>> distribution = chaospy.Burr(5, 2)
         >>> distribution
-        Burr(100, 1.2, scale=2, shift=4)
-        >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([5.9642, 5.9819, 5.9951, 6.0081, 6.0249])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([266.5437,  71.6255,  21.5893,   5.3229,   0.643 ])
-        >>> distribution.sample(4).round(4)
-        array([6.007 , 5.9558, 6.0489, 5.9937])
-        >>> distribution.mom(1).round(4)
-        6.0061
+        Burr(5, 2)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([ 0.   ,  0.652,  0.781,  0.897,  1.043, 15.849])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([ 0.   , 92.945, 20.444,  4.852,  0.694,  0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.931, 0.575, 1.284, 0.828])
+        >>> distribution.mom(1).round(3)
+        1.283
+
     """
 
     def __init__(self, alpha=1, kappa=1, scale=1, shift=0):

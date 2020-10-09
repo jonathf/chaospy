@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class double_weibull(DistributionCore):
+class double_weibull(SimpleDistribution):
     """Double weibull distribution."""
 
     def __init__(self, c):
-        super(double_weibull, self).__init__(c=c)
+        super(double_weibull, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         ax = numpy.abs(x)
@@ -21,17 +21,20 @@ class double_weibull(DistributionCore):
         return numpy.where(x > 0, 1-Cx1, Cx1)
 
     def _ppf(self, q, c):
-        q_ = numpy.where(q>.5, 1-q, q)
-        c = c*numpy.ones(q_.shape)
-        Cq1 = numpy.ones(q_.shape)
-        indices = q_ == 0
-        Cq1[indices] = 1e10
-        indices = ~indices & (c != 0)
-        Cq1[indices] = (-numpy.log(2*q_[indices]))**(1./c[indices])
-        return numpy.where(q>.5, Cq1, -Cq1)
+        q_ = numpy.where(q > .5, 1-q, q)
+        Cq1 = numpy.where(q_ == 0, self._upper(c), 1)
+        Cq1 = numpy.where((q != 0) & (c != 0),
+                          (-numpy.log(2*q_))**(1./c), Cq1)
+        return numpy.where(q > .5, Cq1, -Cq1)
+
+    def _lower(self, c):
+        return -(-numpy.log(2e-10))**(1./c)
+
+    def _upper(self, c):
+        return (-numpy.log(2e-10))**(1./c)
 
 
-class DoubleWeibull(ShiftScale):
+class DoubleWeibull(ShiftScaleDistribution):
     """
     Double Weibull distribution.
 

@@ -8,7 +8,7 @@ order = 2 # <20
 size = 20 # <10**5
 
 
-class normal(cp.DistributionCore):
+class normal(cp.SimpleDistribution):
     """stripped down normal distribution."""
     def _cdf(self, x):
         return special.ndtr(x)

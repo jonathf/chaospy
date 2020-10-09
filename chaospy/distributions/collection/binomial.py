@@ -3,10 +3,11 @@ from functools import wraps
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore
+from ..baseclass import SimpleDistribution
+from ..operators import J
 
 
-class Binomial(DistributionCore):
+class binomial(SimpleDistribution):
     """
     Binomial probability distribution.
 
@@ -16,7 +17,7 @@ class Binomial(DistributionCore):
     Examples:
         >>> distribution = chaospy.Binomial(3, 0.5)
         >>> distribution
-        Binomial(prob=0.5, size=3)
+        Binomial(3, 0.5)
         >>> distribution.pdf([0, 1, 2, 3]).round(4)
         array([0.125, 0.375, 0.375, 0.125])
         >>> distribution.cdf([0, 1, 2, 3]).round(4)
@@ -34,16 +35,18 @@ class Binomial(DistributionCore):
         array([3, 1, 2, 1, 0, 2, 2, 2, 2, 3])
         >>> distribution.mom([1, 2, 3]).round(4)
         array([1.5 , 3.  , 6.75])
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[1.5 , 1.5 , 1.5 ],
-               [0.75, 1.  , 0.75]])
+        >>> distribution.ttr([0, 1, 2, 3]).round(4)
+        array([[1.5 , 1.5 , 1.5 , 1.5 ],
+               [1.  , 0.75, 1.  , 0.75]])
 
     """
     interpret_as_integer = True
 
     def __init__(self, size, prob):
-        self._repr = {"size": size, "prob": prob}
-        super(Binomial, self).__init__(size=size, prob=prob)
+        super(binomial, self).__init__(
+            parameters=dict(size=size, prob=prob),
+            repr_args=[size, prob],
+        )
 
     def _cdf(self, x_data, size, prob):
         size = numpy.round(size)
@@ -59,7 +62,8 @@ class Binomial(DistributionCore):
         ceil[numpy.isnan(ceil)] = 0  # left edge case
 
         offset = x_data-numpy.floor(x_data)
-        return floor*(1-offset) + ceil*offset
+        out = floor*(1-offset) + ceil*offset
+        return out
 
     def _pdf(self, x_data, size, prob):
         x_data = numpy.round(x_data)
@@ -83,3 +87,11 @@ class Binomial(DistributionCore):
         weights = self._pdf(abscissas, size, prob)
         (alpha, beta), _, _ = discretized_stieltjes(k_data, [abscissas], weights)
         return alpha[0, -1], beta[0, -1]
+
+
+class Binomial(J):
+
+    def __init__(self, size, prob):
+        dist = binomial(size, prob)
+        super(Binomial, self).__init__(dist)
+        self._repr_args = [size, prob]

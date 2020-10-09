@@ -53,6 +53,7 @@ It has the convenient property:
     \sigma'(r, n, \theta) = \prod_{d=0}^{n}(-1/\theta-d)*r^{-1/theta-n-1} = \sigma(r, n+1, \theta)
 """
 import numpy
+import chaospy
 
 from ..baseclass import Distribution
 
@@ -60,43 +61,74 @@ from ..baseclass import Distribution
 class Archimedean(Distribution):
 
     def __init__(self, length, theta=1., rotation=None):
-        dependencies = [{idx} for idx in self._declare_dependencies(length)]
+        if rotation is not None:
+            assert length == len(rotation)
+        dependencies, _, rotation = chaospy.declare_dependencies(
+            self,
+            parameters=dict(theta=theta),
+            rotation=rotation,
+            dependency_type="accumulate",
+            length=length,
+        )
         super(Archimedean, self).__init__(
             parameters=dict(theta=float(theta)),
             dependencies=dependencies,
             rotation=rotation,
+            repr_args=[length, "theta=%s" % theta],
         )
 
-    def _lower(self, theta, cache):
-        return numpy.zeros(len(self))
+    def get_parameters(self, idx, cache, assert_numerical=True):
+        parameters = super(Archimedean, self).get_parameters(
+            idx, cache, assert_numerical=assert_numerical)
+        theta = parameters["theta"]
 
-    def _upper(self, theta, cache):
-        return numpy.ones(len(self))
+        if idx is None:
+            return dict(theta=theta, cache=cache)
+        return dict(idx=idx, theta=theta, cache=cache)
 
-    def _cdf(self, x_loc, theta, cache):
-        x_loc = x_loc[self._rotation]
-        out = numpy.zeros(x_loc.shape)
-        loc = numpy.ones(x_loc.shape)
-        for order in range(len(self)):
-            out[order] = self._copula(loc, theta, order)
-            loc[order] = x_loc[order]
-            ret_val = self._copula(loc, theta, order)
-            out[order] = numpy.where(out[order] != 0, ret_val/numpy.where(out[order] != 0, out[order], 1), 1)
+    def _lower(self, idx, theta, cache):
+        return 0.
+
+    def _upper(self, idx, theta, cache):
+        return 1.
+
+    def _ppf(self, qloc, idx, theta, cache):
+        raise chaospy.UnsupportedFeature("Copula not supported.")
+
+    def _cdf(self, xloc, idx, theta, cache):
+        dim = self._rotation.index(idx)
+        conditions = [self[dim_]._get_cache(0, cache, get=0)
+                      for dim_ in self._rotation[:dim]]
+        assert not any([isinstance(condition, chaospy.Distribution)
+                        for condition in conditions])
+        ones = numpy.ones((len(self)-len(conditions), xloc.shape[-1]))
+        xloc1 = numpy.vstack(conditions+[xloc, ones[:-1]])
+        xloc2 = numpy.vstack(conditions+[ones])
+        out1 = self._copula(xloc1, theta, order=idx)
+        out2 = self._copula(xloc2, theta, order=idx)
+        out = numpy.where(out2, out1, 0)/numpy.where(out2, out2, 1)
         return out
 
-    def _pdf(self, x_loc, theta, cache):
-        x_loc = x_loc[self._rotation]
-        out = numpy.zeros(x_loc.shape)
-        loc = numpy.ones(x_loc.shape)
-        for idx in range(len(self)):
-            out[idx] = self._copula(loc, theta, idx)
-            loc[idx] = x_loc[idx]
-            index = out[idx] != 0
-            ret_val = self._copula(loc, theta, idx+1)
-            out[idx] = numpy.where(index, ret_val/out[idx], 1)
+    def _pdf(self, xloc, idx, theta, cache):
+        dim = self._rotation.index(idx)
+        conditions = [self[dim_]._get_cache(0, cache, get=0)
+                      for dim_ in self._rotation[:dim]]
+        assert not any([isinstance(condition, chaospy.Distribution)
+                        for condition in conditions])
+        ones = numpy.ones((len(self)-len(conditions), xloc.shape[-1]))
+        xloc1 = numpy.vstack(conditions+[xloc, ones[:-1]])
+        xloc2 = numpy.vstack(conditions+[ones])
+        out1 = self._copula(xloc1, theta, order=idx+1)
+        out2 = self._copula(xloc2, theta, order=idx)
+        out = numpy.where(out2, out1, 0)/numpy.where(out2, out2, 1)
         return out
 
     def _copula(self, x_loc, theta, order=0):
+        assert isinstance(x_loc, numpy.ndarray)
+        assert len(x_loc) == len(self)
+        theta = float(theta)
+        order = int(order)
+
         out = numpy.sum(self._phi(x_loc, theta), 0)
         out = self._inverse_phi(out, theta, order)
         if order:
@@ -113,6 +145,3 @@ class Archimedean(Distribution):
             out *= (-1/theta-dim)
         out = out*u_loc**(-1/theta-order)
         return out
-
-    def _cache(self, dist, trans, cache):
-        return self

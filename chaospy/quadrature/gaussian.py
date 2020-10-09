@@ -87,9 +87,9 @@ For example, to mention a few:
     >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
     >>> abscissas.round(4)
-    array([[-10.5386,  -4.6581,  -1.0418,   1.0418,   4.6581,  10.5386]])
+    array([[-10.4917,  -4.6469,  -1.0404,   1.0404,   4.6469,  10.4917]])
     >>> weights.round(4)
-    array([1.000e-04, 2.160e-02, 4.783e-01, 4.783e-01, 2.160e-02, 1.000e-04])
+    array([1.000e-04, 2.180e-02, 4.781e-01, 4.781e-01, 2.180e-02, 1.000e-04])
 
 * The Weibull distribution::
 
@@ -107,9 +107,10 @@ For example, to mention a few:
     >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
     >>> abscissas.round(4)
-    array([[0.2473, 0.7687, 1.4795, 2.3314, 3.3228, 4.5295]])
+    array([[0.2474, 0.7688, 1.4797, 2.3318, 3.3233, 4.5304]])
     >>> weights.round(4)
-    array([9.600e-02, 3.591e-01, 3.891e-01, 1.412e-01, 1.430e-02, 2.000e-04])
+    array([9.600e-02, 3.592e-01, 3.891e-01, 1.412e-01, 1.430e-02, 2.000e-04])
+
 """
 from .recurrence import (
     construct_recurrence_coefficients, coefficients_to_quadrature)
@@ -167,7 +168,7 @@ def quad_gaussian(
         >>> abscissas, weights = chaospy.quad_gaussian(
         ...     5, distribution, recurrence_algorithm="stieltjes")
         >>> abscissas.round(4)
-        array([[-3.3242, -1.8891, -0.6167,  0.6167,  1.8891,  3.3242]])
+        array([[-3.3243, -1.8892, -0.6167,  0.6167,  1.8892,  3.3243]])
         >>> weights.round(4)
         array([0.0026, 0.0886, 0.4088, 0.4088, 0.0886, 0.0026])
         >>> distribution = chaospy.J(chaospy.Uniform(), chaospy.Normal())

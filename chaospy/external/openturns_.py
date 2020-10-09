@@ -68,10 +68,10 @@ except ImportError:
 import numpy
 import chaospy
 
-from ..distributions import DistributionCore, J
+from ..distributions import SimpleDistribution, J
 
 
-class openturns_dist(DistributionCore):
+class openturns_dist(SimpleDistribution):
     """One dimensional OpenTURNS distribution."""
 
     def __init__(self, distribution):
@@ -94,8 +94,8 @@ class openturns_dist(DistributionCore):
             numpy.atleast_2d(x_loc).T).asPoint())
 
     def _ppf(self, q_loc):
-        return numpy.array(self.distribution.computeQuantile(
-            q_loc[0]).asPoint())
+        return numpy.array(
+            self.distribution.computeQuantile(q_loc).asPoint())
 
     def _lower(self):
         return self.distribution.getRange().getLowerBound()[0]

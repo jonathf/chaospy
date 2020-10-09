@@ -2,10 +2,10 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class hyperbolic_secant(DistributionCore):
+class hyperbolic_secant(SimpleDistribution):
     """Hyperbolic secant distribution."""
 
     def __init__(self):
@@ -20,13 +20,17 @@ class hyperbolic_secant(DistributionCore):
     def _ppf(self, q):
         return 2/numpy.pi*numpy.log(numpy.tan(numpy.pi*q/2.))
 
+    def _lower(self):
+        return -21.7
+
+    def _upper(self):
+        return 21.7
+
     def _mom(self, k):
-        shape = k.shape
-        output = numpy.abs([special.euler(k_)[-1] for k_ in k.flatten()])
-        return output.reshape(shape)
+        return numpy.abs(special.euler(k.item())[-1])
 
 
-class HyperbolicSecant(ShiftScale):
+class HyperbolicSecant(ShiftScaleDistribution):
     """
     Hyperbolic secant distribution
 
@@ -37,20 +41,24 @@ class HyperbolicSecant(ShiftScale):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.HyperbolicSecant(2, 2)
+        >>> distribution = chaospy.HyperbolicSecant()
         >>> distribution
-        HyperbolicSecant(scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([0.5687, 1.5933, 2.4067, 3.4313])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.1469, 0.2378, 0.2378, 0.1469])
-        >>> distribution.sample(4).round(4)
-        array([ 2.6397, -0.1648,  5.2439,  1.9287])
-        >>> distribution.mom(1).round(4)
-        2.0
+        HyperbolicSecant()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-21.7  ,  -0.716,  -0.203,   0.203,   0.716,  21.7  ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.294, 0.476, 0.476, 0.294, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.32 , -1.082,  1.622, -0.036])
+        >>> distribution.mom(2).round(3)
+        1.0
+
     """
 
     def __init__(self, scale=1, shift=0):

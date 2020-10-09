@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy
 import chaospy
 
-from .distribution import Distribution
+from ..baseclass import Distribution
 from .joint import J
 
 
@@ -52,7 +52,8 @@ class Iid(J):
         exclusion = dist._dependencies[0].copy()
         dists = [deepcopy(dist) for _ in range(length)]
         for dist in dists:
-            dist._dependencies = [{dist._declare_dependencies(1)[0]}]
+            dist._dependencies = chaospy.init_dependencies(
+                dist, rotation=[0], dependency_type="iid")
         super(Iid, self).__init__(*dists, rotation=rotation)
         self._exclusion.update(exclusion)
         self._repr_args = [dist, length]

@@ -2,13 +2,13 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class gamma(DistributionCore):
+class gamma(SimpleDistribution):
 
     def __init__(self, a=1):
-        super(gamma, self).__init__(a=a)
+        super(gamma, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         return x**(a-1)*numpy.e**(-x)/special.gamma(a)
@@ -28,8 +28,11 @@ class gamma(DistributionCore):
     def _lower(self, a):
         return 0.
 
+    def _upper(self, a):
+        return special.gammaincinv(a, 1-1e-12)
 
-class Gamma(ShiftScale):
+
+class Gamma(ShiftScaleDistribution):
     """
     Gamma distribution.
 
@@ -44,23 +47,27 @@ class Gamma(ShiftScale):
             Location of the lower bound.
 
     Examples:
-        >>> distribution = chaospy.Gamma(1, shift=1)
+        >>> distribution = chaospy.Gamma(3, scale=0.5)
         >>> distribution
-        Gamma(1, shift=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([1.2231, 1.5108, 1.9163, 2.6094])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.8, 0.6, 0.4, 0.2])
-        >>> distribution.sample(4).round(4)
-        array([2.0601, 1.1222, 4.0014, 1.6581])
-        >>> distribution.mom(1)
-        array(2.)
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[4., 6., 8.],
-               [1., 4., 9.]])
+        Gamma(3, scale=0.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([ 0.   ,  0.768,  1.143,  1.553,  2.14 , 17.026])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.508, 0.531, 0.432, 0.254, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.683, 0.587, 3.152, 1.301])
+        >>> distribution.mom(1).round(3)
+        1.5
+        >>> distribution.ttr([0, 1, 2, 3]).round(3)
+        array([[1.5 , 2.5 , 3.5 , 4.5 ],
+               [0.  , 0.75, 2.  , 3.75]])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):
@@ -72,7 +79,7 @@ class Gamma(ShiftScale):
         )
 
 
-class Exponential(ShiftScale):
+class Exponential(ShiftScaleDistribution):
     R"""
     Exponential Probability Distribution
 
@@ -83,21 +90,27 @@ class Exponential(ShiftScale):
             Location of the lower bound.
 
     Examples;:
-        >>> distribution = chaospy.Exponential(2, 3)
+        >>> distribution = chaospy.Exponential()
         >>> distribution
-        Exponential(scale=2, shift=3)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([3.4463, 4.0217, 4.8326, 6.2189])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.sample(4).round(4)
-        array([5.1203, 3.2444, 9.0028, 4.3163])
-        >>> distribution.mom(1).round(4)
-        5.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[ 9., 13., 17.],
-               [ 4., 16., 36.]])
+        Exponential()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([ 0.   ,  0.223,  0.511,  0.916,  1.609, 27.631])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([1. , 0.8, 0.6, 0.4, 0.2, 0. ])
+        >>> distribution.sample(4).round(3)
+        array([1.06 , 0.122, 3.001, 0.658])
+        >>> distribution.mom(1).round(3)
+        1.0
+        >>> distribution.ttr([1, 2, 3]).round(3)
+        array([[3., 5., 7.],
+               [1., 4., 9.]])
+
     """
 
     def __init__(self, scale=1, shift=0):

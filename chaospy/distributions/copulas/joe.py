@@ -54,7 +54,7 @@ except ImportError:
 import numpy
 from scipy import special
 
-from ..baseclass import Copula
+from ..baseclass import CopulaDistribution
 from .archimedean import Archimedean
 
 
@@ -78,7 +78,7 @@ class joe(Archimedean):
         return rho(order)
 
 
-class Joe(Copula):
+class Joe(CopulaDistribution):
     """
     Joe Copula
 
@@ -111,8 +111,6 @@ class Joe(Copula):
                [[-0.3764, -0.0596,  0.1991],
                 [-0.1496,  0.115 ,  0.331 ],
                 [ 0.0446,  0.2645,  0.444 ]]])
-        >>> distribution.mom([1, 2]).round(4)
-        0.9968
 
     """
 

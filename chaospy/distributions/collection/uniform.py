@@ -1,8 +1,8 @@
 """Uniform probability distribution."""
-from ..baseclass import DistributionCore, LowerUpper
+from ..baseclass import SimpleDistribution, LowerUpperDistribution
 
 
-class uniform(DistributionCore):
+class uniform(SimpleDistribution):
     """Uniform distribution fixed on the [-1, 1] interval."""
 
     def __init__(self):
@@ -30,7 +30,7 @@ class uniform(DistributionCore):
         return 0., n*n/(4.*n*n-1)
 
 
-class Uniform(LowerUpper):
+class Uniform(LowerUpperDistribution):
     r"""
     Uniform probability distribution.
 
@@ -55,9 +55,10 @@ class Uniform(LowerUpper):
         array([3.3072, 2.23  , 3.9006, 2.9644])
         >>> distribution.mom(1).round(4)
         3.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.    , 3.    , 3.    ],
-               [0.3333, 0.2667, 0.2571]])
+        >>> distribution.ttr([0, 1, 2, 3]).round(4)
+        array([[ 3.    ,  3.    ,  3.    ,  3.    ],
+               [-0.    ,  0.3333,  0.2667,  0.2571]])
+
     """
 
     def __init__(self, lower=0., upper=1.):

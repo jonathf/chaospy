@@ -1,14 +1,14 @@
 """Folded Cauchy distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class folded_cauchy(DistributionCore):
+class folded_cauchy(SimpleDistribution):
     """Folded Cauchy distribution."""
 
     def __init__(self, c=0):
-        super(folded_cauchy, self).__init__(c=c)
+        super(folded_cauchy, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         return 1./(numpy.pi*(1+(x-c)**2))+1/(numpy.pi*(1+(x+c)**2))
@@ -23,7 +23,7 @@ class folded_cauchy(DistributionCore):
         return 1e+16  # actually infinity
 
 
-class FoldedCauchy(ShiftScale):
+class FoldedCauchy(ShiftScaleDistribution):
     """
     Folded Cauchy distribution.
 

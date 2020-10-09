@@ -2,14 +2,24 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class generalized_extreme(DistributionCore):
+class generalized_extreme(SimpleDistribution):
     """Generalized extreme value distribution."""
 
     def __init__(self, c=1):
-        super(generalized_extreme, self).__init__(c=c)
+        super(generalized_extreme, self).__init__(dict(c=c))
+
+    def _lower(self, c):
+        out = numpy.where(c == 0, -3.5, -numpy.expm1(c*3.5)/c)
+        out = numpy.where(c < 0, 1./c, out)
+        return out
+
+    def _upper(self, c):
+        out = numpy.where(c == 0, 25, -numpy.expm1(-c*25)/c)
+        out = numpy.where(c > 0, 1./c, out)
+        return out
 
     def _pdf(self, x, c):
         cx = c*x
@@ -29,10 +39,11 @@ class generalized_extreme(DistributionCore):
         return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
 
 
-class GeneralizedExtreme(ShiftScale):
+class GeneralizedExtreme(ShiftScaleDistribution):
     """
-    Generalized extreme value distribution
-    Fisher-Tippett distribution
+    Generalized extreme value distribution.
+
+    Also known as the Fisher-Tippett distribution.
 
     Args:
         shape (float, Distribution):
@@ -43,20 +54,22 @@ class GeneralizedExtreme(ShiftScale):
             Location parameter
 
     Example:
-        >>> distribution = chaospy.GeneralizedExtreme(3, 2, 2)
+        >>> distribution = chaospy.GeneralizedExtreme(0.5)
         >>> distribution
-        GeneralizedExtreme(3, scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([-0.1126,  2.1538,  2.5778,  2.6593])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.0386, 0.2382, 1.1497, 8.0333])
-        >>> distribution.sample(4).round(4)
-        array([ 2.6154, -4.0776,  2.6666,  2.4079])
-        >>> distribution.mom(1).round(4)
-        -2.2584
+        GeneralizedExtreme(0.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-9.509, -0.537,  0.086,  0.571,  1.055,  2.   ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.254, 0.383, 0.429, 0.378, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.696, -0.941,  1.548,  0.292])
+
     """
 
     def __init__(self, shape=0, scale=1, shift=0):

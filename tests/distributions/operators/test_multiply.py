@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from pytest import raises
 import numpy
 
@@ -26,44 +24,39 @@ def test_dist_multiply_illigals():
         _ = [1, 1]*UNIVARIATE
     # 0-D object:
     with raises(chaospy.StochasticallyDependentError):
-        chaospy.Mul(2, 3)
+        chaospy.Multiply(2, 3)
 
 
 def test_dist_multiply_lower():
     assert (UNIVARIATE*4).lower == -8
     assert (4*UNIVARIATE).lower == -8
 
-    assert all((MULTIVARIATE * 4).lower == [-4, 8])
-    assert all((4 * MULTIVARIATE).lower == [-4, 8])
-    assert all((MULTIVARIATE * [2, 3]).lower == [-2, 6])
-    assert all(([2, 3] * MULTIVARIATE).lower == [-2, 6])
+    assert all((MULTIVARIATE*4).lower == [-4, 8])
+    assert all((4*MULTIVARIATE).lower == [-4, 8])
+    assert all((MULTIVARIATE*[2, 3]).lower == [-2, 6])
+    assert all(([2, 3]*MULTIVARIATE).lower == [-2, 6])
 
     assert all(DEPENDENT1.lower == [-2, -6])
     assert all(DEPENDENT2.lower == [-2, -6])
 
-    assert (UNIVARIATE * deepcopy(UNIVARIATE)).lower == -6
-    assert (UNIVARIATE * UNIVARIATE).lower == -6
-
-    assert all((MULTIVARIATE * deepcopy(MULTIVARIATE)).lower == [-2, 4])
-    assert all((MULTIVARIATE * MULTIVARIATE).lower == [-2, 4])
+    assert (UNIVARIATE*UNIVARIATE).lower == -6
+    assert all((MULTIVARIATE*MULTIVARIATE).lower == [-2, 4])
 
 
 def test_dist_multiply_upper():
     assert (UNIVARIATE*4).upper == 12
     assert (4*UNIVARIATE).upper == 12
 
-    assert all((MULTIVARIATE * 4).upper == [8, 16])
-    assert all((4 * MULTIVARIATE).upper == [8, 16])
-    assert all((MULTIVARIATE * [2, 3]).upper == [4, 12])
-    assert all(([2, 3] * MULTIVARIATE).upper == [4, 12])
+    assert all((MULTIVARIATE*4).upper == [8, 16])
+    assert all((4*MULTIVARIATE).upper == [8, 16])
+    assert all((MULTIVARIATE*[2, 3]).upper == [4, 12])
+    assert all(([2, 3]*MULTIVARIATE).upper == [4, 12])
 
     assert all(DEPENDENT1.upper == [3, 4])
     assert all(DEPENDENT2.upper == [3, 4])
 
-    assert (UNIVARIATE * deepcopy(UNIVARIATE)).upper == 9
-    assert (UNIVARIATE * UNIVARIATE).upper == 9
-    assert all((MULTIVARIATE * deepcopy(MULTIVARIATE)).upper == [4, 16])
-    assert all((MULTIVARIATE * MULTIVARIATE).upper == [4, 16])
+    assert (UNIVARIATE*UNIVARIATE).upper == 9
+    assert all((MULTIVARIATE*MULTIVARIATE).upper == [4, 16])
 
 
 def test_dist_multiply_forward():
@@ -74,9 +67,9 @@ def test_dist_multiply_forward():
                           [[0, 0.5, 1], [1, 0.5, 0]])
     assert numpy.allclose((4*MULTIVARIATE).fwd([[-4, 2, 8], [16, 12, 8]]),
                           [[0, 0.5, 1], [1, 0.5, 0]])
-    assert numpy.allclose((MULTIVARIATE * [2, 3]).fwd([[-2, 1, 4], [12, 9, 6]]),
+    assert numpy.allclose((MULTIVARIATE*[2, 3]).fwd([[-2, 1, 4], [12, 9, 6]]),
                           [[0, 0.5, 1], [1, 0.5, 0]])
-    assert numpy.allclose(([2, 3] * MULTIVARIATE).fwd([[-2, 1, 4], [12, 9, 6]]),
+    assert numpy.allclose(([2, 3]*MULTIVARIATE).fwd([[-2, 1, 4], [12, 9, 6]]),
                           [[0, 0.5, 1], [1, 0.5, 0]])
 
     assert numpy.allclose(DEPENDENT1.fwd([[-2, -2, -2, 0.5, 0.5, 3, 3, 3],
@@ -99,7 +92,7 @@ def test_dist_multiply_inverse():
                           [[-4, 2, 8], [16, 12, 8]])
     assert numpy.allclose((MULTIVARIATE*[2, 3]).inv([[0, 0.5, 1], [1, 0.5, 0]]),
                           [[-2, 1, 4], [12, 9, 6]])
-    assert numpy.allclose(([2, 3] * MULTIVARIATE).inv([[0, 0.5, 1], [1, 0.5, 0]]),
+    assert numpy.allclose(([2, 3]*MULTIVARIATE).inv([[0, 0.5, 1], [1, 0.5, 0]]),
                           [[-2, 1, 4], [12, 9, 6]])
 
     assert numpy.allclose(DEPENDENT1.inv([[0, 0, 0, 0.5, 0.5, 1, 1, 1],

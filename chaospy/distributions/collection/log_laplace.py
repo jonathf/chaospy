@@ -2,14 +2,14 @@
 import numpy
 from scipy import special, misc
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class log_laplace(DistributionCore):
+class log_laplace(SimpleDistribution):
     """Log-laplace distribution."""
 
     def __init__(self, c):
-        super(log_laplace, self).__init__(c=c)
+        super(log_laplace, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         cd2 = c/2.0
@@ -23,9 +23,13 @@ class log_laplace(DistributionCore):
         return numpy.where(q < 0.5, (2.*q)**(1./c), (2*(1.-q))**(-1./c))
 
     def _lower(self, c):
-        return 0.0
+        return 0.
 
-class LogLaplace(ShiftScale):
+    def _upper(self, c):
+        return 2e12**(1./c)
+
+
+class LogLaplace(ShiftScaleDistribution):
     """
     Log-laplace distribution
 
@@ -38,18 +42,22 @@ class LogLaplace(ShiftScale):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.LogLaplace(2, 2, 2)
+        >>> distribution = chaospy.LogLaplace(5)
         >>> distribution
-        LogLaplace(2, scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([3.2649, 3.7889, 4.2361, 5.1623])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.3162, 0.4472, 0.3578, 0.1265])
-        >>> distribution.sample(4).round(4)
-        array([4.4028, 2.9592, 8.3425, 3.9641])
+        LogLaplace(5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([  0.   ,   0.833,   0.956,   1.046,   1.201, 288.54 ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 1.201, 2.091, 1.913, 0.833, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.076, 0.745, 1.587, 0.993])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

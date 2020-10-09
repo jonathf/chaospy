@@ -72,8 +72,7 @@ from .collection import *
 from .copulas import *
 from .operators import *
 from .constructor import construct
-from .approximation import (
-    approximate_density, approximate_inverse, approximate_moment)
+from .approximation import *
 
 from . import (
     baseclass, sampler, approximation,

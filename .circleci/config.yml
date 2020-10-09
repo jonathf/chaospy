@@ -1,13 +1,23 @@
 version-tags: &version-tags
   tags:
-    only: /v\d+\.\d+\.\d+/
+    only: /v\d+\.\d+(\.\d+|-(alpha|beta|rc|dev|post)\d+)/
 
-version: 2
+version: 2.1
+executors:
+  python-container:
+    docker:
+      - image: circleci/python:$PYTHON_VERSION
+        auth:
+          username: jonathf
+          password: $DOCKERHUB_PASSWORD
+    working_directory: /home/circleci/project
+
+
 jobs:
   test-py27:
-    docker:
-      - image: circleci/python:2.7.17
-    working_directory: /home/circleci/project
+    executor: python-container
+    environment:
+      PYTHON_VERSION: 2.7.18
     steps:
       - checkout
       - restore_cache:
@@ -21,7 +31,8 @@ jobs:
               virtualenv /home/circleci/venv
             fi
             source /home/circleci/venv/bin/activate
-            pip install -U numpoly functools32 scipy pytest openturns scikit-learn==0.20.1
+            pip install -U numpoly functools32 scipy pytest \
+                  openturns scikit-learn==0.20.1
       - save_cache:
           key: deps-py27-{{ checksum "pyproject.toml" }}
           paths:
@@ -32,9 +43,9 @@ jobs:
               source /home/circleci/venv/bin/activate
               pytest tests
   test:
-    docker:
-      - image: circleci/python:3.8.3
-    working_directory: /home/circleci/project
+    executor: python-container
+    environment:
+      PYTHON_VERSION: 3.8.3
     steps:
       - checkout
       - restore_cache:
@@ -69,9 +80,9 @@ jobs:
                 docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb
             bash <(curl -s https://codecov.io/bash)
   deploy:
-    docker:
-      - image: circleci/python:3.8.3
-    working_directory: /home/circleci/project
+    executor: python-container
+    environment:
+      PYTHON_VERSION: 3.8.3
     steps:
       - checkout
       - run:

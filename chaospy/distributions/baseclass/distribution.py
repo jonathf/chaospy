@@ -1,17 +1,13 @@
 """Abstract baseclass for all distributions."""
 import logging
-import abc
-import six
-from itertools import permutations
 import numpy
 
 import chaospy
 
-DISTRIBUTION_IDENTIFIERS = {}
+from .utils import check_dependencies, report_on_exception
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Distribution():
+class Distribution(object):
     """Baseclass for all probability distributions."""
 
     __array_priority__ = 9000
@@ -27,18 +23,6 @@ class Distribution():
     def stochastic_dependent(self):
         """True if distribution contains stochastically dependent components."""
         return any(len(deps) > 1 for deps in self._dependencies)
-
-    def shares_dependencies(self, *others):
-        distributions = [self]+[other for other in others
-                                if isinstance(other, Distribution)]
-        if len(distributions) == 1:
-            return False
-        dependencies = [{dep for deps in dist._dependencies for dep in deps}
-                        for dist in distributions]
-        for deps1, deps2 in permutations(dependencies, 2):
-            if deps1.intersection(deps2):
-                return True
-        return False
 
     def __init__(
             self,
@@ -76,6 +60,7 @@ class Distribution():
                 rectified. This include under-defined
                 distributions, and inclusion of distributions that
                 should be exclusion.
+
         """
         assert isinstance(parameters, dict)
         self._parameters = parameters
@@ -95,17 +80,18 @@ class Distribution():
             repr_args = ("{}={}".format(key, self._parameters[key])
                          for key in sorted(self._parameters))
         self._repr_args = list(repr_args)
-        self._mom_cache = {(0,)*len(self): 1.}
+        self._mom_cache = {(0,)*len(dependencies): 1.}
         self._ttr_cache = {}
+        self._indices = {}
 
-        all_dependencies = {dep for deps in self._dependencies for dep in deps}
-        if len(all_dependencies) < len(self):
+        self._all_dependencies = {dep for deps in self._dependencies for dep in deps}
+        if len(self._all_dependencies) < len(dependencies):
             raise chaospy.StochasticallyDependentError(
                 "%s is an under-defined probability distribution." % self)
 
-        for key, param in parameters.items():
+        for key, param in list(parameters.items()):
             if isinstance(param, Distribution):
-                if all_dependencies.intersection(param._exclusion):
+                if self._all_dependencies.intersection(param._exclusion):
                     raise chaospy.StochasticallyDependentError((
                         "%s contains dependencies that can not also exist "
                         "other places in the dependency hierarchy") % param)
@@ -113,100 +99,74 @@ class Distribution():
             else:
                 self._parameters[key] = numpy.asarray(param)
 
-    def _check_dependencies(self):
-        """
-        Check if the dependency structure is valid.
-
-        Rosenblatt transformations, density calculations etc. assumes
-        that the input and output of transformation is the same. It
-        also assumes that there is a order defined in `self._rotation` so an
-        decomposition `p(x0), p(x1|x0), ...` is possible.
-
-        Raises:
-            StochasticallyDependentError:
-                If invalid dependency structure is present.
-        """
-        current = set()
-        for idx in self._rotation:
-            length = len(current)
-            current.update(self._dependencies[idx])
-            if len(current) != length+1:
-                raise chaospy.StochasticallyDependentError(
-                    "%s has more underlying dependencies than the size of distribution." % self)
-
-    def _check_parameters(self, parameters):
-        """
-        Check if the parameters are as expected.
-
-        Override in sub-class to add rules for how parameters should behave.
-        """
-        del parameters
-
-    def get_parameters(self, cache):
+    def get_parameters(self, idx, cache, assert_numerical=True):
         """Get distribution parameters."""
+        del assert_numerical
         out = self._parameters.copy()
+        assert isinstance(cache, dict)
+        if idx is not None:
+            assert not isinstance(idx, dict), idx
+            assert idx == int(idx), idx
+            if "idx" in out:
+                assert out["idx"] == idx, (idx, out)
+        assert "cache" not in out
         out["cache"] = cache
+        out["idx"] = idx
         return out
-
-    def _declare_dependencies(self, count):
-        """
-        Declare stochastic dependency to an underlying random variable.
-
-        Args:
-            count (int):
-                The number of variables to declare.
-
-        Returns:
-            (List[int]):
-                Unique integer identifiers that represents dependencies.
-
-        """
-        length = len(DISTRIBUTION_IDENTIFIERS)
-        new_identifiers = list(range(length+1, length+1+count))
-        for idx in new_identifiers:
-            DISTRIBUTION_IDENTIFIERS[idx] = self
-        return new_identifiers
 
     @property
     def lower(self):
         """Lower bound for the distribution."""
-        return self._get_lower(cache={})
+        cache = {}
+        out = numpy.zeros(len(self))
+        for idx in self._rotation:
+            out[idx] = self._get_lower(idx, cache=cache)
+        return out
 
-    def _get_lower(self, cache):
+    @report_on_exception
+    def _get_lower(self, idx, cache):
         """In-processes function for getting lower bounds."""
-        if self in cache:
-            return cache[self][0]
-        out = self._lower(**self.get_parameters(cache=cache))
+        if (idx, self) in cache:
+            return cache[idx, self][0]
+        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        out = self._lower(**parameters)
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
-        assert len(out) == len(self), (self, out)
-        cache[self] = (out, None)
+        assert out.ndim == 1, (self, out, cache)
+        cache[idx, self] = (out, None)
         return out
 
     def _lower(self, **kwargs):
         """Backend lower bound."""
-        return self._ppf(numpy.array([1e-10]*len(self)), **kwargs)
+        raise chaospy.UnsupportedFeature("lower not supported")
 
     @property
     def upper(self):
         """Upper bound for the distribution."""
         cache = {}
-        return self._get_upper(cache=cache)
+        out = numpy.zeros(len(self))
+        for idx in self._rotation:
+            out[idx] = self._get_upper(idx, cache=cache)
+        return out
 
-    def _get_upper(self, cache):
+    @report_on_exception
+    def _get_upper(self, idx, cache):
         """In-processes function for getting upper bounds."""
-        if self in cache:
-            return cache[self][0]
-        out = self._upper(**self.get_parameters(cache=cache))
+        if (idx, self) in cache:
+            return cache[idx, self][0]
+        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        out = self._upper(**parameters)
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
-        assert len(out) == len(self), (self, out)
-        cache[self] = (out, None)
+        assert out.ndim == 1, (self, out, cache)
+        cache[idx, self] = (out, None)
+        size = max([elem[0].size for elem in cache.values()])
+        assert all([elem[0].size in (1, size) for elem in cache.values()])
         return out
 
     def _upper(self, **kwargs):
         """Backend upper bound."""
-        return self._ppf(numpy.array([1-1e-10]*len(self)), **kwargs)
+        raise chaospy.UnsupportedFeature("lower not supported")
 
     def fwd(self, x_data):
         """
@@ -223,21 +183,14 @@ class Distribution():
                 ``out.shape==x_data.shape``.
         """
         logger = logging.getLogger(__name__)
-        self._check_dependencies()
+        check_dependencies(self)
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
-
-        q_data = numpy.zeros(x_data.shape)
-        indices = (x_data.T > self.upper.T).T
-        q_data[indices] = 1
-        indices = ~indices & (x_data.T >= self.lower).T
-        if not numpy.all(indices):
-            logger.debug("%s.fwd: %d/%d inputs out of bounds",
-                         self, numpy.sum(~indices), len(indices))
-
         cache = {}
-        q_data[indices] = self._get_fwd(x_data, cache)[indices]
+        q_data = numpy.zeros(x_data.shape)
+        for idx in self._rotation:
+            q_data[idx] = self._get_fwd(x_data[idx], idx, cache)
 
         indices = (q_data > 1) | (q_data < 0)
         if numpy.any(indices):
@@ -248,29 +201,34 @@ class Distribution():
         q_data = q_data.reshape(shape)
         return q_data
 
-    def _get_fwd(self, x_data, cache):
+    @report_on_exception
+    def _get_fwd(self, x_data, idx, cache):
         """In-process function for getting cdf-values."""
-        if self in cache:
-            return cache[self][1]
-        assert len(x_data) == len(self), (
-            "distribution %s is not of length %d" % (self, len(x_data)))
-        lower = self._get_lower(cache=cache.copy())
-        upper = self._get_upper(cache=cache.copy())
-        parameters = self.get_parameters(cache=cache)
-        self._check_parameters(parameters)
+        logger = logging.getLogger(__name__)
+        if (idx, self) in cache:
+            return cache[idx, self][1]
+        lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
+        upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
+        parameters = self.get_parameters(idx, cache, assert_numerical=True)
         ret_val = self._cdf(x_data, **parameters)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         out = numpy.zeros(x_data.shape)
         out[:] = ret_val
-        out[(x_data.T < lower.T).T] = 0
-        out[(x_data.T > upper.T).T] = 1
-        cache[self] = (x_data, out)
-        return out
+        indices = x_data < lower
+        if numpy.any(indices):
+            logger.debug("%s.fwd: %d/%d inputs below bounds",
+                         self, numpy.sum(indices), len(indices))
+            out = numpy.where(indices, 0, out)
+        indices = x_data > upper
+        if numpy.any(indices):
+            logger.debug("%s.fwd: %d/%d inputs above bounds",
+                         self, numpy.sum(indices), len(indices))
+            out = numpy.where(indices, 1, out)
+        assert numpy.all((out >= 0) | (out <= 1))
 
-    @abc.abstractmethod
-    def _cdf(self, *args, **kwargs):
-        """Backend function for getting cdf-values."""
-        pass
+        cache[idx, self] = (x_data, out)
+        assert out.ndim == 1, (self, out, cache)
+        return out
 
     def cdf(self, x_data):
         """
@@ -290,7 +248,7 @@ class Distribution():
                 ``x_data.shape`` in one dimension and ``x_data.shape[1:]`` in
                 higher dimensions.
         """
-        self._check_dependencies()
+        check_dependencies(self)
         if self.stochastic_dependent:
             raise chaospy.StochasticallyDependentError(
                 "Cumulative distribution does not support dependencies.")
@@ -328,44 +286,59 @@ class Distribution():
                 ``out.shape == q_data.shape``.
         """
         logger = logging.getLogger(__name__)
-        self._check_dependencies()
+        check_dependencies(self)
         q_data = numpy.asfarray(q_data)
         assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
         shape = q_data.shape
         q_data = q_data.reshape(len(self), -1)
         cache = {}
-        x_data = self._get_inv(q_data, cache)
-
-        indices = numpy.any((x_data.T < self.lower), axis=-1)
-        if numpy.any(indices):
-            logger.debug("%s.inv: %d/%d outputs under lower bound",
-                         self, numpy.sum(indices), len(indices))
-            x_data.T[indices] = self.lower
-
-        indices = numpy.any((x_data.T > self.upper), axis=-1)
-        if numpy.any(indices):
-            logger.debug("%s.inv: %d/%d outputs over upper bound",
-                         self, numpy.sum(indices), len(indices))
-            x_data.T[indices] = self.upper
+        x_data = numpy.zeros(q_data.shape)
+        for idx in self._rotation:
+            x_data[idx] = self._get_inv(q_data[idx], idx, cache)
 
         x_data = x_data.reshape(shape)
         return x_data
 
-    def _get_inv(self, q_data, cache):
+    @report_on_exception
+    def _get_inv(self, q_data, idx, cache):
         """In-process function for getting ppf-values."""
-        if self in cache:
-            return cache[self][0]
-        if hasattr(self, "_ppf"):
-            parameters = self.get_parameters(cache=cache)
-            self._check_parameters(parameters)
+        logger = logging.getLogger(__name__)
+        assert numpy.all(q_data <= 1) and numpy.all(q_data >= 0)
+        assert q_data.ndim == 1
+        if (idx, self) in cache:
+            return cache[idx, self][0]
+        lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), q_data.shape)
+        upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), q_data.shape)
+        try:
+            parameters = self.get_parameters(idx, cache, assert_numerical=True)
             ret_val = self._ppf(q_data, **parameters)
-        else:
-            ret_val = chaospy.approximate_inverse(self, q_data, cache)
+        except chaospy.UnsupportedFeature:
+            ret_val = chaospy.approximate_inverse(self, idx, q_data, cache=cache)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
+
         out = numpy.zeros(q_data.shape)
         out[:] = ret_val
-        cache[self] = (out, q_data)
+
+        indices = out < lower
+        if numpy.any(indices):
+            logger.debug("%s.inv: %d/%d outputs below bounds",
+                         self, numpy.sum(indices), len(indices))
+            out = numpy.where(indices, lower, out)
+
+        indices = out > upper
+        if numpy.any(indices):
+            logger.debug("%s.inv: %d/%d outputs above bounds",
+                         self, numpy.sum(indices), len(indices))
+            out = numpy.where(indices, upper, out)
+
+        assert out.ndim == 1
+        cache[idx, self] = (out, q_data)
+        assert out.ndim == 1, (self, out, cache)
         return out
+
+    def _ppf(self, xloc, **kwargs):
+        raise chaospy.UnsupportedFeature(
+            "%s: does not support analytical ppf." % self)
 
     def pdf(self, x_data, decompose=False):
         """
@@ -414,49 +387,55 @@ class Distribution():
 
         """
         logger = logging.getLogger(__name__)
-        self._check_dependencies()
+        check_dependencies(self)
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
-
         f_data = numpy.zeros(x_data.shape)
-        indices = numpy.any((x_data.T <= self.upper).T & (x_data.T >= self.lower).T, axis=0)
-        if not numpy.all(indices):
-            logger.debug("%s.fwd: %d/%d inputs out of bounds",
-                         self, numpy.sum(~indices), len(indices))
-        try:
-            cache = {}
-            f_data[:, indices] = self._get_pdf(x_data, cache)[:, indices]
-        except chaospy.UnsupportedFeature:
-            f_data[:, indices] = chaospy.approximate_density(self, x_data)[:, indices]
+        cache = {}
+        for idx in self._rotation:
+            f_data[idx] = self._get_pdf(x_data[idx], idx, cache)
 
         f_data = f_data.reshape(shape)
         if len(self) > 1 and not decompose:
             f_data = numpy.prod(f_data, 0)
         return f_data
 
-    def _get_pdf(self, x_data, cache):
+    @report_on_exception
+    def _get_pdf(self, x_data, idx, cache):
         """In-process function for getting pdf-values."""
-        if self in cache:
-            return cache[self][1]
-        lower = self._get_lower(cache=cache.copy())
-        upper = self._get_upper(cache=cache.copy())
-        index = numpy.all((x_data.T >= lower.T) & (x_data.T <= upper.T), axis=1)
-        parameters = self.get_parameters(cache=cache)
-        self._check_parameters(parameters)
-        out = numpy.zeros(x_data.shape)
-        if hasattr(self, "_pdf"):
+        logger = logging.getLogger(__name__)
+        assert x_data.ndim == 1
+        if (idx, self) in cache:
+            return cache[idx, self][1]
+        lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
+        upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
+        parameters = self.get_parameters(idx, cache, assert_numerical=True)
+        try:
             ret_val = self._pdf(x_data, **parameters)
-        else:
-            raise chaospy.UnsupportedFeature(
-                "%s: does not support analytical pdf." % self)
-        _, ret_val = numpy.broadcast_arrays(out, ret_val)
+        except chaospy.UnsupportedFeature:
+            ret_val = chaospy.approximate_density(self, idx, x_data, cache)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
-        out[:, index] = ret_val[:, index]
+
+        out = numpy.zeros(x_data.shape)
+        out[:] = ret_val
+
+        indices = (x_data < lower) | (x_data > upper)
+        if numpy.any(indices):
+            logger.debug("%s.fwd: %d/%d inputs out of bounds",
+                         self, numpy.sum(indices), len(indices))
+            logger.debug("%s[%s]: %s - %s - %s", self, idx, lower, x_data, upper)
+            out = numpy.where(indices, 0, ret_val)
+
         if self in cache:
             out = numpy.where(x_data == cache[self][0], out, 0)
-        cache[self] = (x_data, out)
+        cache[idx, self] = (x_data, out)
+        assert out.ndim == 1, (self, out, cache)
         return out
+
+    def _pdf(self, xloc, **kwargs):
+        raise chaospy.UnsupportedFeature(
+            "%s: does not support analytical pdf." % self)
 
     def sample(self, size=(), rule="random", antithetic=None):
         """
@@ -509,7 +488,7 @@ class Distribution():
             (numpy.ndarray):
                 Random samples with shape ``(len(self),)+self.shape``.
         """
-        self._check_dependencies()
+        check_dependencies(self)
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         if dim > 1:
@@ -578,22 +557,28 @@ class Distribution():
                 logger.info(
                     "%s: has stochastic dependencies; "
                     "Approximating moments with quadrature.", str(self))
-                out = chaospy.approximate_moment(self, K)
+                out = [chaospy.approximate_moment(self, kdata) for kdata in K.T]
             else:
                 raise
         out = numpy.array(out)
         assert out.size == numpy.prod(shape), (out, shape)
         return out.reshape(shape)
 
+    @report_on_exception
     def _get_mom(self, kdata):
         """In-process function for getting moments."""
         if tuple(kdata) in self._mom_cache:
             return self._mom_cache[tuple(kdata)]
-        parameters = self.get_parameters(cache={})
+        parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
+        assert "idx" not in parameters, (self, parameters)
         ret_val = float(self._mom(kdata, **parameters))
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         self._mom_cache[tuple(kdata)] = ret_val
         return ret_val
+
+    def _mom(self, kloc, **kwargs):
+        raise chaospy.UnsupportedFeature(
+            "moments not supported for this distribution")
 
     def ttr(self, kloc):
         """
@@ -608,29 +593,43 @@ class Distribution():
                 Where out[0] is the first (A) and out[1] is the second
                 coefficient With ``out.shape==(2,)+k.shape``.
         """
-        self._check_dependencies()
+        check_dependencies(self)
         kloc = numpy.asarray(kloc, dtype=int)
         shape = kloc.shape
         kloc = kloc.reshape(len(self), -1)
-        out = [self._get_ttr(k) for k in kloc.T]
-        alpha, beta = numpy.asfarray(list(zip(*out)))
-        out = numpy.array([alpha.T, beta.T])
+        out = numpy.zeros((2,)+kloc.shape)
+        for idy, kloc_ in enumerate(kloc.T):
+            for idx in range(len(self)):
+                out[:, idx, idy] = self._get_ttr(kloc_[idx], idx)
         return out.reshape((2,)+shape)
 
-    def _get_ttr(self, kdata):
+    @report_on_exception
+    def _get_ttr(self, kdata, idx):
         """In-process function for getting TTR-values."""
-        if tuple(kdata) in self._ttr_cache:
-            return self._ttr_cache[tuple(kdata)]
-        parameters = self.get_parameters(cache={})
+        if (idx, kdata) in self._ttr_cache:
+            return self._ttr_cache[idx, kdata]
+        parameters = self.get_parameters(idx, cache={}, assert_numerical=True)
         alpha, beta = self._ttr(kdata, **parameters)
         assert not isinstance(alpha, Distribution), (self, alpha)
         assert not isinstance(beta, Distribution), (self, beta)
-        alpha = numpy.asfarray(alpha).reshape(len(self))
-        beta = numpy.asfarray(beta).reshape(len(self))
-        self._ttr_cache[tuple(kdata)] = (alpha, beta)
+        alpha = numpy.asfarray(alpha).item()
+        beta = numpy.asfarray(beta).item()
+        self._ttr_cache[idx, kdata] = (alpha, beta)
         return alpha, beta
 
-    def _get_cache_1(self, cache):
+    @report_on_exception
+    def _get_cache(self, idx, cache, get=None):
+        if (idx, self) in cache:
+            out = cache[idx, self]
+        else:
+            out = self._cache(idx, cache)
+        if not isinstance(out, Distribution) and get is not None:
+            assert get in (0, 1)
+            out = out[get]
+        return out
+
+    @report_on_exception
+    def _get_cache_1(self, idx, cache):
         """
         In-process function for getting cached values.
 
@@ -661,15 +660,15 @@ class Distribution():
                 The content of the first cache, if any. Else return self.
         """
         if self in cache:
-            out = cache[self]
+            out = cache[idx, self]
         else:
-            parameters = self.get_parameters(cache=cache)
-            out = self._cache(**parameters)
+            out = self._cache(idx, cache)
         if not isinstance(out, Distribution):
             out = out[0]
         return out
 
-    def _get_cache_2(self, cache):
+    @report_on_exception
+    def _get_cache_2(self, idx, cache):
         """
         In-process function for getting cached values.
 
@@ -700,18 +699,39 @@ class Distribution():
                 The content of the second cache, if any. Else return self.
         """
         if self in cache:
-            out = cache[self]
+            out = cache[idx, self]
         else:
-            parameters = self.get_parameters(cache=cache)
-            out = self._cache(**parameters)
+            out = self._cache(idx, cache)
         if not isinstance(out, Distribution):
             out = out[1]
         return out
 
-    @abc.abstractmethod
-    def _cache(self, cache):
+    def _cache(self, idx, cache):
         """Backend function of retrieving cache values."""
-        pass
+        return self
+
+    def __getitem__(self, index):
+        if isinstance(index, numpy.number):
+            assert index.dtype == int
+            index = int(index)
+        if isinstance(index, int):
+            if not -len(self) < index < len(self):
+                raise IndexError("index out of bounds: %s" % index)
+            if index < 0:
+                index += len(self)
+            return chaospy.ItemDistribution(int(index), self)
+        if isinstance(index, slice):
+            start = 0 if index.start is None else index.start
+            stop = len(self) if index.stop is None else index.stop
+            step = 1 if index.step is None else index.step
+            return chaospy.J(*[self[idx] for idx in range(start, stop, step)])
+        raise IndexError("unrecognized key: %s" % repr(index))
+
+    def __iter__(self):
+        if isinstance(self, (chaospy.ItemDistribution, chaospy.SimpleDistribution)):
+            raise TypeError("index of an index not possible.")
+        for idx in range(len(self)):
+            yield self[idx]
 
     def __len__(self):
         """Distribution length."""
@@ -744,64 +764,60 @@ class Distribution():
 
     def __neg__(self):
         """X.__neg__() <==> -X"""
-        return chaospy.Neg(self)
+        return chaospy.Negative(self)
 
     def __mul__(self, X):
         """Y.__mul__(X) <==> X*Y"""
-        return chaospy.Mul(self, X)
+        return chaospy.Multiply(self, X)
 
     def __rmul__(self, X):
         """Y.__rmul__(X) <==> Y*X"""
-        return chaospy.Mul(X, self)
+        return chaospy.Multiply(X, self)
 
     def __div__(self, X):
         """Y.__div__(X) <==> Y/X"""
-        return chaospy.Mul(self, X**-1)
+        return chaospy.Multiply(self, X**-1)
 
     def __rdiv__(self, X):
         """Y.__rdiv__(X) <==> X/Y"""
-        return chaospy.Mul(X, self**-1)
+        return chaospy.Multiply(X, self**-1)
 
     def __floordiv__(self, X):
         """Y.__floordiv__(X) <==> Y/X"""
-        return chaospy.Mul(self, X**-1)
+        return chaospy.Multiply(self, X**-1)
 
     def __rfloordiv__(self, X):
         """Y.__rfloordiv__(X) <==> X/Y"""
-        return chaospy.Mul(X, self**-1)
+        return chaospy.Multiply(X, self**-1)
 
     def __truediv__(self, X):
         """Y.__truediv__(X) <==> Y/X"""
-        return chaospy.Mul(self, X**-1)
+        return chaospy.Multiply(self, X**-1)
 
     def __rtruediv__(self, X):
         """Y.__rtruediv__(X) <==> X/Y"""
-        return chaospy.Mul(X, self**-1)
+        return chaospy.Multiply(X, self**-1)
 
     def __pow__(self, X):
         """Y.__pow__(X) <==> Y**X"""
-        return chaospy.Pow(self, X)
+        return chaospy.Power(self, X)
 
     def __rpow__(self, X):
         """Y.__rpow__(X) <==> X**Y"""
-        return chaospy.Pow(X, self)
+        return chaospy.Power(X, self)
 
-    # def __eq__(self, other):
-    #     if not isinstance(other, Distribution):
-    #         return False
-    #     if len(other) != len(self):
-    #         return False
-    #     if len(other) > 1:
-    #         if len(self) > 1:
-    #             return all([d1 == d2 for d1, d2 in zip(self, other)])
-    #         return all([self == d for d in other])
-    #     elif len(self) > 1:
-    #         return all([d == other for d in self])
-    #     while isinstance(self, chaospy.J):
-    #         self = self._parameters["_000"]
-    #     while isinstance(other, chaospy.J):
-    #         other = other._parameters["_000"]
-    #     return self is other
+    def __eq__(self, other):
+        if not isinstance(other, Distribution):
+            return False
+        if len(other) != len(self):
+            return False
+        if len(self) > 1:
+            return all([self == other for self, other in zip(self, other)])
+        if isinstance(self, chaospy.ItemDistribution) and isinstance(other, chaospy.ItemDistribution):
+            return (self._parameters["index"] == other._parameters["index"] and
+                    self._parameters["parent"] is other._parameters["parent"])
 
-    # def __hash__(self):
-    #     return id(self)
+        return self is other
+
+    def __hash__(self):
+        return id(self)

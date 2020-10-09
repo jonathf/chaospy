@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class fatigue_life(DistributionCore):
+class fatigue_life(SimpleDistribution):
     """Fatigue-life distribution."""
 
     def __init__(self, c=0):
-        super(fatigue_life, self).__init__(c=c)
+        super(fatigue_life, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
         output = (x+1)/(2*c*numpy.sqrt(2*numpy.pi*x**3))
@@ -18,14 +18,24 @@ class fatigue_life(DistributionCore):
         return output
 
     def _cdf(self, x, c):
-        return special.ndtr(1.0/c*(numpy.sqrt(x)-1.0/numpy.sqrt(x)))
+        out = special.ndtr(1.0/c*(numpy.sqrt(x)-1.0/numpy.sqrt(x)))
+        out = numpy.where(x == 0, 0, out)
+        return out
 
     def _ppf(self, q, c):
         tmp = c*special.ndtri(q)
-        return 0.25*(tmp + numpy.sqrt(tmp**2 + 4))**2
+        out = numpy.where(
+            numpy.isfinite(tmp), 0.25*(tmp+numpy.sqrt(tmp**2+4))**2, tmp)
+        return out
+
+    def _lower(self, c):
+        return (-4*c+numpy.sqrt(16*c**2+1))**2
+
+    def _upper(self, c):
+        return (4*c+numpy.sqrt(16*c**2+1))**2
 
 
-class FatigueLife(ShiftScale):
+class FatigueLife(ShiftScaleDistribution):
     """
     Fatigue-Life or Birmbaum-Sanders distribution
 
@@ -38,20 +48,22 @@ class FatigueLife(ShiftScale):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.FatigueLife(2, 2, 1)
+        >>> distribution = chaospy.FatigueLife(0.5)
         >>> distribution
-        FatigueLife(2, scale=2, shift=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([ 1.4332,  2.2113,  4.3021, 10.2334])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.4223, 0.1645, 0.0603, 0.0198])
-        >>> distribution.sample(4).round(4)
-        array([ 5.3231,  1.2621, 26.5603,  2.8292])
-        >>> distribution.mom(1).round(4)
-        7.0
+        FatigueLife(0.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([ 0.056,  0.659,  0.881,  1.135,  1.519, 17.944])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.869, 0.879, 0.682, 0.377, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.218, 0.553, 2.23 , 0.978])
+
     """
     def __init__(self, shape=1, scale=1, shift=0):
         super(FatigueLife, self).__init__(

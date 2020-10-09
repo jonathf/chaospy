@@ -34,6 +34,7 @@ With increasing order::
      [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
 """
 import numpy
+import chaospy
 
 from .combine import combine
 
@@ -65,8 +66,7 @@ def quad_gauss_patterson(order, domain):
         >>> weights.round(4)
         array([0.0523, 0.1342, 0.2007, 0.2255, 0.2007, 0.1342, 0.0523])
     """
-    from ..distributions.baseclass import Distribution
-    if isinstance(domain, Distribution):
+    if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_gauss_patterson(
             order, (domain.lower, domain.upper))
         weights *= domain.pdf(abscissas).flatten()

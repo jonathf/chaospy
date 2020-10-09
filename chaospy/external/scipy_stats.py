@@ -25,10 +25,10 @@ Currently the wrapper is limited to only support univariate distributions.
 import numpy
 from scipy.stats._distn_infrastructure import rv_frozen
 
-from ..distributions import DistributionCore
+from ..distributions import SimpleDistribution
 
 
-class ScipyStatsDist(DistributionCore):
+class ScipyStatsDist(SimpleDistribution):
     """
     One dimensional ``scipy.stats`` distribution.
 

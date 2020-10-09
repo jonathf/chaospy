@@ -2,14 +2,14 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class chi_squared(DistributionCore):
+class chi_squared(SimpleDistribution):
     """Central Chi-squared distribution."""
 
     def __init__(self, df, nc):
-        super(chi_squared, self).__init__(df=df, nc=nc)
+        super(chi_squared, self).__init__(dict(df=df, nc=nc))
 
     def _pdf(self, x, df, nc):
         output = 0.5*numpy.e**(-0.5*(x+nc))
@@ -33,7 +33,7 @@ class chi_squared(DistributionCore):
                 return upper.item()
 
 
-class ChiSquared(ShiftScale):
+class ChiSquared(ShiftScaleDistribution):
     """
     (Non-central) Chi-squared distribution.
 

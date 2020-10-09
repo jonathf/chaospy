@@ -1,12 +1,13 @@
 """Multivariate Student-T Distribution."""
 import numpy
 from scipy import special
+import chaospy
 
 from .student_t import student_t
-from ..baseclass import MeanCovariance
+from ..baseclass import MeanCovarianceDistribution
 
 
-class MvStudentT(MeanCovariance):
+class MvStudentT(MeanCovarianceDistribution):
     """
     Multivariate Student-T Distribution.
 
@@ -21,7 +22,7 @@ class MvStudentT(MeanCovariance):
     Examples:
         >>> distribution = chaospy.MvStudentT(40, [1, 2], [[1, 0.6], [0.6, 1]])
         >>> distribution
-        MvStudentT(df=40, mu=[1, 2], sigma=[[1.0, 0.6], [0.6, 1.0]])
+        MvStudentT(df=40, mu=[1, 2], sigma=[[1, 0.6], [0.6, 1]])
         >>> chaospy.Cov(distribution).round(4)
         array([[1.0526, 0.6316],
                [0.6316, 1.0526]])
@@ -50,14 +51,12 @@ class MvStudentT(MeanCovariance):
             sigma=None,
             rotation=None,
     ):
-        repr_args = ["df=%s" % numpy.array(df).tolist(),
-                     "mu=%s" % numpy.array(mu).tolist()]
-        if sigma is not None:
-            repr_args += ["sigma=%s" % numpy.array(sigma).tolist()]
         super(MvStudentT, self).__init__(
             dist=student_t(df),
             mean=mu,
             covariance=sigma,
             rotation=rotation,
-            repr_args=repr_args,
+            repr_args=chaospy.format_repr_kwargs(df=(df, None))+
+                      chaospy.format_repr_kwargs(mu=(mu, None))+
+                      chaospy.format_repr_kwargs(sigma=(sigma, None)),
         )

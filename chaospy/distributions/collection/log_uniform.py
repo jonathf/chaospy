@@ -1,14 +1,14 @@
 """Log-uniform distribution."""
 import numpy
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class log_uniform(DistributionCore):
+class log_uniform(SimpleDistribution):
     """Log-uniform distribution."""
 
     def __init__(self, lo=0, up=1):
-        super(log_uniform, self).__init__(lo=lo, up=up)
+        super(log_uniform, self).__init__(dict(lo=lo, up=up))
 
     def _pdf(self, x, lo, up):
         return 1./(x*(up-lo))
@@ -29,7 +29,7 @@ class log_uniform(DistributionCore):
         return ((numpy.e**(up*k)-numpy.e**(lo*k))/((up-lo)*(k+(k==0))))**(k!=0)
 
 
-class LogUniform(ShiftScale):
+class LogUniform(ShiftScaleDistribution):
     """
     Log-uniform distribution
 

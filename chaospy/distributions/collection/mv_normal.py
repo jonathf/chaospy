@@ -5,10 +5,10 @@ from scipy import special
 import chaospy
 
 from .normal import normal
-from ..baseclass import MeanCovariance
+from ..baseclass import MeanCovarianceDistribution
 
 
-class MvNormal(MeanCovariance):
+class MvNormal(MeanCovarianceDistribution):
     r"""
     Multivariate Normal Distribution.
 
@@ -27,7 +27,7 @@ class MvNormal(MeanCovariance):
         ...     [[1, 0.2, 0.3], [0.2, 2, 0.4], [0.3, 0.4, 1]], rotation=[1, 2, 0])
         >>> distribution  # doctest: +NORMALIZE_WHITESPACE
         MvNormal(mu=[10, 20, 30],
-                 sigma=[[1.0, 0.2, 0.3], [0.2, 2.0, 0.4], [0.3, 0.4, 1.0]])
+                 sigma=[[1, 0.2, 0.3], [0.2, 2, 0.4], [0.3, 0.4, 1]])
         >>> chaospy.E(distribution)
         array([10., 20., 30.])
         >>> chaospy.Cov(distribution)
@@ -61,21 +61,18 @@ class MvNormal(MeanCovariance):
             sigma=None,
             rotation=None,
     ):
-        repr_args = ["mu=%s" % numpy.array(mu).tolist()]
-        if sigma is not None:
-            repr_args += ["sigma=%s" % numpy.array(sigma).tolist()]
-
         super(MvNormal, self).__init__(
             dist=normal(),
             mean=mu,
             covariance=sigma,
             rotation=rotation,
-            repr_args=repr_args,
+            repr_args=chaospy.format_repr_kwargs(mu=(mu, None))+
+                      chaospy.format_repr_kwargs(sigma=(sigma, None)),
         )
 
-    def _mom(self, k, mean, covariance, cache):
+    def _mom(self, k, mean, sigma, cache):
         if isinstance(mean, chaospy.Distribution):
-            mean = mean._get_cache_1(cache)
+            mean = mean._get_cache(None, cache=cache, get=0)
             if isinstance(mean, chaospy.Distribution):
                 raise chaospy.UnsupportedFeature(
                     "Analytical moment of a conditional not supported")
@@ -88,7 +85,7 @@ class MvNormal(MeanCovariance):
             pos = numpy.all(pos)
             location_ = numpy.prod(mean**diff)
 
-            out += pos*coef*location_*isserlis_moment(tuple(kdx), covariance)
+            out += pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
 
         return float(out)
 

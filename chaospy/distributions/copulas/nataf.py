@@ -1,69 +1,87 @@
 """Nataf (normal) copula."""
 import numpy
 from scipy import special
+import chaospy
 
-from ..baseclass import Copula, Distribution, DistributionCore
-
+from ..baseclass import CopulaDistribution, Distribution
 
 
 class nataf(Distribution):
     """Nataf (normal) copula."""
 
-    def __init__(self, R, rotation=None):
-        if rotation is None:
-            rotation = range(len(R))
-        rotation = numpy.array(rotation)
+    def __init__(self, covariance, rotation=None):
+        covariance = numpy.asarray(covariance)
+        assert covariance.ndim == 2, "Covariance must be a matrix"
+        assert covariance.shape[0] == covariance.shape[1], (
+            "Parameters 'covariance' not a square matrix.")
 
-        accumulant = set()
-        dependencies = self._declare_dependencies(len(R))
-        for idx in rotation:
-            accumulant.add(dependencies[idx])
-            dependencies[idx] = accumulant.copy()
-
-        P = numpy.eye(len(R))[rotation]
-        R = numpy.dot(P, numpy.dot(R, P.T))
-        R = numpy.linalg.cholesky(R)
-        R = numpy.dot(P.T, numpy.dot(R, P))
-        Ci = numpy.linalg.inv(R)
-        super(nataf, self).__init__(
-            parameters=dict(C=R, Ci=Ci),
+        dependencies, _, rotation = chaospy.declare_dependencies(
+            self,
+            parameters=dict(covariance=covariance),
             rotation=rotation,
+            dependency_type="accumulate",
+        )
+        correlation = covariance/numpy.sqrt(numpy.outer(numpy.diag(covariance), numpy.diag(covariance)))
+        self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
+        self._correlation = self._permute.dot(correlation).dot(self._permute.T)
+        cholesky = numpy.linalg.cholesky(self._correlation)
+        self._fwd_transform = self._permute.T.dot(numpy.linalg.inv(cholesky))
+        self._inv_transform = self._permute.T.dot(cholesky)
+
+        super(nataf, self).__init__(
+            parameters=dict(),
             dependencies=dependencies,
+            rotation=rotation,
+            repr_args=[covariance.tolist()],
         )
 
-    def _cdf(self, x, C, Ci, cache):
-        out = special.ndtr(numpy.dot(Ci, special.ndtri(x)))
+    def _cdf(self, xloc, idx, cache):
+        dim = self._rotation.index(idx)
+        conditions = [self._get_cache(dim_, cache, get=0)
+                      for dim_ in self._rotation[:dim]]
+        assert not any([isinstance(condition, chaospy.Distribution)
+                        for condition in conditions])
+        xloc = numpy.vstack(conditions+[xloc])
+        zloc = self._fwd_transform[idx, :len(xloc)].dot(special.ndtri(xloc))
+        out = special.ndtr(zloc)
         return out
 
-    def _ppf(self, q, C, Ci, cache):
-        out = special.ndtr(numpy.dot(C, special.ndtri(q)))
+    def _ppf(self, qloc, idx, cache):
+        dim = self._rotation.index(idx)
+        conditions = [self._get_cache(dim_, cache, get=1)
+                      for dim_ in self._rotation[:dim]]
+        assert not any([isinstance(condition, chaospy.Distribution)
+                        for condition in conditions])
+        qloc = numpy.vstack(conditions+[qloc])
+        zloc = special.ndtri(qloc)
+        out = special.ndtr(self._inv_transform[idx, :len(qloc)].dot(zloc))
         return out
 
-    def _lower(self, C, Ci, cache):
-        return numpy.zeros(len(self))
+    def _pdf(self, xloc, idx, cache):
+        raise chaospy.UnsupportedFeature("Copula not supported.")
 
-    def _upper(self, C, Ci, cache):
-        return numpy.ones(len(self))
+    def _lower(self, idx, cache):
+        return 0.
 
-    def _cache(self, C, Ci, cache):
-        return self
+    def _upper(self, idx, cache):
+        return 1.
 
 
-class Nataf(Copula):
+class Nataf(CopulaDistribution):
     """
     Nataf (normal) copula.
 
     Args:
         dist (Distribution):
             The distribution to wrap.
-        R (numpy.ndarray):
+        covariance (numpy.ndarray):
             Covariance matrix.
 
     Examples:
         >>> distribution = chaospy.Nataf(
-        ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), R=[[1, .5], [.5, 1]])
+        ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), covariance=[[1, .5], [.5, 1]])
         >>> distribution
-        Nataf(Iid(Uniform(lower=-1, upper=1), 2), R=[[1, 0.5], [0.5, 1]])
+        Nataf(Iid(Uniform(lower=-1, upper=1), 2), [[1.0, 0.5], [0.5, 1.0]])
         >>> samples = distribution.sample(3)
         >>> samples.round(4)
         array([[ 0.3072, -0.77  ,  0.9006],
@@ -82,16 +100,13 @@ class Nataf(Copula):
                [[-0.2707, -0.1737, -0.0739],
                 [-0.1008,  0.    ,  0.1008],
                 [ 0.0739,  0.1737,  0.2707]]])
-        >>> distribution.mom([1, 1]).round(4)
-        0.1609
 
     """
 
-    def __init__(self, dist, R, rotation=None):
-        self._repr = {"R": R}
-        assert len(dist) == len(R)
+    def __init__(self, dist, covariance):
+        assert len(dist) == len(covariance)
         return super(Nataf, self).__init__(
             dist=dist,
-            trans=nataf(R, rotation),
-            repr_args=[dist, "R=%s" % R],
+            trans=nataf(covariance, dist._rotation),
+            repr_args=[dist, numpy.array(covariance).tolist()],
         )

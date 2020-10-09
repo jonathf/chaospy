@@ -2,17 +2,19 @@
 import numpy
 from scipy import special
 
-from ..baseclass import DistributionCore, ShiftScale
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
-class levy(DistributionCore):
+class levy(SimpleDistribution):
     """Levy distribution."""
 
     def __init__(self):
         super(levy, self).__init__()
 
     def _pdf(self, x):
-        return 1/numpy.sqrt(2*numpy.pi*x)/x*numpy.exp(-1/(2*x))
+        out = 1/numpy.sqrt(2*numpy.pi*x)/x*numpy.exp(-1/(2*x))
+        out[x == 0] = 0
+        return out
 
     def _cdf(self, x):
         return 2*(1-special.ndtr(1/numpy.sqrt(x)))
@@ -21,11 +23,14 @@ class levy(DistributionCore):
         val = special.ndtri(1-q/2.0)
         return 1.0/(val*val)
 
+    def _upper(self):
+        return 1e12
+
     def _lower(self):
         return 0.
 
 
-class Levy(ShiftScale):
+class Levy(ShiftScaleDistribution):
     """
     Levy distribution
 
@@ -36,18 +41,24 @@ class Levy(ShiftScale):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Levy(2, 2)
+        >>> distribution = chaospy.Levy()
         >>> distribution
-        Levy(scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([ 3.2177,  4.8236,  9.2728, 33.16  ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.1847, 0.0834, 0.0251, 0.0031])
-        >>> distribution.sample(4).round(4)
-        array([ 11.9303,   2.8051, 516.4406,   6.0494])
+        Levy()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc[:5].round(3)
+        array([ 0.   ,  0.609,  1.412,  3.636, 15.58 ])
+        >>> distribution.upper
+        array([1.e+12])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.369, 0.167, 0.05 , 0.006, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([  4.965,   0.403, 257.22 ,   2.025])
+
     """
 
     def __init__(self, scale=1, shift=0):
