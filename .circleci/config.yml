@@ -90,7 +90,7 @@ jobs:
           command: |
               PROJECT_TAG=$(cat pyproject.toml \
                   | grep 'version\s*=' \
-                  | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\(-[a-z0-9]\+\)\{0,1\}')
+                  | grep -o '[0-9]\+\.[0-9]\+\(\.[0-9]\+\|-[a-z0-9]\+\)')
               echo "$CIRCLE_TAG == v$PROJECT_TAG"
               test "$CIRCLE_TAG" = "v$PROJECT_TAG"
       - restore_cache:
