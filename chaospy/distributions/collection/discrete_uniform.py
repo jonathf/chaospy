@@ -34,9 +34,10 @@ class discrete_uniform(SimpleDistribution):
         array([3, 2, 4, 3])
         >>> distribution.mom(1).round(4)
         3.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.    , 3.    , 3.3333],
-               [0.6667, 0.3333, 0.    ]])
+        >>> distribution.ttr([0, 1, 2, 3]).round(4)
+        array([[3.    , 3.    , 3.    , 3.3333],
+               [1.    , 0.6667, 0.3333, 0.    ]])
+
     """
     interpret_as_integer = True
 

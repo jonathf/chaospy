@@ -25,6 +25,9 @@ class exponential_power(SimpleDistribution):
         del b
         return 0.
 
+    def _upper(self, b):
+        return 3.6**(1./b)
+
 
 class ExponentialPower(ShiftScaleDistribution):
     """
@@ -42,20 +45,22 @@ class ExponentialPower(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.ExponentialPower(2, 2, 1)
+        >>> distribution = chaospy.ExponentialPower(1.5)
         >>> distribution
-        ExponentialPower(2, scale=2, shift=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([1.8976, 2.2848, 2.6129, 2.9587])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.4392, 0.5823, 0.6182, 0.5111])
-        >>> distribution.sample(4).round(4)
-        array([2.7003, 1.679 , 3.3551, 2.4223])
-        >>> distribution.mom(1).round(4)
-        2.4314
+        ExponentialPower(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.344, 0.554, 0.751, 0.973, 2.349])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.86 , 1.012, 0.996, 0.772, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.805, 0.237, 1.243, 0.635])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

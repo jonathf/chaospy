@@ -230,9 +230,11 @@ def format_repr_kwargs(**parameters):
     out = []
 
     defaults_only = True
-    for param, default in parameters.values():
+    for name, (param, default) in list(parameters.items()):
         defaults_only &= (
             isinstance(param, (int, float)) and param == default)
+        if isinstance(param, numpy.ndarray):
+            parameters[name] = (param.tolist(), default)
     if defaults_only:
         return []
     return ["%s=%s" % (key, parameters[key][0]) for key in sorted(parameters)]

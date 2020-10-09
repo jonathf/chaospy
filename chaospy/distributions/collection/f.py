@@ -29,10 +29,13 @@ class f(SimpleDistribution):
         return special.ncfdtr(dfn, dfd, nc, x)
 
     def _ppf(self, q, dfn, dfd, nc):
-        return special.ncfdtri(dfn, dfd, nc, q)
+        return numpy.where(q == 1, self._upper(dfn, dfd, nc), special.ncfdtri(dfn, dfd, nc, q))
 
     def _lower(self, dfn, dfd, nc):
         return 0.
+
+    def _upper(self, dfn, dfd, nc):
+        return special.ncfdtri(dfn, dfd, nc, 1-1e-10)
 
 
 class F(ShiftScaleDistribution):
@@ -44,28 +47,30 @@ class F(ShiftScaleDistribution):
             Degres of freedom for numerator
         m (float, Distribution):
             Degres of freedom for denominator
+        nc (float, Distribution):
+            Non-centrality parameter
         scale (float, Distribution):
             Scaling parameter
         shift (float, Distribution):
             Location parameter
-        nc (float, Distribution):
-            Non-centrality parameter
 
     Examples:
-        >>> distribution = chaospy.F(3, 3, 1, scale=2, shift=1)
+        >>> distribution = chaospy.F(10, 10, 0)
         >>> distribution
-        F(3, 3, nc=1, scale=2, shift=1)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([1.9336, 2.9751, 4.7028, 8.8521])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.2277, 0.1572, 0.0837, 0.027 ])
-        >>> distribution.sample(4).round(4)
-        array([ 5.4212,  1.5739, 25.7656,  3.5586])
-        >>> distribution.mom(1) > 10**8  # undefined
+        F(10, 10, nc=0)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([  0.   ,   0.578,   0.848,   1.179,   1.732, 261.403])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.734, 0.701, 0.505, 0.245, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.292, 0.455, 2.984, 0.971])
+
     """
 
     def __init__(self, n=2, m=10, nc=0, shift=0, scale=1):

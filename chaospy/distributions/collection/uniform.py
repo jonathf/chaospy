@@ -55,9 +55,10 @@ class Uniform(LowerUpperDistribution):
         array([3.3072, 2.23  , 3.9006, 2.9644])
         >>> distribution.mom(1).round(4)
         3.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.    , 3.    , 3.    ],
-               [0.3333, 0.2667, 0.2571]])
+        >>> distribution.ttr([0, 1, 2, 3]).round(4)
+        array([[ 3.    ,  3.    ,  3.    ,  3.    ],
+               [-0.    ,  0.3333,  0.2667,  0.2571]])
+
     """
 
     def __init__(self, lower=0., upper=1.):

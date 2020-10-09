@@ -10,6 +10,12 @@ class log_normal(SimpleDistribution):
     def __init__(self, a=1):
         super(log_normal, self).__init__(dict(a=a))
 
+    def _lower(self, a):
+        return 0.
+
+    def _upper(self, a):
+        return numpy.e**(a*6.37)
+
     def _pdf(self, x, a):
         out = (numpy.e**(-numpy.log(x+(1-x)*(x<=0))**2/(2*a*a))/
                ((x+(1-x)*(x<=0))*a*numpy.sqrt(2*numpy.pi))*(x>0))
@@ -31,9 +37,6 @@ class log_normal(SimpleDistribution):
             (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
         )
 
-    def _lower(self, a):
-        return 0.
-
 
 class LogNormal(ShiftScaleDistribution):
     R"""
@@ -51,23 +54,27 @@ class LogNormal(ShiftScaleDistribution):
             Scale parameter. Overlaps with mu by scale=e**mu
 
     Examples:
-        >>> distribution = chaospy.LogNormal(0, 1)
+        >>> distribution = chaospy.LogNormal(0, 0.1)
         >>> distribution
-        LogNormal(mu=0, sigma=1)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([0.431 , 0.7762, 1.2883, 2.3201])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.6495, 0.4977, 0.2999, 0.1207])
-        >>> distribution.sample(4).round(4)
-        array([1.4844, 0.3011, 5.1945, 0.9563])
-        >>> distribution.mom(1).round(4)
-        1.6487
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[1.50155000e+01, 1.18650900e+02, 8.97651100e+02],
-               [4.67080000e+00, 3.48830600e+02, 2.09298326e+04]])
+        LogNormal(mu=0, sigma=0.1)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.919, 0.975, 1.026, 1.088, 1.891])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 3.045, 3.963, 3.767, 2.574, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.04 , 0.887, 1.179, 0.996])
+        >>> distribution.mom(1).round(3)
+        1.005
+        >>> distribution.ttr([0, 1, 2, 3]).round(3)
+        array([[1.005, 1.035, 1.067, 1.098],
+               [0.   , 0.01 , 0.021, 0.033]])
+
     """
 
     def __init__(self, mu=0, sigma=1, shift=0, scale=1):
@@ -93,23 +100,27 @@ class Gilbrat(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Gilbrat(3, 2)
+        >>> distribution = chaospy.Gilbrat(scale=0.0015)
         >>> distribution
-        Gilbrat(scale=3, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([3.293 , 4.3286, 5.865 , 8.9604])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.2165, 0.1659, 0.1   , 0.0402])
+        Gilbrat(scale=0.0015)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.001, 0.001, 0.002, 0.003, 0.876])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([  0.   , 433.031, 331.825, 199.919,  80.444,   0.   ])
         >>> distribution.sample(4).round(4)
-        array([ 6.4533,  2.9033, 17.5835,  4.869 ])
-        >>> distribution.mom(1).round(4)
-        6.9462
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[4.70464000e+01, 3.57952700e+02, 2.69495320e+03],
-               [4.20370000e+01, 3.13947580e+03, 1.88368494e+05]])
+        array([0.0022, 0.0005, 0.0078, 0.0014])
+        >>> distribution.mom(1).round(8)
+        0.00247308
+        >>> distribution.ttr([0, 1, 2]).round(4)
+        array([[0.0025, 0.0225, 0.178 ],
+               [0.    , 0.    , 0.0008]])
+
     """
 
     def __init__(self, scale=1, shift=0):

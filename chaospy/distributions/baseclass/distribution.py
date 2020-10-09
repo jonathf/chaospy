@@ -7,7 +7,7 @@ import chaospy
 from .utils import check_dependencies, report_on_exception
 
 
-class Distribution():
+class Distribution(object):
     """Baseclass for all probability distributions."""
 
     __array_priority__ = 9000
@@ -128,11 +128,8 @@ class Distribution():
         """In-processes function for getting lower bounds."""
         if (idx, self) in cache:
             return cache[idx, self][0]
-        try:
-            parameters = self.get_parameters(idx, cache, assert_numerical=False)
-            out = self._lower(**parameters)
-        except chaospy.UnsupportedFeature:
-            out = chaospy.approximate_lower(self, idx, cache=cache)
+        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        out = self._lower(**parameters)
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert out.ndim == 1, (self, out, cache)
@@ -157,11 +154,8 @@ class Distribution():
         """In-processes function for getting upper bounds."""
         if (idx, self) in cache:
             return cache[idx, self][0]
-        try:
-            parameters = self.get_parameters(idx, cache, assert_numerical=False)
-            out = self._upper(**parameters)
-        except chaospy.UnsupportedFeature:
-            out = chaospy.approximate_upper(self, idx, cache=cache)
+        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        out = self._upper(**parameters)
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert out.ndim == 1, (self, out, cache)

@@ -38,9 +38,9 @@ class MvLogNormal(Distribution):
                 [0.5 , 0.5 , 0.5 ],
                 [0.75, 0.75, 0.75]]])
         >>> distribution.pdf(distribution.inv(mesh)).round(4)
-        array([[0.0317, 0.0135, 0.0037],
-               [0.0232, 0.0099, 0.0027],
-               [0.0108, 0.0046, 0.0012]])
+        array([[0.0108, 0.002 , 0.    ],
+               [0.0135, 0.0035, 0.    ],
+               [0.0107, 0.0038, 0.0001]])
         >>> distribution.sample(4).round(4)
         array([[ 4.0351,  0.8185, 14.1201,  2.5996],
                [23.279 ,  1.8986,  4.9261,  5.8399]])
@@ -63,13 +63,8 @@ class MvLogNormal(Distribution):
         )
 
         sigma = parameters["sigma"]
-        assert sigma.ndim <= 2, (
+        assert sigma.ndim == 2, (
             "Covariance must either be scalar, vector or matrix")
-        if sigma.size == 1:
-            sigma = numpy.eye(len(rotation))*sigma
-        elif sigma.ndim == 1:
-            sigma = numpy.diag(sigma)
-        parameters["sigma"] = sigma
 
         self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
         self._psigma = self._permute.dot(sigma).dot(self._permute.T)
@@ -83,6 +78,13 @@ class MvLogNormal(Distribution):
             rotation=rotation,
             repr_args=repr_args,
         )
+
+    def get_parameters(self, idx, cache, assert_numerical=True):
+        parameters = super(MvLogNormal, self).get_parameters(
+            idx, cache, assert_numerical=assert_numerical)
+        if idx is None:
+            parameters.pop("idx")
+        return parameters
 
     def _pdf(self, xloc, idx, mu, sigma, cache):
         dim = self._rotation.index(idx)
@@ -109,19 +111,6 @@ class MvLogNormal(Distribution):
         zloc = (numpy.log(xloc[indices])-mu)/sigma
         out[indices] = 1/numpy.sqrt(2*numpy.pi)*numpy.exp(-zloc**2/2.)/xloc[indices]
         return out
-
-
-        conditions = [self._get_cache(dim_, cache, get=0)
-                      for dim_ in self._rotation[:dim]]
-        assert not any([isinstance(condition, chaospy.Distribution)
-                        for condition in conditions])
-        yloc = numpy.vstack(conditions+[xloc])
-        yloc = numpy.log(numpy.abs(yloc) + numpy.where(yloc <= 0, 1., 0.))
-        mu = mu[numpy.asarray(self._rotation[:len(yloc)])]
-        loc = (yloc.T-mu).T
-        zloc = self._fwd_transform[idx, :len(yloc)].dot(loc)
-        out = 1/numpy.sqrt(2*numpy.pi)*numpy.exp(-zloc**2/2.)/numpy.where(xloc > 0, xloc, 1)
-        return numpy.where(xloc <= 0, 0., out)
 
     def _cdf(self, xloc, idx, mu, sigma, cache):
         dim = self._rotation.index(idx)
@@ -150,7 +139,7 @@ class MvLogNormal(Distribution):
         out = numpy.e**xloc
         return out
 
-    def _mom(self, kloc, idx, mu, sigma, cache):
+    def _mom(self, kloc, mu, sigma, cache):
         output =  numpy.dot(kloc, mu)
         output += .5*numpy.dot(numpy.dot(kloc, sigma), kloc)
         output =  numpy.e**(output)
@@ -161,6 +150,3 @@ class MvLogNormal(Distribution):
 
     def _upper(self, idx, mu, sigma, cache):
         return numpy.exp(7.1*numpy.sqrt(sigma[idx, idx])) + mu[idx]
-
-    def _cache(self, idx, cache):
-        return self

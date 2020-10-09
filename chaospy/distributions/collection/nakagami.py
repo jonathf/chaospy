@@ -23,6 +23,9 @@ class nakagami(SimpleDistribution):
     def _lower(self, nu):
         return 0.
 
+    def _upper(self, nu):
+        return numpy.sqrt(1.0/nu*special.gammaincinv(nu, 1-1e-16))
+
 
 class Nakagami(ShiftScaleDistribution):
     """
@@ -37,20 +40,22 @@ class Nakagami(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Nakagami(2, 2, 2)
+        >>> distribution = chaospy.Nakagami(1.5)
         >>> distribution
-        Nakagami(2, scale=2, shift=2)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([3.284 , 3.6592, 4.0111, 4.4472])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.4642, 0.5766, 0.5383, 0.3669])
-        >>> distribution.sample(4).round(4)
-        array([4.1137, 3.076 , 5.0824, 3.8012])
-        >>> distribution.mom(1).round(4)
-        3.88
+        Nakagami(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.579, 0.789, 0.991, 1.244, 5.079])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.84 , 1.015, 0.933, 0.63 , 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.05 , 0.465, 1.615, 0.87 ])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

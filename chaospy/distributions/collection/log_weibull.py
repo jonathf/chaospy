@@ -20,6 +20,12 @@ class log_weibull(SimpleDistribution):
     def _ppf(self, q):
         return -numpy.log(-numpy.log(q))
 
+    def _lower(self):
+        return -3.5
+
+    def _upper(self):
+        return 35
+
 
 class LogWeibull(ShiftScaleDistribution):
     """
@@ -32,20 +38,22 @@ class LogWeibull(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.LogWeibull(2, 2)
+        >>> distribution = chaospy.LogWeibull()
         >>> distribution
-        LogWeibull(scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([1.0482, 2.1748, 3.3435, 4.9999])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.1609, 0.1833, 0.1532, 0.0893])
-        >>> distribution.sample(4).round(4)
-        array([3.71  , 0.4572, 7.952 , 2.631 ])
-        >>> distribution.mom(1).round(4)
-        3.1544
+        LogWeibull()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-3.5  , -0.476,  0.087,  0.672,  1.5  , 35.   ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.322, 0.367, 0.306, 0.179, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.855, -0.771,  2.976,  0.316])
+
     """
     def __init__(self, scale=1, shift=0):
         super(LogWeibull, self).__init__(

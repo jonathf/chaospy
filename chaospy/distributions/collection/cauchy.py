@@ -19,6 +19,12 @@ class cauchy(SimpleDistribution):
     def _ppf(self, q):
         return numpy.tan(numpy.pi*q-numpy.pi/2.0)
 
+    def _lower(self):
+        return -3e13
+
+    def _upper(self):
+        return 3e13
+
 
 class Cauchy(ShiftScaleDistribution):
     """
@@ -34,18 +40,21 @@ class Cauchy(ShiftScaleDistribution):
             Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Cauchy(4, 2)
+        >>> distribution = chaospy.Cauchy()
         >>> distribution
-        Cauchy(scale=4, shift=2)
-        >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([-4.9282, -0.3094,  2.    ,  4.3094,  8.9282])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.0199, 0.0597, 0.0796, 0.0597, 0.0199])
-        >>> distribution.sample(4).round(4)
-        array([ 4.0953, -8.585 , 27.4011,  1.776 ])
+        Cauchy()
+        >>> uloc = numpy.linspace(0.1, 0.9, 5)
+        >>> uloc
+        array([0.1, 0.3, 0.5, 0.7, 0.9])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-3.078, -0.727,  0.   ,  0.727,  3.078])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.03 , 0.208, 0.318, 0.208, 0.03 ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.524, -2.646,  6.35 , -0.056])
 
     Notes:
         The Cauchy distribution is what is known as a "pathological"
@@ -54,12 +63,10 @@ class Cauchy(ShiftScaleDistribution):
         approximation. This makes both bounds and moments results in
         non-sensibel results. E.g.::
 
-            >>> distribution.lower < -1e15
+            >>> distribution.lower < -1e10
             array([ True])
-            >>> distribution.upper > 1e15
+            >>> distribution.upper > 1e10
             array([ True])
-            >>> abs(distribution.mom(1)) > 1e12
-            True
 
     """
 

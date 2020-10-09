@@ -12,17 +12,21 @@ class mielke(SimpleDistribution):
         super(mielke, self).__init__(dict(k=k, s=s))
 
     def _pdf(self, x, k, s):
-        return k*x**(k-1.0)/(1.0+x**s)**(1.0+k*1.0/s)
+        return k*x**(k-1.)/(1.+x**s)**(1.+k*1./s)
 
     def _cdf(self, x, k, s):
-        return x**k/(1.0+x**s)**(k*1.0/s)
+        return x**k/(1.+x**s)**(k*1./s)
 
     def _ppf(self, q, k, s):
-        qsk = pow(q,s*1.0/k)
-        return pow(qsk/(1.0-qsk),1.0/s)
+        qsk = pow(q, s*1./k)
+        return pow(qsk/(1.-qsk), 1./s)
 
     def _lower(self, k, s):
         return 0.
+
+    def _upper(self, k, s):
+        qsk = pow(1-1e-10, s*1./k)
+        return pow(qsk/(1.-qsk), 1./s)
 
 
 class Mielke(ShiftScaleDistribution):
@@ -40,18 +44,22 @@ class Mielke(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Mielke(2, 0.5, scale=2)
+        >>> distribution = chaospy.Mielke(kappa=1.5, expo=15)
         >>> distribution
-        Mielke(2, 0.5, scale=2)
-        >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([  6.2633,  20.0195,  55.867 , 175.731 , 919.6095])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.0192, 0.008 , 0.0028, 0.0007, 0.0001])
-        >>> distribution.sample(4).round(4)
-        array([1.58937400e+02, 3.88830000e+00, 1.21490448e+04, 4.99808000e+01])
+        Mielke(1.5, 15)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.342, 0.543, 0.712, 0.868, 3.981])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.877, 1.105, 1.257, 1.234, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.754, 0.236, 1.028, 0.615])
+
     """
 
     def __init__(self, kappa=1, expo=1, scale=1, shift=0):

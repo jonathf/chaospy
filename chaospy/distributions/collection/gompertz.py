@@ -24,6 +24,9 @@ class gompertz(SimpleDistribution):
     def _lower(self, c):
         return 0.
 
+    def _upper(self, c):
+        return numpy.log(1+27.7/c)
+
 
 class Gompertz(ShiftScaleDistribution):
     """
@@ -38,23 +41,25 @@ class Gompertz(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Gompertz(3, 2, 2)
+        >>> distribution = chaospy.Gompertz(1.5)
         >>> distribution
-        Gompertz(3, scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.1435, 2.3145, 2.5331, 2.859 ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([1.2893, 1.0532, 0.7833, 0.4609])
-        >>> distribution.sample(4).round(4)
-        array([2.6052, 2.0798, 3.3868, 2.3967])
-        >>> distribution.mom(1).round(4)
-        2.5242
+        Gompertz(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.139, 0.293, 0.477, 0.729, 2.969])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([1.5  , 1.379, 1.206, 0.967, 0.622, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.535, 0.078, 1.099, 0.364])
+
     """
 
-    def __init__(self, shape, scale, shift):
+    def __init__(self, shape, scale=1, shift=0):
         super(Gompertz, self).__init__(
             dist=gompertz(shape),
             scale=scale,

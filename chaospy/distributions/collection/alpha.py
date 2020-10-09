@@ -13,17 +13,23 @@ class alpha(SimpleDistribution):
         super(alpha, self).__init__(dict(a=a))
 
     def _cdf(self, x, a):
-        return (special.ndtr(a.T-1./x.T)/special.ndtr(a.T)).T
+        return special.ndtr(a-1./x)/special.ndtr(a)
 
     def _ppf(self, q, a):
-        return 1.0/(a.T-special.ndtri(q.T*special.ndtr(a.T))).T
+        out = 1.0/(a-special.ndtri(q*special.ndtr(a)))
+        return numpy.where(q == 1, self._upper(a), out)
 
     def _pdf(self, x, a):
-        return (1.0/(x.T**2)/special.ndtr(a.T)*
-            numpy.e**(.5*(a.T-1.0/x.T)**2)/numpy.sqrt(2*numpy.pi)).T
+        return numpy.where(
+            x == 0, 0, numpy.e**(-.5*(a-1./x)**2)/
+                (numpy.sqrt(2*numpy.pi)*x**2*special.ndtr(a))
+        )
 
     def _lower(self, a):
-        return numpy.zeros(a.size)
+        return 0.
+
+    def _upper(self, a):
+        return 1./(a-special.ndtri((1-1e-10)*special.ndtr(a)))
 
 
 class Alpha(ShiftScaleDistribution):
@@ -39,21 +45,21 @@ class Alpha(ShiftScaleDistribution):
             Location of lower threshold
 
     Examples:
-        >>> distribution = chaospy.Alpha([1, 2], scale=0.5)
+        >>> distribution = chaospy.Alpha(6)
         >>> distribution
-        Alpha([1, 2], scale=0.5)
-        >>> mesh = numpy.mgrid[0.25:0.75:3j, 0.25:0.75:3j].reshape(2, -1)
-        >>> mapped_mesh = distribution.inv(mesh)
-        >>> mapped_mesh.round(2)
-        array([[0.28, 0.28, 0.28, 0.42, 0.42, 0.42, 0.75, 0.75, 0.75],
-               [0.19, 0.25, 0.36, 0.19, 0.25, 0.36, 0.19, 0.25, 0.36]])
-        >>> numpy.allclose(distribution.fwd(mapped_mesh), mesh)
+        Alpha(6)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([ 0.   ,  0.146,  0.16 ,  0.174,  0.194, 63.709])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
-        >>> distribution.pdf(mapped_mesh).round(2)
-        array([32.15, 14.37,  8.04, 10.48,  4.68,  2.62,  3.34,  1.49,  0.84])
-        >>> distribution.sample(4).round(4)
-        array([[0.5717, 0.2174, 3.1229, 0.4037],
-               [0.5251, 0.1776, 0.1332, 0.2189]])
+        >>> distribution.pdf(xloc).round(3)
+        array([ 0.   , 13.104, 15.108, 12.759,  7.449,  0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.178, 0.139, 0.23 , 0.165])
 
     """
 

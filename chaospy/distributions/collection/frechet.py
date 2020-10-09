@@ -18,13 +18,16 @@ class frechet(SimpleDistribution):
         return -numpy.expm1(-pow(x,c))
 
     def _ppf(self, q, c):
-        return pow(-numpy.log1p(-q),1.0/c)
+        return pow(-numpy.log1p(-q), 1./c)
 
     def _mom(self, k, c):
         return special.gamma(1-k*1./c)
 
     def _lower(self, c):
         return 0.
+
+    def _upper(self, c):
+        return pow(35, (1./c))
 
 
 class Frechet(ShiftScaleDistribution):
@@ -40,20 +43,22 @@ class Frechet(ShiftScaleDistribution):
             Location parameter.
 
     Examples:
-        >>> distribution = chaospy.Frechet(3, 2, 1)
+        >>> distribution = chaospy.Frechet(3)
         >>> distribution
-        Frechet(3, scale=2, shift=1)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.2131, 2.5988, 2.9426, 3.3438])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.4415, 0.5751, 0.566 , 0.412 ])
-        >>> distribution.sample(4).round(4)
-        array([3.0393, 1.9924, 3.8849, 2.7397])
-        >>> distribution.mom(1).round(4)
-        3.7082
+        Frechet(3)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.607, 0.799, 0.971, 1.172, 3.271])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.883, 1.15 , 1.132, 0.824, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.02 , 0.496, 1.442, 0.87 ])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

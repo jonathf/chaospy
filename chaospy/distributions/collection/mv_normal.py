@@ -27,7 +27,7 @@ class MvNormal(MeanCovarianceDistribution):
         ...     [[1, 0.2, 0.3], [0.2, 2, 0.4], [0.3, 0.4, 1]], rotation=[1, 2, 0])
         >>> distribution  # doctest: +NORMALIZE_WHITESPACE
         MvNormal(mu=[10, 20, 30],
-                 sigma=[[1.0, 0.2, 0.3], [0.2, 2.0, 0.4], [0.3, 0.4, 1.0]])
+                 sigma=[[1, 0.2, 0.3], [0.2, 2, 0.4], [0.3, 0.4, 1]])
         >>> chaospy.E(distribution)
         array([10., 20., 30.])
         >>> chaospy.Cov(distribution)
@@ -61,16 +61,13 @@ class MvNormal(MeanCovarianceDistribution):
             sigma=None,
             rotation=None,
     ):
-        repr_args = ["mu=%s" % mu]
-        if sigma is not None:
-            repr_args += ["sigma=%s" % numpy.array(sigma).tolist()]
-
         super(MvNormal, self).__init__(
             dist=normal(),
             mean=mu,
             covariance=sigma,
             rotation=rotation,
-            repr_args=repr_args,
+            repr_args=chaospy.format_repr_kwargs(mu=(mu, None))+
+                      chaospy.format_repr_kwargs(sigma=(sigma, None)),
         )
 
     def _mom(self, k, mean, sigma, cache):

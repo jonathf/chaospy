@@ -77,9 +77,10 @@ class Triangle(LowerUpperDistribution):
         array([3.1676, 2.4796, 3.6847, 2.982 ])
         >>> distribution.mom(1).round(4)
         3.0
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[3.    , 3.    , 3.    ],
-               [0.1667, 0.2333, 0.2327]])
+        >>> distribution.ttr([0, 1, 2, 3]).round(4)
+        array([[3.    , 3.    , 3.    , 3.    ],
+               [4.    , 0.1667, 0.2333, 0.2327]])
+
     """
 
     def __init__(self, lower=-1, midpoint=0, upper=1):

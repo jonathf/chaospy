@@ -141,10 +141,11 @@ def generate_quadrature(
         >>> abscissas, weights = generate_quadrature(
         ...     1, distribution, rule=("gaussian", "fejer"))
         >>> abscissas.round(3)
-        array([[-1.   , -1.   ,  1.   ,  1.   ],
-               [-3.181,  3.181, -3.181,  3.181]])
+        array([[-1.  , -1.  ,  1.  ,  1.  ],
+               [-4.11,  4.11, -4.11,  4.11]])
         >>> weights.round(3)
         array([0.25, 0.25, 0.25, 0.25])
+
     """
     if not rule:
         if isinstance(dist, chaospy.J):

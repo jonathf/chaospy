@@ -4,15 +4,28 @@ Truncation.
 Example usage
 -------------
 
+Simple distribution to start with::
+
     >>> distribution = chaospy.Normal(0, 1)
-    >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
-    [1.2816 2.3263 3.0902]
-    >>> distribution = chaospy.Trunc(chaospy.Normal(0, 1), 1)
-    >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
-    [0.6974 0.9658 0.9965]
-    >>> distribution = chaospy.Trunc(chaospy.Normal(0, 1), 2)
-    >>> print(numpy.around(distribution.inv([0.9, 0.99, 0.999]), 4))
-    [1.1726 1.8449 1.9822]
+    >>> distribution.inv([0.9, 0.99, 0.999]).round(4)
+    array([1.2816, 2.3263, 3.0902])
+
+Same distribution, but with a right-side truncation::
+
+    >>> right_trunc = chaospy.Trunc(chaospy.Normal(0, 1), 1)
+    >>> right_trunc
+    Trunc(Normal(mu=0, sigma=1), 1)
+    >>> right_trunc.inv([0.9, 0.99, 0.999]).round(4)
+    array([0.6974, 0.9658, 0.9965])
+
+Same, but with left-side truncation::
+
+    >>> left_trunc = chaospy.Trunc(1, chaospy.Normal(0, 1))
+    >>> left_trunc
+    Trunc(1, Normal(mu=0, sigma=1))
+    >>> left_trunc.inv([0.001, 0.01, 0.1]).round(4)
+    array([1.0007, 1.0066, 1.0679])
+
 """
 import numpy
 import chaospy
@@ -39,21 +52,18 @@ class Trunc(OperatorDistribution):
             if left.stochastic_dependent:
                 raise chaospy.StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
-            exclusion = {dep for deps in left._dependencies for dep in deps}
         else:
             left = numpy.atleast_1d(left)
         if isinstance(right, Distribution):
             if right.stochastic_dependent:
                 raise chaospy.StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
-            exclusion = {dep for deps in right._dependencies for dep in deps}
         else:
             right = numpy.atleast_1d(right)
         super(Trunc, self).__init__(
             left=left,
             right=right,
-            exclusion=exclusion,
-            repr_args=[left, right],
+            repr_args=repr_args,
         )
 
     def _lower(self, idx, left, right, cache):

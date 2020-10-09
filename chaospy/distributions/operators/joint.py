@@ -114,7 +114,7 @@ class J(Distribution):
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
             >>> dist.lower.round(4)
-            array([ 0.    , -8.2221])
+            array([ 0.  , -8.22])
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> dist.lower
@@ -127,7 +127,7 @@ class J(Distribution):
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
             >>> dist.upper.round(4)
-            array([1.    , 8.2095])
+            array([1.  , 8.22])
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
             >>> dist.upper

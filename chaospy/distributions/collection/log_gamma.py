@@ -18,7 +18,13 @@ class log_gamma(SimpleDistribution):
         return special.gammainc(c, numpy.exp(x))
 
     def _ppf(self, q, c):
-        return numpy.log(special.gammaincinv(c,q))
+        return numpy.log(special.gammaincinv(c, q))
+
+    def _lower(self, c):
+        return numpy.log(special.gammaincinv(c, 1e-15))
+
+    def _upper(self, c):
+        return numpy.log(special.gammaincinv(c, 1-1e-15))
 
 
 class LogGamma(ShiftScaleDistribution):
@@ -34,20 +40,22 @@ class LogGamma(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.LogGamma(2, 2, 1)
+        >>> distribution = chaospy.LogGamma(1.5)
         >>> distribution
-        LogGamma(2, scale=2, shift=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([0.6138, 1.639 , 2.4085, 3.1934])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.149 , 0.2392, 0.2706, 0.2245])
-        >>> distribution.sample(4).round(4)
-        array([ 2.6074, -0.0932,  4.1166,  1.9675])
-        >>> distribution.mom(1).round(4)
-        1.8456
+        LogGamma(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-22.836,  -0.688,  -0.068,   0.387,   0.842,   3.597])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.243, 0.4  , 0.462, 0.392, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.503, -1.125,  1.364,  0.128])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

@@ -20,6 +20,12 @@ class chi(SimpleDistribution):
     def _ppf(self, q, df):
         return numpy.sqrt(2*special.gammaincinv(df*0.5, q))
 
+    def _lower(self, df):
+        return numpy.sqrt(2*special.gammaincinv(df*0.5, 1e-12))
+
+    def _upper(self, df):
+        return numpy.sqrt(2*special.gammaincinv(df*0.5, 1-1e-12))
+
     def _mom(self, k, df):
         return 2**(.5*k)*special.gamma(.5*(df+k))/special.gamma(.5*df)
 
@@ -37,20 +43,23 @@ class Chi(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Chi(2, 4, 1)
+        >>> distribution = chaospy.Chi(1.5)
         >>> distribution
-        Chi(2, scale=4, shift=1)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([ 1.0001,  4.0341,  5.7096,  7.6604, 35.2867])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.    , 0.1422, 0.1472, 0.1041, 0.    ])
-        >>> distribution.sample(4).round(4)
-        array([ 6.8244,  2.9773, 10.8003,  5.5892])
-        >>> distribution.mom(1).round(4)
-        6.0133
+        Chi(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.472, 0.791, 1.127, 1.568, 7.294])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.596, 0.631, 0.546, 0.355, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.229, 0.321, 2.234, 0.924])
+        >>> distribution.mom(1).round(3)
+        1.046
 
     """
 
@@ -75,20 +84,24 @@ class Maxwell(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Maxwell(2, 3)
+        >>> distribution = chaospy.Maxwell()
         >>> distribution
-        Maxwell(scale=2, shift=3)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([ 3.0003,  5.2023,  6.0763,  7.0538, 20.595 ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.    , 0.2638, 0.2892, 0.2101, 0.    ])
-        >>> distribution.sample(4).round(4)
-        array([6.6381, 4.6119, 8.5955, 6.015 ])
-        >>> distribution.mom(1).round(4)
-        6.1915
+        Maxwell()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 1.003, 1.367, 1.716, 2.154, 7.676])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.485, 0.586, 0.539, 0.364, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.819, 0.806, 2.798, 1.507])
+        >>> distribution.mom(1).round(3)
+        1.596
+
     """
 
     def __init__(self, scale=1, shift=0):
@@ -111,20 +124,24 @@ class Rayleigh(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Rayleigh(2, 3)
+        >>> distribution = chaospy.Rayleigh()
         >>> distribution
-        Rayleigh(scale=2, shift=3)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([ 3.    ,  4.5171,  5.3548,  6.3302, 20.1433])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.    , 0.2844, 0.2944, 0.2081, 0.    ])
-        >>> distribution.sample(4).round(4)
-        array([5.9122, 3.9886, 7.9001, 5.2946])
-        >>> distribution.mom(1).round(4)
-        5.5066
+        Rayleigh()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.668, 1.011, 1.354, 1.794, 7.434])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.534, 0.606, 0.541, 0.359, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.456, 0.494, 2.45 , 1.147])
+        >>> distribution.mom(1).round(3)
+        1.253
+
     """
     def __init__(self, scale=1, shift=0):
         super(Rayleigh, self).__init__(

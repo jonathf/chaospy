@@ -1,6 +1,7 @@
 """Power log-Normal probability distribution."""
 import numpy
 from scipy import special
+import chaospy
 
 from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
@@ -13,16 +14,21 @@ class power_log_normal(SimpleDistribution):
 
     def _pdf(self, x, c, s):
         norm = (2*numpy.pi)**-.5*numpy.exp(-(numpy.log(x)/s)**2/2.)
-        return c/(x*s)*norm*pow(special.ndtr(-numpy.log(x)/s), c*1.-1.)
+        out = c/(x*s)*norm*pow(special.ndtr(-numpy.log(x)/s), c*1.-1.)
+        out = numpy.where(x == 0, 0, out)
+        return out
 
     def _cdf(self, x, c, s):
-        return 1. - pow(special.ndtr(-numpy.log(x)/s), c*1.)
+        return 1.-pow(special.ndtr(-numpy.log(x)/s), c*1.)
 
     def _ppf(self, q, c, s):
         return numpy.exp(-s*special.ndtri(pow(1.-q, 1./c)))
 
     def _lower(self, c, s):
         return 0.
+
+    def _upper(self, c, s):
+        return numpy.exp(-s*special.ndtri(pow(1e-12, 1./c)))
 
 
 class PowerLogNormal(ShiftScaleDistribution):
@@ -43,18 +49,21 @@ class PowerLogNormal(ShiftScaleDistribution):
             Scaling parameter. Overlap with mu in scale=e**mu
 
     Examples:
-        >>> distribution = chaospy.PowerLogNormal(2, 2, 2, 2, 2)
+        >>> distribution = chaospy.PowerLogNormal(1.5)
         >>> distribution
-        PowerLogNormal(2, mu=2, sigma=2, scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([ 3.212 ,  5.2707,  9.5114, 21.2701])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.1347, 0.0711, 0.0317, 0.0092])
-        >>> distribution.sample(4).round(4)
-        array([11.4445,  2.6512, 69.8654,  6.6177])
+        PowerLogNormal(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([  0.   ,   0.337,   0.573,   0.898,   1.502, 273.691])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.912, 0.755, 0.488, 0.214, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.017, 0.242, 3.01 , 0.69 ])
 
     """
     def __init__(self, shape=1, mu=0, sigma=1, scale=1, shift=0):
@@ -64,5 +73,6 @@ class PowerLogNormal(ShiftScaleDistribution):
             dist=dist,
             scale=scale,
             shift=shift,
-            repr_args=[shape, "mu=%s" % mu, "sigma=%s" % sigma]
+            repr_args=[shape]+chaospy.format_repr_kwargs(mu=(mu, 0))+
+                              chaospy.format_repr_kwargs(sigma=(sigma, 1)),
         )

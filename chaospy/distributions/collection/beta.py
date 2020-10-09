@@ -69,9 +69,10 @@ class Beta(LowerUpperDistribution):
         array([2.6039, 2.2112, 2.8651, 2.4881])
         >>> distribution.mom(1).round(4)
         2.5
-        >>> distribution.ttr([1, 2, 3]).round(4)
-        array([[2.5   , 2.5   , 2.5   ],
-               [0.05  , 0.0571, 0.0595]])
+        >>> distribution.ttr([0, 1, 2, 3]).round(4)
+        array([[2.5   , 2.5   , 2.5   , 2.5   ],
+               [0.05  , 0.05  , 0.0571, 0.0595]])
+
     """
 
     def __init__(self, alpha, beta, lower=0, upper=1):
