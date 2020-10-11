@@ -12,6 +12,7 @@ Tutorials
    introduction/pseudo_spectral_projection
    advanced/scikitlearn_regression
    advanced/intrusive_galerkin
+   advanced/kernel_density_estimation
    polynomial/expansion_construction
    polynomial/polynomial_evaluation
    polynomial/wiener_askey_scheme
@@ -70,9 +71,15 @@ Advanced Topics
    the non-intrusive method described in `Point Collocation`_ and
    `Pseudo-Spectral Projection`_. It requires a bit more use of the mathematical
    hand holding to apply properly.
+`Kernel Density Estimation`_
+   Kernel density estimation is a way to estimate the probability density
+   function of a random variable in a non-parametric way. It works for both
+   uni-variate and multi-variate data. It includes automatic bandwidth
+   determination.
 
 .. _Scikit-Learn Regression: ./advanced/scikitlearn_regression.ipynb
 .. _Intrusive Galerkin: ./advanced/intrusive_galerkin.ipynb
+.. _Kernel Density Estimation: ./advanced/kernel_density_estimation.ipynb
 
 Polynomial Behavior
 -------------------
