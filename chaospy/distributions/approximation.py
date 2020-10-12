@@ -8,6 +8,7 @@ def approximate_inverse(
         distribution,
         idx,
         qloc,
+        xloc0=None,
         bounds=None,
         cache=None,
         parameters=None,
@@ -71,7 +72,8 @@ def approximate_inverse(
         xlower, xupper = bounds
     xlower = numpy.broadcast_to(xlower, qloc.shape)
     xupper = numpy.broadcast_to(xupper, qloc.shape)
-    xloc = 0.5*(xlower+xupper)
+    xloc = xlower+qloc*(xlower+xupper) if xloc0 is None else xloc0
+    assert xloc.shape == qloc.shape
     uloc = numpy.zeros(qloc.shape)
     ulower = -qloc
     uupper = 1-qloc
@@ -121,8 +123,11 @@ def approximate_inverse(
             "Too many iterations required to estimate inverse.")
         logger.info("%d out of %d did not converge.",
             numpy.sum(indices), len(indices))
+        # print("Too many iterations required to estimate inverse.")
+        # print("%d out of %d did not converge." % (numpy.sum(indices), len(indices)))
 
     logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
+    # print("%s: ppf approx used %d steps" % (distribution, idx_/2))
     return xloc
 
 MOMENTS_QUADS = {}
