@@ -75,9 +75,10 @@ jobs:
           name: "Run pytest"
           command: |
             source /home/circleci/venv/bin/activate
-            coverage run --source=chaospy/ --module pytest --nbval --doctest-modules \
-                chaospy/ tests/ docs/*.rst docs/*/*.rst \
-                docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb
+            coverage run --source=chaospy/ --module \
+                pytest --nbval-lax --doctest-modules \
+                docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb \
+                chaospy/ tests/ docs/*.rst docs/*/*.rst
             bash <(curl -s https://codecov.io/bash)
   deploy:
     executor: python-container

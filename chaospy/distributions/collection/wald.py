@@ -35,13 +35,16 @@ class wald(SimpleDistribution):
         return 0.
 
     def _upper(self, mu):
-        return chaospy.approximate_inverse(
+        qloc = numpy.repeat(1-1e-12, mu.size)
+        out = chaospy.approximate_inverse(
             distribution=self,
             idx=0,
-            qloc=numpy.array([1-1e-15]),
+            qloc=qloc,
             parameters=dict(mu=mu),
-            bounds=(0., 100*(numpy.exp(mu)+numpy.exp(1/mu))),
+            bounds=(0., 60+numpy.e**(1./(mu+0.1))),
+            tolerance=1e-15,
         )
+        return out
 
 
 class Wald(ShiftScaleDistribution):
@@ -59,20 +62,22 @@ class Wald(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.Wald(2, 2, 2)
+        >>> distribution = chaospy.Wald(0.5)
         >>> distribution
-        Wald(2, scale=2, shift=2)
-        >>> distribution.upper.round(4)
-        array([905.7777])
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.7154, 3.45  , 4.5777, 6.6902])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.3242, 0.2262, 0.138 , 0.063 ])
-        >>> distribution.sample(4).round(4)
-        array([3.6277, 4.5902, 3.087 , 5.2544])
+        Wald(0.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([ 0.   ,  1.416,  2.099,  2.94 ,  4.287, 54.701])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.297, 0.275, 0.2  , 0.105, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.653, 1.904, 1.698, 1.161])
+
     """
 
     def __init__(self, mu=1, scale=1, shift=0):

@@ -15,7 +15,7 @@ class folded_normal(SimpleDistribution):
         return numpy.sqrt(2.0/numpy.pi)*numpy.cosh(c*x)*numpy.exp(-(x*x+c*c)/2.0)
 
     def _cdf(self, x, c):
-        return special.ndtr(x-c) + special.ndtr(x+c)-1.0
+        return special.ndtr(x-c)+special.ndtr(x+c)-1.0
 
     def _lower(self, c):
         return 0.
@@ -37,20 +37,22 @@ class FoldedNormal(ShiftScaleDistribution):
             Location of fold.
 
     Examples:
-        >>> distribution = chaospy.FoldedNormal(3, 2, 1)
+        >>> distribution = chaospy.FoldedNormal(1.5)
         >>> distribution
-        FoldedNormal(3, scale=2, shift=1)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([3.3224, 4.4938, 5.5067, 6.6832])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.1417, 0.1934, 0.1932, 0.14  ])
-        >>> distribution.sample(4).round(4)
-        array([2.1633, 1.7828, 4.6912, 5.5157])
-        >>> distribution.mom(1).round(4)
-        5.034
+        FoldedNormal(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.706, 1.254, 1.755, 2.342, 9.5  ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.259, 0.326, 0.396, 0.388, 0.28 , 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.906, 2.225, 1.638, 2.701])
+
     """
 
     def __init__(self, mu=0, scale=1, shift=0):

@@ -31,8 +31,8 @@ In addition multivariate distributions supported::
     >>> data = [[1, 2, 2, 3], [5, 5, 4, 3]]
     >>> distribution = chaospy.SampleDist(data)
     >>> distribution.sample(4).round(4)
-    array([[2.3601, 1.7626, 1.094 , 2.6507],
-           [3.9457, 4.5802, 4.9081, 3.9278]])
+    array([[1.5286, 2.0468, 2.1125, 1.8947],
+           [4.402 , 4.1522, 4.4384, 4.5737]])
 
 .. _kernel density estimation: \
 https://en.wikipedia.org/wiki/Kernel_density_estimation
@@ -114,7 +114,7 @@ def SampleDist(samples, lo=None, up=None, threshold=1e-5):
         >>> distribution.pdf(distribution.inv(q)).round(4)
         array([0.2254, 0.4272, 0.5135, 0.4272, 0.2254])
         >>> distribution.sample(4).round(4)
-        array([1.0294, 1.0993, 0.9116, 0.3768])
+        array([0.3662, 0.6073, 0.9156, 1.0883])
         >>> distribution.mom(1).round(4)
         1.0
 

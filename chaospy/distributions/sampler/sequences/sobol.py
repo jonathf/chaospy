@@ -15,13 +15,13 @@ Standard usage::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
     >>> samples = distribution.sample(3, rule="sobol")
-    >>> print(numpy.around(samples, 4))
-    [[0.5  0.75 0.25]
-     [0.5  0.25 0.75]]
+    >>> samples.round(4)
+    array([[0.5 , 0.75, 0.25],
+           [0.5 , 0.25, 0.75]])
     >>> samples = distribution.sample(4, rule="sobol")
-    >>> print(numpy.around(samples, 4))
-    [[0.5   0.75  0.25  0.375]
-     [0.5   0.25  0.75  0.375]]
+    >>> samples.round(4)
+    array([[0.5  , 0.75 , 0.25 , 0.375],
+           [0.5  , 0.25 , 0.75 , 0.375]])
 
 Papers::
 

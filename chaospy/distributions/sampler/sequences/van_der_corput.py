@@ -14,13 +14,13 @@ Example usage
 
 Using base 10::
 
-    >>> print(create_van_der_corput_samples(range(11), number_base=10))
-    [0.1  0.2  0.3  0.4  0.5  0.6  0.7  0.8  0.9  0.01 0.11]
+    >>> create_van_der_corput_samples(range(11), number_base=10)
+    array([0.1 , 0.2 , 0.3 , 0.4 , 0.5 , 0.6 , 0.7 , 0.8 , 0.9 , 0.01, 0.11])
 
 Using base 2::
 
-    >>> print(create_van_der_corput_samples(range(8), number_base=2))
-    [0.5    0.25   0.75   0.125  0.625  0.375  0.875  0.0625]
+    >>> create_van_der_corput_samples(range(8), number_base=2)
+    array([0.5   , 0.25  , 0.75  , 0.125 , 0.625 , 0.375 , 0.875 , 0.0625])
 
 .. Van Der Corput: https://en.wikipedia.org/wiki/Van_der_Corput_sequence
 """

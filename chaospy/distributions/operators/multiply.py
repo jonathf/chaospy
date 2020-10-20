@@ -9,76 +9,76 @@ Distribution multiplied with a constant::
     >>> distribution = chaospy.Uniform(0, 1)*4
     >>> distribution
     Multiply(Uniform(), 4)
-    >>> print(numpy.around(distribution.sample(5), 4))
-    [2.6144 0.46   3.8011 1.9288 3.4899]
-    >>> print(numpy.around(distribution.fwd([1, 2, 3]), 4))
-    [0.25 0.5  0.75]
-    >>> print(numpy.around(distribution.inv(distribution.fwd([1, 2, 3])), 4))
-    [1. 2. 3.]
-    >>> print(numpy.around(distribution.pdf([1, 2, 3]), 4))
-    [0.25 0.25 0.25]
-    >>> print(numpy.around(distribution.mom([1, 2, 3]), 4))
-    [ 2.      5.3333 16.    ]
-    >>> print(numpy.around(distribution.ttr([1, 2, 3]), 4))
-    [[2.     2.     2.    ]
-     [1.3333 1.0667 1.0286]]
+    >>> distribution.sample(5).round(4)
+    array([2.6144, 0.46  , 3.8011, 1.9288, 3.4899])
+    >>> distribution.fwd([1, 2, 3]).round(4)
+    array([0.25, 0.5 , 0.75])
+    >>> distribution.inv(distribution.fwd([1, 2, 3])).round(4)
+    array([1., 2., 3.])
+    >>> distribution.pdf([1, 2, 3]).round(4)
+    array([0.25, 0.25, 0.25])
+    >>> distribution.mom([1, 2, 3]).round(4)
+    array([ 2.    ,  5.3333, 16.    ])
+    >>> distribution.ttr([1, 2, 3]).round(4)
+    array([[2.    , 2.    , 2.    ],
+           [1.3333, 1.0667, 1.0286]])
 
 Construct joint multiplication distribution::
 
     >>> lhs = chaospy.Uniform(-1, 0)
     >>> rhs = chaospy.Uniform(-3, -2)
     >>> multiplication = lhs * rhs
-    >>> print(multiplication)
+    >>> multiplication
     Multiply(Uniform(lower=-1, upper=0), Uniform(lower=-3, upper=-2))
     >>> joint1 = chaospy.J(lhs, multiplication)
-    >>> print(joint1.lower)
-    [-1. -0.]
-    >>> print(joint1.upper)
-    [0. 3.]
+    >>> joint1.lower
+    array([-1., -0.])
+    >>> joint1.upper
+    array([0., 3.])
     >>> joint2 = chaospy.J(rhs, multiplication)
-    >>> print(joint2.lower)
-    [-3. -0.]
-    >>> print(joint2.upper)
-    [-2.  3.]
+    >>> joint2.lower
+    array([-3., -0.])
+    >>> joint2.upper
+    array([-2.,  3.])
     >>> joint3 = chaospy.J(multiplication, lhs)
-    >>> print(joint3.lower)
-    [-0. -1.]
-    >>> print(joint3.upper)
-    [3. 0.]
+    >>> joint3.lower
+    array([-0., -1.])
+    >>> joint3.upper
+    array([3., 0.])
     >>> joint4 = chaospy.J(multiplication, rhs)
-    >>> print(joint4.lower)
-    [-0. -3.]
-    >>> print(joint4.upper)
-    [ 3. -2.]
+    >>> joint4.lower
+    array([-0., -3.])
+    >>> joint4.upper
+    array([ 3., -2.])
 
 Generate random samples::
 
-    >>> print(numpy.around(joint1.sample(4), 4))
-    [[-0.7877 -0.9593 -0.6028 -0.7669]
-     [ 2.2383  2.1172  1.6532  1.8345]]
-    >>> print(numpy.around(joint2.sample(4), 4))
-    [[-2.8177 -2.2565 -2.9304 -2.1147]
-     [ 2.6843  2.1011  1.2174  0.0613]]
+    >>> joint1.sample(4).round(4)
+    array([[-0.7877, -0.9593, -0.6028, -0.7669],
+           [ 2.2383,  2.1172,  1.6532,  1.8345]])
+    >>> joint2.sample(4).round(4)
+    array([[-2.8177, -2.2565, -2.9304, -2.1147],
+           [ 2.6843,  2.1011,  1.2174,  0.0613]])
 
 Forward transformations::
 
     >>> lcorr = numpy.array([-0.9, -0.5, -0.1])
     >>> rcorr = numpy.array([-2.99, -2.5, -2.01])
-    >>> print(numpy.around(joint1.fwd([lcorr, lcorr*rcorr]), 4))
-    [[0.1  0.5  0.9 ]
-     [0.99 0.5  0.01]]
-    >>> print(numpy.around(joint2.fwd([rcorr, lcorr*rcorr]), 4))
-    [[0.01 0.5  0.99]
-     [0.9  0.5  0.1 ]]
+    >>> joint1.fwd([lcorr, lcorr*rcorr]).round(4)
+    array([[0.1 , 0.5 , 0.9 ],
+           [0.99, 0.5 , 0.01]])
+    >>> joint2.fwd([rcorr, lcorr*rcorr]).round(4)
+    array([[0.01, 0.5 , 0.99],
+           [0.9 , 0.5 , 0.1 ]])
 
 Inverse transformations::
 
-    >>> print(numpy.around(joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])), 4))
-    [[-0.9   -0.5   -0.1  ]
-     [ 2.691  1.25   0.201]]
-    >>> print(numpy.around(joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])), 4))
-    [[-2.99  -2.5   -2.01 ]
-     [ 2.691  1.25   0.201]]
+    >>> joint1.inv(joint1.fwd([lcorr, lcorr*rcorr])).round(4)
+    array([[-0.9  , -0.5  , -0.1  ],
+           [ 2.691,  1.25 ,  0.201]])
+    >>> joint2.inv(joint2.fwd([rcorr, lcorr*rcorr])).round(4)
+    array([[-2.99 , -2.5  , -2.01 ],
+           [ 2.691,  1.25 ,  0.201]])
 """
 import numpy
 import chaospy
@@ -199,20 +199,21 @@ class Multiply(OperatorDistribution):
         Point percentile function.
 
         Example:
-            >>> print(chaospy.Uniform().inv([0.1, 0.2, 0.9]))
-            [0.1 0.2 0.9]
-            >>> print(Multiply(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9]))
-            [0.2 0.4 1.8]
-            >>> print(Multiply(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
-            [0.2 0.4 1.8]
-            >>> dist = chaospy.Multiply([2, 1], chaospy.Iid(chaospy.Uniform(), 2))
-            >>> print(dist.inv([[0.5, 0.6, 0.7], [0.5, 0.6, 0.7]]))
-            [[1.  1.2 1.4]
-             [0.5 0.6 0.7]]
+            >>> chaospy.Uniform().inv([0.1, 0.2, 0.9])
+            array([0.1, 0.2, 0.9])
+            >>> Multiply(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9])
+            array([0.2, 0.4, 1.8])
+            >>> Multiply(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9])
+            array([0.2, 0.4, 1.8])
+            >>> dist = chaospy.Multiply(
+            ...     [2, 1], chaospy.Iid(chaospy.Uniform(), 2))
+            >>> dist.inv([[0.5, 0.6, 0.7], [0.5, 0.6, 0.7]])
+            array([[1. , 1.2, 1.4],
+                   [0.5, 0.6, 0.7]])
             >>> dist = chaospy.Multiply(chaospy.Iid(chaospy.Uniform(), 2), [1, 2])
-            >>> print(dist.inv([[0.5, 0.6, 0.7], [0.5, 0.6, 0.7]]))
-            [[0.5 0.6 0.7]
-             [1.  1.2 1.4]]
+            >>> dist.inv([[0.5, 0.6, 0.7], [0.5, 0.6, 0.7]])
+            array([[0.5, 0.6, 0.7],
+                   [1. , 1.2, 1.4]])
 
         """
         if isinstance(right, Distribution):
@@ -228,18 +229,18 @@ class Multiply(OperatorDistribution):
         Probability density function.
 
         Example:
-            >>> print(chaospy.Uniform().pdf([-0.5, 0.5, 1.5, 2.5]))
-            [0. 1. 0. 0.]
-            >>> print(Multiply(chaospy.Uniform(), 2).pdf([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.5 0.5 0. ]
-            >>> print(Multiply(2, chaospy.Uniform()).pdf([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.5 0.5 0. ]
+            >>> chaospy.Uniform().pdf([-0.5, 0.5, 1.5, 2.5])
+            array([0., 1., 0., 0.])
+            >>> Multiply(chaospy.Uniform(), 2).pdf([-0.5, 0.5, 1.5, 2.5])
+            array([0. , 0.5, 0.5, 0. ])
+            >>> Multiply(2, chaospy.Uniform()).pdf([-0.5, 0.5, 1.5, 2.5])
+            array([0. , 0.5, 0.5, 0. ])
             >>> dist = chaospy.Multiply([2, 1], chaospy.Iid(chaospy.Uniform(), 2))
-            >>> print(dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [0.5 0.5 0. ]
+            >>> dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]])
+            array([0.5, 0.5, 0. ])
             >>> dist = chaospy.Multiply(chaospy.Iid(chaospy.Uniform(), 2), [1, 2])
-            >>> print(dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]]))
-            [0.5 0.5 0. ]
+            >>> dist.pdf([[0.5, 0.6, 1.5], [0.5, 0.6, 1.5]])
+            array([0.5, 0.5, 0. ])
 
         """
         if isinstance(right, Distribution):
@@ -257,14 +258,15 @@ class Multiply(OperatorDistribution):
         Statistical moments.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
-            [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(Multiply(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
-            [1.     1.     1.3333 2.    ]
-            >>> print(numpy.around(Multiply(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
-            [1.     1.     1.3333 2.    ]
-            >>> print(numpy.around(Multiply(chaospy.Uniform(), chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
-            [1.     0.25   0.1111 0.0625]
+            >>> chaospy.Uniform().mom([0, 1, 2, 3]).round(4)
+            array([1.    , 0.5   , 0.3333, 0.25  ])
+            >>> Multiply(chaospy.Uniform(), 2).mom([0, 1, 2, 3]).round(4)
+            array([1.    , 1.    , 1.3333, 2.    ])
+            >>> Multiply(2, chaospy.Uniform()).mom([0, 1, 2, 3]).round(4)
+            array([1.    , 1.    , 1.3333, 2.    ])
+            >>> Multiply(chaospy.Uniform(), chaospy.Uniform()).mom([0, 1, 2, 3]).round(4)
+            array([1.    , 0.25  , 0.1111, 0.0625])
+
         """
         del cache
         if isinstance(left, Distribution):

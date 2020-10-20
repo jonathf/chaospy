@@ -44,15 +44,18 @@ class Uniform(LowerUpperDistribution):
         >>> distribution = chaospy.Uniform(2, 4)
         >>> distribution
         Uniform(lower=2, upper=4)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([2. , 2.5, 3. , 3.5, 4. ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.5, 0.5, 0.5, 0.5, 0.5])
-        >>> distribution.sample(4).round(4)
-        array([3.3072, 2.23  , 3.9006, 2.9644])
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([2. , 2.4, 2.8, 3.2, 3.6, 4. ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+        >>> distribution.sample(4).round(3)
+        array([3.307, 2.23 , 3.901, 2.964])
         >>> distribution.mom(1).round(4)
         3.0
         >>> distribution.ttr([0, 1, 2, 3]).round(4)

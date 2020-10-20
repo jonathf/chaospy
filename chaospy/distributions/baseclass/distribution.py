@@ -313,7 +313,8 @@ class Distribution(object):
             parameters = self.get_parameters(idx, cache, assert_numerical=True)
             ret_val = self._ppf(q_data, **parameters)
         except chaospy.UnsupportedFeature:
-            ret_val = chaospy.approximate_inverse(self, idx, q_data, cache=cache)
+            ret_val = chaospy.approximate_inverse(
+                self, idx, q_data, cache=cache)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
 
         out = numpy.zeros(q_data.shape)

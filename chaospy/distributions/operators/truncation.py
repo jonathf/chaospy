@@ -71,10 +71,10 @@ class Trunc(OperatorDistribution):
         Distribution lower bound.
 
         Examples:
-            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).lower)
-            [0.]
-            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).lower)
-            [0.6]
+            >>> chaospy.Trunc(chaospy.Uniform(), 0.6).lower
+            array([0.])
+            >>> chaospy.Trunc(0.6, chaospy.Uniform()).lower
+            array([0.6])
         """
         del right
         if isinstance(left, Distribution):
@@ -86,10 +86,10 @@ class Trunc(OperatorDistribution):
         Distribution lower bound.
 
         Examples:
-            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.6).upper)
-            [0.6]
-            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).upper)
-            [1.]
+            >>> chaospy.Trunc(chaospy.Uniform(), 0.6).upper
+            array([0.6])
+            >>> chaospy.Trunc(0.6, chaospy.Uniform()).upper
+            array([1.])
         """
         del left
         if isinstance(right, Distribution):
@@ -101,12 +101,12 @@ class Trunc(OperatorDistribution):
         Cumulative distribution function.
 
         Example:
-            >>> print(chaospy.Uniform().fwd([-0.5, 0.3, 0.7, 1.2]))
-            [0.  0.3 0.7 1. ]
-            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.4).fwd([-0.5, 0.2, 0.8, 1.2]))
-            [0.  0.5 1.  1. ]
-            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).fwd([-0.5, 0.2, 0.8, 1.2]))
-            [0.  0.  0.5 1. ]
+            >>> chaospy.Uniform().fwd([-0.5, 0.3, 0.7, 1.2])
+            array([0. , 0.3, 0.7, 1. ])
+            >>> chaospy.Trunc(chaospy.Uniform(), 0.4).fwd([-0.5, 0.2, 0.8, 1.2])
+            array([0. , 0.5, 1. , 1. ])
+            >>> chaospy.Trunc(0.6, chaospy.Uniform()).fwd([-0.5, 0.2, 0.8, 1.2])
+            array([0. , 0. , 0.5, 1. ])
         """
         if isinstance(left, Distribution):
             left = left._get_cache(idx, cache, get=0)
@@ -130,17 +130,17 @@ class Trunc(OperatorDistribution):
 
         Example:
             >>> dist = chaospy.Trunc(chaospy.Uniform(), 0.6)
-            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
-            [0.         1.66666667 1.66666667 0.         0.        ]
+            >>> dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25])
+            array([0.        , 1.66666667, 1.66666667, 0.        , 0.        ])
             >>> dist = chaospy.Trunc(chaospy.Uniform(), 0.4)
-            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
-            [0.  2.5 0.  0.  0. ]
+            >>> dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25])
+            array([0. , 2.5, 0. , 0. , 0. ])
             >>> dist = chaospy.Trunc(0.4, chaospy.Uniform())
-            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
-            [0.         0.         1.66666667 1.66666667 0.        ]
+            >>> dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25])
+            array([0.        , 0.        , 1.66666667, 1.66666667, 0.        ])
             >>> dist = chaospy.Trunc(0.6, chaospy.Uniform())
-            >>> print(dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25]))
-            [0.  0.  0.  2.5 0. ]
+            >>> dist.pdf([-0.25, 0.25, 0.5, 0.75, 1.25])
+            array([0. , 0. , 0. , 2.5, 0. ])
         """
         if isinstance(left, Distribution):
             left = left._get_cache(idx, cache, get=0)
@@ -163,12 +163,12 @@ class Trunc(OperatorDistribution):
         Point percentile function.
 
         Example:
-            >>> print(chaospy.Uniform().inv([0.1, 0.2, 0.9]))
-            [0.1 0.2 0.9]
-            >>> print(chaospy.Trunc(chaospy.Uniform(), 0.4).inv([0.1, 0.2, 0.9]))
-            [0.04 0.08 0.36]
-            >>> print(chaospy.Trunc(0.6, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
-            [0.64 0.68 0.96]
+            >>> chaospy.Uniform().inv([0.1, 0.2, 0.9])
+            array([0.1, 0.2, 0.9])
+            >>> chaospy.Trunc(chaospy.Uniform(), 0.4).inv([0.1, 0.2, 0.9])
+            array([0.04, 0.08, 0.36])
+            >>> chaospy.Trunc(0.6, chaospy.Uniform()).inv([0.1, 0.2, 0.9])
+            array([0.64, 0.68, 0.96])
         """
         if isinstance(left, Distribution):
             left = left._get_cache(idx, cache, get=0)

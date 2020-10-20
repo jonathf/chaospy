@@ -8,6 +8,7 @@ from ..baseclass import Distribution
 
 
 class KernelDensityBaseclass(Distribution):
+    """Kernel density estimation baseclass."""
 
     def __init__(
             self,
@@ -39,23 +40,23 @@ class KernelDensityBaseclass(Distribution):
                 equally weighted.
 
         """
-        self.samples = numpy.atleast_2d(samples)
-        assert self.samples.ndim == 2
+        samples = numpy.atleast_2d(samples)
+        assert samples.ndim == 2
 
         # the scale is taken from Scott-92.
         # The Scott factor is taken from scipy docs.
         if h_mat is None:
 
             if estimator_rule == "scott":
-                qrange = numpy.quantile(self.samples, [0.25, 0.75], axis=1).ptp(axis=0)
+                qrange = numpy.quantile(samples, [0.25, 0.75], axis=1).ptp(axis=0)
                 scale = numpy.min([numpy.std(samples, axis=1), qrange/1.34], axis=0)
-                factor = self.samples.shape[1]**(-1./(len(self.samples)+4))
+                factor = samples.shape[1]**(-1./(len(samples)+4))
                 covariance = numpy.diag(scale*factor)**2
 
             elif estimator_rule == "silverman":
-                qrange = numpy.quantile(self.samples, [0.25, 0.75], axis=1).ptp(axis=0)
+                qrange = numpy.quantile(samples, [0.25, 0.75], axis=1).ptp(axis=0)
                 scale = numpy.min([numpy.std(samples, axis=1), qrange/1.34], axis=0)
-                factor = (self.samples.shape[1]*(len(self.samples)+2)/4.)**(-1./(len(self.samples)+4))
+                factor = (samples.shape[1]*(len(samples)+2)/4.)**(-1./(len(samples)+4))
                 covariance = numpy.diag(scale*factor)**2
 
             else:
@@ -64,25 +65,30 @@ class KernelDensityBaseclass(Distribution):
         else:
             covariance = numpy.asfarray(h_mat)
             if covariance.ndim in (0, 1):
-                covariance = covariance*numpy.eye(len(self.samples))
+                covariance = covariance*numpy.eye(len(samples))
         if covariance.ndim == 2:
             covariance = covariance[numpy.newaxis]
         else:
             covariance = numpy.rollaxis(covariance, 2, 0)
-        assert covariance.shape[1:] == (len(self.samples), len(self.samples))
+        assert covariance.shape[1:] == (len(samples), len(samples))
 
         if weights is None:
-            weights = 1./self.samples.shape[1]
+            weights = 1./samples.shape[1]
         self.weights = weights
-
-        self.covariance = covariance
-        self.L = numpy.linalg.cholesky(covariance)
-        self.Li = numpy.linalg.inv(self.L)
 
         dependencies, _, rotation = chaospy.declare_dependencies(
             self, dict(), rotation=rotation,
-            dependency_type="accumulate", length=len(self.samples),
+            dependency_type="accumulate", length=len(samples),
         )
+
+        self.samples = samples
+        self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
+        self.covariance = covariance
+        self._pcovariance = numpy.matmul(numpy.matmul(
+            self._permute, covariance), self._permute.T)
+        cholesky = numpy.linalg.cholesky(self._pcovariance)
+        self._fwd_transform = numpy.linalg.inv(cholesky)
+        self._inv_transform = cholesky
 
         super(KernelDensityBaseclass, self).__init__(
             parameters={},
@@ -90,8 +96,8 @@ class KernelDensityBaseclass(Distribution):
             rotation=rotation,
         )
         self._zloc = None
-        self._samples = None
         self._kernel0 = None
+        self._kernel1 = None
 
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(KernelDensityBaseclass, self).get_parameters(
@@ -106,10 +112,12 @@ class KernelDensityBaseclass(Distribution):
         """Kernel density function."""
         s, t = numpy.mgrid[:x_loc.shape[-1], :self.samples.shape[-1]]
         if not dim:
-            samples = self.samples[dim, t]
-            self._zloc = ((x_loc[s]-samples)*self.Li[:, 0, 0])[:, :, numpy.newaxis]
-            self._kernel0 = self._kernel1 = self._kernel(self._zloc)/self.L[:, 0, 0]
-            out = numpy.sum(self._kernel0*self.weights, axis=-1)
+            samples = self.samples[idx, t]
+            z_loc = ((x_loc[s]-samples)*self._fwd_transform[:, 0, 0])
+            self._zloc = z_loc[:, :, numpy.newaxis]
+            kernel = self._kernel(self._zloc)/self._inv_transform[:, 0, 0]
+            self._kernel0 = self._kernel1 = kernel
+            out = numpy.sum(kernel*self.weights, axis=-1)
 
         else:
             if self._zloc.shape[2] == dim+1:
@@ -119,12 +127,12 @@ class KernelDensityBaseclass(Distribution):
             x_loc = numpy.dstack([x[s] for x in x_loc])
             samples = numpy.dstack([self.samples[dim_, t]
                                     for dim_ in self._rotation[:dim+1]])
-            zloc = numpy.sum((x_loc-samples)*self.Li[:, idx, :idx+1], -1)
+            zloc = numpy.sum((x_loc-samples)*self._fwd_transform[:, dim, :dim+1], -1)
             self._zloc = numpy.dstack([self._zloc[:, :, :dim], zloc])
 
             kernel = self._kernel(self._zloc)
-            kernel *= (numpy.linalg.det(self.L[:, :idx, :idx])/
-                       numpy.linalg.det(self.L[:, :idx+1, :idx+1]))
+            kernel *= (numpy.linalg.det(self._inv_transform[:, :dim, :dim])/
+                       numpy.linalg.det(self._inv_transform[:, :dim+1, :dim+1]))
             out = (numpy.sum(kernel*self.weights, axis=-1)/
                    numpy.sum(self._kernel0*self.weights, axis=-1))
             self._kernel1, self._kernel0 = self._kernel0, kernel
@@ -135,9 +143,10 @@ class KernelDensityBaseclass(Distribution):
         """Forward mapping."""
         s, t = numpy.mgrid[:x_loc.shape[-1], :self.samples.shape[-1]]
         if not dim:
-            z_loc = (x_loc[s]-self.samples[idx, t])*self.Li[:, 0, 0]
+            z_loc = (x_loc[s]-self.samples[idx, t])*self._fwd_transform[:, 0, 0]
             self._zloc = z_loc[:, :, numpy.newaxis]
-            out = numpy.sum(self._ikernel(self._zloc)*self.weights, axis=-1)
+            out = numpy.sum(self._ikernel(z_loc)*self.weights, axis=-1)
+            assert out.shape == x_loc.shape, (out.shape, x_loc.shape)
 
         else:
             x_loc = [self._get_cache(dim_, cache, get=0)
@@ -146,14 +155,16 @@ class KernelDensityBaseclass(Distribution):
 
             samples = numpy.dstack([self.samples[dim_, t]
                                     for dim_ in self._rotation[:dim+1]])
-            zloc = numpy.sum((x_loc-samples)*self.Li[:, idx, :idx+1], -1)
+            zloc = numpy.sum((x_loc-samples)*self._fwd_transform[:, dim, :dim+1], -1)
             self._zloc = numpy.dstack([self._zloc[:, :, :dim], zloc])
-            out = (numpy.sum(self._ikernel(self._zloc)*self.weights, axis=-1)/
+            ikernel = self._kernel(self._zloc[:, :, :-1])*self._ikernel(self._zloc[:, :, -1])
+            out = (numpy.sum(ikernel*self.weights, axis=-1)/
                    numpy.sum(self._kernel(self._zloc[:, :, :-1])*self.weights, axis=-1))
         return out
 
     def _ppf(self, u_loc, idx, dim, cache):
         """Inverse mapping."""
-        xloc0 = None if dim else numpy.quantile(self.samples[idx], u_loc)
-        return chaospy.approximate_inverse(
-            self, idx, u_loc, xloc0=xloc0, cache=cache, tolerance=1e-12)
+        xloc0 = numpy.quantile(self.samples[idx], u_loc)
+        out = chaospy.approximate_inverse(
+            self, idx, u_loc, xloc0=xloc0, cache=cache, iterations=1000)
+        return out

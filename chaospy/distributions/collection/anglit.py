@@ -37,20 +37,22 @@ class Anglit(ShiftScaleDistribution):
             Scaling parameter
 
     Examples:
-        >>> distribution = chaospy.Anglit(4, 2)
+        >>> distribution = chaospy.Anglit()
         >>> distribution
-        Anglit(scale=4, shift=2)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([-1.1416,  0.9528,  2.    ,  3.0472,  5.1416])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.    , 0.2165, 0.25  , 0.2165, 0.    ])
-        >>> distribution.sample(4).round(4)
-        array([2.6245, 0.2424, 4.2421, 1.9288])
-        >>> distribution.mom([1, 2, 3]).round(4)
-        array([ 2.    ,  5.8696, 19.2176])
+        Anglit()
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-0.785, -0.322, -0.101,  0.101,  0.322,  0.785])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.  , 0.8 , 0.98, 0.98, 0.8 , 0.  ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.156, -0.439,  0.561, -0.018])
+
     """
 
     def __init__(self, scale=1, shift=0):

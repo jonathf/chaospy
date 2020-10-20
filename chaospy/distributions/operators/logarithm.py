@@ -17,18 +17,18 @@ class Logn(OperatorDistribution):
 
     Example:
         >>> distribution = chaospy.Logn(chaospy.Uniform(1, 2), 3)
-        >>> print(distribution)
+        >>> distribution
         Logn(Uniform(lower=1, upper=2), 3)
         >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> print(numpy.around(distribution.inv(q), 4))
-        [0.166  0.3063 0.4278 0.535 ]
-        >>> print(numpy.around(distribution.fwd(distribution.inv(q)), 4))
-        [0.2 0.4 0.6 0.8]
-        >>> print(numpy.around(distribution.pdf(distribution.inv(q)), 4))
-        [1.3183 1.5381 1.7578 1.9775]
-        >>> print(numpy.around(distribution.sample(4), 4))
-        [0.4578 0.0991 0.608  0.3582]
-        >>> print(numpy.around(distribution.mom(1), 4))
+        >>> distribution.inv(q).round(4)
+        array([0.166 , 0.3063, 0.4278, 0.535 ])
+        >>> distribution.fwd(distribution.inv(q)).round(4)
+        array([0.2, 0.4, 0.6, 0.8])
+        >>> distribution.pdf(distribution.inv(q)).round(4)
+        array([1.3183, 1.5381, 1.7578, 1.9775])
+        >>> distribution.sample(4).round(4)
+        array([0.4578, 0.0991, 0.608 , 0.3582])
+        >>> distribution.mom(1).round(4)
         0.3516
 
     """
@@ -94,7 +94,7 @@ class Log10(Logn):
 
     Example:
         >>> distribution = chaospy.Log10(chaospy.Uniform(1, 2))
-        >>> print(distribution)
+        >>> distribution
         Log10(Uniform(lower=1, upper=2))
 
     """

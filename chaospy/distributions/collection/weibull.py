@@ -18,7 +18,7 @@ class weibull(SimpleDistribution):
         return (1-numpy.e**(-x**a))
 
     def _ppf(self, q, a):
-        return (-numpy.log(1-q+1*(q==1)))**(1./a)*(q!=1) + 30.**(1./a)*(q==1)
+        return (-numpy.log(1-q+1*(q==1)))**(1./a)*(q!=1)+30.**(1./a)*(q==1)
 
     def _mom(self, k, a):
         return special.gamma(1.+k*1./a)
@@ -46,17 +46,21 @@ class Weibull(ShiftScaleDistribution):
         >>> distribution = chaospy.Weibull(2)
         >>> distribution
         Weibull(2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([0.4724, 0.7147, 0.9572, 1.2686])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.7558, 0.8577, 0.7658, 0.5075])
-        >>> distribution.sample(4).round(4)
-        array([1.0296, 0.3495, 1.7325, 0.8113])
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.472, 0.715, 0.957, 1.269, 5.477])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.756, 0.858, 0.766, 0.507, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.03 , 0.35 , 1.732, 0.811])
         >>> distribution.mom(1).round(4)
         0.8862
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

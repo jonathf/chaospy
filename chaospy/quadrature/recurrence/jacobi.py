@@ -10,15 +10,15 @@ def coefficients_to_quadrature(coeffs):
 
     Examples:
         >>> distribution = chaospy.Normal(0, 1)
-        >>> coeffs = chaospy.construct_recurrence_coefficients(4, distribution)
-        >>> print(numpy.around(coeffs, 4))
-        [[[0. 0. 0. 0. 0.]
-          [0. 1. 2. 3. 4.]]]
-        >>> abscissas, weights = chaospy.coefficients_to_quadrature(coeffs)
-        >>> print(numpy.around(abscissas, 4))
-        [[-2.857  -1.3556 -0.      1.3556  2.857 ]]
-        >>> print(numpy.around(weights, 4))
-        [[0.0113 0.2221 0.5333 0.2221 0.0113]]
+        >>> coeffs, = chaospy.construct_recurrence_coefficients(4, distribution)
+        >>> coeffs
+        array([[0., 0., 0., 0., 0.],
+               [0., 1., 2., 3., 4.]])
+        >>> (abscissas,), (weights,) = chaospy.coefficients_to_quadrature(coeffs)
+        >>> abscissas.round(4)
+        array([-2.857 , -1.3556, -0.    ,  1.3556,  2.857 ])
+        >>> weights.round(4)
+        array([0.0113, 0.2221, 0.5333, 0.2221, 0.0113])
     """
     coeffs = numpy.asfarray(coeffs)
     if len(coeffs.shape) == 2:

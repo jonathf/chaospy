@@ -47,20 +47,22 @@ class DoubleWeibull(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.DoubleWeibull(2, 4, 2)
+        >>> distribution = chaospy.DoubleWeibull(1.5)
         >>> distribution
-        DoubleWeibull(2, scale=4, shift=2)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([-16.903 ,  -1.3302,   2.    ,   5.3302,  20.903 ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.    , 0.1041, 0.    , 0.1041, 0.    ])
-        >>> distribution.sample(4).round(4)
-        array([ 4.4232, -2.8491,  8.0772,  1.2382])
-        >>> distribution.mom(1).round(4)
-        2.0
+        DoubleWeibull(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([-7.93 , -0.943, -0.368,  0.368,  0.943,  7.93 ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 0.291, 0.364, 0.364, 0.291, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([ 0.513, -1.293,  1.747, -0.11 ])
+
     """
 
     def __init__(self, shape=1, scale=1, shift=0):

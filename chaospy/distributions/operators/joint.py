@@ -167,15 +167,17 @@ class J(Distribution):
     def _ppf(self, qloc, idx, dist, cache):
         """
         Example:
-            >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-            >>> print(numpy.around(dist.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]), 4))
-            [[ 0.1     0.2     0.3   ]
-             [-0.5244 -0.5244 -0.2533]]
-            >>> d0 = chaospy.Uniform()
-            >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(numpy.around(dist.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]), 4))
-            [[0.1 0.2 0.3]
-             [0.4 0.5 0.7]]
+            >>> dist1 = chaospy.J(chaospy.Uniform(), chaospy.Normal())
+            >>> xloc = dist1.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]])
+            >>> xloc.round(4)
+            array([[ 0.1   ,  0.2   ,  0.3   ],
+                   [-0.5244, -0.5244, -0.2533]])
+            >>> dist2 = chaospy.Uniform()
+            >>> joint = chaospy.J(dist2, dist2+chaospy.Uniform())
+            >>> joint.inv([[0.1, 0.2, 0.3], [0.3, 0.3, 0.4]]).round(4)
+            array([[0.1, 0.2, 0.3],
+                   [0.4, 0.5, 0.7]])
+
         """
         return dist._get_inv(qloc, idx, cache)
 
@@ -208,17 +210,17 @@ class J(Distribution):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal(), chaospy.Exponential())
-            >>> print(numpy.around(dist.ttr([[1, 2, 3], [1, 2, 3], [1, 2, 3]]), 4))
-            [[[0.5    0.5    0.5   ]
-              [0.     0.     0.    ]
-              [3.     5.     7.    ]]
+            >>> dist.ttr([[1, 2, 3], [1, 2, 3], [1, 2, 3]]).round(4)
+            array([[[0.5   , 0.5   , 0.5   ],
+                    [0.    , 0.    , 0.    ],
+                    [3.    , 5.    , 7.    ]],
             <BLANKLINE>
-             [[0.0833 0.0667 0.0643]
-              [1.     2.     3.    ]
-              [1.     4.     9.    ]]]
+                   [[0.0833, 0.0667, 0.0643],
+                    [1.    , 2.    , 3.    ],
+                    [1.    , 4.    , 9.    ]]])
             >>> d0 = chaospy.Uniform()
             >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> print(numpy.around(dist.ttr([1, 1]), 4)) # doctest: +IGNORE_EXCEPTION_DETAIL
+            >>> dist.ttr([1, 1])  # doctest: +IGNORE_EXCEPTION_DETAIL
             Traceback (most recent call last):
                 ...
             chaospy.distributions.baseclass.UnsupportedFeature: Joint ...

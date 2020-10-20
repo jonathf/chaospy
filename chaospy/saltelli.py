@@ -5,6 +5,7 @@ Code is built upon the code provided by Vinzenze Eck.
 """
 import numpy
 import numpoly
+import chaospy
 
 
 class Saltelli(object):
@@ -17,7 +18,6 @@ class Saltelli(object):
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
         >>> generator = Saltelli(dist, 3, rule="halton")
-
         >>> generator[False, False].round(4)
         array([[0.875 , 0.0625, 0.5625],
                [0.5556, 0.8889, 0.037 ]])
@@ -46,7 +46,8 @@ class Saltelli(object):
             Scheme for generating random samples.
         """
         self.dist = dist
-        samples_ = dist.sample(2*samples, rule=rule)
+        samples_ = chaospy.generate_samples(
+            2*samples, domain=len(dist), rule=rule)
         self.samples1 = samples_.T[:samples].T
         self.samples2 = samples_.T[samples:].T
         self.poly = poly
@@ -60,7 +61,7 @@ class Saltelli(object):
                 new[idx] = self.samples1[idx]
             else:
                 new[idx] = self.samples2[idx]
-
+        new = self.dist.inv(new)
         if isinstance(self.poly, numpoly.ndpoly) and self.poly.size:
             new = self.poly(*new)
         return new

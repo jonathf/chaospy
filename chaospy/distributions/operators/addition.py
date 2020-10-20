@@ -136,12 +136,12 @@ class Add(OperatorDistribution):
         Probability density function.
 
         Example:
-            >>> print(chaospy.Uniform().pdf([-2, 0, 2, 4]))
-            [0. 1. 0. 0.]
-            >>> print(chaospy.Add(chaospy.Uniform(), 2).pdf([-2, 0, 2, 4]))
-            [0. 0. 1. 0.]
-            >>> print(chaospy.Add(2, chaospy.Uniform()).pdf([-2, 0, 2, 4]))
-            [0. 0. 1. 0.]
+            >>> chaospy.Uniform().pdf([-2, 0, 2, 4])
+            array([0., 1., 0., 0.])
+            >>> chaospy.Add(chaospy.Uniform(), 2).pdf([-2, 0, 2, 4])
+            array([0., 0., 1., 0.])
+            >>> chaospy.Add(2, chaospy.Uniform()).pdf([-2, 0, 2, 4])
+            array([0., 0., 1., 0.])
 
         """
         if isinstance(right, Distribution):
@@ -154,12 +154,13 @@ class Add(OperatorDistribution):
         Point percentile function.
 
         Example:
-            >>> print(chaospy.Uniform().inv([0.1, 0.2, 0.9]))
-            [0.1 0.2 0.9]
-            >>> print(chaospy.Add(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9]))
-            [2.1 2.2 2.9]
-            >>> print(chaospy.Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
-            [2.1 2.2 2.9]
+            >>> chaospy.Uniform().inv([0.1, 0.2, 0.9])
+            array([0.1, 0.2, 0.9])
+            >>> chaospy.Add(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9])
+            array([2.1, 2.2, 2.9])
+            >>> chaospy.Add(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9])
+            array([2.1, 2.2, 2.9])
+
         """
         if isinstance(right, Distribution):
             left, right = right, left
@@ -171,12 +172,13 @@ class Add(OperatorDistribution):
         Statistical moments.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
-            [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(chaospy.Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
-            [ 1.      2.5     6.3333 16.25  ]
-            >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
-            [ 1.      2.5     6.3333 16.25  ]
+            >>> chaospy.Uniform().mom([0, 1, 2, 3]).round(4)
+            array([1.    , 0.5   , 0.3333, 0.25  ])
+            >>> chaospy.Add(chaospy.Uniform(), 2).mom([0, 1, 2, 3]).round(4)
+            array([ 1.    ,  2.5   ,  6.3333, 16.25  ])
+            >>> chaospy.Add(2, chaospy.Uniform()).mom([0, 1, 2, 3]).round(4)
+            array([ 1.    ,  2.5   ,  6.3333, 16.25  ])
+
         """
         del cache
         keys_ = numpy.mgrid[tuple(slice(0, key+1, 1) for key in keys)]
@@ -207,15 +209,15 @@ class Add(OperatorDistribution):
         Three terms recurrence coefficients.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().ttr([0, 1, 2, 3]), 4))
-            [[ 0.5     0.5     0.5     0.5   ]
-             [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]), 4))
-            [[ 2.5     2.5     2.5     2.5   ]
-             [-0.      0.0833  0.0667  0.0643]]
-            >>> print(numpy.around(chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]), 4))
-            [[ 2.5     2.5     2.5     2.5   ]
-             [-0.      0.0833  0.0667  0.0643]]
+            >>> chaospy.Uniform().ttr([0, 1, 2, 3]).round(4)
+            array([[ 0.5   ,  0.5   ,  0.5   ,  0.5   ],
+                   [-0.    ,  0.0833,  0.0667,  0.0643]])
+            >>> chaospy.Add(chaospy.Uniform(), 2).ttr([0, 1, 2, 3]).round(4)
+            array([[ 2.5   ,  2.5   ,  2.5   ,  2.5   ],
+                   [-0.    ,  0.0833,  0.0667,  0.0643]])
+            >>> chaospy.Add(2, chaospy.Uniform()).ttr([0, 1, 2, 3]).round(4)
+            array([[ 2.5   ,  2.5   ,  2.5   ,  2.5   ],
+                   [-0.    ,  0.0833,  0.0667,  0.0643]])
 
         """
         del cache

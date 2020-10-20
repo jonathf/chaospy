@@ -121,9 +121,9 @@ class Gumbel(CopulaDistribution):
         >>> samples = distribution.sample(3)
         >>> samples.round(4)
         array([[ 0.3072, -0.77  ,  0.9006],
-               [ 0.4709,  0.2102,  0.8696]])
+               [ 0.4709,  0.2101,  0.8696]])
         >>> distribution.pdf(samples).round(4)
-        array([7.9975000e+00, 5.0700000e-02, 3.6718099e+03])
+        array([7.9977000e+00, 5.0700000e-02, 3.6733563e+03])
         >>> distribution.fwd(samples).round(4)
         array([[0.6536, 0.115 , 0.9503],
                [0.4822, 0.8725, 0.2123]])
@@ -139,7 +139,7 @@ class Gumbel(CopulaDistribution):
 
     """
 
-    def __init__(self, dist, theta, eps=1e-6):
+    def __init__(self, dist, theta):
         super(Gumbel, self).__init__(
             dist=dist,
             trans=gumbel(len(dist), theta),

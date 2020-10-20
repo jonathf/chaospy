@@ -3,13 +3,13 @@ Create all primes bellow a certain threshold.
 
 Examples::
 
-    >>> print(create_primes(1))
+    >>> create_primes(1)
     []
-    >>> print(create_primes(2))
+    >>> create_primes(2)
     [2]
-    >>> print(create_primes(3))
+    >>> create_primes(3)
     [2, 3]
-    >>> print(create_primes(20))
+    >>> create_primes(20)
     [2, 3, 5, 7, 11, 13, 17, 19]
 """
 
