@@ -1,52 +1,13 @@
-"""Gaussian kernel density estimation."""
+"""Kernel density estimation baseclass."""
 from __future__ import division
-from typing import Callable
 
 import numpy
-from scipy.special import comb, ndtr, ndtri, factorial2
-from scipy.stats import gaussian_kde
 import chaospy
 
-from .baseclass import Distribution
-from .collection.mv_normal import MvNormal
+from ..baseclass import Distribution
 
 
-class GaussianKDE(Distribution):
-    """
-    Examples:
-        >>> samples = [-1, 0, 1]
-        >>> dist = GaussianKDE(samples, 0.4**2)
-        >>> dist.pdf([-1, -0.5, 0, 0.5, 1]).round(4)
-        array([0.3471, 0.3047, 0.3617, 0.3047, 0.3471])
-        >>> dist.cdf([-1, -0.5, 0, 0.5, 1]).round(4)
-        array([0.1687, 0.3334, 0.5   , 0.6666, 0.8313])
-        >>> dist.inv([0, 0.25, 0.5, 0.75, 1]).round(4)
-        array([-3.7687, -0.7645,  0.    ,  0.7645,  3.9424])
-        >>> dist.mom([1, 2, 3]).round(4)
-        array([0.    , 0.8267, 0.    ])
-        >>> # Does dist normalize to one
-        >>> t = numpy.linspace(-4, 4, 1000000)
-        >>> abs(numpy.mean(dist.pdf(t))*(t[-1]-t[0]) - 1)  # err
-        1.0000000212340154e-06
-
-        >>> samples = [[-1, 0, 1], [0, 1, 2]]
-        >>> dist = GaussianKDE(samples, 0.4)
-        >>> dist.lower.round(4)
-        array([-5.7434, -4.7434])
-        >>> dist.upper.round(4)
-        array([5.7434, 6.7434])
-        >>> dist.pdf([[0, 0, 1, 1], [0, 1, 0, 1]]).round(4)
-        array([0.0482, 0.0977, 0.008 , 0.0482])
-        >>> dist.fwd([[0, 0, 1, 1], [0, 1, 0, 1]]).round(4)
-        array([[0.5   , 0.5   , 0.8141, 0.8141],
-               [0.1274, 0.5   , 0.0158, 0.1597]])
-        >>> dist.inv([[0, 0, 1, 1], [0, 1, 0, 1]]).round(4)
-        array([[-5.7379, -5.7379,  5.393 ,  5.393 ],
-               [-4.7434,  5.0072, -4.7434,  6.5641]])
-        >>> dist.mom([(0, 1, 1), (1, 0, 1)]).round(4)
-        array([1.    , 0.    , 0.6667])
-
-    """
+class KernelDensityBaseclass(Distribution):
 
     def __init__(
             self,
@@ -123,7 +84,7 @@ class GaussianKDE(Distribution):
             dependency_type="accumulate", length=len(self.samples),
         )
 
-        super(GaussianKDE, self).__init__(
+        super(KernelDensityBaseclass, self).__init__(
             parameters={},
             dependencies=dependencies,
             rotation=rotation,
@@ -133,7 +94,7 @@ class GaussianKDE(Distribution):
         self._kernel0 = None
 
     def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(GaussianKDE, self).get_parameters(
+        parameters = super(KernelDensityBaseclass, self).get_parameters(
             idx, cache, assert_numerical=assert_numerical)
         if idx is None:
             del parameters["idx"]
@@ -141,23 +102,13 @@ class GaussianKDE(Distribution):
             parameters["dim"] = dim = self._rotation.index(idx)
         return parameters
 
-    @staticmethod
-    def _kernel(z_loc):
-        """The underlying density kernel."""
-        return numpy.prod(numpy.e**(-z_loc**2/2.)/numpy.sqrt(2*numpy.pi), axis=-1)
-
     def _pdf(self, x_loc, idx, dim, cache):
         """Kernel density function."""
-        # grid up every location to evaluate against every sample
         s, t = numpy.mgrid[:x_loc.shape[-1], :self.samples.shape[-1]]
-
-
-        # The first dimension
         if not dim:
             samples = self.samples[dim, t]
-            z_loc = ((x_loc[s]-samples)*self.Li[:, 0, 0])[:, :, numpy.newaxis]
-            self._zloc = z_loc
-            self._kernel0 = self._kernel1 = self._kernel(z_loc)/self.L[:, 0, 0]
+            self._zloc = ((x_loc[s]-samples)*self.Li[:, 0, 0])[:, :, numpy.newaxis]
+            self._kernel0 = self._kernel1 = self._kernel(self._zloc)/self.L[:, 0, 0]
             out = numpy.sum(self._kernel0*self.weights, axis=-1)
 
         else:
@@ -180,19 +131,12 @@ class GaussianKDE(Distribution):
 
         return out
 
-    def _ikernel(self, z_loc):
-        """The integrand of the underlying density kernel."""
-        kernel = 1
-        if z_loc.shape[-1] > 1:
-            kernel = self._kernel(z_loc[:, :, :-1])
-        return kernel*ndtr(z_loc[:, :, -1])
-
     def _cdf(self, x_loc, idx, dim, cache):
         """Forward mapping."""
         s, t = numpy.mgrid[:x_loc.shape[-1], :self.samples.shape[-1]]
-
         if not dim:
-            self._zloc = ((x_loc[s]-self.samples[idx, t])*self.Li[:, 0, 0])[:, :, numpy.newaxis]
+            z_loc = (x_loc[s]-self.samples[idx, t])*self.Li[:, 0, 0]
+            self._zloc = z_loc[:, :, numpy.newaxis]
             out = numpy.sum(self._ikernel(self._zloc)*self.weights, axis=-1)
 
         else:
@@ -206,38 +150,10 @@ class GaussianKDE(Distribution):
             self._zloc = numpy.dstack([self._zloc[:, :, :dim], zloc])
             out = (numpy.sum(self._ikernel(self._zloc)*self.weights, axis=-1)/
                    numpy.sum(self._kernel(self._zloc[:, :, :-1])*self.weights, axis=-1))
-
-
         return out
 
     def _ppf(self, u_loc, idx, dim, cache):
         """Inverse mapping."""
-        # speed up convergence considerable, by giving very good initial position.
         xloc0 = None if dim else numpy.quantile(self.samples[idx], u_loc)
         return chaospy.approximate_inverse(
             self, idx, u_loc, xloc0=xloc0, cache=cache, tolerance=1e-12)
-
-    def _mom(self, k_loc, cache):
-        """Raw statistical moments."""
-        length = self.samples.shape[-1]
-        covariance = numpy.broadcast_to(
-            self.covariance, (length,)+self.covariance.shape[1:])
-        out = numpy.array([
-            MvNormal._mom(
-                self,
-                k_loc,
-                mean=self.samples[:, idx],
-                sigma=covariance[idx],
-                cache={},
-            )
-            for idx in range(length)
-        ])
-        return numpy.sum(out*self.weights)
-
-    def _lower(self, idx, dim, cache):
-        """Lower bounds."""
-        return (self.samples[idx]-7.5*numpy.sqrt(self.covariance[:, idx, idx]).T).min(-1)
-
-    def _upper(self, idx, dim, cache):
-        """Upper bounds."""
-        return (self.samples[idx]+7.5*numpy.sqrt(self.covariance[:, idx, idx]).T).max(-1)
