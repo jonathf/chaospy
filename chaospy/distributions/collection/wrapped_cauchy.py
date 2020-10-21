@@ -37,11 +37,11 @@ class wrapped_cauchy(SimpleDistribution):
 
         return output
 
-    def _ppf(self, q, c):
+    def _ppf(self, qloc, c):
         val = (1.0-c)/(1.0+c)
-        rcq = 2*numpy.arctan(val*numpy.tan(numpy.pi*q))
-        rcmq = 2*numpy.pi-2*numpy.arctan(val*numpy.tan(numpy.pi*(1-q)))
-        return numpy.where(q < 1.0/2, rcq, rcmq)
+        rcq = 2*numpy.arctan(val*numpy.tan(numpy.pi*qloc))
+        rcmq = 2*numpy.pi-2*numpy.arctan(val*numpy.tan(numpy.pi*(1-qloc)))
+        return numpy.where(qloc < 0.5, rcq, rcmq)
 
     def _lower(self, c):
         return 0.
@@ -63,20 +63,22 @@ class WrappedCauchy(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.WrappedCauchy(0.8, 4, 6)
+        >>> distribution = chaospy.WrappedCauchy(0.5)
         >>> distribution
-        WrappedCauchy(0.8, scale=4, shift=6)
-        >>> q = numpy.linspace(0, 1, 7)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([ 6.5125,  7.521 , 18.5664, 29.6117, 30.6202])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.1667, 0.3333, 0.5   , 0.6667, 0.8333])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.2697, 0.0928, 0.0044, 0.0928, 0.2697])
-        >>> distribution.sample(4).round(4)
-        array([29.4606,  6.3357, 30.9928, 14.8313])
-        >>> distribution.mom(1).round(4)
-        18.5664
+        WrappedCauchy(0.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.475, 1.596, 4.687, 5.808, 6.283])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.477, 0.331, 0.094, 0.094, 0.331, 0.477])
+        >>> distribution.sample(4).round(3)
+        array([5.15 , 0.251, 6.178, 2.809])
+
     """
 
     def __init__(self, shape=0.5, scale=1, shift=0):

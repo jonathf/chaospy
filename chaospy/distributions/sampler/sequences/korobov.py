@@ -8,13 +8,14 @@ Normal usage::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
     >>> samples = distribution.sample(4, rule="korobov")
-    >>> print(numpy.around(samples, 4))
-    [[0.2 0.4 0.6 0.8]
-     [0.4 0.8 0.2 0.6]]
+    >>> samples.round(4)
+    array([[0.2, 0.4, 0.6, 0.8],
+           [0.4, 0.8, 0.2, 0.6]])
     >>> samples = distribution.sample(6, rule="korobov")
-    >>> print(numpy.around(samples, 4))
-    [[0.1429 0.2857 0.4286 0.5714 0.7143 0.8571]
-     [0.4286 0.8571 0.2857 0.7143 0.1429 0.5714]]
+    >>> samples.round(4)
+    array([[0.1429, 0.2857, 0.4286, 0.5714, 0.7143, 0.8571],
+           [0.4286, 0.8571, 0.2857, 0.7143, 0.1429, 0.5714]])
+
 """
 import numpy
 

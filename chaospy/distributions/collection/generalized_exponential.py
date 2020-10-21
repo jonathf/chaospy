@@ -24,12 +24,14 @@ class generalized_exponential(SimpleDistribution):
         return 0.
 
     def _upper(self, a, b, c):
+        qloc, a, b, c = numpy.broadcast_arrays(1-1e-12, a, b, c)
         return chaospy.approximate_inverse(
             distribution=self,
             idx=0,
-            qloc=numpy.array([1.]),
+            qloc=qloc,
             parameters=dict(a=a, b=b, c=c),
-            bounds=(0., 100./a/b/c),
+            bounds=(0., 500./a/b/c),
+            tolerance=1e-15,
         )
 
 
@@ -57,18 +59,21 @@ class GeneralizedExponential(ShiftScaleDistribution):
         N. Balakrishnan, Asit P. Basu.
 
     Examples:
-        >>> distribution = chaospy.GeneralizedExponential(3, 2, 2, 2, 2)
+        >>> distribution = chaospy.GeneralizedExponential(3, 4, 5)
         >>> distribution
-        GeneralizedExponential(3, 2, 2, scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.1423, 2.3113, 2.5314, 2.8774])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([1.3061, 1.0605, 0.7649, 0.4168])
-        >>> distribution.sample(4).round(4)
-        array([2.3802, 2.0889, 3.1627, 3.2915])
+        GeneralizedExponential(3, 4, 5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.063, 0.127, 0.204, 0.321, 4.062])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([3.   , 3.26 , 2.925, 2.223, 1.24 , 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.006, 0.108, 0.089, 0.04 ])
 
     """
 

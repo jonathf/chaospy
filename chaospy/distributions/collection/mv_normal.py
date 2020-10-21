@@ -83,11 +83,11 @@ class MvNormal(MeanCovarianceDistribution):
             pos = diff >= 0
             diff = diff*pos
             pos = numpy.all(pos)
-            location_ = numpy.prod(mean**diff)
+            location_ = numpy.prod(mean**diff, -1)
 
-            out += pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
+            out = out+pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
 
-        return float(out)
+        return out
 
 
 def isserlis_moment(k, scale):
@@ -116,24 +116,27 @@ def isserlis_moment(k, scale):
         >>> isserlis_moment((0, 0, 2), scale)
         1.0
     """
+    if scale.ndim == 2:
+        scale = scale[numpy.newaxis]
+        return isserlis_moment(k, scale)[0]
+
     if not isinstance(k, numpy.ndarray):
         k = numpy.asarray(k)
     assert len(k.shape) == 1
 
     # Recursive exit condition
     if (numpy.sum(k) % 2 == 1) or numpy.any(k < 0):
-        return 0.
+        return numpy.zeros(len(scale))
 
     # Choose a pivot index as first non-zero entry
     idx = numpy.nonzero(k)[0]
     if not idx.size:
         # Skip if no pivot found
-        return 1.
+        return numpy.ones(len(scale))
     idx = idx[0]
 
     eye = numpy.eye(len(k), dtype=int)
-    out = (k[idx]-1)*scale[idx, idx]*isserlis_moment(k-2*eye[idx], scale)
+    out = (k[idx]-1)*scale[:, idx, idx]*isserlis_moment(k-2*eye[idx], scale)
     for idj in range(idx+1, len(k)):
-        out += k[idj]*scale[idx, idj]*isserlis_moment(k-eye[idx]-eye[idj], scale)
-
-    return float(out)
+        out += k[idj]*scale[:, idx, idj]*isserlis_moment(k-eye[idx]-eye[idj], scale)
+    return out

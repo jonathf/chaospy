@@ -1,7 +1,9 @@
 """Truncated normal distribution."""
 import numpy
 from scipy import special
+import chaospy
 
+from .normal import normal
 from ..baseclass import SimpleDistribution
 from ..operators import J
 
@@ -35,10 +37,14 @@ class trunc_normal(SimpleDistribution):
         return special.ndtri(q*(fb-fa) + fa)*sigma + mu
 
     def _lower(self, a, b, mu, sigma):
-        return a
+        del b
+        lower = normal()._lower()*sigma+mu
+        return numpy.where(a < lower, lower, a)
 
     def _upper(self, a, b, mu, sigma):
-        return b
+        del a
+        upper = normal()._upper()*sigma+mu
+        return numpy.where(b > upper, upper, b)
 
 
 class TruncNormal(J):
@@ -56,23 +62,33 @@ class TruncNormal(J):
             Standard deviation of normal distribution
 
     Examples:
-        >>> distribution = chaospy.TruncNormal(2, 4, 2, 2)
-        >>> distribution
-        TruncNormal(lower=2, upper=4, mu=2, sigma=2)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([2.    , 2.4311, 2.8835, 3.387 , 4.    ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([1.1687, 1.1419, 1.0601, 0.9189, 0.7089])
-        >>> distribution.sample(4).round(4)
-        array([3.1841, 2.1971, 3.8643, 2.8501])
+        >>> full_trunc = chaospy.TruncNormal(lower=-1, upper=1)
+        >>> half_trunc = chaospy.TruncNormal(upper=1)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> half_trunc.inv(uloc).round(3)
+        array([-8.22 , -0.961, -0.422,  0.012,  0.448,  1.   ])
+        >>> xloc = full_trunc.inv(uloc)
+        >>> xloc.round(3)
+        array([-1.   , -0.538, -0.172,  0.172,  0.538,  1.   ])
+        >>> numpy.allclose(full_trunc.fwd(xloc), uloc)
+        True
+        >>> full_trunc.pdf(xloc).round(3)
+        array([0.354, 0.506, 0.576, 0.576, 0.506, 0.354])
+        >>> half_trunc.pdf(xloc).round(3)
+        array([0.288, 0.41 , 0.467, 0.467, 0.41 , 0.288])
+        >>> full_trunc.sample(4).round(3)
+        array([ 0.266, -0.715,  0.868, -0.03 ])
+        >>> half_trunc.sample(4).round(3)
+        array([ 0.625, -0.921, -1.822, -0.428])
 
     """
 
-    def __init__(self, lower=-1, upper=1, mu=0, sigma=1):
+    def __init__(self, lower=-numpy.inf, upper=numpy.inf, mu=0, sigma=1):
         super(TruncNormal, self).__init__(
             trunc_normal(lower=lower, upper=upper, mu=mu, sigma=sigma))
-        self._repr_args=["lower=%s" % lower, "upper=%s" % upper ,
-                         "mu=%s" % mu, "sigma=%s" % sigma]
+        self._repr_args = chaospy.format_repr_kwargs(lower=(lower, -numpy.inf))
+        self._repr_args += chaospy.format_repr_kwargs(upper=(upper, numpy.inf))
+        self._repr_args += chaospy.format_repr_kwargs(lower=(mu, 0))
+        self._repr_args += chaospy.format_repr_kwargs(lower=(sigma, 1))

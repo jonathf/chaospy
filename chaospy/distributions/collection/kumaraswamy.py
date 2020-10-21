@@ -47,20 +47,23 @@ class Kumaraswamy(LowerUpperDistribution):
             Upper threshold
 
     Examples:
-        >>> distribution = chaospy.Kumaraswamy(2, 2, 2, 3)
+        >>> distribution = chaospy.Kumaraswamy(1.5, 2.5)
         >>> distribution
-        Kumaraswamy(2, 2, lower=2, upper=3)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.3249, 2.4748, 2.6063, 2.7435])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([1.1625, 1.471 , 1.5337, 1.33  ])
-        >>> distribution.sample(4).round(4)
-        array([2.6414, 2.2434, 2.8815, 2.5295])
+        Kumaraswamy(1.5, 2.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.194, 0.324, 0.455, 0.609, 1.   ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.   , 1.444, 1.572, 1.46 , 1.114, 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([0.492, 0.132, 0.788, 0.377])
         >>> distribution.mom(1).round(4)
-        2.5333
+        0.404
 
     """
 

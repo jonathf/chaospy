@@ -36,18 +36,31 @@ class FoldedCauchy(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.FoldedCauchy(3, 2, 1)
+        >>> distribution = chaospy.FoldedCauchy(1.5)
         >>> distribution
-        FoldedCauchy(3, scale=2, shift=1)
-        >>> q = numpy.linspace(0,1,6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([ 5.1449,  6.708 ,  8.0077, 10.6502])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.0915, 0.1603, 0.1306, 0.0393])
-        >>> distribution.sample(4).round(4)
-        array([ 3.2852,  3.988 ,  2.1266, 19.5435])
+        FoldedCauchy(1.5)
+        >>> uloc = numpy.linspace(0.1, 0.9, 5)
+        >>> uloc
+        array([0.1, 0.3, 0.5, 0.7, 0.9])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.489, 1.217, 1.803, 2.67 , 6.644])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.222, 0.333, 0.318, 0.152, 0.016])
+        >>> distribution.sample(4).round(3)
+        array([1.929, 8.542, 0.311, 1.414])
+
+    Notes:
+        The Cauchy distribution is what is known as a "pathological"
+        distribution. It is not only infinitely bound, but heavy tailed
+        enough that approximate bounds is also infinite for any reasonable
+        approximation. This makes both bounds and moments results in
+        non-sensibel results. In the case of folded-Cauchy distribution::
+
+            >>> distribution.upper > 1e10
+            array([ True])
 
     """
 

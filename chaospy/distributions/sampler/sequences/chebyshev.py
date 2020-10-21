@@ -8,37 +8,38 @@ Basic usage::
 
     >>> distribution = chaospy.Uniform(0, 1)
     >>> samples = distribution.sample(2, rule="chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [0.25 0.75]
+    >>> samples.round(4)
+    array([0.25, 0.75])
     >>> samples = distribution.sample(5, rule="chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [0.067 0.25  0.5   0.75  0.933]
+    >>> samples.round(4)
+    array([0.067, 0.25 , 0.5  , 0.75 , 0.933])
 
 Certain orders are nested::
 
     >>> samples = distribution.sample(3, rule="chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [0.1464 0.5    0.8536]
+    >>> samples.round(4)
+    array([0.1464, 0.5   , 0.8536])
     >>> samples = distribution.sample(7, rule="chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]
+    >>> samples.round(4)
+    array([0.0381, 0.1464, 0.3087, 0.5   , 0.6913, 0.8536, 0.9619])
 
 Create nested samples directly with the dedicated function::
 
     >>> samples = distribution.sample(2, rule="nested_chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [0.1464 0.5    0.8536]
+    >>> samples.round(4)
+    array([0.1464, 0.5   , 0.8536])
     >>> samples = distribution.sample(3, rule="nested_chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [0.0381 0.1464 0.3087 0.5    0.6913 0.8536 0.9619]
+    >>> samples.round(4)
+    array([0.0381, 0.1464, 0.3087, 0.5   , 0.6913, 0.8536, 0.9619])
 
 Multivariate usage::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
     >>> samples = distribution.sample(2, rule="chebyshev")
-    >>> print(numpy.around(samples, 4))
-    [[0.25 0.25 0.75 0.75]
-     [0.25 0.75 0.25 0.75]]
+    >>> samples.round(4)
+    array([[0.25, 0.25, 0.75, 0.75],
+           [0.25, 0.75, 0.25, 0.75]])
+
 """
 import numpy
 import chaospy

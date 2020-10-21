@@ -11,8 +11,9 @@ def approximate_inverse(
         bounds=None,
         cache=None,
         parameters=None,
+        xloc0=None,
         iterations=300,
-        tolerance=1e-5,
+        tolerance=1e-12,
 ):
     """
     Calculate the approximation of the inverse Rosenblatt transformation.
@@ -51,10 +52,13 @@ def approximate_inverse(
     Example:
         >>> distribution = chaospy.Normal(1000, 10)
         >>> qloc = numpy.array([0.1, 0.2, 0.9])
-        >>> approximate_inverse(distribution, 0, qloc).round(4)
-        array([ 987.1845,  991.5839, 1012.8153])
-        >>> distribution.inv(qloc).round(4)
+        >>> inverse = distribution.inv(qloc)
+        >>> inverse.round(4)
         array([ 987.1845,  991.5838, 1012.8155])
+        >>> distribution._ppf = None
+        >>> numpy.allclose(
+        ...     approximate_inverse(distribution, 0, qloc), inverse)
+        True
 
     """
     logger = logging.getLogger(__name__)
@@ -68,10 +72,10 @@ def approximate_inverse(
         xlower = distribution._get_lower(idx, cache.copy())
         xupper = distribution._get_upper(idx, cache.copy())
     else:
-        xlower, xupper = bounds
-    xlower = numpy.broadcast_to(xlower, qloc.shape)
-    xupper = numpy.broadcast_to(xupper, qloc.shape)
-    xloc = 0.5*(xlower+xupper)
+        xlower = numpy.broadcast_to(bounds[0], qloc.shape)
+        xupper = numpy.broadcast_to(bounds[1], qloc.shape)
+
+    xloc = xlower+qloc*(xlower+xupper) if xloc0 is None else xloc0
     uloc = numpy.zeros(qloc.shape)
     ulower = -qloc
     uupper = 1-qloc
@@ -121,8 +125,11 @@ def approximate_inverse(
             "Too many iterations required to estimate inverse.")
         logger.info("%d out of %d did not converge.",
             numpy.sum(indices), len(indices))
+        # print("Too many iterations required to estimate inverse.")
+        # print("%d out of %d did not converge." % (numpy.sum(indices), len(indices)))
 
     logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
+    # print("%s: ppf approx used %d steps" % (distribution, idx_/2))
     return xloc
 
 MOMENTS_QUADS = {}
@@ -223,9 +230,9 @@ def approximate_density(
     cache = cache or {}
     xloc = numpy.asfarray(xloc)
     assert xloc.ndim == 1
-    lo, up = numpy.min(xloc), numpy.max(xloc)
-    mu = .5*(lo+up)
-    tolerance = (numpy.where(xloc < mu, tolerance, -tolerance)*
+    lower, upper = numpy.min(xloc), numpy.max(xloc)
+    middle = .5*(lower+upper)
+    tolerance = (numpy.where(xloc < middle, tolerance, -tolerance)*
                  numpy.clip(numpy.abs(xloc), 1, None))
 
     floc1 = distribution._get_fwd(xloc, idx, cache=cache.copy())

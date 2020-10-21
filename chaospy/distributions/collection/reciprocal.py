@@ -24,8 +24,8 @@ class reciprocal(SimpleDistribution):
     def _upper(self, lower, upper):
         return upper
 
-    def _mom(self, k, lower, upper):
-        return ((upper*numpy.e**k-lower*numpy.e**k)/(numpy.log(upper/lower)*(k+(k == 0))))**(k != 0)
+    def _mom(self, kloc, lower, upper):
+        return (upper**kloc-lower**kloc)/(kloc*numpy.log(upper/lower))
 
 
 class Reciprocal(ShiftScaleDistribution):
@@ -47,17 +47,21 @@ class Reciprocal(ShiftScaleDistribution):
         >>> distribution = chaospy.Reciprocal(2, 4)
         >>> distribution
         Reciprocal(2, 4)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([2.    , 2.3784, 2.8284, 3.3636, 4.    ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.7213, 0.6066, 0.5101, 0.4289, 0.3607])
-        >>> distribution.sample(4).round(4)
-        array([3.1462, 2.166 , 3.8645, 2.7937])
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([2.   , 2.297, 2.639, 3.031, 3.482, 4.   ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.721, 0.628, 0.547, 0.476, 0.414, 0.361])
+        >>> distribution.sample(4).round(3)
+        array([3.146, 2.166, 3.865, 2.794])
         >>> distribution.mom(1).round(4)
-        7.8433
+        2.8854
+
     """
 
     def __init__(self, lower, upper, shift=0, scale=1):

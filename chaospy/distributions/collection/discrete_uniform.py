@@ -5,7 +5,7 @@ from ..baseclass import SimpleDistribution
 from ..operators import J
 
 
-class discrete_uniform(SimpleDistribution):
+class DiscreteUniform(SimpleDistribution):
     """
     Discrete uniform probability distribution.
 
@@ -21,14 +21,14 @@ class discrete_uniform(SimpleDistribution):
         >>> distribution = chaospy.DiscreteUniform(2, 4)
         >>> distribution
         DiscreteUniform(2, 4)
-        >>> q = numpy.linspace(0, 1, 9)
-        >>> q.round(2)
+        >>> qloc = numpy.linspace(0, 1, 9)
+        >>> qloc.round(2)
         array([0.  , 0.12, 0.25, 0.38, 0.5 , 0.62, 0.75, 0.88, 1.  ])
-        >>> distribution.inv(q).round(2)
+        >>> distribution.inv(qloc).round(2)
         array([1.5 , 1.88, 2.25, 2.62, 3.  , 3.38, 3.75, 4.12, 4.5 ])
-        >>> distribution.fwd(distribution.inv(q)).round(2)
+        >>> distribution.fwd(distribution.inv(qloc)).round(2)
         array([0.  , 0.12, 0.25, 0.38, 0.5 , 0.62, 0.75, 0.88, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
+        >>> distribution.pdf(distribution.inv(qloc)).round(4)
         array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
         >>> distribution.sample(4)
         array([3, 2, 4, 3])
@@ -42,7 +42,8 @@ class discrete_uniform(SimpleDistribution):
     interpret_as_integer = True
 
     def __init__(self, lower, upper):
-        super(discrete_uniform, self).__init__(dict(lower=lower, upper=upper))
+        super(DiscreteUniform, self).__init__(dict(lower=lower, upper=upper))
+        self._repr_args = [lower, upper]
 
     def _cdf(self, x_data, lower, upper):
         """Cumulative distribution function."""
@@ -81,12 +82,3 @@ class discrete_uniform(SimpleDistribution):
         weights = numpy.repeat(1./len(abscissas), len(abscissas))
         (alpha, beta), _, _ = discretized_stieltjes(k_data, [abscissas], weights)
         return alpha[0, -1], beta[0, -1]
-
-
-class DiscreteUniform(J):
-
-    interpret_as_integer = True
-
-    def __init__(self, lower, upper):
-        super(DiscreteUniform, self).__init__(discrete_uniform(lower=lower, upper=upper))
-        self._repr_args = [lower, upper]

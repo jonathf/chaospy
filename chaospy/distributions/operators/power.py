@@ -27,16 +27,16 @@ class Power(OperatorDistribution):
         Distribution lower bounds.
 
         Example:
-            >>> print(chaospy.Uniform().lower)
-            [0.]
-            >>> print(chaospy.Power(chaospy.Uniform(), 2).lower)
-            [0.]
-            >>> print(chaospy.Power(chaospy.Uniform(1, 2), -1).lower)
-            [0.5]
-            >>> print(chaospy.Power(2, chaospy.Uniform()).lower)
-            [1.]
-            >>> print(chaospy.Power(2, chaospy.Uniform(-1, 0)).lower)
-            [0.5]
+            >>> chaospy.Uniform().lower
+            array([0.])
+            >>> chaospy.Power(chaospy.Uniform(), 2).lower
+            array([0.])
+            >>> chaospy.Power(chaospy.Uniform(1, 2), -1).lower
+            array([0.5])
+            >>> chaospy.Power(2, chaospy.Uniform()).lower
+            array([1.])
+            >>> chaospy.Power(2, chaospy.Uniform(-1, 0)).lower
+            array([0.5])
 
         """
         left = self._parameters["left"]
@@ -76,16 +76,16 @@ class Power(OperatorDistribution):
         Distribution bounds.
 
         Example:
-            >>> print(chaospy.Uniform().upper)
-            [1.]
-            >>> print(chaospy.Power(chaospy.Uniform(), 2).upper)
-            [1.]
-            >>> print(chaospy.Power(chaospy.Uniform(1, 2), -1).upper)
-            [1.]
-            >>> print(chaospy.Power(2, chaospy.Uniform()).upper)
-            [2.]
-            >>> print(chaospy.Power(2, chaospy.Uniform(-1, 0)).upper)
-            [1.]
+            >>> chaospy.Uniform().upper
+            array([1.])
+            >>> chaospy.Power(chaospy.Uniform(), 2).upper
+            array([1.])
+            >>> chaospy.Power(chaospy.Uniform(1, 2), -1).upper
+            array([1.])
+            >>> chaospy.Power(2, chaospy.Uniform()).upper
+            array([2.])
+            >>> chaospy.Power(2, chaospy.Uniform(-1, 0)).upper
+            array([1.])
 
         """
         left = self._parameters["left"]
@@ -123,16 +123,16 @@ class Power(OperatorDistribution):
         Probability density function.
 
         Example:
-            >>> print(chaospy.Uniform().pdf([-0.5, 0.5, 1.5, 2.5]))
-            [0. 1. 0. 0.]
-            >>> print(chaospy.Power(chaospy.Uniform(), 2).pdf([-0.5, 0.5, 1.5, 2.5]))
-            [0.         0.70710678 0.         0.        ]
-            >>> print(chaospy.Power(chaospy.Uniform(1, 2), -1).pdf([0.4, 0.6, 0.8, 1.2]))
-            [0.         2.77777778 1.5625     0.        ]
-            >>> print(chaospy.Power(2, chaospy.Uniform()).pdf([-0.5, 0.5, 1.5, 2.5]))
-            [0.         0.         0.96179669 0.        ]
-            >>> print(chaospy.Power(2, chaospy.Uniform(-1, 0)).pdf([0.4, 0.6, 0.8, 1.2]))
-            [0.         2.40449173 1.8033688  0.        ]
+            >>> chaospy.Uniform().pdf([-0.5, 0.5, 1.5, 2.5])
+            array([0., 1., 0., 0.])
+            >>> chaospy.Power(chaospy.Uniform(), 2).pdf([-0.5, 0.5, 1.5, 2.5])
+            array([0.        , 0.70710678, 0.        , 0.        ])
+            >>> chaospy.Power(chaospy.Uniform(1, 2), -1).pdf([0.4, 0.6, 0.8, 1.2])
+            array([0.        , 2.77777778, 1.5625    , 0.        ])
+            >>> chaospy.Power(2, chaospy.Uniform()).pdf([-0.5, 0.5, 1.5, 2.5])
+            array([0.        , 0.        , 0.96179669, 0.        ])
+            >>> chaospy.Power(2, chaospy.Uniform(-1, 0)).pdf([0.4, 0.6, 0.8, 1.2])
+            array([0.        , 2.40449173, 1.8033688 , 0.        ])
 
         """
         if isinstance(left, Distribution):
@@ -160,16 +160,16 @@ class Power(OperatorDistribution):
         Cumulative distribution function.
 
         Example:
-            >>> print(chaospy.Uniform().fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.  0.5 1.  1. ]
-            >>> print(chaospy.Power(chaospy.Uniform(), 2).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.         0.70710678 1.         1.        ]
-            >>> print(chaospy.Power(chaospy.Uniform(1, 2), -1).fwd([0.4, 0.6, 0.8, 1.2]))
-            [0.         0.33333333 0.75       1.        ]
-            >>> print(chaospy.Power(2, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5]))
-            [0.        0.        0.5849625 1.       ]
-            >>> print(chaospy.Power(2, chaospy.Uniform(-1, 0)).fwd([0.4, 0.6, 0.8, 1.2]))
-            [0.         0.26303441 0.67807191 1.        ]
+            >>> chaospy.Uniform().fwd([-0.5, 0.5, 1.5, 2.5])
+            array([0. , 0.5, 1. , 1. ])
+            >>> chaospy.Power(chaospy.Uniform(), 2).fwd([-0.5, 0.5, 1.5, 2.5])
+            array([0.        , 0.70710678, 1.        , 1.        ])
+            >>> chaospy.Power(chaospy.Uniform(1, 2), -1).fwd([0.4, 0.6, 0.8, 1.2])
+            array([0.        , 0.33333333, 0.75      , 1.        ])
+            >>> chaospy.Power(2, chaospy.Uniform()).fwd([-0.5, 0.5, 1.5, 2.5])
+            array([0.       , 0.       , 0.5849625, 1.       ])
+            >>> chaospy.Power(2, chaospy.Uniform(-1, 0)).fwd([0.4, 0.6, 0.8, 1.2])
+            array([0.        , 0.26303441, 0.67807191, 1.        ])
 
         """
         if isinstance(left, Distribution):
@@ -190,16 +190,16 @@ class Power(OperatorDistribution):
         Point percentile function.
 
         Example:
-            >>> print(chaospy.Uniform().inv([0.1, 0.2, 0.9]))
-            [0.1 0.2 0.9]
-            >>> print(chaospy.Power(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9]))
-            [0.01 0.04 0.81]
-            >>> print(chaospy.Power(chaospy.Uniform(1, 2), -1).inv([0.1, 0.2, 0.9]))
-            [0.52631579 0.55555556 0.90909091]
-            >>> print(chaospy.Power(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9]))
-            [1.07177346 1.14869835 1.86606598]
-            >>> print(chaospy.Power(2, chaospy.Uniform(-1, 0)).inv([0.1, 0.2, 0.9]))
-            [0.53588673 0.57434918 0.93303299]
+            >>> chaospy.Uniform().inv([0.1, 0.2, 0.9])
+            array([0.1, 0.2, 0.9])
+            >>> chaospy.Power(chaospy.Uniform(), 2).inv([0.1, 0.2, 0.9])
+            array([0.01, 0.04, 0.81])
+            >>> chaospy.Power(chaospy.Uniform(1, 2), -1).inv([0.1, 0.2, 0.9])
+            array([0.52631579, 0.55555556, 0.90909091])
+            >>> chaospy.Power(2, chaospy.Uniform()).inv([0.1, 0.2, 0.9])
+            array([1.07177346, 1.14869835, 1.86606598])
+            >>> chaospy.Power(2, chaospy.Uniform(-1, 0)).inv([0.1, 0.2, 0.9])
+            array([0.53588673, 0.57434918, 0.93303299])
 
         """
         if isinstance(left, Distribution):
@@ -216,16 +216,16 @@ class Power(OperatorDistribution):
         Statistical moments.
 
         Example:
-            >>> print(numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4))
-            [1.     0.5    0.3333 0.25  ]
-            >>> print(numpy.around(chaospy.Power(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4))
-            [1.     0.3333 0.2    0.1429]
-            >>> print(numpy.around(chaospy.Power(chaospy.Uniform(1, 2), -1).mom([0, 1, 2, 3]), 4))
-            [1.     0.6931 0.5    0.375 ]
-            >>> print(numpy.around(chaospy.Power(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4))
-            [1.     1.4427 2.164  3.3663]
-            >>> print(numpy.around(chaospy.Power(2, chaospy.Uniform(-1, 0)).mom([0, 1, 2, 3]), 4))
-            [1.     0.7213 0.541  0.4208]
+            >>> numpy.around(chaospy.Uniform().mom([0, 1, 2, 3]), 4)
+            array([1.    , 0.5   , 0.3333, 0.25  ])
+            >>> numpy.around(chaospy.Power(chaospy.Uniform(), 2).mom([0, 1, 2, 3]), 4)
+            array([1.    , 0.3333, 0.2   , 0.1429])
+            >>> numpy.around(chaospy.Power(chaospy.Uniform(1, 2), -1).mom([0, 1, 2, 3]), 4)
+            array([1.    , 0.6931, 0.5   , 0.375 ])
+            >>> numpy.around(chaospy.Power(2, chaospy.Uniform()).mom([0, 1, 2, 3]), 4)
+            array([1.    , 1.4427, 2.164 , 3.3663])
+            >>> numpy.around(chaospy.Power(2, chaospy.Uniform(-1, 0)).mom([0, 1, 2, 3]), 4)
+            array([1.    , 0.7213, 0.541 , 0.4208])
 
         """
         del cache

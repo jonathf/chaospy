@@ -44,20 +44,24 @@ class LogUniform(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.LogUniform(2, 3, 2, 3)
+        >>> distribution = chaospy.LogUniform(0.5, 1.5)
         >>> distribution
-        LogUniform(2, 3, scale=2, shift=3)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([21.05  , 25.0464, 29.9275, 35.8893])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.0554, 0.0454, 0.0371, 0.0304])
-        >>> distribution.sample(4).round(4)
-        array([31.4099, 19.5793, 41.2227, 26.9349])
-        >>> distribution.mom(1).round(4)
-        28.393
+        LogUniform(0.5, 1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([1.649, 2.014, 2.46 , 3.004, 3.669, 4.482])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.607, 0.497, 0.407, 0.333, 0.273, 0.223])
+        >>> distribution.sample(4).round(3)
+        array([3.17 , 1.85 , 4.264, 2.67 ])
+        >>> distribution.mom(1).round(3)
+        2.833
+
     """
 
     def __init__(self, lower=0, upper=1, scale=1, shift=0):

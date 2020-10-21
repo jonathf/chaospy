@@ -47,23 +47,25 @@ class GeneralizedHalfLogistic(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.GeneralizedHalfLogistic(1, 2, 2)
+        >>> distribution = chaospy.GeneralizedHalfLogistic(0.5)
         >>> distribution
-        GeneralizedHalfLogistic(1, scale=2, shift=2)
-        >>> q = numpy.linspace(0, 1, 6)[1:-1]
-        >>> distribution.inv(q).round(4)
-        array([2.6667, 3.1429, 3.5   , 3.7778])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.2, 0.4, 0.6, 0.8])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.36, 0.49, 0.64, 0.81])
-        >>> distribution.sample(4).round(4)
-        array([3.581 , 2.4126, 3.949 , 3.3013])
-        >>> distribution.mom(1).round(4)
-        3.2274
+        GeneralizedHalfLogistic(0.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.367, 0.691, 1.   , 1.333, 2.   ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([0.5  , 0.588, 0.642, 0.64 , 0.54 , 0.   ])
+        >>> distribution.sample(4).round(3)
+        array([1.085, 0.218, 1.681, 0.818])
+
     """
 
-    def __init__(self, shape, scale, shift):
+    def __init__(self, shape, scale=1, shift=0):
         super(GeneralizedHalfLogistic, self).__init__(
             dist=generalized_half_logistic(shape),
             scale=scale,

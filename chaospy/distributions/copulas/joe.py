@@ -95,10 +95,10 @@ class Joe(CopulaDistribution):
         Joe(Iid(Uniform(lower=-1, upper=1), 2), theta=2)
         >>> samples = distribution.sample(3)
         >>> samples.round(4)
-        array([[ 0.3072, -0.77  ,  0.9005],
-               [ 0.4155, -0.173 ,  0.866 ]])
+        array([[ 0.3072, -0.77  ,  0.9006],
+               [ 0.4155, -0.173 ,  0.8661]])
         >>> distribution.pdf(samples).round(4)
-        array([ 0.2014,  0.3844, 11.8424])
+        array([ 0.2014,  0.3844, 11.8495])
         >>> distribution.fwd(samples).round(4)
         array([[0.6536, 0.115 , 0.9503],
                [0.4822, 0.8725, 0.2123]])
@@ -108,7 +108,7 @@ class Joe(CopulaDistribution):
                 [-0.2   ,  0.    ,  0.2   ],
                 [-0.2   ,  0.    ,  0.2   ]],
         <BLANKLINE>
-               [[-0.3764, -0.0596,  0.1991],
+               [[-0.3764, -0.0596,  0.199 ],
                 [-0.1496,  0.115 ,  0.331 ],
                 [ 0.0446,  0.2645,  0.444 ]]])
 

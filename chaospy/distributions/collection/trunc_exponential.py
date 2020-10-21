@@ -40,20 +40,22 @@ class TruncExponential(ShiftScaleDistribution):
             Location parameter
 
     Examples:
-        >>> distribution = chaospy.TruncExponential(2, 4)
+        >>> distribution = chaospy.TruncExponential(1.5)
         >>> distribution
-        TruncExponential(2, scale=4)
-        >>> q = numpy.linspace(0, 1, 5)
-        >>> distribution.inv(q).round(4)
-        array([0.    , 0.4142, 0.8763, 1.3988, 2.    ])
-        >>> distribution.fwd(distribution.inv(q)).round(4)
-        array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-        >>> distribution.pdf(distribution.inv(q)).round(4)
-        array([0.6354, 0.5729, 0.5104, 0.4479, 0.3854])
-        >>> distribution.sample(4).round(4)
-        array([1.1891, 0.1852, 1.873 , 0.8415])
-        >>> distribution.mom(1).round(4)
-        0.917
+        TruncExponential(1.5)
+        >>> uloc = numpy.linspace(0, 1, 6)
+        >>> uloc
+        array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
+        >>> xloc = distribution.inv(uloc)
+        >>> xloc.round(3)
+        array([0.   , 0.169, 0.372, 0.628, 0.972, 1.5  ])
+        >>> numpy.allclose(distribution.fwd(xloc), uloc)
+        True
+        >>> distribution.pdf(xloc).round(3)
+        array([1.287, 1.087, 0.887, 0.687, 0.487, 0.287])
+        >>> distribution.sample(4).round(3)
+        array([0.709, 0.094, 1.34 , 0.469])
+
     """
 
     def __init__(self, upper=1, scale=1, shift=0):
