@@ -47,16 +47,13 @@ class KernelDensityBaseclass(Distribution):
         # The Scott factor is taken from scipy docs.
         if h_mat is None:
 
-            if estimator_rule == "scott":
+            if estimator_rule in ("scott", "silverman"):
                 qrange = numpy.quantile(samples, [0.25, 0.75], axis=1).ptp(axis=0)
                 scale = numpy.min([numpy.std(samples, axis=1), qrange/1.34], axis=0)
-                factor = samples.shape[1]**(-1./(len(samples)+4))
-                covariance = numpy.diag(scale*factor)**2
-
-            elif estimator_rule == "silverman":
-                qrange = numpy.quantile(samples, [0.25, 0.75], axis=1).ptp(axis=0)
-                scale = numpy.min([numpy.std(samples, axis=1), qrange/1.34], axis=0)
-                factor = (samples.shape[1]*(len(samples)+2)/4.)**(-1./(len(samples)+4))
+                factor = samples.shape[1]
+                if estimator_rule == "silverman":
+                    factor *= (len(samples)+2)/4.
+                factor **= -1./(len(samples)+4)
                 covariance = numpy.diag(scale*factor)**2
 
             else:
@@ -82,8 +79,8 @@ class KernelDensityBaseclass(Distribution):
         )
 
         self.samples = samples
+        self.h_mat = covariance
         self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
-        self.covariance = covariance
         self._pcovariance = numpy.matmul(numpy.matmul(
             self._permute, covariance), self._permute.T)
         cholesky = numpy.linalg.cholesky(self._pcovariance)

@@ -17,7 +17,7 @@ class GaussianKDE(KernelDensityBaseclass):
     Attributes:
         samples:
             The raw data as provided by the user reshaped to have `ndim == 2`.
-        covariance:
+        h_mat:
             The covariance matrix to each sample. Assuming uncorrelated
             dimensions, the bandwidth is the square root of the diagonals. It
             will have either dimensions `(1, n_dim, n_dim)` if all samples
@@ -28,17 +28,20 @@ class GaussianKDE(KernelDensityBaseclass):
 
     Examples:
         >>> samples = [[-1, 0, 1], [0, 1, 2]]
-        >>> dist = chaospy.GaussianKDE(samples, 0.4)
+        >>> distribution = chaospy.GaussianKDE(samples, estimator_rule="silverman")
+        >>> distribution.h_mat  # H-matrix or bandwidth**2
+        array([[[0.38614462, 0.        ],
+                [0.        , 0.38614462]]])
         >>> uloc = [[0, 0, 1, 1], [0, 1, 0, 1]]
-        >>> dist.pdf(uloc).round(4)
-        array([0.0482, 0.0977, 0.008 , 0.0482])
-        >>> dist.fwd(uloc).round(4)
-        array([[0.5   , 0.5   , 0.8141, 0.8141],
-               [0.1274, 0.5   , 0.0158, 0.1597]])
-        >>> dist.inv(uloc).round(4)
-        array([[-6.6758, -6.6758,  5.4719,  5.4719],
-               [-4.454 ,  4.6876, -6.0671,  7.8807]])
-        >>> dist.mom([(0, 1, 1), (1, 0, 1)]).round(4)
+        >>> distribution.pdf(uloc).round(4)
+        array([0.0469, 0.0982, 0.0074, 0.0469])
+        >>> distribution.fwd(uloc).round(4)
+        array([[0.5   , 0.5   , 0.8152, 0.8152],
+               [0.1233, 0.5   , 0.0142, 0.1532]])
+        >>> distribution.inv(uloc).round(4)
+        array([[-6.577 , -6.577 ,  5.3948,  5.3948],
+               [-4.3871,  4.6411, -5.9611,  7.7779]])
+        >>> distribution.mom([(0, 1, 1), (1, 0, 1)]).round(4)
         array([1.    , 0.    , 0.6667])
 
     """
@@ -56,14 +59,14 @@ class GaussianKDE(KernelDensityBaseclass):
     def _mom(self, k_loc, cache):
         """Raw statistical moments."""
         length = self.samples.shape[-1]
-        covariance = numpy.broadcast_to(
-            self.covariance, (length,)+self.covariance.shape[1:])
+        h_mat = numpy.broadcast_to(
+            self.h_mat, (length,)+self.h_mat.shape[1:])
         out = numpy.array([
             MvNormal._mom(
                 self,
                 k_loc,
                 mean=self.samples[:, idx],
-                sigma=covariance[idx],
+                sigma=h_mat[idx],
                 cache={},
             )
             for idx in range(length)
@@ -72,8 +75,8 @@ class GaussianKDE(KernelDensityBaseclass):
 
     def _lower(self, idx, dim, cache):
         """Lower bounds."""
-        return (self.samples[idx]-10*numpy.sqrt(self.covariance[:, idx, idx]).T).min(-1)
+        return (self.samples[idx]-10*numpy.sqrt(self.h_mat[:, idx, idx]).T).min(-1)
 
     def _upper(self, idx, dim, cache):
         """Upper bounds."""
-        return (self.samples[idx]+10*numpy.sqrt(self.covariance[:, idx, idx]).T).max(-1)
+        return (self.samples[idx]+10*numpy.sqrt(self.h_mat[:, idx, idx]).T).max(-1)

@@ -24,10 +24,8 @@ class reciprocal(SimpleDistribution):
     def _upper(self, lower, upper):
         return upper
 
-    def _mom(self, k, lower, upper):
-        if not k:
-            return 1.
-        return (upper**k-lower**k)/(k*numpy.log(upper/lower))
+    def _mom(self, kloc, lower, upper):
+        return (upper**kloc-lower**kloc)/(kloc*numpy.log(upper/lower))
 
 
 class Reciprocal(ShiftScaleDistribution):
