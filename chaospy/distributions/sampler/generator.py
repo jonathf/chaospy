@@ -60,6 +60,7 @@ import numpy
 from . import sequences, latin_hypercube
 
 SAMPLER_NAMES = {
+    "a": "additive_recursion", "additive_recursion": "additive_recursion",
     "c": "chebyshev", "chebyshev": "chebyshev",
     "nc": "nested_chebyshev", "nested_chebyshev": "nested_chebyshev",
     "k": "korobov", "korobov": "korobov",
@@ -72,6 +73,7 @@ SAMPLER_NAMES = {
     "r": "random", "random": "random",
 }
 SAMPLER_FUNCTIONS = {
+    "additive_recursion": sequences.create_additive_recursion_samples,
     "chebyshev": sequences.create_chebyshev_samples,
     "nested_chebyshev": sequences.create_nested_chebyshev_samples,
     "korobov": sequences.create_korobov_samples,
