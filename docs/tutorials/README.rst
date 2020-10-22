@@ -13,6 +13,7 @@ Tutorials
    advanced/scikitlearn_regression
    advanced/intrusive_galerkin
    advanced/kernel_density_estimation
+   advanced/gaussian_mixture_model
    polynomial/expansion_construction
    polynomial/polynomial_evaluation
    polynomial/wiener_askey_scheme
@@ -76,10 +77,14 @@ Advanced Topics
    function of a random variable in a non-parametric way. It works for both
    uni-variate and multi-variate data. It includes automatic bandwidth
    determination.
+`Gaussian Mixture Model`_
+   A Gaussian mixture model is a probabilistic model constructed from a mixture
+   of a finite number of Gaussian distributions.
 
 .. _Scikit-Learn Regression: ./advanced/scikitlearn_regression.ipynb
 .. _Intrusive Galerkin: ./advanced/intrusive_galerkin.ipynb
 .. _Kernel Density Estimation: ./advanced/kernel_density_estimation.ipynb
+.. _Gaussian Mixture Model: ./advanced/gaussian_mixture_model.ipynb
 
 Polynomial Behavior
 -------------------
