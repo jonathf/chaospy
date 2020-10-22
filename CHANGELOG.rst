@@ -1,6 +1,35 @@
 Master Branch
 =============
 
+Version 4.0-beta3 (2020-10-22)
+==============================
+
+Additive recursion sampler.
+
+ADDED:
+  * Support for additive recursive sampling scheme.
+  * Tutorial for Monte-Carlo now includes compare of difference sampling
+    schemes.
+CHANGED:
+  * Bugfix to antithetic variate.
+
+Version 4.0-beta2 (2020-10-21)
+==============================
+
+Mv-KDE support!
+
+ADDED:
+  * Added support for multivariate kernel density estimation distribution
+    `GaussianKDE`.
+  * Tutorial for KDE.
+CHANGED:
+  * Default tolerance for the accuracy in approximate inverse lowered from
+    `10^-5` to `10^-12`.
+  * Lots of distribution have fixes such that `dist.inv([0, 1])` is now allowed
+    in general.
+  * Update to lots of docs to include example with `dist.inv([0, 1])`.
+  * Update `nbval` config to be more relaxed during tests.
+
 Version 4.0-beta1 (2020-10-09)
 ==============================
 

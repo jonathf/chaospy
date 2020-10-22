@@ -20,6 +20,7 @@ advantage.
 
 .. low-discrepancy sequence: https://en.wikipedia.org/wiki/Low-discrepancy_sequence
 """
+from .additive_recursion import create_additive_recursion_samples
 from .chebyshev import create_chebyshev_samples, create_nested_chebyshev_samples
 from .grid import create_grid_samples, create_nested_grid_samples
 from .halton import create_halton_samples

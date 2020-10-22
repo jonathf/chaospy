@@ -33,11 +33,11 @@ Antithetic variates can also be used in multiple dimensions::
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> samples = distribution.sample(6, antithetic=True)
     >>> samples.round(4)
-    array([[0.0407, 0.9593, 0.0407, 0.9593, 0.3972, 0.6028],
-           [0.8417, 0.8417, 0.1583, 0.1583, 0.2071, 0.2071]])
+    array([[0.8725, 0.1275, 0.8725, 0.1275, 0.2123, 0.7877],
+           [0.3972, 0.3972, 0.6028, 0.6028, 0.2331, 0.2331]])
     >>> 1-samples.round(4)
-    array([[0.9593, 0.0407, 0.9593, 0.0407, 0.6028, 0.3972],
-           [0.1583, 0.1583, 0.8417, 0.8417, 0.7929, 0.7929]])
+    array([[0.1275, 0.8725, 0.1275, 0.8725, 0.7877, 0.2123],
+           [0.6028, 0.6028, 0.3972, 0.3972, 0.7669, 0.7669]])
 
 Lastly, it is also possible to select which axes should be included when
 applying the variate by passing a bool array. For axes that are "false", the
@@ -45,18 +45,18 @@ value is frozen in place::
 
     >>> samples = distribution.sample(6, antithetic=[True, False])
     >>> samples.round(4)
-    array([[0.3922, 0.6078, 0.1823, 0.8177, 0.7435, 0.2565],
-           [0.0696, 0.0696, 0.8853, 0.8853, 0.9526, 0.9526]])
+    array([[0.2071, 0.7929, 0.7425, 0.2575, 0.3922, 0.6078],
+           [0.1823, 0.1823, 0.7435, 0.7435, 0.0696, 0.0696]])
     >>> 1-samples.round(4)
-    array([[0.6078, 0.3922, 0.8177, 0.1823, 0.2565, 0.7435],
-           [0.9304, 0.9304, 0.1147, 0.1147, 0.0474, 0.0474]])
+    array([[0.7929, 0.2071, 0.2575, 0.7425, 0.6078, 0.3922],
+           [0.8177, 0.8177, 0.2565, 0.2565, 0.9304, 0.9304]])
     >>> samples = distribution.sample(6, antithetic=[False, True])
     >>> samples.round(4)
-    array([[0.9311, 0.9311, 0.4154, 0.4154, 0.029 , 0.029 ],
-           [0.982 , 0.018 , 0.3396, 0.6604, 0.7067, 0.2933]])
+    array([[0.8853, 0.8853, 0.9526, 0.9526, 0.9311, 0.9311],
+           [0.4154, 0.5846, 0.029 , 0.971 , 0.982 , 0.018 ]])
     >>> 1-samples.round(4)
-    array([[0.0689, 0.0689, 0.5846, 0.5846, 0.971 , 0.971 ],
-           [0.018 , 0.982 , 0.6604, 0.3396, 0.2933, 0.7067]])
+    array([[0.1147, 0.1147, 0.0474, 0.0474, 0.0689, 0.0689],
+           [0.5846, 0.4154, 0.971 , 0.029 , 0.018 , 0.982 ]])
 
 .. _antithetic variates: https://en.wikipedia.org/wiki/Antithetic_variates
 """
