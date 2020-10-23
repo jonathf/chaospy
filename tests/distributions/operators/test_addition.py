@@ -1,3 +1,4 @@
+"""Tests for the addition operator."""
 from pytest import raises
 
 import numpy

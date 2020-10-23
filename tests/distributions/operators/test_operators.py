@@ -1,3 +1,4 @@
+"""Tests for the various base-operators."""
 import numpy
 import chaospy
 
