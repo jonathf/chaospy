@@ -9,12 +9,14 @@ List of Distributions
 
     .. code-block::
 
-        >>> upper_trunc = chaospy.Trunc(chaospy.Weibull(1), 2)
-        >>> print(upper_trunc)
-        Trunc(Weibull(1), 2)
-        >>> upper_and_lower_trunc = chaospy.Trunc(0.5, upper_trunc)
-        >>> print(upper_and_lower_trunc)
-        Trunc(0.5, Trunc(Weibull(1), 2))
+        >>> distribution = chaospy.Weibull(1)
+        >>> upper_trunc = chaospy.Trunc(distribution, upper=2)
+        >>> upper_trunc
+        Trunc(Weibull(1), upper=2)
+        >>> upper_and_lower_trunc = chaospy.Trunc(
+        ...     distribution, lower=0.5, upper=2)
+        >>> upper_and_lower_trunc
+        Trunc(Weibull(1), lower=0.5, upper=2)
 
 Alpha Distribution
 ------------------

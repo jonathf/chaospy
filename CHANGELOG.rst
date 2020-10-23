@@ -1,6 +1,9 @@
 Master Branch
 =============
 
+CHANGED:
+  * `chaospy.Trunc` updated to take both `lower` and `upper` at the same time.
+
 Version 4.0-beta3 (2020-10-22)
 ==============================
 
