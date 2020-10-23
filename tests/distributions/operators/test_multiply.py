@@ -1,3 +1,4 @@
+"""Tests for the multiplication operator."""
 from pytest import raises
 import numpy
 
