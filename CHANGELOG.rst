@@ -1,6 +1,11 @@
 Master Branch
 =============
 
+Version 4.0.1 (2020-10-26)
+==========================
+
+Release!
+
 ADDED:
   * Gaussian Mixture Model: `GaussianMixture`.
   * Tutorial for how to use `scikit-learn` mixture models to fit a model, and
