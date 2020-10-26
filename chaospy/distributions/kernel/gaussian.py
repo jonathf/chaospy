@@ -83,8 +83,12 @@ class GaussianKDE(KernelDensityBaseclass):
 
     def _lower(self, idx, dim, cache):
         """Lower bounds."""
+        del dim
+        del cache
         return (self.samples[idx]-10*numpy.sqrt(self.h_mat[:, idx, idx]).T).min(-1)
 
     def _upper(self, idx, dim, cache):
         """Upper bounds."""
+        del dim
+        del cache
         return (self.samples[idx]+10*numpy.sqrt(self.h_mat[:, idx, idx]).T).max(-1)

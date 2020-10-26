@@ -141,8 +141,9 @@ Also a few shout-outs:
 | `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
 | `quadpy`_    | for several of the quadrature integration methods.           |
 +--------------+--------------------------------------------------------------+
-| ``UQRF``     | Thanks to `Florian Künzner`_ for providing the               |
-|              | implementation for `sample distribution`_.                   |
+| ``UQRF``     | Thanks to `Florian Künzner`_ for providing the initial       |
+|              | implementation of kernel density estimation and              |
+|              | quantity-of-interest distribution.                           |
 +--------------+--------------------------------------------------------------+
 
 .. _OpenTURNS: http://openturns.github.io/openturns/latest

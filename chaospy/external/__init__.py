@@ -7,4 +7,3 @@ allowing for using components from other projects as part of ``chaospy``.
 """
 from .openturns_ import openturns_dist, OpenTURNSDist
 from .scipy_stats import ScipyStatsDist
-from .samples import sample_dist, SampleDist

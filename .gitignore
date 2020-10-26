@@ -1,0 +1,8 @@
+.coverage
+__pycache__
+*.egg-info
+*.pyc
+.ipynb_checkpoints
+.mypy_cache
+.envrc
+docs/.build

@@ -1,12 +1,19 @@
 Master Branch
 =============
 
+Version 4.0.1 (2020-10-26)
+==========================
+
+Release!
+
 ADDED:
   * Gaussian Mixture Model: `GaussianMixture`.
   * Tutorial for how to use `scikit-learn` mixture models to fit a model, and
     `chaospy` to generate quasi-random samples and orthogonal polynomials.
 CHANGED:
   * `chaospy.Trunc` updated to take both `lower` and `upper` at the same time.
+REMOVED:
+  * `chaospy.SampleDist` removed in favor of `chaospy.GaussianKDE`.
 
 Version 4.0-beta3 (2020-10-22)
 ==============================
