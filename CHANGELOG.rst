@@ -1,6 +1,10 @@
 Master Branch
 =============
 
+ADDED:
+  * Gaussian Mixture Model: `GaussianMixture`.
+  * Tutorial for how to use `scikit-learn` mixture models to fit a model, and
+    `chaospy` to generate quasi-random samples and orthogonal polynomials.
 CHANGED:
   * `chaospy.Trunc` updated to take both `lower` and `upper` at the same time.
 

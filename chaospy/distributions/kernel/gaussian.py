@@ -46,6 +46,14 @@ class GaussianKDE(KernelDensityBaseclass):
 
     """
 
+    @property
+    def samples(self):
+        return self._samples
+
+    @property
+    def h_mat(self):
+        return self._covariance
+
     @staticmethod
     def _kernel(z_loc):
         """The underlying density kernel."""

@@ -73,7 +73,7 @@ from .copulas import *
 from .operators import *
 from .constructor import construct
 from .approximation import *
-from .kernel import GaussianKDE
+from .kernel import GaussianKDE, GaussianMixture
 
 from . import (
     baseclass, sampler, approximation,
