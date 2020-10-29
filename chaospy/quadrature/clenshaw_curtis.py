@@ -110,7 +110,6 @@ def quad_clenshaw_curtis(order, domain, growth=False, segments=1):
         abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
         weights *= domain.pdf(abscissas_).flatten()
         weights /= numpy.sum(weights)
-
         return abscissas, weights
 
     order = numpy.asarray(order, dtype=int).flatten()

@@ -108,12 +108,9 @@ def quad_gauss_legendre(
         abscissas, weights = quad_gauss_legendre(
             order, (domain.lower, domain.upper),
             rule, accuracy, recurrence_algorithm)
-
-        pdf = domain.pdf(abscissas)
-        if len(domain) > 1:
-            weights = (weights.T*pdf).T
-        else:
-            weights *= pdf.flatten()
+        eps = 1e-14*(domain.upper-domain.lower)
+        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
+        weights *= domain.pdf(abscissas_).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights
 
