@@ -73,6 +73,7 @@ class ShiftScaleDistribution(Distribution):
             scale = scale._get_cache(idx, cache, get=0)
         elif idx is not None and len(scale) > 1:
             scale = scale[idx]
+        assert scale > 0, "condition not satisfied: `scale > 0`"
 
         assert not assert_numerical or not (isinstance(shift, Distribution) or
                                             isinstance(scale, Distribution))

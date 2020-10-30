@@ -68,7 +68,8 @@ class LowerUpperDistribution(Distribution):
             upper = upper[idx]
         assert not assert_numerical or not (isinstance(lower, Distribution) or
                                             isinstance(upper, Distribution))
-
+        assert numpy.all(upper.ravel() > lower.ravel()), (
+            "condition not satisfied: `upper > lower`")
         lower0 = self._dist._get_lower(idx, cache.copy())
         upper0 = self._dist._get_upper(idx, cache.copy())
         scale = (upper-lower)/(upper0-lower0)
@@ -92,6 +93,7 @@ class LowerUpperDistribution(Distribution):
         return dist._pdf((xloc-shift)/scale, **parameters)/scale
 
     def _mom(self, kloc, dist, scale, shift, parameters):
+        del parameters
         poly = numpoly.variable(len(self))
         poly = numpoly.sum(scale*poly, axis=-1)+shift
         poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))

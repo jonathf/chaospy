@@ -101,7 +101,9 @@ def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
     if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_fejer(
             order, (domain.lower, domain.upper), growth)
-        weights *= domain.pdf(abscissas).flatten()
+        eps = 1e-14*(domain.upper-domain.lower)
+        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
+        weights *= domain.pdf(abscissas_).flatten()
         weights /= numpy.sum(weights)
         return abscissas, weights
 

@@ -60,19 +60,23 @@ class Trunc(Distribution):
                 raise chaospy.StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
             assert len(dist) == len(lower)
+            lower_ = lower.lower
         elif lower is None:
-            lower = dist.lower
+            lower = lower_ = dist.lower
         else:
-            lower = numpy.atleast_1d(lower)
+            lower = lower_ = numpy.atleast_1d(lower)
         if isinstance(upper, Distribution):
             if upper.stochastic_dependent:
                 raise chaospy.StochasticallyDependentError(
                     "Joint distribution with dependencies not supported.")
             assert len(dist) == len(upper)
+            upper_ = upper.upper
         elif upper is None:
-            upper = dist.upper
+            upper = upper_ = dist.upper
         else:
-            upper = numpy.atleast_1d(upper)
+            upper = upper_ = numpy.atleast_1d(upper)
+        assert numpy.all(upper_ > lower_), (
+            "condition `upper > lower` not satisfied: %s <= %s" % (upper_, lower_))
 
         dependencies, parameters, rotation = chaospy.declare_dependencies(
             distribution=self,
