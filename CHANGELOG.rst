@@ -1,6 +1,15 @@
 Master Branch
 =============
 
+Version 4.0.2 (2020-10-30)
+==========================
+
+CHANGED:
+  * `lower > upper` illegal for all `LowerUpperDistribution` and `Trunc`.
+  * `scale <= 0` illegal for all `ShiftScaleDistribution`.
+  * Add epsilon buffer to all quadrature rules that evaluate at the edges.
+  * `numpoly` update to version 1.0.8.
+
 Version 4.0.1 (2020-10-26)
 ==========================
 

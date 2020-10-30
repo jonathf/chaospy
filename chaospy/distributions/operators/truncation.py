@@ -73,6 +73,8 @@ class Trunc(Distribution):
             upper = dist.upper
         else:
             upper = numpy.atleast_1d(upper)
+        assert numpy.all(upper > lower), (
+            "condition not satisfied: `upper > lower`")
 
         dependencies, parameters, rotation = chaospy.declare_dependencies(
             distribution=self,

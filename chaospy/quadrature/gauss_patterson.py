@@ -70,15 +70,9 @@ def quad_gauss_patterson(order, domain):
         abscissas, weights = quad_gauss_patterson(
             order, (domain.lower, domain.upper))
         eps = 1e-14*(domain.upper-domain.lower)
-        print()
-        print(domain.lower, domain.upper)
-        print(abscissas)
         abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        print(abscissas_)
-        print(weights)
         weights *= domain.pdf(abscissas_).flatten()
         weights /= numpy.sum(weights)
-        print(weights)
         return abscissas, weights
 
     lower, upper = numpy.array(domain)
