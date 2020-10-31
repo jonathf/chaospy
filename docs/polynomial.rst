@@ -22,7 +22,6 @@ same function.
     :maxdepth: 1
 
     Introduction <https://numpoly.readthedocs.io/en/master/introduction.html>
-    Initialization <https://numpoly.readthedocs.io/en/master/initialization.html>
     Numpy Wrapper <https://numpoly.readthedocs.io/en/master/array_function.html>
     Polynomial Division <https://numpoly.readthedocs.io/en/master/division.html>
     Comparison Operators <https://numpoly.readthedocs.io/en/master/comparison.html>
