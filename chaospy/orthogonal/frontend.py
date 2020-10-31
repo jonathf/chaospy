@@ -24,7 +24,6 @@ def generate_expansion(
         graded=True,
         reverse=True,
         cross_truncation=1.,
-        sort=None,
         **kws
 ):
     """
@@ -98,6 +97,7 @@ def generate_expansion(
     """
     name = EXPANSION_NAMES[rule.lower()]
     expansion_function = EXPANSION_FUNCTIONS[name]
-    return expansion_function(order, dist=dist, normed=normed, graded=graded,
-                              reverse=reverse, sort=sort,
-                              cross_truncation=cross_truncation, **kws)
+    return expansion_function(
+        order, dist=dist, normed=normed, graded=graded, reverse=reverse,
+        cross_truncation=cross_truncation, **kws
+    )

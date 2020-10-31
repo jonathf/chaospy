@@ -27,9 +27,32 @@ import numpy
 import chaospy
 import numpoly
 
+APPROXIMATE_POSITIVE_DEFINITENES = {"none": lambda mat: mat}
+try:
+    import matrix
+    APPROXIMATE_POSITIVE_DEFINITENES.update(
+        reimer=matrix.approximation.positive_semidefinite.positive_semidefinite_matrix,
+        gmw_81=matrix.approximation.positive_semidefinite.GMW_81,
+        gmw_t1=matrix.approximation.positive_semidefinite.GMW_T1,
+        gmw_t2=matrix.approximation.positive_semidefinite.GMW_T2,
+        se_90=matrix.approximation.positive_semidefinite.SE_90,
+        se_99=matrix.approximation.positive_semidefinite.SE_99,
+        se_t1=matrix.approximation.positive_semidefinite.SE_T1,
+    )
+except ImportError:  # pragma: no coverage
+    pass
 
-def orth_chol(order, dist, normed=False, graded=True, reverse=True,
-              cross_truncation=1., retall=False, **kws):
+
+def orth_chol(
+    order,
+    dist,
+    normed=False,
+    graded=True,
+    reverse=True,
+    cross_truncation=1.,
+    retall=False,
+    approx_method=None,
+):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
 
@@ -55,6 +78,21 @@ def orth_chol(order, dist, normed=False, graded=True, reverse=True,
         retall (bool):
             If true return numerical stabilized norms as well. Roughly the same
             as ``cp.E(orth**2, dist)``.
+        approx_method (Optional[str]):
+            Method to use in case the expansion covariance does not identify as
+            positive definite. The methods are as follows:
+
+            * ``none`` -- No approximation applied. Raises error instead.
+            * ``gmw_81`` -- :func:`~matrix.approximation.positive_semidefinite.GMW_81`
+            * ``gmw_t1`` -- :func:`~matrix.approximation.positive_semidefinite.GMW_T1`
+            * ``gmw_t2`` -- :func:`~matrix.approximation.positive_semidefinite.GMW_T2`
+            * ``se_90`` -- :func:`~matrix.approximation.positive_semidefinite.SE_90`
+            * ``se_99`` -- :func:`~matrix.approximation.positive_semidefinite.SE_99`
+            * ``se_t1`` -- :func:`~matrix.approximation.positive_semidefinite.SE_T1`
+            * ``reimer`` -- :func:`~matrix.approximation.positive_semidefinite.positive_semidefinite_matrix`
+
+            Defaults 'se_99' if matrix-decomposition is installed (which
+            requires >=python3.7), 'none' otherwise.
 
     Examples:
         >>> distribution = chaospy.Normal()
@@ -76,8 +114,15 @@ def orth_chol(order, dist, normed=False, graded=True, reverse=True,
     )
     length = len(basis)
 
+    if approx_method is None:
+        approx_method = "se99" if "se99" in APPROXIMATE_POSITIVE_DEFINITENES else "none"
+
     covariance = chaospy.descriptives.Cov(basis, dist)
-    cholmat = chaospy.chol.gill_king(covariance)
+    make_positive_definite = APPROXIMATE_POSITIVE_DEFINITENES[approx_method]
+    covariance = make_positive_definite(covariance)
+    cholmat = numpy.linalg.cholesky(covariance)
+    # matrix.decompose(covariance, return_type="LL").L
+
     cholmat_inv = numpy.linalg.inv(cholmat.T).T
     if not normed:
         diag_mesh = numpy.repeat(numpy.diag(cholmat_inv), len(cholmat_inv))
@@ -86,22 +131,14 @@ def orth_chol(order, dist, normed=False, graded=True, reverse=True,
     else:
         norms = numpy.ones(length+1, dtype=float)
 
-    coefs = numpy.empty((length+1, length+1))
-
-    coefs[1:, 1:] = cholmat_inv
-    coefs[0, 0] = 1
-    coefs[0, 1:] = 0
-
-    expected = -numpy.sum(
-        cholmat_inv*chaospy.descriptives.E(basis, dist, **kws), -1)
-    coefs[1:, 0] = expected
-
-    coefs = coefs.T
+    expected = -numpy.sum(cholmat_inv*chaospy.E(basis, dist), -1)
+    coeffs = numpy.block([[1.,                       expected],
+                          [numpy.zeros((length, 1)), cholmat_inv.T]])
 
     out = {}
-    out[(0,)*dim] = coefs[0]
+    out[(0,)*dim] = coeffs[0]
     for idx, key in enumerate(basis.exponents):
-        out[tuple(key)] = coefs[idx+1]
+        out[tuple(key)] = coeffs[idx+1]
 
     names = numpoly.symbols("q:%d" % dim)
     polynomials = numpoly.polynomial(out, names=names)

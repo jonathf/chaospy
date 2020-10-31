@@ -196,11 +196,11 @@ epub_exclude_files = ['search.html']
 
 # -- Options for intersphinx extension ---------------------------------------
 
-# Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
     'numpoly': ('https://numpoly.readthedocs.io/en/master/', None),
     'openturns': ('https://openturns.github.io/openturns/master/', None),
     'scikit-learn': ('https://scikit-learn.org/stable/', None),
+    'matrix': ('https://matrix-decomposition.readthedocs.io/en/stable/', None),
 }

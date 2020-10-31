@@ -880,6 +880,22 @@ pyparsing = ">=2.0.1,<2.0.4 || >2.0.4,<2.1.2 || >2.1.2,<2.1.6 || >2.1.6"
 python-dateutil = ">=2.1"
 
 [[package]]
+category = "main"
+description = "This library allows to approximate Hermitian (dense and sparse) matrices by positive definite matrices. Furthermore it allows to decompose (factorize) positive definite matrices and solve associated systems of linear equations."
+marker = "python_version >= \"3.7\" and python_version < \"4.0\""
+name = "matrix-decomposition"
+optional = false
+python-versions = ">=3.7"
+version = "1.2"
+
+[package.dependencies]
+numpy = ">=1.15"
+scipy = ">=0.19"
+
+[package.extras]
+decompose_sparse = ["scikit-sparse (>=0.4.2)"]
+
+[[package]]
 category = "dev"
 description = "The fastest markdown parser in pure Python"
 name = "mistune"
@@ -1989,7 +2005,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "dafaf5e280e8c7f3a0d6ecfc5e85d5cc4ca6e27b20e624fd2294c550ffd7a1a4"
+content-hash = "e38a6ef92abd15451fb28b3477756a829d7eacee93cb4ae1e5e21221b1c39d83"
 python-versions = "*"
 
 [metadata.files]
@@ -2467,6 +2483,10 @@ matplotlib = [
     {file = "matplotlib-3.0.3-cp37-cp37m-win32.whl", hash = "sha256:53af2e01d7f1700ed2b64a9091bc865360c9c4032f625451c4589a826854c787"},
     {file = "matplotlib-3.0.3-cp37-cp37m-win_amd64.whl", hash = "sha256:7169a34971e398dd58e87e173f97366fd88a3fa80852704530433eb224a8ca57"},
     {file = "matplotlib-3.0.3.tar.gz", hash = "sha256:e1d33589e32f482d0a7d1957bf473d43341115d40d33f578dad44432e47df7b7"},
+]
+matrix-decomposition = [
+    {file = "matrix-decomposition-1.2.tar.gz", hash = "sha256:c94233d4c92e60733df1d6613617f6433c0ae1bd20ba60472680a40d6dc64029"},
+    {file = "matrix_decomposition-1.2-py3-none-any.whl", hash = "sha256:55804eb77e6f80569fcf7e1cbefc34318ff5ea4ce146237647a3be805479af4b"},
 ]
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},

@@ -10,7 +10,6 @@ import pkg_resources
 
 from numpoly import *
 
-import chaospy.chol
 import chaospy.descriptives
 import chaospy.distributions
 import chaospy.orthogonal
@@ -34,7 +33,7 @@ from chaospy.external import *
 
 try:
     __version__ = pkg_resources.get_distribution("chaospy").version
-except pkg_resources.DistributionNotFound:
+except pkg_resources.DistributionNotFound:  # pragma: no coverage
     __version__ = None
 
 
