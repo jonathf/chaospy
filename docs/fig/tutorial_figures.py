@@ -43,7 +43,7 @@ def plot_figures():
     plt.clf()
 
 
-    polynomial_expansion = cp.orth_ttr(8, distribution)
+    polynomial_expansion = cp.generate_quadrature(8, distribution)
     foo_approx = cp.fit_regression(polynomial_expansion, samples, evals)
     expected = cp.E(foo_approx, distribution)
     deviation = cp.Std(foo_approx, distribution)
