@@ -21,7 +21,7 @@ projection. (For the "real" spectral projection method, see: :ref:`galerkin`):
   :ref:`orthogonality`) where the weight function is the distribution in the
   first step::
 
-    >>> expansion = chaospy.orth_ttr(2, distribution)
+    >>> expansion = chaospy.generate_expansion(2, distribution)
     >>> expansion
     polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
 
@@ -61,7 +61,8 @@ coefficients can be used to calculate them instead with more stability.
 To include these stable norms in the calculations, the following change in code
 can be added::
 
-    >>> expansion, norms = chaospy.orth_ttr(2, distribution, retall=True)
+    >>> expansion, norms = chaospy.generate_expansion(
+    ...     2, distribution, retall=True)
     >>> approx2 = chaospy.fit_quadrature(
     ...     expansion, abscissas, weights, solves, norms=norms)
     >>> approx2.round(4)

@@ -5,6 +5,7 @@ import pytest
 
 import numpy
 import scipy
+import sklearn.linear_model
 
 
 @pytest.fixture(autouse=True)
@@ -20,6 +21,7 @@ def global_setup(doctest_namespace, monkeypatch):
     doctest_namespace["numpy"] = numpy
     doctest_namespace["scipy"] = scipy
     doctest_namespace["chaospy"] = chaospy
+    doctest_namespace["sklearn"] = sklearn
 
     # fix random seeds:
     numpy.random.seed(1000)

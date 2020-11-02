@@ -28,6 +28,13 @@ def exponential_model(parameters, coordinates=coordinates):
     Returns:
         (numpy.ndarray):
             Evaluation of the exponential model. Same shape as ``coordinates``.
+
+    Examples:
+        >>> evals = exponential_model(
+        ...     parameters=(2, 4), coordinates=numpy.linspace(0, 1, 7))
+        >>> evals.round(4)
+        array([2.    , 1.0268, 0.5272, 0.2707, 0.139 , 0.0713, 0.0366])
+
     """
     param_init, param_rate = parameters
     return param_init*numpy.e**(-param_rate*coordinates)
@@ -47,6 +54,13 @@ def error_mean(prediction_mean, true_mean=true_mean):
     Returns:
         (float):
             The mean absolute distance between predicted and true values.
+
+    Examples:
+        >>> predicted_mean = chaospy.Normal(0, 1).sample(100)
+        >>> errors = error_mean(predicted_mean, true_mean=0)
+        >>> errors.round(4)
+        0.7864
+
     """
     return numpy.mean(numpy.abs(prediction_mean-true_mean))
 
@@ -65,5 +79,12 @@ def error_variance(predicted_variance, true_variance=true_variance):
     Returns:
         (float):
             The mean absolute distance between predicted and true values.
+
+    Examples:
+        >>> predicted_var = chaospy.Exponential(1).sample(100)
+        >>> errors = error_variance(predicted_var, true_variance=1)
+        >>> errors.round(4)
+        0.7068
+
     """
     return numpy.mean(numpy.abs(predicted_variance-true_variance))

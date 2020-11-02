@@ -33,7 +33,7 @@ class ScipyStatsDist(SimpleDistribution):
     One dimensional ``scipy.stats`` distribution.
 
     Args:
-        distribution (openturns.Distribution):
+        distribution (scipy.stats._distn_infrastructure.rv_frozen):
             1D distribution created with ``scipy.stats``.
     """
 
