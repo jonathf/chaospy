@@ -24,11 +24,9 @@ numpoly = "==1.0.8"
 numpy = "*"
 scipy = "*"
 functools32 = { version = "*", python = "^2.7" }
-matrix-decomposition = { version = "^1.2", python = "^3.7" }
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
-pytest-cov = "*"
 sphinx = "*"
 openturns = "*"
 scikit-learn = "*"

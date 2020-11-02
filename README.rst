@@ -169,4 +169,8 @@ Please feel free to
 
 If you are using this software in work that will be published, please cite the
 journal article: `Chaospy: An open source tool for designing methods of
-uncertainty quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_
+uncertainty quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.
+
+And if you use code to deal with stochastic dependencies, please also cite
+`Multivariate Polynomial Chaos Expansions with Dependent Variables
+<https://epubs.siam.org/doi/10.1137/15M1020447>`_.

@@ -202,5 +202,4 @@ intersphinx_mapping = {
     'numpoly': ('https://numpoly.readthedocs.io/en/master/', None),
     'openturns': ('https://openturns.github.io/openturns/master/', None),
     'scikit-learn': ('https://scikit-learn.org/stable/', None),
-    'matrix': ('https://matrix-decomposition.readthedocs.io/en/stable/', None),
 }

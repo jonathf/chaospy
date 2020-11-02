@@ -27,20 +27,6 @@ import numpy
 import chaospy
 import numpoly
 
-APPROXIMATE_POSITIVE_DEFINITENES = {"none": lambda mat: mat}
-try:
-    import matrix
-    APPROXIMATE_POSITIVE_DEFINITENES.update(
-        reimer=matrix.approximation.positive_semidefinite.positive_semidefinite_matrix,
-        gmw_81=matrix.approximation.positive_semidefinite.GMW_81,
-        gmw_t1=matrix.approximation.positive_semidefinite.GMW_T1,
-        gmw_t2=matrix.approximation.positive_semidefinite.GMW_T2,
-        se_90=matrix.approximation.positive_semidefinite.SE_90,
-        se_99=matrix.approximation.positive_semidefinite.SE_99,
-        se_t1=matrix.approximation.positive_semidefinite.SE_T1,
-    )
-except ImportError:  # pragma: no coverage
-    pass
 
 
 def orth_chol(
@@ -51,7 +37,6 @@ def orth_chol(
     reverse=True,
     cross_truncation=1.,
     retall=False,
-    approx_method=None,
 ):
     """
     Create orthogonal polynomial expansion from Cholesky decomposition.
@@ -78,21 +63,6 @@ def orth_chol(
         retall (bool):
             If true return numerical stabilized norms as well. Roughly the same
             as ``cp.E(orth**2, dist)``.
-        approx_method (Optional[str]):
-            Method to use in case the expansion covariance does not identify as
-            positive definite. The methods are as follows:
-
-            * ``none`` -- No approximation applied. Raises error instead.
-            * ``gmw_81`` -- :func:`~matrix.approximation.positive_semidefinite.GMW_81`
-            * ``gmw_t1`` -- :func:`~matrix.approximation.positive_semidefinite.GMW_T1`
-            * ``gmw_t2`` -- :func:`~matrix.approximation.positive_semidefinite.GMW_T2`
-            * ``se_90`` -- :func:`~matrix.approximation.positive_semidefinite.SE_90`
-            * ``se_99`` -- :func:`~matrix.approximation.positive_semidefinite.SE_99`
-            * ``se_t1`` -- :func:`~matrix.approximation.positive_semidefinite.SE_T1`
-            * ``reimer`` -- :func:`~matrix.approximation.positive_semidefinite.positive_semidefinite_matrix`
-
-            Defaults 'se_99' if matrix-decomposition is installed (which
-            requires >=python3.7), 'none' otherwise.
 
     Examples:
         >>> distribution = chaospy.Normal()
@@ -114,14 +84,8 @@ def orth_chol(
     )
     length = len(basis)
 
-    if approx_method is None:
-        approx_method = "se99" if "se99" in APPROXIMATE_POSITIVE_DEFINITENES else "none"
-
     covariance = chaospy.descriptives.Cov(basis, dist)
-    make_positive_definite = APPROXIMATE_POSITIVE_DEFINITENES[approx_method]
-    covariance = make_positive_definite(covariance)
-    cholmat = numpy.linalg.cholesky(covariance)
-    # matrix.decompose(covariance, return_type="LL").L
+    cholmat = gill_king(covariance)
 
     cholmat_inv = numpy.linalg.inv(cholmat.T).T
     if not normed:
@@ -146,3 +110,76 @@ def orth_chol(
     if retall:
         return polynomials, norms
     return polynomials
+
+
+def gill_king(mat, tolerance=1e-16):
+    """
+    Gill-King algorithm for modified Cholesky decomposition.
+
+    Algorithm 3.4 of 'Numerical Optimization' by Jorge Nocedal and Stephen J.
+    Wright. This particular implementation is a rewrite of MATLAB code from
+    Michael L. Overton 2005.
+
+    Args:
+        mat (numpy.ndarray):
+            Must be a non-singular and symmetric matrix.
+        tolerance (float):
+            Error tolerance used in algorithm.
+    Returns:
+        (numpy.ndarray):
+            Lower triangular Cholesky factor.
+    Examples:
+        >>> mat = [[4, 2, 1], [2, 6, 3], [1, 3, -.004]]
+        >>> lowtri = gill_king(mat)
+        >>> lowtri.round(4)
+        array([[2.    , 0.    , 0.    ],
+               [1.    , 2.2361, 0.    ],
+               [0.5   , 1.118 , 1.2264]])
+        >>> (lowtri @ lowtri.T).round(4)
+        array([[4.   , 2.   , 1.   ],
+               [2.   , 6.   , 3.   ],
+               [1.   , 3.   , 3.004]])
+    """
+    mat = numpy.asfarray(mat)
+    assert numpy.allclose(mat, mat.T)
+
+    size = mat.shape[0]
+    mat_diag = mat.diagonal()
+    gamma = abs(mat_diag).max()
+    off_diag = abs(mat - numpy.diag(mat_diag)).max()
+
+    delta = tolerance*max(gamma+off_diag, 1)
+    beta = numpy.sqrt(max(gamma, off_diag/size, tolerance))
+
+    # initialize d_vec and lowtri
+    lowtri = numpy.eye(size)
+    d_vec = numpy.zeros(size, dtype=float)
+
+    # there are no inner for loops, everything implemented with
+    # vector operations for a reasonable level of efficiency
+    for idx in range(size):
+        # column index: all columns to left of diagonal
+        # d_vec(idz) doesn't work in case idz is empty
+        idz = numpy.s_[:idx] if idx else []
+
+        djtemp = mat[idx, idx]-numpy.dot(
+            lowtri[idx, idz], d_vec[idz]*lowtri[idx, idz].T)
+
+        if idx < size-1:
+            idy = numpy.s_[idx+1:size]
+            # row index: all rows below diagonal
+            ccol = mat[idy, idx]-numpy.dot(
+                lowtri[idy, idz], d_vec[idz]*lowtri[idx, idz].T)
+            # C(idy, idx) in book
+            theta = abs(ccol).max()
+            # guarantees d_vec(idx) not too small and lowtri(idy, idx) not too
+            # big in sufficiently positive definite case, d_vec(idx) = djtemp
+            d_vec[idx] = max(abs(djtemp), (theta/beta)**2, delta)
+            lowtri[idy, idx] = ccol/d_vec[idx]
+
+        else:
+            d_vec[idx] = max(abs(djtemp), delta)
+
+    # convert LDL_t to usual output format LL_t:
+    lowtri *= numpy.sqrt(d_vec)
+    return lowtri
