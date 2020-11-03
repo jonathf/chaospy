@@ -71,11 +71,10 @@ from .sampler import *
 from .collection import *
 from .copulas import *
 from .operators import *
-from .constructor import construct
 from .approximation import *
 from .kernel import *
 
 from . import (
     baseclass, sampler, approximation,
-    copulas, collection, operators, constructor
+    copulas, collection, operators
 )

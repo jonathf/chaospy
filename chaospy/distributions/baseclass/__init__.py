@@ -7,3 +7,4 @@ from .mean_covariance import MeanCovarianceDistribution
 from .shift_scale import ShiftScaleDistribution
 from .lower_upper import LowerUpperDistribution
 from .operator import OperatorDistribution
+from .user import UserDistribution

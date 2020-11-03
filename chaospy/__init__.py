@@ -18,10 +18,6 @@ import chaospy.quadrature
 import chaospy.saltelli
 import chaospy.regression
 
-# To be deprecated
-from .basis import basis
-from .prange import prange
-
 from chaospy.distributions import *
 from chaospy.orthogonal import *
 from chaospy.spectral import *

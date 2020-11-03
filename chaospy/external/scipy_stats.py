@@ -17,6 +17,10 @@ This distribution then behaves as a normal ``chaospy`` distribution::
 
     >>> distribution.pdf([-1, 0, 1]).round(4)
     array([0.242 , 0.3989, 0.242 ])
+    >>> distribution.fwd([-1, 0, 1]).round(4)
+    array([0.1587, 0.5   , 0.8413])
+    >>> distribution.inv([0, 0.5, 1]).round(4)
+    array([-7.7394,  0.    ,  7.7394])
     >>> distribution.mom([0, 1, 2])
     array([1., 0., 1.])
 
