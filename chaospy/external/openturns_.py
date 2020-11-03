@@ -36,6 +36,10 @@ The wrapper also supports multivariate distributions::
     >>> mv_distribution.sample(4).round(4)
     array([[ 0.1676, -0.5204,  0.6847, -0.018 ],
            [ 0.7449, -0.5753, -0.9186, -0.2056]])
+    >>> mv_distribution.fwd([[-1, -0.5, 0, 0.5, 1],
+    ...                      [-1, -0.5, 0, 0.5, 1]]).round(4)
+    array([[0.   , 0.125, 0.5  , 0.875, 1.   ],
+           [0.   , 0.25 , 0.5  , 0.75 , 1.   ]])
 
 As a shorthand, it is also possible to construct multivariate distributions
 form lists::
@@ -63,7 +67,7 @@ openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
 """
 try:
     from collections.abc import Iterable
-except ImportError:
+except ImportError:  # pragma: no coverage
     from collections import Iterable
 import numpy
 import chaospy
@@ -128,6 +132,7 @@ class OpenTURNSDist(J):
         >>> distribution  # doctest: +NORMALIZE_WHITESPACE
         OpenTURNSDist([openturns.Normal(mu = 0, sigma = 1),
                        openturns.Normal(mu = 0, sigma = 1)])
+
     """
 
     def __init__(self, distribution):

@@ -81,7 +81,14 @@ import numpoly
 import chaospy
 
 
-def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws):
+def fit_quadrature(
+        orth,
+        nodes,
+        weights,
+        solves,
+        retall=False,
+        norms=None
+):
     """
     Using spectral projection to create a polynomial approximation over
     distribution space.
@@ -92,48 +99,55 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None, **kws
             approximation to be accurate.
         nodes (numpy.ndarray):
             Where to evaluate the polynomial expansion and model to
-            approximate. ``nodes.shape==(D,K)`` where ``D`` is the number of
+            approximate. ``nodes.shape==(D, K)`` where ``D`` is the number of
             dimensions and ``K`` is the number of nodes.
         weights (numpy.ndarray):
             Weights when doing numerical integration. ``weights.shape == (K,)``
             must hold.
         solves (numpy.ndarray):
             The model evaluation to approximate. If `numpy.ndarray` is
-            provided, it must have ``len(solves) == K``. If callable, it must
-            take a single argument X with ``len(X) == D``, and return
-            a consistent numpy compatible shape.
+            provided, it must have ``len(solves) == K``.
+        retall (int):
+            What the function should return.
+            0: only return fitted polynomials, with shape `evals.shape[1:]`.
+            1: polynomials, and Fourier coefficients,
+            2: polynomials, coefficients and polynomial evaluations.
         norms (numpy.ndarray):
-            In the of TTR using coefficients to estimate the polynomial norm is
-            more stable than manual calculation. Calculated using quadrature if
-            no provided. ``norms.shape == (len(orth),)`` must hold.
+            Three terms recurrence method produces norms more stable than the
+            ones calculated from the polynomials themselves. Calculated from
+            quadrature if not provided. ``norms.shape == (len(orth),)`` must
+            hold.
 
     Returns:
         (numpoly.ndpoly):
             Fitted model approximation in the form of an polynomial.
+
     """
     orth = numpoly.polynomial(orth)
-    nodes = numpy.asfarray(nodes)
+    assert orth.ndim == 1
     weights = numpy.asfarray(weights)
-
-    if callable(solves):
-        solves = [solves(node) for node in nodes.T]
+    assert weights.ndim == 1
     solves = numpy.asfarray(solves)
+    nodes = numpy.atleast_2d(nodes)
+    assert nodes.ndim == 2
+    assert nodes.shape[1] == len(weights) == len(solves)
 
-    shape = solves.shape
-    solves = solves.reshape(weights.size, int(solves.size/weights.size))
+    shape = solves.shape[1:]
+    solves = solves.reshape(len(solves), -1)
 
     ovals = orth(*nodes)
     vals1 = [(val*solves.T*weights).T for val in ovals]
 
     if norms is None:
         norms = numpy.sum(ovals**2*weights, -1)
-    else:
-        norms = numpy.array(norms).flatten()
+    norms = numpy.asfarray(norms)
+    assert norms.ndim == 1
 
-    coefs = (numpy.sum(vals1, 1).T/norms).T
-    coefs = coefs.reshape(len(coefs), *shape[1:])
-    approx_model = numpoly.sum(orth*coefs.T, -1).T
+    coeffs = (numpy.sum(vals1, 1).T/norms).T
+    coeffs = coeffs.reshape(len(coeffs), *shape)
+    approx_model = numpoly.sum(orth*coeffs.T, -1).T
 
-    if retall:
-        return approx_model, coefs
-    return approx_model
+    choices = {0: approx_model,
+               1: (approx_model, coeffs),
+               2: (approx_model, coeffs, ovals)}
+    return choices[retall]

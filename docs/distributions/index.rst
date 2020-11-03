@@ -12,6 +12,5 @@ Below you will find the various topics related to distribution construction:
 
     multivariate
     copulas
-    custom
     baseclass
     collection

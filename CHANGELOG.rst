@@ -1,6 +1,15 @@
 Master Branch
 =============
 
+CHANGED:
+  * `chaospy.constructor` removed in favor for `chaospy.UserDistribution`.
+REMOVED:
+  * `chaospy.basis` and `chaospy.prange` (which was superseded by
+    `chaospy.monomial` in June).
+  * `chaospy.chol` modules and the Cholesky functions: `bastos_ohagen`,
+    `gill_murry_wright` and `schnabel_eskow`. `gill_king` moved to
+    `chaospy.orthogonal.cholesky` as it is used by `orth_chol`.
+
 Version 4.0.2 (2020-10-30)
 ==========================
 

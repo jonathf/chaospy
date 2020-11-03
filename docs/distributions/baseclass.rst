@@ -11,3 +11,4 @@ Distribution Baseclass
 .. autoclass:: chaospy.distributions.baseclass.shift_scale.ShiftScaleDistribution
 .. autoclass:: chaospy.distributions.baseclass.lower_upper.LowerUpperDistribution
 .. autoclass:: chaospy.distributions.baseclass.operator.OperatorDistribution
+.. autoclass:: chaospy.distributions.baseclass.user.UserDistribution
