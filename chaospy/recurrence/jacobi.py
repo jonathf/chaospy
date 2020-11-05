@@ -13,7 +13,7 @@ def coefficients_to_quadrature(coeffs):
         >>> coeffs, = chaospy.construct_recurrence_coefficients(4, distribution)
         >>> coeffs
         array([[0., 0., 0., 0., 0.],
-               [0., 1., 2., 3., 4.]])
+               [1., 1., 2., 3., 4.]])
         >>> (abscissas,), (weights,) = chaospy.coefficients_to_quadrature(coeffs)
         >>> abscissas.round(4)
         array([-2.857 , -1.3556, -0.    ,  1.3556,  2.857 ])
@@ -46,7 +46,7 @@ def coefficients_to_quadrature(coeffs):
             abscissa, weight = abscissa[indices], weight[indices]
 
         else:
-            abscissa, weight = numpy.array([coeffs[dim][0, 0]]), numpy.array([1.])
+            abscissa, weight = numpy.array([coeff[0, 0]]), numpy.array([1.])
 
         abscissas.append(abscissa)
         weights.append(weight)

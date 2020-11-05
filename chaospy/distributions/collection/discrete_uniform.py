@@ -1,5 +1,6 @@
 """Discrete uniform probability distribution."""
 import numpy
+import chaospy
 
 from ..baseclass import SimpleDistribution
 from ..operators import J
@@ -34,9 +35,6 @@ class DiscreteUniform(SimpleDistribution):
         array([3, 2, 4, 3])
         >>> distribution.mom(1).round(4)
         3.0
-        >>> distribution.ttr([0, 1, 2, 3]).round(4)
-        array([[3.    , 3.    , 3.    , 3.3333],
-               [1.    , 0.6667, 0.3333, 0.    ]])
 
     """
     interpret_as_integer = True
@@ -74,11 +72,3 @@ class DiscreteUniform(SimpleDistribution):
         """Raw statistical moments."""
         return numpy.mean(numpy.arange(
             numpy.ceil(lower), numpy.floor(upper)+1)**k_data)
-
-    def _ttr(self, k_data, lower, upper):
-        """Three terms recurrence coefficients."""
-        from chaospy.quadrature import discretized_stieltjes
-        abscissas = numpy.arange(numpy.ceil(lower), numpy.floor(upper)+1)
-        weights = numpy.repeat(1./len(abscissas), len(abscissas))
-        (alpha, beta), _, _ = discretized_stieltjes(k_data, [abscissas], weights)
-        return alpha[0, -1], beta[0, -1]

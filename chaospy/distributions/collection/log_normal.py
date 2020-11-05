@@ -44,7 +44,7 @@ class LogNormal(ShiftScaleDistribution):
 
     Args:
         mu (float, Distribution):
-            Mean in the normal distribution.  Overlaps with scale by
+            Mean in the normal distribution. Overlaps with scale by
             mu=log(scale)
         sigma (float, Distribution):
             Standard deviation of the normal distribution.

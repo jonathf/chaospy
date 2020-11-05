@@ -1,14 +1,35 @@
 Master Branch
 =============
 
+Version 4.1.0 (2020-11-05)
+==========================
+
+Refactored `chaospy.quadrature.recurrence` -> `chaospy.recurrence`.
+
 CHANGED:
   * `chaospy.constructor` removed in favor for `chaospy.UserDistribution`.
+  * Bugfix: `chaospy.InverseGamma` moments needed to be reciprocal.
+  * Increased range on distributions: `StudentT`.
+  * Moved submodule `chaospy{.orthogonal->}.recurrence`.
+  * Stieltjes method get common interface `chaospy.stieltjes` which uses
+    analytical TTR if present, and approximation if not.
+  * Refactor `discretized_stieltjes` to be an iterative method with
+    tolerance criteria instead of brute forced. Also added max iterations and
+    scaling.
+  * Flag: Default `recurrence_algorithm` default changed to `stieltjes` (as
+    it covers both `analtical` and discretized Stieltjes).
+  * Discretization default in Lanczos and Stieltjes changed from `fejer` to
+    `clenshaw_curtis` as edge evaluation is better handled these days, and the
+    latter is better for when edges are finite.
+
 REMOVED:
   * `chaospy.basis` and `chaospy.prange` (which was superseded by
     `chaospy.monomial` in June).
+  * Removal of "analytical" TTR where it is approximated: `Triangle`.
   * `chaospy.chol` modules and the Cholesky functions: `bastos_ohagen`,
     `gill_murry_wright` and `schnabel_eskow`. `gill_king` moved to
     `chaospy.orthogonal.cholesky` as it is used by `orth_chol`.
+  * Flag: `accuracy` deprecated in favor for `tolerance`.
 
 Version 4.0.2 (2020-10-30)
 ==========================

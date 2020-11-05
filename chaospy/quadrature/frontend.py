@@ -89,12 +89,14 @@ QUAD_FUNCTIONS = {
 def generate_quadrature(
         order,
         dist,
-        rule="",
+        rule=None,
         sparse=False,
-        accuracy=100,
         growth=None,
         segments=1,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Numerical quadrature node and weight generator.
@@ -104,7 +106,7 @@ def generate_quadrature(
             The order of the quadrature.
         dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
-        rule (str, Sequence[str]):
+        rule (str, Sequence[str], None):
             Rule for generating abscissas and weights. If one name is provided,
             that rule is applied to all dimensions. If multiple names, each
             rule is positionally applied to each dimension. If omitted,
@@ -113,10 +115,6 @@ def generate_quadrature(
         sparse (bool):
             If True used Smolyak's sparse grid instead of normal tensor product
             grid.
-        accuracy (int):
-            If gaussian is set, but the dist provided in domain does not
-            provide an analytical TTR, ac sets the approximation order for the
-            descitized Stieltje's method.
         growth (bool, None):
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples. Defaults to the same
@@ -130,6 +128,15 @@ def generate_quadrature(
             Name of the algorithm used to generate abscissas and weights in
             case of Gaussian quadrature scheme. If omitted, ``analytical`` will
             be tried first, and ``stieltjes`` used if that fails.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -159,7 +166,15 @@ def generate_quadrature(
     if sparse:
         from . import sparse_grid
         return sparse_grid.construct_sparse_grid(
-            order, dist, rule=rule, accuracy=accuracy, growth=growth)
+            order=order,
+            dist=dist,
+            growth=growth,
+            recurrence_algorithm=recurrence_algorithm,
+            rule=rule,
+            tolerance=tolerance,
+            scaling=scaling,
+            n_max=n_max,
+        )
 
     if len(dist) == 1 or dist.stochastic_dependent:
         assert isinstance(rule, str), "dependencies require rule consistency"
@@ -169,8 +184,10 @@ def generate_quadrature(
             rule=rule,
             growth=growth,
             segments=segments,
-            accuracy=accuracy,
             recurrence_algorithm=recurrence_algorithm,
+            tolerance=tolerance,
+            scaling=scaling,
+            n_max=n_max,
         )
 
     else:
@@ -188,8 +205,10 @@ def generate_quadrature(
                 rule=rule_,
                 growth=growth,
                 segments=segments,
-                accuracy=accuracy,
                 recurrence_algorithm=recurrence_algorithm,
+                tolerance=tolerance,
+                scaling=scaling,
+                n_max=n_max,
             )
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
@@ -233,8 +252,8 @@ def _generate_quadrature(order, dist, rule, **kwargs):
         parameters.update(growth=kwargs["growth"], segments=kwargs["segments"])
 
     if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
-        parameters.update(accuracy=kwargs["accuracy"],
-                          recurrence_algorithm=kwargs["recurrence_algorithm"])
+        parameters.update(tolerance=kwargs["tolerance"], scaling=kwargs["scaling"],
+                          n_max=kwargs["n_max"], recurrence_algorithm=kwargs["recurrence_algorithm"])
 
     quad_function = QUAD_FUNCTIONS[rule]
     abscissas, weights = quad_function(order, dist, **parameters)

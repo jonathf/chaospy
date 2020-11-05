@@ -58,6 +58,7 @@ from itertools import product
 
 import numpy
 from scipy.special import comb
+
 import numpoly
 import chaospy
 
@@ -65,10 +66,12 @@ import chaospy
 def construct_sparse_grid(
         order,
         dist,
-        rule="gaussian",
-        accuracy=100,
         growth=None,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        rule="gaussian",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Smolyak sparse grid constructor.
@@ -79,13 +82,6 @@ def construct_sparse_grid(
             ``dim`` and ``skew``.
         dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
-        rule (str):
-            Rule for generating abscissas and weights. Either done with
-            quadrature rules, or with random samples with constant weights.
-        accuracy (int):
-            If gaussian is set, but the dist provided in domain does not
-            provide an analytical TTR, ac sets the approximation order for the
-            descitized Stieltje's method.
         growth (bool, None):
             If True sets the growth rule for the quadrature rule to only
             include orders that enhances nested samples. Defaults to the same
@@ -94,6 +90,18 @@ def construct_sparse_grid(
             Name of the algorithm used to generate abscissas and weights in
             case of Gaussian quadrature scheme. If omitted, ``analytical`` will
             be tried first, and ``stieltjes`` used if that fails.
+        rule (str):
+            Rule for generating abscissas and weights. Either done with
+            quadrature rules, or with random samples with constant weights.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -126,7 +134,15 @@ def construct_sparse_grid(
         rule = (rule,)*len(dist)
 
     x_lookup, w_lookup = _construct_lookup(
-        orders, dist, rule, accuracy, growth, recurrence_algorithm)
+        orders=orders,
+        dists=dist,
+        growth=growth,
+        recurrence_algorithm=recurrence_algorithm,
+        rules=rule,
+        tolerance=tolerance,
+        scaling=scaling,
+        n_max=n_max,
+    )
     collection = _construct_collection(
         order, dist, x_lookup, w_lookup)
 
@@ -165,29 +181,32 @@ def _construct_collection(
 def _construct_lookup(
         orders,
         dists,
-        rules,
-        accuracy,
         growth,
         recurrence_algorithm,
+        rules,
+        tolerance,
+        scaling,
+        n_max,
 ):
     """
     Create abscissas and weights look-up table so values do not need to be
     re-calculatated on the fly.
     """
-    from .frontend import generate_quadrature
     x_lookup = []
     w_lookup = []
     for max_order, dist, rule in zip(orders, dists, rules):
         x_lookup.append([])
         w_lookup.append([])
         for order in range(max_order+1):
-            (abscissas,), weights = generate_quadrature(
-                order,
-                dist,
-                accuracy=accuracy,
-                rule=rule,
+            (abscissas,), weights = chaospy.generate_quadrature(
+                order=order,
+                dist=dist,
                 growth=growth,
                 recurrence_algorithm=recurrence_algorithm,
+                rule=rule,
+                tolerance=tolerance,
+                scaling=scaling,
+                n_max=n_max,
             )
             x_lookup[-1].append(abscissas)
             w_lookup[-1].append(weights)

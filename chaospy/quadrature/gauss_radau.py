@@ -62,9 +62,8 @@ However, a fixed point at 0 is not allowed::
 """
 import numpy
 import scipy.linalg
+import chaospy
 
-from .recurrence import (
-    construct_recurrence_coefficients, coefficients_to_quadrature)
 from .combine import combine_quadrature
 
 
@@ -72,9 +71,11 @@ def quad_gauss_radau(
         order,
         dist,
         fixed_point=None,
-        rule="fejer",
-        accuracy=100,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        rule="clenshaw_curtis",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Generate the quadrature nodes and weights in Gauss-Radau quadrature.
@@ -124,12 +125,19 @@ def quad_gauss_radau(
     if order == 0:
         return fixed_point.reshape(-1, 1), numpy.ones(1)
 
-    coefficients = construct_recurrence_coefficients(
-        2*order-1, dist, rule, accuracy, recurrence_algorithm)
+    coefficients = chaospy.construct_recurrence_coefficients(
+        order=2*order-1,
+        dist=dist,
+        recurrence_algorithm=recurrence_algorithm,
+        rule=rule,
+        tolerance=tolerance,
+        scaling=scaling,
+        n_max=n_max,
+    )
     coefficients = [radau_jakobi(coeffs, point)
                     for point, coeffs in zip(fixed_point, coefficients)]
 
-    abscissas, weights = coefficients_to_quadrature(coefficients)
+    abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
 
     return combine_quadrature(abscissas, weights)
 

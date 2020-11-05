@@ -2,6 +2,7 @@
 from functools import wraps
 import numpy
 from scipy import special
+import chaospy
 
 from ..baseclass import SimpleDistribution
 from ..operators import J
@@ -34,9 +35,6 @@ class binomial(SimpleDistribution):
         array([2, 1, 0, 2, 2, 2, 2, 3, 3, 0])
         >>> distribution.mom([1, 2, 3]).round(4)
         array([1.5 , 3.  , 6.75])
-        >>> distribution.ttr([0, 1, 2, 3]).round(4)
-        array([[1.5 , 1.5 , 1.5 , 1.5 ],
-               [1.  , 0.75, 1.  , 0.75]])
 
     """
     interpret_as_integer = True
@@ -78,14 +76,6 @@ class binomial(SimpleDistribution):
         x_data = numpy.arange(int(size)+1, dtype=int)
         return numpy.sum(x_data**k_data*self._pdf(
             x_data, size=numpy.floor(size), prob=prob))
-
-    def _ttr(self, k_data, size, prob):
-        """Krawtchouk rule."""
-        from chaospy.quadrature import discretized_stieltjes
-        abscissas = numpy.arange(0, numpy.floor(size)+1)
-        weights = self._pdf(abscissas, size, prob)
-        (alpha, beta), _, _ = discretized_stieltjes(k_data, [abscissas], weights)
-        return alpha[0, -1], beta[0, -1]
 
 
 class Binomial(J):

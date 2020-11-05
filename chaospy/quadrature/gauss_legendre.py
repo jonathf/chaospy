@@ -40,18 +40,19 @@ The abscissas stays the same, but the weights are re-adjusted for the new
 weight function.
 """
 import numpy
+import chaospy
 
-from .recurrence import (
-    construct_recurrence_coefficients, coefficients_to_quadrature)
 from .combine import combine_quadrature
 
 
 def quad_gauss_legendre(
         order,
         domain=(0, 1),
-        rule="fejer",
-        accuracy=100,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        rule="clenshaw_curtis",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     r"""
     Generate the quadrature nodes and weights in Gauss-Legendre quadrature.
@@ -75,16 +76,20 @@ def quad_gauss_legendre(
             Quadrature order.
         domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
             proxy-integration scheme.
-        accuracy (int):
-            In the case ``rule`` is used, defines the quadrature order of the
-            scheme used. In practice, must be at least as large as ``order``.
-        recurrence_algorithm (str):
-            Name of the algorithm used to generate abscissas and weights. If
-            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -106,8 +111,14 @@ def quad_gauss_legendre(
     from ..distributions.collection import Uniform
     if isinstance(domain, Distribution):
         abscissas, weights = quad_gauss_legendre(
-            order, (domain.lower, domain.upper),
-            rule, accuracy, recurrence_algorithm)
+            order=order,
+            domain=(domain.lower, domain.upper),
+            recurrence_algorithm=recurrence_algorithm,
+            rule=rule,
+            tolerance=tolerance,
+            scaling=scaling,
+            n_max=n_max,
+        )
         eps = 1e-14*(domain.upper-domain.lower)
         abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
         weights *= domain.pdf(abscissas_).flatten()
@@ -124,10 +135,17 @@ def quad_gauss_legendre(
     lower = numpy.ones(dim)*lower
     upper = numpy.ones(dim)*upper
 
-    coefficients = construct_recurrence_coefficients(
-        numpy.max(order), Uniform(0, 1), rule, accuracy, recurrence_algorithm)
+    coefficients = chaospy.construct_recurrence_coefficients(
+        order=numpy.max(order),
+        dist=Uniform(0, 1),
+        recurrence_algorithm=recurrence_algorithm,
+        rule=rule,
+        tolerance=tolerance,
+        scaling=scaling,
+        n_max=n_max,
+    )
 
-    abscissas, weights = zip(*[coefficients_to_quadrature(
+    abscissas, weights = zip(*[chaospy.coefficients_to_quadrature(
         coefficients[:order_+1]) for order_ in order])
     abscissas = list(numpy.asarray(abscissas).reshape(dim, -1))
     weights = list(numpy.asarray(weights).reshape(dim, -1))

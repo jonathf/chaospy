@@ -30,14 +30,6 @@ class laplace(SimpleDistribution):
     def _upper(self):
         return 20.
 
-    def _ttr(self, k):
-        q1, w1 = chaospy.quad_fejer(500, (-20, 0))
-        q2, w2 = chaospy.quad_fejer(500, (0, 20))
-        qloc = numpy.concatenate([q1,q2], 1)
-        w = numpy.concatenate([w1,w2])*self._pdf(qloc[0])
-        coeffs, _, _ = chaospy.discretized_stieltjes(k, qloc, w)
-        return coeffs[:, 0, -1]
-
 
 class Laplace(ShiftScaleDistribution):
     R"""
@@ -67,9 +59,6 @@ class Laplace(ShiftScaleDistribution):
         array([ 0.367, -1.47 ,  2.308, -0.036])
         >>> distribution.mom(1).round(3)
         0.0
-        >>> distribution.ttr([0, 1, 2, 3]).round(3)
-        array([[ 0.   , -0.   ,  0.   ,  0.   ],
-               [ 1.   ,  2.   , 10.   , 21.592]])
 
     """
     def __init__(self, mu=0, sigma=1):

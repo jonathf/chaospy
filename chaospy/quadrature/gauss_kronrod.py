@@ -105,18 +105,19 @@ from __future__ import division
 import math
 
 import numpy
+import chaospy
 
-from .recurrence import (
-    construct_recurrence_coefficients, coefficients_to_quadrature)
 from .combine import combine_quadrature
 
 
 def quad_gauss_kronrod(
         order,
         dist,
-        rule="fejer",
-        accuracy=100,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        rule="clenshaw_curtis",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Generate the abscissas and weights in Gauss-Kronrod quadrature.
@@ -126,16 +127,22 @@ def quad_gauss_kronrod(
             The order of the quadrature.
         dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
-        rule (str):
-            In the case of ``lanczos`` or ``stieltjes``, defines the
-            proxy-integration scheme.
-        accuracy (int):
-            In the case ``rule`` is used, defines the quadrature order of the
-            scheme used. In practice, must be at least as large as ``order``.
         recurrence_algorithm (str):
             Name of the algorithm used to generate abscissas and weights. If
             omitted, ``analytical`` will be tried first, and ``stieltjes`` used
             if that fails.
+        rule (str):
+            In the case of ``lanczos`` or ``stieltjes``, defines the
+            proxy-integration scheme.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -162,12 +169,19 @@ def quad_gauss_kronrod(
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
 
     length = int(numpy.ceil(3*(order+1) / 2.0))
-    coefficients = construct_recurrence_coefficients(
-        length, dist, rule, accuracy, recurrence_algorithm)
+    coefficients = chaospy.construct_recurrence_coefficients(
+        order=length,
+        dist=dist,
+        recurrence_algorithm=recurrence_algorithm,
+        rule=rule,
+        tolerance=tolerance,
+        scaling=scaling,
+        n_max=n_max,
+    )
 
     coefficients = [kronrod_jacobi(order+1, coeffs) for coeffs in coefficients]
 
-    abscissas, weights = coefficients_to_quadrature(coefficients)
+    abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
     return combine_quadrature(abscissas, weights)
 
 
