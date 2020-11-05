@@ -372,7 +372,3 @@ GENZ_KEISTER_16 = {
         1.8684014894510604E-18,
     )),
 }
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

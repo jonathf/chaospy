@@ -22,13 +22,15 @@ def quad_genz_keister(order, dist, rule=24):
     """
     Genz-Keister quadrature rule.
 
-    Eabsicassample:
+    Examples:
         >>> abscissas, weights = quad_genz_keister(
-        ...         order=1, dist=chaospy.Uniform(0, 1))
-        >>> abscissas.round(4)
-        array([[0.0416, 0.5   , 0.9584]])
-        >>> weights.round(4)
-        array([0.1667, 0.6667, 0.1667])
+        ...         order=1, dist=chaospy.Iid(chaospy.Uniform(0, 1), 2))
+        >>> abscissas.round(2)
+        array([[0.04, 0.04, 0.04, 0.5 , 0.5 , 0.5 , 0.96, 0.96, 0.96],
+               [0.04, 0.5 , 0.96, 0.04, 0.5 , 0.96, 0.04, 0.5 , 0.96]])
+        >>> weights.round(2)
+        array([0.03, 0.11, 0.03, 0.11, 0.44, 0.11, 0.03, 0.11, 0.03])
+
     """
     assert isinstance(rule, int)
 
@@ -51,5 +53,4 @@ def quad_genz_keister(order, dist, rule=24):
     abscissas, weights = foo(order)
     abscissas = dist.inv(scipy.special.ndtr(abscissas))
     abscissas = abscissas.reshape(1, abscissas.size)
-
     return abscissas, weights

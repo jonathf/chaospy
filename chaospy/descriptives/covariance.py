@@ -33,13 +33,17 @@ def Cov(poly, dist=None, **kws):
                [  0. ,   2. ,   0.5,   0. ],
                [  0. ,   0.5,   1. ,   0. ],
                [  0. ,   0. ,   0. , 225. ]])
+        >>> chaospy.Cov([1, 2, 3], dist)
+        array([[0., 0., 0.],
+               [0., 0., 0.],
+               [0., 0., 0.]])
 
     """
     if dist is None:
         dist, poly = poly, numpoly.variable(len(poly))
     poly = numpoly.set_dimensions(poly, len(dist))
-    if not poly.isconstant:
-        return poly.tonumpy()**2
+    if poly.isconstant():
+        return numpy.zeros((len(poly), len(poly)))
     poly = poly-E(poly, dist)
     poly = numpoly.outer(poly, poly)
     return E(poly, dist)

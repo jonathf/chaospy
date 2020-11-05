@@ -1,4 +1,5 @@
 """Skewness operator."""
+import numpy
 import numpoly
 
 from .expected import E
@@ -31,12 +32,15 @@ def Skew(poly, dist=None, **kws):
         >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> chaospy.Skew(poly, dist)
         array([nan,  2.,  0.,  0.])
+        >>> chaospy.Skew(2., dist)
+        array(nan)
+
     """
     if dist is None:
         dist, poly = poly, numpoly.variable(len(poly))
     poly = numpoly.set_dimensions(poly, len(dist))
-    if not poly.isconstant:
-        return poly.tonumpy()**3
+    if poly.isconstant():
+        return numpy.full(poly.shape, numpy.nan)
 
     poly = poly-E(poly, dist, **kws)
     poly = numpoly.true_divide(poly, Std(poly, dist, **kws))

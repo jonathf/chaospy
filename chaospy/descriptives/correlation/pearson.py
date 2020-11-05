@@ -40,9 +40,6 @@ def Corr(poly, dist=None, **kws):
     else:
         poly = numpoly.polynomial(poly)
 
-    if not poly.shape:
-        return numpy.ones((1, 1))
-
     cov = chaospy.Cov(poly, dist, **kws)
     var = numpy.diag(cov)
     vvar = numpy.sqrt(numpy.outer(var, var))

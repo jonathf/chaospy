@@ -39,14 +39,11 @@ def Perc(poly, q, dist, sample=10000, **kws):
     shape = poly.shape
     poly = poly.flatten()
 
-    q = numpy.array(q)/100.
+    q = numpy.asarray(q).ravel()/100.
     dim = len(dist)
 
     # Interior
-    Z = dist.sample(sample, **kws)
-    if dim==1:
-        Z = (Z,)
-        q = numpy.array([q])
+    Z = dist.sample(sample, **kws).reshape(len(dist), sample)
     poly1 = poly(*Z)
 
     # Min/max

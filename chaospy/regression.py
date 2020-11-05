@@ -114,7 +114,7 @@ def fit_regression(
         evals = evals.reshape(len(evals), -1)
 
     if model is None:
-        uhat, _, _, _ = numpy.linalg.lstsq(poly_evals, evals)
+        uhat, _, _, _ = numpy.linalg.lstsq(poly_evals, evals, rcond=None)
 
     else:
         try:

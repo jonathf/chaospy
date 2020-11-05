@@ -38,14 +38,17 @@ def Kurt(poly, dist=None, fisher=True, **kws):
         >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> chaospy.Kurt(poly, dist).round(4)
         array([nan,  6.,  0., 15.])
+        >>> chaospy.Kurt(4., dist)
+        array(nan)
+
     """
     adjust = 3 if fisher else 0
 
     if dist is None:
         dist, poly = poly, numpoly.variable(len(poly))
     poly = numpoly.set_dimensions(poly, len(dist))
-    if not poly.isconstant:
-        return poly.tonumpy()**4-adjust
+    if poly.isconstant():
+        return numpy.full(poly.shape, numpy.nan)
 
     poly = poly-E(poly, dist, **kws)
     poly = numpoly.true_divide(poly, Std(poly, dist, **kws))
