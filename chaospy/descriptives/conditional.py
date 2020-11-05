@@ -2,6 +2,7 @@
 from itertools import product
 
 import numpy
+import chaospy
 import numpoly
 
 from . import expected
@@ -17,7 +18,7 @@ def E_cond(poly, freeze, dist, **kws):
     Args:
         poly (numpoly.ndpoly):
             Polynomial to find conditional expected value on.
-        freeze (numpy.ndarray):
+        freeze (numpy.ndpoly):
             Boolean values defining the conditional variables. True values
             implies that the value is conditioned on, e.g. frozen during the
             expected value calculation.
@@ -35,27 +36,31 @@ def E_cond(poly, freeze, dist, **kws):
         >>> poly
         polynomial([1, q0, q1, 10*q0*q1-1])
         >>> dist = chaospy.J(chaospy.Gamma(1, 1), chaospy.Normal(0, 2))
-        >>> chaospy.E_cond(poly, [1, 0], dist)
+        >>> chaospy.E_cond(poly, q0, dist)
         polynomial([1.0, q0, 0.0, -1.0])
-        >>> chaospy.E_cond(poly, [0, 1], dist)
+        >>> chaospy.E_cond(poly, q1, dist)
         polynomial([1.0, 1.0, q1, 10.0*q1-1.0])
-        >>> chaospy.E_cond(poly, [1, 1], dist)
+        >>> chaospy.E_cond(poly, [q0, q1], dist)
         polynomial([1, q0, q1, 10*q0*q1-1])
-        >>> chaospy.E_cond(poly, [0, 0], dist)
+        >>> chaospy.E_cond(poly, [], dist)
         polynomial([1.0, 1.0, 0.0, -1.0])
+        >>> chaospy.E_cond(4, [], dist)
+        array(4)
 
     """
     poly = numpoly.set_dimensions(poly, len(dist))
-    if not poly.isconstant:
+    if poly.isconstant():
         return poly.tonumpy()
     assert not dist.stochastic_dependent, dist
 
-    freeze = numpoly.polynomial(freeze)
-    if freeze.isconstant():
-        freeze = freeze.tonumpy().astype(bool)
+    freeze = numpoly.aspolynomial(freeze)
+    if not freeze.size:
+        return numpoly.polynomial(chaospy.E(poly, dist))
+    if not freeze.isconstant():
+        freeze = [name in freeze.names for name in poly.names]
     else:
-        poly, freeze = numpoly.align_exponents(poly, freeze)
-        freeze = numpy.isin(poly.keys, freeze.keys)
+        freeze = freeze.tonumpy()
+    freeze = numpy.asarray(freeze, dtype=bool)
 
     # decompose into frozen and unfrozen part
     poly = numpoly.decompose(poly)
@@ -71,5 +76,4 @@ def E_cond(poly, freeze, dist, **kws):
     # Remove frozen coefficients, such that poly == sum(frozen*unfrozen) holds
     for key in unfrozen.keys:
         unfrozen[key] = unfrozen[key] != 0
-
     return numpoly.sum(frozen*expected.E(unfrozen, dist), 0)

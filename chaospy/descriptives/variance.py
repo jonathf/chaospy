@@ -29,13 +29,15 @@ def Var(poly, dist=None, **kws):
         >>> poly = chaospy.polynomial([1, q0, q1, 10*q0*q1])
         >>> chaospy.Var(poly, dist)
         array([  0.,   1.,   4., 800.])
+        >>> chaospy.Var(2., dist)
+        array(0.)
+
     """
     if dist is None:
         dist, poly = poly, numpoly.variable(len(poly))
     poly = numpoly.set_dimensions(poly, len(dist))
-    if not poly.isconstant:
-
-        return poly.tonumpy()**2
+    if poly.isconstant():
+        return numpy.zeros(poly.shape)
     poly = poly-E(poly, dist, **kws)
     poly = numpoly.square(poly)
     return E(poly, dist, **kws)
