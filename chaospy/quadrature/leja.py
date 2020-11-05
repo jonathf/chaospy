@@ -55,21 +55,21 @@ def quad_leja(
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_leja(3, chaospy.Normal(0, 1))
-        >>> abscissas.round(4)
-        array([[-2.7173, -1.4142,  0.    ,  1.7635]])
-        >>> weights.round(4)
-        array([0.022 , 0.1629, 0.6506, 0.1645])
+        >>> abscissas, weights = quad_leja(
+        ...     2, chaospy.Iid(chaospy.Normal(0, 1), 2))
+        >>> abscissas.round(2)
+        array([[-1.41, -1.41, -1.41,  0.  ,  0.  ,  0.  ,  1.76,  1.76,  1.76],
+               [-1.41,  0.  ,  1.76, -1.41,  0.  ,  1.76, -1.41,  0.  ,  1.76]])
+        >>> weights.round(3)
+        array([0.05 , 0.133, 0.04 , 0.133, 0.359, 0.107, 0.04 , 0.107, 0.032])
+
     """
     if len(dist) > 1:
-        if dist.stochastic_depedent:
+        if dist.stochastic_dependent:
             raise chaospy.StochasticallyDependentError(
                 "Leja quadrature do not supper distribution with dependencies.")
-        if isinstance(order, int):
-            out = [quad_leja(order, _) for _ in dist]
-        else:
-            out = [quad_leja(order[_], dist[_]) for _ in range(len(dist))]
-
+        order = numpy.broadcast_to(order, len(dist))
+        out = [quad_leja(order[_], dist[_]) for _ in range(len(dist))]
         abscissas = [_[0][0] for _ in out]
         weights = [_[1] for _ in out]
         abscissas = combine(abscissas).T
@@ -90,11 +90,14 @@ def quad_leja(
         def fmin(idx):
             """Bound minimization."""
             try:
-                x, fx = fminbound(objective, abscissas[idx], abscissas[idx+1], full_output=1)[:2]
-            except UnboundLocalError:
-                x = abscissas[idx] + 0.5*(3-5**0.5) * (abscissas[idx+1]-abscissas[idx])
-                fx = objective(x)
-            return x, fx
+                xopt, fval, _, _ = fminbound(objective, abscissas[idx],
+                                             abscissas[idx+1], full_output=True)
+            # Hard coded solution to scipy/scipy#11207 for scipy < 1.5.0.
+            except UnboundLocalError:  # pragma: no cover
+                xopt = abscissas[idx]+0.5*(3-5**0.5)*(
+                    abscissas[idx+1]-abscissas[idx])
+                fx = objective(xopt)
+            return xopt, fval
 
         opts, vals = zip(*[fmin(idx) for idx in range(len(abscissas)-1)])
         index = numpy.argmin(vals)
@@ -110,10 +113,10 @@ def quad_leja(
 def create_weights(
         nodes,
         dist,
-        rule="fejer",
+        rule="clenshaw_curtis",
 ):
     """Create weights for the Laja method."""
-    _, poly, _ = chaospy.stieltjes(len(nodes)-1, dist)
-    poly = poly.flatten()
+    _, poly, _ = chaospy.stieltjes(len(nodes)-1, dist, rule=rule)
+    poly = poly.ravel()
     weights = numpy.linalg.inv(poly(nodes))
     return weights[:, 0]

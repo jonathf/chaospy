@@ -60,11 +60,13 @@ def quad_gauss_patterson(order, domain):
 
     Example:
         >>> abscissas, weights = chaospy.quad_gauss_patterson(
-        ...     2, chaospy.Uniform(0, 1))
-        >>> abscissas.round(4)
-        array([[0.0198, 0.1127, 0.2829, 0.5   , 0.7171, 0.8873, 0.9802]])
-        >>> weights.round(4)
-        array([0.0523, 0.1342, 0.2007, 0.2255, 0.2007, 0.1342, 0.0523])
+        ...     1, chaospy.Iid(chaospy.Uniform(0, 1), 2))
+        >>> abscissas.round(3)
+        array([[0.113, 0.113, 0.113, 0.5  , 0.5  , 0.5  , 0.887, 0.887, 0.887],
+               [0.113, 0.5  , 0.887, 0.113, 0.5  , 0.887, 0.113, 0.5  , 0.887]])
+        >>> weights.round(3)
+        array([0.077, 0.123, 0.077, 0.123, 0.198, 0.123, 0.077, 0.123, 0.077])
+
     """
     if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_gauss_patterson(
@@ -75,24 +77,22 @@ def quad_gauss_patterson(order, domain):
         weights /= numpy.sum(weights)
         return abscissas, weights
 
-    lower, upper = numpy.array(domain)
-    lower = numpy.asarray(lower).flatten()
-    upper = numpy.asarray(upper).flatten()
+    domain = numpy.array(numpy.broadcast_arrays(*domain))
+    lower, upper = numpy.atleast_2d(domain.T).T
+    lower, upper, order = numpy.broadcast_arrays(lower, upper, order)
 
-    if len(lower) > 1:
+    if lower.size > 1:
+        values = [quad_gauss_patterson(order_, (lower_, upper_))
+                  for order_, lower_, upper_ in zip(order, lower, upper)]
 
-        values = [quad_gauss_patterson(order[i], (domain[0][i], domain[1][i]))
-                  for i in range(len(domain[0]))]
-
-        abscissas = [_[0][0] for _ in values]
-        weights = [_[1] for _ in values]
+        abscissas = [value[0][0] for value in values]
+        weights = [value[1] for value in values]
         abscissas = combine(abscissas).T
         weights = numpy.prod(combine(weights), -1)
-
         return abscissas, weights
 
-    order = sorted(PATTERSON_VALUES.keys())[order]
-    abscissas, weights = PATTERSON_VALUES[order]
+    order = sorted(PATTERSON_VALUES.keys())[int(order)]
+    abscissas, weights = PATTERSON_VALUES[int(order)]
 
     abscissas = .5*(abscissas*(upper-lower)+upper+lower)
     abscissas = abscissas.reshape(1, abscissas.size)
