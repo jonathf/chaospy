@@ -41,18 +41,19 @@ Multivariate samples::
 """
 import numpy
 from scipy.linalg import solve_banded, solve
+import chaospy
 
-from .recurrence import (
-    construct_recurrence_coefficients, coefficients_to_quadrature)
 from .combine import combine_quadrature
 
 
 def quad_gauss_lobatto(
         order,
         dist,
+        recurrence_algorithm="stieltjes",
         rule="fejer",
-        accuracy=100,
-        recurrence_algorithm="",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Generate the abscissas and weights in Gauss-Loboto quadrature.
@@ -63,16 +64,20 @@ def quad_gauss_lobatto(
         dist (chaospy.distributions.baseclass.Distribution):
             The distribution weights to be used to create higher order nodes
             from.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
             proxy-integration scheme.
-        accuracy (int):
-            In the case ``rule`` is used, defines the quadrature order of the
-            scheme used. In practice, must be at least as large as ``order``.
-        recurrence_algorithm (str):
-            Name of the algorithm used to generate abscissas and weights. If
-            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -95,11 +100,18 @@ def quad_gauss_lobatto(
     if order == 0:
         return dist.lower.reshape(1, -1), numpy.array([1.])
 
-    coefficients = construct_recurrence_coefficients(
-        2*order-1, dist, rule, accuracy, recurrence_algorithm)
+    coefficients = chaospy.construct_recurrence_coefficients(
+        order=2*order-1,
+        dist=dist,
+        recurrence_algorithm=recurrence_algorithm,
+        rule=rule,
+        tolerance=tolerance,
+        scaling=scaling,
+        n_max=n_max,
+    )
     coefficients = [_lobatto(coeffs, (lo, up))
                     for coeffs, lo, up in zip(coefficients, dist.lower, dist.upper)]
-    abscissas, weights = coefficients_to_quadrature(coefficients)
+    abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
 
     return combine_quadrature(abscissas, weights)
 

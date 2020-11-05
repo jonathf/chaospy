@@ -29,7 +29,7 @@ class gamma(SimpleDistribution):
         return 0.
 
     def _upper(self, a):
-        return special.gammaincinv(a, 1-1e-12)
+        return special.gammaincinv(a, 1-1e-14)
 
 
 class Gamma(ShiftScaleDistribution):
@@ -55,7 +55,7 @@ class Gamma(ShiftScaleDistribution):
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
         >>> xloc.round(3)
-        array([ 0.   ,  0.768,  1.143,  1.553,  2.14 , 17.026])
+        array([ 0.   ,  0.768,  1.143,  1.553,  2.14 , 19.459])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)
@@ -98,7 +98,7 @@ class Exponential(ShiftScaleDistribution):
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
         >>> xloc.round(3)
-        array([ 0.   ,  0.223,  0.511,  0.916,  1.609, 27.631])
+        array([ 0.   ,  0.223,  0.511,  0.916,  1.609, 32.237])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)

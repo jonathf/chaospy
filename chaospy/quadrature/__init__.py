@@ -80,13 +80,3 @@ from .genz_keister import quad_genz_keister
 from .grid import quad_grid
 from .leja import quad_leja
 from .newton_cotes import quad_newton_cotes
-
-from .recurrence import (
-    analytical_stieljes,
-    modified_chebyshev,
-    coefficients_to_quadrature,
-    construct_recurrence_coefficients,
-    discretized_stieltjes,
-    lanczos,
-    RECURRENCE_ALGORITHMS,
-)

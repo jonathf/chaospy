@@ -14,7 +14,7 @@ class inverse_gamma(SimpleDistribution):
         return 0.
 
     def _upper(self, a):
-        return 1./special.gammainccinv(a, 1-1e-10)
+        return 1./special.gammainccinv(a, 1-1e-16)
 
     def _pdf(self, x, a):
         x_ = numpy.where(x, x, 1)
@@ -29,7 +29,7 @@ class inverse_gamma(SimpleDistribution):
     def _mom(self, k, a):
         if k > a:
             return self._upper(a)
-        return numpy.prod(a-numpy.arange(1, k.item()+1))
+        return 1./numpy.prod(a-numpy.arange(1, k.item()+1))
 
 
 class InverseGamma(ShiftScaleDistribution):
@@ -45,23 +45,23 @@ class InverseGamma(ShiftScaleDistribution):
             Location of the lower bound.
 
     Examples:
-        >>> distribution = chaospy.InverseGamma(shape=5)
+        >>> distribution = chaospy.InverseGamma(shape=10)
         >>> distribution
-        InverseGamma(5)
+        InverseGamma(10)
         >>> uloc = numpy.linspace(0, 1, 6)
         >>> uloc
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
         >>> xloc.round(3)
-        array([ 0.   ,  0.149,  0.191,  0.241,  0.324, 38.218])
+        array([0.   , 0.08 , 0.095, 0.112, 0.137, 8.608])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)
-        array([0.   , 4.629, 4.569, 3.352, 1.65 , 0.   ])
+        array([ 0.   , 11.928, 12.963, 10.441,  5.808,  0.   ])
         >>> distribution.sample(4).round(3)
-        array([0.258, 0.129, 0.508, 0.21 ])
-        >>> distribution.mom(1).round(3)
-        4.0
+        array([0.118, 0.072, 0.185, 0.102])
+        >>> distribution.mom([1, 2, 3]).round(3)
+        array([0.111, 0.014, 0.002])
 
     """
 

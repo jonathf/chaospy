@@ -20,7 +20,7 @@ class student_t(SimpleDistribution):
         return special.stdtr(a, x)
 
     def _ppf(self, q, a):
-        return special.stdtrit(a, numpy.clip(q, 1e-12, 1-1e-12))
+        return special.stdtrit(a, numpy.clip(q, 1e-16, 1-1e-16))
 
     def _mom(self, k, a):
         if numpy.any(a < k):
@@ -33,10 +33,10 @@ class student_t(SimpleDistribution):
         return 0., k*a*(a-k+1.)/ ((a-2*k)*(a-2*k+2))
 
     def _lower(self, a):
-        return special.stdtrit(a, 1e-12)
+        return special.stdtrit(a, 1e-16)*10
 
     def _upper(self, a):
-        return special.stdtrit(a, 1-1e-12)
+        return special.stdtrit(a, 1-1e-16)*10
 
 
 class StudentT(ShiftScaleDistribution):
@@ -60,7 +60,7 @@ class StudentT(ShiftScaleDistribution):
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
         >>> xloc.round(3)
-        array([-40.532,  -0.879,  -0.26 ,   0.26 ,   0.879,  40.532])
+        array([-102.051,   -0.879,   -0.26 ,    0.26 ,    0.879,  100.988])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)

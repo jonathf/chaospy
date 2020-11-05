@@ -97,7 +97,7 @@ For example, to mention a few:
     >>> abscissas, weights = chaospy.generate_quadrature(
     ...     5, distribution, rule="gaussian")
     >>> abscissas.round(4)
-    array([[ 0.2242,  1.19  ,  2.9933,  5.7746,  9.8349, 15.9752]])
+    array([[ 0.2228,  1.1886,  2.9918,  5.7731,  9.8334, 15.9737]])
     >>> weights.round(4)
     array([4.589e-01, 4.170e-01, 1.134e-01, 1.040e-02, 3.000e-04, 0.000e+00])
 
@@ -112,17 +112,18 @@ For example, to mention a few:
     array([9.600e-02, 3.592e-01, 3.891e-01, 1.412e-01, 1.430e-02, 2.000e-04])
 
 """
-from .recurrence import (
-    construct_recurrence_coefficients, coefficients_to_quadrature)
+import chaospy
 from .combine import combine_quadrature
 
 
 def quad_gaussian(
         order,
         dist,
-        rule="fejer",
-        accuracy=200,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        rule="clenshaw_curtis",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Generating Gaussian quadrature by first generating so called *three terms
@@ -138,16 +139,20 @@ def quad_gaussian(
             The distribution which density will be used as weight function.
         order (int):
             The order of the quadrature.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
             proxy-integration scheme.
-        accuracy (int):
-            In the case ``rule`` is used, defines the quadrature order of the
-            scheme used. In practice, must be at least as large as ``order``.
-        recurrence_algorithm (str):
-            Name of the algorithm used to generate abscissas and weights. If
-            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -180,7 +185,14 @@ def quad_gaussian(
         >>> weights.round(3)
         array([0.046, 0.185, 0.046, 0.074, 0.296, 0.074, 0.046, 0.185, 0.046])
     """
-    coefficients = construct_recurrence_coefficients(
-        order, dist, rule, accuracy, recurrence_algorithm)
-    abscissas, weights = coefficients_to_quadrature(coefficients)
+    coefficients = chaospy.construct_recurrence_coefficients(
+        order=order,
+        dist=dist,
+        recurrence_algorithm=recurrence_algorithm,
+        rule=rule,
+        tolerance=tolerance,
+        scaling=scaling,
+        n_max=n_max,
+    )
+    abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
     return combine_quadrature(abscissas, weights)

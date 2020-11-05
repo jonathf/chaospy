@@ -34,21 +34,6 @@ class triangle(SimpleDistribution):
     def _upper(self, a):
         return 1.
 
-    def _ttr(self, k, a):
-        if a == 0:
-            return beta_()._ttr(k, 1, 2)
-        if a == 1:
-            return beta_()._ttr(k, 2, 1)
-
-        from ...quadrature import quad_fejer, discretized_stieltjes
-        q1, w1 = quad_fejer(int(1000*a), (0, a))
-        q2, w2 = quad_fejer(int(1000*(1-a)), (a, 1))
-        qloc = numpy.concatenate([q1,q2], 1)
-        w = numpy.concatenate([w1,w2])*self._pdf(qloc[0], a)
-
-        coeffs, _, _ = discretized_stieltjes(k, qloc, w)
-        return coeffs[:, 0, -1]
-
 
 class Triangle(LowerUpperDistribution):
     """
@@ -82,9 +67,6 @@ class Triangle(LowerUpperDistribution):
         array([ 0.168, -0.52 ,  0.685, -0.018])
         >>> distribution.mom(1).round(4)
         0.0
-        >>> distribution.ttr([0, 1, 2, 3]).round(4)
-        array([[-0.    ,  0.    , -0.    ,  0.    ],
-               [ 4.    ,  0.1667,  0.2333,  0.2327]])
 
     """
 

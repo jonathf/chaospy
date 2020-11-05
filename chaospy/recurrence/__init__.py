@@ -64,4 +64,4 @@ from .jacobi import coefficients_to_quadrature
 
 from .chebyshev import modified_chebyshev
 from .lanczos import lanczos
-from .stieltjes import discretized_stieltjes, analytical_stieljes
+from .stieltjes import stieltjes, discretized_stieltjes, analytical_stieltjes

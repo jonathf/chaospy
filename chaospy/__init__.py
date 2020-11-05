@@ -17,6 +17,7 @@ import chaospy.spectral
 import chaospy.quadrature
 import chaospy.saltelli
 import chaospy.regression
+import chaospy.recurrence
 
 from chaospy.distributions import *
 from chaospy.orthogonal import *
@@ -26,6 +27,7 @@ from chaospy.saltelli import *
 from chaospy.descriptives import *
 from chaospy.regression import *
 from chaospy.external import *
+from chaospy.recurrence import *
 
 try:
     __version__ = pkg_resources.get_distribution("chaospy").version

@@ -60,7 +60,7 @@ import chaospy
 
 
 def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
-             retall=False, cross_truncation=1., sort=None, **kws):
+             retall=False, cross_truncation=1.):
     """
     Create orthogonal polynomial expansion from three terms recurrence formula.
 
@@ -108,21 +108,10 @@ def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
         polynomial([1.0, q1, q0, 0.707*q1**2-0.707, q0*q1, 0.707*q0**2-0.707])
 
     """
-    logger = logging.getLogger(__name__)
-    if sort is not None:
-        logger.warning("deprecation warning: 'sort' argument is deprecated; "
-                       "use 'graded' and/or 'reverse' instead")
-        graded = "G" in sort.upper()
-        reverse = "R" not in sort.upper()
-
-    try:
-        _, polynomials, norms, = chaospy.quadrature.recurrence.analytical_stieljes(
-            numpy.max(order), dist, normed=normed)
-    except NotImplementedError:
-        abscissas, weights = chaospy.quadrature.generate_quadrature(
-            int(10000**(1/len(dist))), dist, rule="fejer")
-        _, polynomials, norms, = chaospy.quadrature.recurrence.discretized_stieltjes(
-            numpy.max(order), abscissas, weights, normed=normed)
+    _, polynomials, norms, = chaospy.stieltjes(numpy.max(order), dist)
+    if normed:
+        polynomials /= numpy.sqrt(norms)
+        norms[:] = 1.
 
     polynomials = polynomials.reshape((len(dist), numpy.max(order)+1))
 

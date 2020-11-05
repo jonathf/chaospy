@@ -1,20 +1,23 @@
 """Construct recurrence coefficients."""
 import numpy
+import chaospy
 
 from .chebyshev import modified_chebyshev
 from .jacobi import coefficients_to_quadrature
 from .lanczos import lanczos
-from .stieltjes import discretized_stieltjes
+from .stieltjes import stieltjes
 
-RECURRENCE_ALGORITHMS = ("analytical", "chebyshev", "lanczos", "stieltjes")
+RECURRENCE_ALGORITHMS = ("chebyshev", "lanczos", "stieltjes")
 
 
 def construct_recurrence_coefficients(
         order,
         dist,
-        rule="fejer",
-        accuracy=200,
-        recurrence_algorithm="",
+        recurrence_algorithm="stieltjes",
+        rule="clenshaw_curtis",
+        tolerance=1e-10,
+        scaling=3,
+        n_max=5000,
 ):
     """
     Frontend wrapper for constructing *three terms recurrence* coefficients.
@@ -22,10 +25,10 @@ def construct_recurrence_coefficients(
     The algorithm for constructing recurrence coefficients can be specified
     using the ``recurrence_algorithm`` flag. It accepts the strings:
 
-    ``analytical``
-        Some distributions have a built-in method for generating three terms
-        recurrence coefficients. If that is not the case, raise an appropriate
-        error. The most stable method, if available.
+    ``stieltjes``
+        Use the discretized Stieltjes algorithm for iterative estimate each
+        recurrence coefficient using numerical integration. Typically the
+        method known to have the highest convergence rate.
     ``chebyshev``
         Use modified Chebyshev algorithm to convert raw statistical moments to
         the recurrence coefficients. A good algorithm for when raw statistical
@@ -35,11 +38,6 @@ def construct_recurrence_coefficients(
         consisting of abscissas and weights from an alternative integration
         scheme to estimate the recurrence coefficients. Stabilized using ideas
         by Rutishauser. An alternative method to ``stieltjes``.
-    ``stieltjes``
-        Use the discretized Stieltjes algorithm for iterative estimate each
-        recurrence coefficient using numerical integration. Typically the
-        method known to have the highest convergence rate when no analytical
-        information is available.
 
     Args:
         order (int):
@@ -47,16 +45,20 @@ def construct_recurrence_coefficients(
         dist (chaospy.distributions.baseclass.Distribution):
             The distribution which density will be used as weight function.
             Assumed to one-dimensional.
+        recurrence_algorithm (str):
+            Name of the algorithm used to generate abscissas and weights.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
             proxy-integration scheme.
-        accuracy (int):
-            In the case ``rule`` is used, defines the quadrature order of the
-            scheme used. In practice, must be at least as large as ``order``.
-        recurrence_algorithm (str):
-            Name of the algorithm used to generate abscissas and weights. If
-            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails.
+        tolerance (float):
+            The allowed relative error in norm between two quadrature orders
+            before method assumes convergence.
+        scaling (float):
+            A multiplier the adaptive order increases with for each step
+            quadrature order is not converged. Use 0 to indicate unit
+            increments.
+        n_max (int):
+            The allowed number of quadrature points to use in approximation.
 
     Returns:
         (typing.List[numpy.ndarray]):
@@ -65,12 +67,12 @@ def construct_recurrence_coefficients(
             respectively.
 
     Examples:
-        >>> distribution = chaospy.Normal(0, 1)
+        >>> distribution = chaospy.Normal(1, 1)
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     4, distribution, recurrence_algorithm="stieltjes")
         >>> coefficients[0].round(3)
-        array([[-0.,  0., -0.,  0., -0.],
-               [ 1.,  1.,  2.,  3.,  4.]])
+        array([[1., 1., 1., 1., 1.],
+               [1., 1., 2., 3., 4.]])
         >>> distribution = chaospy.J(chaospy.Exponential(), chaospy.Uniform())
         >>> coefficients = chaospy.construct_recurrence_coefficients(
         ...     [2, 4], distribution, recurrence_algorithm="chebyshev")
@@ -81,43 +83,31 @@ def construct_recurrence_coefficients(
         array([[0.5   , 0.5   , 0.5   , 0.5   , 0.5   ],
                [1.    , 0.0833, 0.0667, 0.0643, 0.0635]])
     """
-    import chaospy
-    if not recurrence_algorithm:
-        try:
-            return construct_recurrence_coefficients(
-                order, dist, rule, accuracy, recurrence_algorithm="analytical")
-        except NotImplementedError:
-            return construct_recurrence_coefficients(
-                order, dist, rule, accuracy, recurrence_algorithm="stieltjes")
-
     if len(dist) > 1:
         orders = (order*numpy.ones(len(dist), dtype=int)).tolist()
         return [construct_recurrence_coefficients(
-            int(order_), dist_, rule, accuracy, recurrence_algorithm)[0]
-                for dist_, order_ in zip(dist, orders)]
+            order=int(order_),
+            dist=dist_,
+            recurrence_algorithm=recurrence_algorithm,
+            rule=rule,
+            tolerance=tolerance,
+            scaling=scaling,
+            n_max=n_max,
+        )[0] for dist_, order_ in zip(dist, orders)]
 
     assert recurrence_algorithm in RECURRENCE_ALGORITHMS, (
         "recurrence algorithm '%s' not recognized" % recurrence_algorithm)
     assert not rule.startswith("gauss"), (
         "recursive Gaussian quadrature construct")
 
-    if recurrence_algorithm == "analytical":
-        coeffs = dist.ttr(numpy.arange(order+1, dtype=int))
-
-    elif recurrence_algorithm == "chebyshev":
+    if recurrence_algorithm == "chebyshev":
         moments = dist.mom(numpy.arange(2*(order+1), dtype=int))
         coeffs = modified_chebyshev(moments)
 
     elif recurrence_algorithm == "lanczos":
-        from ..frontend import generate_quadrature
-        abscissas, weights = generate_quadrature(
-            accuracy, dist, rule=rule, segments=0)
-        coeffs = lanczos(order, abscissas, weights)
+        coeffs = lanczos(order, dist, rule=rule, tolerance=tolerance)
 
     elif recurrence_algorithm == "stieltjes":
-        from ..frontend import generate_quadrature
-        abscissas, weights = generate_quadrature(
-            accuracy, dist, rule=rule, segments=0)
-        coeffs, _, _ = discretized_stieltjes(order, abscissas, weights)
+        coeffs, _, _ = stieltjes(order, dist, rule=rule, tolerance=tolerance)
 
     return [coeffs.reshape(2, int(order)+1)]

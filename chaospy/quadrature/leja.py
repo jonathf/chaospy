@@ -26,15 +26,12 @@ from scipy.optimize import fminbound
 import chaospy
 
 from .combine import combine
-from .recurrence import analytical_stieljes, discretized_stieltjes
 
 
 def quad_leja(
         order,
         dist,
         rule="fejer",
-        accuracy=100,
-        recurrence_algorithm="",
 ):
     """
     Generate Leja quadrature node.
@@ -47,13 +44,6 @@ def quad_leja(
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
             proxy-integration scheme.
-        accuracy (int):
-            In the case ``rule`` is used, defines the quadrature order of the
-            scheme used. In practice, must be at least as large as ``order``.
-        recurrence_algorithm (str):
-            Name of the algorithm used to generate abscissas and weights. If
-            omitted, ``analytical`` will be tried first, and ``stieltjes`` used
-            if that fails.
 
     Returns:
         (numpy.ndarray, numpy.ndarray):
@@ -111,8 +101,7 @@ def quad_leja(
         abscissas.insert(index+1, opts[index])
 
     abscissas = numpy.asfarray(abscissas).flatten()[1:-1]
-    weights = create_weights(
-        abscissas, dist, rule, accuracy, recurrence_algorithm)
+    weights = create_weights(abscissas, dist, rule)
     abscissas = abscissas.reshape(1, abscissas.size)
 
     return numpy.asfarray(abscissas), numpy.asfarray(weights).flatten()
@@ -122,19 +111,9 @@ def create_weights(
         nodes,
         dist,
         rule="fejer",
-        accuracy=100,
-        recurrence_algorithm="",
 ):
     """Create weights for the Laja method."""
-    try:
-        _, poly, _ = analytical_stieljes(len(nodes)-1, dist)
-    except NotImplementedError:
-        from .frontend import generate_quadrature
-        abscissas, weights = generate_quadrature(
-            order=accuracy, dist=dist, rule=rule,
-            recurrence_algorithm=recurrence_algorithm,
-        )
-        _, poly, _ = discretized_stieltjes(len(nodes)-1, abscissas, weights)
+    _, poly, _ = chaospy.stieltjes(len(nodes)-1, dist)
     poly = poly.flatten()
     weights = numpy.linalg.inv(poly(nodes))
     return weights[:, 0]
