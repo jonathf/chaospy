@@ -1,6 +1,9 @@
 Master Branch
 =============
 
+Version 4.1.0 (2020-11-05)
+==========================
+
 Refactored `chaospy.quadrature.recurrence` -> `chaospy.recurrence`.
 
 CHANGED:
@@ -15,9 +18,9 @@ CHANGED:
     scaling.
   * Flag: Default `recurrence_algorithm` default changed to `stieltjes` (as
     it covers both `analtical` and discretized Stieltjes).
-  * Flag: `accuracy` deprecated in favor for `tolerance`.
-  * Discretization default in Lanczos and Stieltjes changed from Fejer to
-    Clenshaw-Curtis as edge evaluation is better handled these days.
+  * Discretization default in Lanczos and Stieltjes changed from `fejer` to
+    `clenshaw_curtis` as edge evaluation is better handled these days, and the
+    latter is better for when edges are finite.
 
 REMOVED:
   * `chaospy.basis` and `chaospy.prange` (which was superseded by
@@ -26,6 +29,7 @@ REMOVED:
   * `chaospy.chol` modules and the Cholesky functions: `bastos_ohagen`,
     `gill_murry_wright` and `schnabel_eskow`. `gill_king` moved to
     `chaospy.orthogonal.cholesky` as it is used by `orth_chol`.
+  * Flag: `accuracy` deprecated in favor for `tolerance`.
 
 Version 4.0.2 (2020-10-30)
 ==========================
