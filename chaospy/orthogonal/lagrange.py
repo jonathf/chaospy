@@ -22,6 +22,8 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
             considered bigger than ``q0**3*q1``, instead of the opposite.
 
     Example:
+        >>> chaospy.lagrange_polynomial([4]).round(4)
+        polynomial([4.0])
         >>> chaospy.lagrange_polynomial([-10, 10]).round(4)
         polynomial([-0.05*q0+0.5, 0.05*q0+0.5])
         >>> chaospy.lagrange_polynomial([-1, 0, 1]).round(4)
@@ -29,7 +31,7 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
         >>> poly = chaospy.lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
         >>> poly.round(4)
         polynomial([-0.5*q1+0.5*q0+0.5, -q0+1.0, 0.5*q1+0.5*q0-0.5])
-        >>> poly([1, 0, 1], [0, 1, 2]).round(4)
+        >>> poly([1, 0, 1], [0, 1, 2]).round(14)
         array([[1., 0., 0.],
                [0., 1., 0.],
                [0., 0., 1.]])

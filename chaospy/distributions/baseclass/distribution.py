@@ -107,8 +107,7 @@ class Distribution(object):
         if idx is not None:
             assert not isinstance(idx, dict), idx
             assert idx == int(idx), idx
-            if "idx" in out:
-                assert out["idx"] == idx, (idx, out)
+            assert "idx" not in out
         assert "cache" not in out
         out["cache"] = cache
         out["idx"] = idx
@@ -136,7 +135,7 @@ class Distribution(object):
         cache[idx, self] = (out, None)
         return out
 
-    def _lower(self, **kwargs):
+    def _lower(self, **kwargs):  # pragma: no cover
         """Backend lower bound."""
         raise chaospy.UnsupportedFeature("lower not supported")
 
@@ -164,7 +163,7 @@ class Distribution(object):
         assert all([elem[0].size in (1, size) for elem in cache.values()])
         return out
 
-    def _upper(self, **kwargs):
+    def _upper(self, **kwargs):  # pragma: no cover
         """Backend upper bound."""
         raise chaospy.UnsupportedFeature("lower not supported")
 
@@ -193,7 +192,7 @@ class Distribution(object):
             q_data[idx] = self._get_fwd(x_data[idx], idx, cache)
 
         indices = (q_data > 1) | (q_data < 0)
-        if numpy.any(indices):
+        if numpy.any(indices):  # pragma: no cover
             logger.debug("%s.fwd: %d/%d outputs out of bounds",
                          self, numpy.sum(indices), len(indices))
             q_data = numpy.clip(q_data, a_min=0, a_max=1)
@@ -205,8 +204,7 @@ class Distribution(object):
     def _get_fwd(self, x_data, idx, cache):
         """In-process function for getting cdf-values."""
         logger = logging.getLogger(__name__)
-        if (idx, self) in cache:
-            return cache[idx, self][1]
+        assert (idx, self) not in cache, "repeated evaluation"
         lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
         upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
         parameters = self.get_parameters(idx, cache, assert_numerical=True)
@@ -438,7 +436,7 @@ class Distribution(object):
         raise chaospy.UnsupportedFeature(
             "%s: does not support analytical pdf." % self)
 
-    def sample(self, size=(), rule="random", antithetic=None):
+    def sample(self, size=(), rule="random", antithetic=None, include_axis_dim=False):
         """
         Create pseudo-random generated samples.
 
@@ -484,35 +482,30 @@ class Distribution(object):
             antithetic (bool, numpy.ndarray):
                 If provided, will be used to setup antithetic variables. If
                 array, defines the axes to mirror.
+            include_axis_dim (bool):
+                By default an extra dimension even if the number of dimensions
+                is 1.
 
         Returns:
             (numpy.ndarray):
-                Random samples with shape ``(len(self),)+self.shape``.
+                Random samples with ``self.shape``. An extra dimension might be
+                added to the front if either ``len(dist) > 1`` or
+                ``include_axis_dim=True``.
+
         """
         check_dependencies(self)
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)
-        if dim > 1:
-            if isinstance(size, (tuple, list, numpy.ndarray)):
-                shape = (dim,) + tuple(size)
-            else:
-                shape = (dim, size)
-        else:
-            shape = size
+        shape = ((size,) if isinstance(size, (int, float, numpy.number)) else tuple(size))
+        shape = shape if dim == 1 and not include_axis_dim else (dim,)+shape
 
         from chaospy.distributions import sampler
         out = sampler.generator.generate_samples(
             order=size_, domain=self, rule=rule, antithetic=antithetic)
-        try:
-            out = out.reshape(shape)
-        except:
-            if len(self) == 1:
-                out = out.flatten()
-            else:
-                out = out.reshape(dim, int(out.size/dim))
 
         if self.interpret_as_integer:
             out = numpy.round(out).astype(int)
+        out = out.reshape(shape)
         return out
 
     def mom(self, K, allow_approx=True, **kws):
@@ -618,8 +611,46 @@ class Distribution(object):
         self._ttr_cache[idx, kdata] = (alpha, beta)
         return alpha, beta
 
+    def _mom(self, kloc, **kwargs):
+        raise chaospy.UnsupportedFeature(
+            "three terms recursion not supported for this distribution")
+
     @report_on_exception
     def _get_cache(self, idx, cache, get=None):
+        """
+        In-process function for getting cached values.
+
+        Each time a distribution has been processed, the input and output
+        values are stored in the cache.
+        This checks if a distribution has been processed before and return a
+        cache value if it is.
+
+        The cached values are as follows:
+
+        -----------  -------------  -------------
+        Context      Get 1          Get 2
+        -----------  -------------  -------------
+        pdf          Input values   Output values
+        cdf/fwd      Input values   Output values
+        ppf/inv      Output values  Input values
+        lower/upper  Output values  N/A
+        -----------  -------------  -------------
+
+        Args:
+            idx (int):
+                Which dimension to get cache from.
+            cache (Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]):
+                Collection of cached values. Keys are distributions that has
+                been processed earlier, values consist of up to two cache
+                value.
+            get (int):
+                Which cache to retrieve.
+
+        Returns:
+            (numpy.ndarray, Distribution):
+                The content of the cache, if any. Else return self.
+
+        """
         if (idx, self) in cache:
             out = cache[idx, self]
         else:
@@ -628,77 +659,6 @@ class Distribution(object):
             assert get in (0, 1)
             out = out[get]
         return out
-
-    @report_on_exception
-    def _get_cache_1(self, idx, cache):
-        """
-        In-process function for getting cached values.
-
-        Each time a distribution has been processed, the input and output
-        values are stored in the cache.
-        This checks if a distribution has been processed before and return a
-        cache value if it is.
-
-        The cached values are as follows:
-
-        -----------  -------------
-        Context      Content
-        -----------  -------------
-        pdf          Input values
-        cdf/fwd      Input values
-        ppf/inv      Output values
-        lower/upper  Output values
-        -----------  -------------
-
-        Args:
-            cache (Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]):
-                Collection of cached values. Keys are distributions that has
-                been processed earlier, values consist of up to two cache
-                value.
-
-        Returns:
-            (numpy.ndarray, Distribution):
-                The content of the first cache, if any. Else return self.
-        """
-        if self in cache:
-            out = cache[idx, self]
-        else:
-            out = self._cache(idx, cache)
-        if not isinstance(out, Distribution):
-            out = out[0]
-        return out
-
-    @report_on_exception
-    def _get_cache_2(self, idx, cache):
-        """
-        In-process function for getting cached values.
-
-        Each time a distribution has been processed, the input and output
-        values are stored in the cache.
-        This checks if a distribution has been processed before and return a
-        cache value if it is.
-
-        The cached values are as follows:
-
-        -----------  -------------
-        Context      Content
-        -----------  -------------
-        pdf          Output values
-        cdf/fwd      Output values
-        ppf/inv      Input values
-        lower/upper  N/A
-        -----------  -------------
-
-        Args:
-            cache (Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]):
-                Collection of cached values. Keys are distributions that has
-                been processed earlier, values consist of up to two cache
-                value.
-
-        Returns:
-            (numpy.ndarray, Distribution):
-                The content of the second cache, if any. Else return self.
-        """
         if self in cache:
             out = cache[idx, self]
         else:
@@ -729,8 +689,6 @@ class Distribution(object):
         raise IndexError("unrecognized key: %s" % repr(index))
 
     def __iter__(self):
-        if isinstance(self, (chaospy.ItemDistribution, chaospy.SimpleDistribution)):
-            raise TypeError("index of an index not possible.")
         for idx in range(len(self)):
             yield self[idx]
 

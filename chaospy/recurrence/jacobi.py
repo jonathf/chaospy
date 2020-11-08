@@ -35,18 +35,14 @@ def coefficients_to_quadrature(coeffs):
                 "constructing Gaussian quadrature rule")
 
         order = len(coeff[0])
-        if order:
-            bands = numpy.zeros((2, order))
-            bands[0, :] = coeff[0, :order]
-            bands[1, :-1] = numpy.sqrt(coeff[1, 1:order])
-            vals, vecs = scipy.linalg.eig_banded(bands, lower=True)
+        bands = numpy.zeros((2, order))
+        bands[0, :] = coeff[0, :order]
+        bands[1, :-1] = numpy.sqrt(coeff[1, 1:order])
+        vals, vecs = scipy.linalg.eig_banded(bands, lower=True)
 
-            abscissa, weight = vals.real, vecs[0, :]**2
-            indices = numpy.argsort(abscissa)
-            abscissa, weight = abscissa[indices], weight[indices]
-
-        else:
-            abscissa, weight = numpy.array([coeff[0, 0]]), numpy.array([1.])
+        abscissa, weight = vals.real, vecs[0, :]**2
+        indices = numpy.argsort(abscissa)
+        abscissa, weight = abscissa[indices], weight[indices]
 
         abscissas.append(abscissa)
         weights.append(weight)

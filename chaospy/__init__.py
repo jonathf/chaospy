@@ -31,7 +31,7 @@ from chaospy.recurrence import *
 
 try:
     __version__ = pkg_resources.get_distribution("chaospy").version
-except pkg_resources.DistributionNotFound:  # pragma: no coverage
+except pkg_resources.DistributionNotFound:  # pragma: no cover
     __version__ = None
 
 

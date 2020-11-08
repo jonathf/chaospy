@@ -155,14 +155,10 @@ def generate_quadrature(
 
     """
     if not rule:
-        if isinstance(dist, chaospy.J):
-            rule = [
-                ("discrete" if dist_.interpret_as_integer else "clenshaw_curtis")
-                for dist_ in dist
-            ]
-        else:
-            rule = ("discrete" if dist.interpret_as_integer
-                    else "clenshaw_curtis")
+        dist_ = dist if isinstance(dist, chaospy.J) else [dist]
+        rule = [("discrete" if dist_.interpret_as_integer else "clenshaw_curtis")
+                for dist_ in dist_]
+
     if sparse:
         from . import sparse_grid
         return sparse_grid.construct_sparse_grid(

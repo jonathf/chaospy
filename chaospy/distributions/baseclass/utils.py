@@ -1,4 +1,5 @@
 """Distribution utility functions."""
+import sys
 import os
 import logging
 from contextlib import wraps
@@ -55,7 +56,8 @@ def report_on_exception(method):
 
     Will output the function name and call signature to logger when an
     exception is raised. But only during testing or if the environment variable
-    `CHAOSPY_DEBUG=1` is set.
+    `CHAOSPY_DEBUG=1` is set. Will not affect calculations output, only how the
+    errors are reported.
 
     Args:
         method:
@@ -85,7 +87,7 @@ def report_on_exception(method):
             raise
         return ret_val
 
-    if os.environ.get("CHAOSPY_DEBUG", "") == "1":
+    if os.environ.get("CHAOSPY_DEBUG", "") == "1" or "pytest" in sys.modules:
         method = wrapper_method
     return method
 
@@ -227,6 +229,9 @@ def init_dependencies(
 
 
 def format_repr_kwargs(**parameters):
+    """
+    Format arguments for REPR output.
+    """
     out = []
 
     defaults_only = True

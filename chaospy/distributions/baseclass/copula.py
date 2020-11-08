@@ -105,9 +105,3 @@ class CopulaDistribution(Distribution):
         density = dist._get_pdf(xloc, idx, cache=cache.copy())
         return trans._get_pdf(
             dist._get_fwd(xloc, idx, cache=cache), idx, cache=cache)*density
-
-    def _mom(self, xloc, dist, trans, cache):
-        raise chaospy.UnsupportedFeature("Copula not supported.")
-
-    def _ttr(self, xloc, idx, dist, trans, cache):
-        raise chaospy.UnsupportedFeature("Copula not supported.")

@@ -100,14 +100,13 @@ class SimpleDistribution(Distribution):
 
         Returns:
             (Dict[str, numpy.ndarray]):
-                Collection of parameters. Probability distributions
-                are replaced with cached values.
+                Collection of parameters. Probability distributions are
+                replaced with cached values.
 
         Raise:
             UnsupportedFeature:
-                If a parameter is a probability distribution
-                without cache, it means the dependency is
-                unresolved.
+                If a parameter is a probability distribution without cache, it
+                means the dependency is unresolved.
 
         """
         parameters = super(SimpleDistribution, self).get_parameters(
@@ -119,8 +118,6 @@ class SimpleDistribution(Distribution):
                 value = value._get_cache(idx, cache, get=0)
                 assert not assert_numerical or not isinstance(value, Distribution)
                 parameters[key] = value
-            if idx is not None and len(value) > 1:
-                parameters[key] = value[idx]
         return parameters
 
     def _mom(self, kloc, **kwargs):
