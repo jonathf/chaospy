@@ -47,51 +47,6 @@ Normal(mu=Uniform(), sigma=1) has dangling dependencies
                 "%s has dangling dependencies" % distribution)
 
 
-_EXCEPTION_IN_PROGRESS = False
-
-
-def report_on_exception(method):
-    """
-    Method decorators for getting more verbose output.
-
-    Will output the function name and call signature to logger when an
-    exception is raised. But only during testing or if the environment variable
-    `CHAOSPY_DEBUG=1` is set. Will not affect calculations output, only how the
-    errors are reported.
-
-    Args:
-        method:
-            Method to be wrapped.
-
-    Returns:
-        Same as 'method', but wrapped to include exception logger.
-
-    """
-    logger = logging.getLogger(__name__)
-
-    @wraps(method)
-    def wrapper_method(self, *args, **kwargs):
-        """Method to wrap 'method'."""
-        global _EXCEPTION_IN_PROGRESS
-        _EXCEPTION_IN_PROGRESS = False
-        try:
-            ret_val = method(self, *args, **kwargs)
-        except Exception as err:
-            if not _EXCEPTION_IN_PROGRESS:
-                _EXCEPTION_IN_PROGRESS = True
-                args = ",\n    ".join([repr(arg) for arg in args]+
-                                    ["%s=%r" % (key, val) for key, val in kwargs.items()])
-                logger.warning("failure:\n%s.%s(\n    %s\n)", self, method.__name__, args)
-            else:
-                logger.warning("failure: %s.%s", self, method.__name__)
-            raise
-        return ret_val
-
-    if os.environ.get("CHAOSPY_DEBUG", "") == "1" or "pytest" in sys.modules:
-        method = wrapper_method
-    return method
-
-
 def shares_dependencies(*distributions):
     """
     Check if a collection of distributions shares dependencies.

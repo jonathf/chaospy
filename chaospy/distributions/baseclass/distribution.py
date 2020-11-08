@@ -4,7 +4,7 @@ import numpy
 
 import chaospy
 
-from .utils import check_dependencies, report_on_exception
+from .utils import check_dependencies
 
 
 class Distribution(object):
@@ -122,7 +122,6 @@ class Distribution(object):
             out[idx] = self._get_lower(idx, cache=cache)
         return out
 
-    @report_on_exception
     def _get_lower(self, idx, cache):
         """In-processes function for getting lower bounds."""
         if (idx, self) in cache:
@@ -148,7 +147,6 @@ class Distribution(object):
             out[idx] = self._get_upper(idx, cache=cache)
         return out
 
-    @report_on_exception
     def _get_upper(self, idx, cache):
         """In-processes function for getting upper bounds."""
         if (idx, self) in cache:
@@ -200,7 +198,6 @@ class Distribution(object):
         q_data = q_data.reshape(shape)
         return q_data
 
-    @report_on_exception
     def _get_fwd(self, x_data, idx, cache):
         """In-process function for getting cdf-values."""
         logger = logging.getLogger(__name__)
@@ -297,7 +294,6 @@ class Distribution(object):
         x_data = x_data.reshape(shape)
         return x_data
 
-    @report_on_exception
     def _get_inv(self, q_data, idx, cache):
         """In-process function for getting ppf-values."""
         logger = logging.getLogger(__name__)
@@ -400,7 +396,6 @@ class Distribution(object):
             f_data = numpy.prod(f_data, 0)
         return f_data
 
-    @report_on_exception
     def _get_pdf(self, x_data, idx, cache):
         """In-process function for getting pdf-values."""
         logger = logging.getLogger(__name__)
@@ -497,6 +492,7 @@ class Distribution(object):
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)
         shape = ((size,) if isinstance(size, (int, float, numpy.number)) else tuple(size))
+        shape = (-1,)+shape[1:]
         shape = shape if dim == 1 and not include_axis_dim else (dim,)+shape
 
         from chaospy.distributions import sampler
@@ -558,7 +554,6 @@ class Distribution(object):
         assert out.size == numpy.prod(shape), (out, shape)
         return out.reshape(shape)
 
-    @report_on_exception
     def _get_mom(self, kdata):
         """In-process function for getting moments."""
         if tuple(kdata) in self._mom_cache:
@@ -597,7 +592,6 @@ class Distribution(object):
                 out[:, idx, idy] = self._get_ttr(kloc_[idx], idx)
         return out.reshape((2,)+shape)
 
-    @report_on_exception
     def _get_ttr(self, kdata, idx):
         """In-process function for getting TTR-values."""
         if (idx, kdata) in self._ttr_cache:
@@ -615,7 +609,6 @@ class Distribution(object):
         raise chaospy.UnsupportedFeature(
             "three terms recursion not supported for this distribution")
 
-    @report_on_exception
     def _get_cache(self, idx, cache, get=None):
         """
         In-process function for getting cached values.

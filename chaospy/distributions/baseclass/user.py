@@ -76,7 +76,6 @@ class UserDistribution(SimpleDistribution):
         for name in ["pdf", "lower", "upper", "ppf", "mom", "ttr"]:
             value = locals()[name]
             if value is not None:
-                method = lambda *args, **kwargs: value(*args, **kwargs)
                 repr_args.append("%s=%s" % (name, value))
                 setattr(self, "_"+name, value)
 
