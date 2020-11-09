@@ -38,8 +38,6 @@ Non-Gaussian Quadrature Rules
 import numpy
 import chaospy
 
-from .combine import combine
-
 from .clenshaw_curtis import quad_clenshaw_curtis
 from .discrete import quad_discrete
 from .fejer import quad_fejer
@@ -155,17 +153,13 @@ def generate_quadrature(
 
     """
     if not rule:
-        if isinstance(dist, chaospy.J):
-            rule = [
-                ("discrete" if dist_.interpret_as_integer else "clenshaw_curtis")
-                for dist_ in dist
-            ]
-        else:
-            rule = ("discrete" if dist.interpret_as_integer
-                    else "clenshaw_curtis")
+        rule = [
+            ("discrete" if dist_.interpret_as_integer else "clenshaw_curtis")
+            for dist_ in dist
+        ]
+
     if sparse:
-        from . import sparse_grid
-        return sparse_grid.construct_sparse_grid(
+        return chaospy.sparse_grid.construct_sparse_grid(
             order=order,
             dist=dist,
             growth=growth,
@@ -177,6 +171,8 @@ def generate_quadrature(
         )
 
     if len(dist) == 1 or dist.stochastic_dependent:
+        if not isinstance(rule, str) and len(rule) == 1:
+            rule = rule[0]
         assert isinstance(rule, str), "dependencies require rule consistency"
         abscissas, weights = _generate_quadrature(
             order=order,
@@ -212,8 +208,8 @@ def generate_quadrature(
             )
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
-        abscissas = combine([abscissa.T for abscissa in abscissas]).T
-        weights = numpy.prod(combine([weight.T for weight in weights]), -1)
+        abscissas = chaospy.combine([abscissa.T for abscissa in abscissas]).T
+        weights = numpy.prod(chaospy.combine([weight.T for weight in weights]), -1)
 
     assert abscissas.shape == (len(dist), len(weights))
     if dist.interpret_as_integer:

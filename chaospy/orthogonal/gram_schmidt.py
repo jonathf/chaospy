@@ -55,9 +55,7 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
     dim = len(dist)
 
     if isinstance(order, int):
-        if order == 0:
-            return numpoly.polynomial(1)
-        basis = numpoly.monomial(
+        order = numpoly.monomial(
             0,
             order+1,
             names=numpoly.variable(2).names,
@@ -65,11 +63,7 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
             reverse=reverse,
             cross_truncation=cross_truncation,
         )
-    else:
-        basis = order
-
-    basis = list(basis)
-
+    basis = list(order)
     polynomials = [basis[0]]
 
     norms = [1.]
@@ -81,7 +75,7 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
             basis[idx] = basis[idx]-polynomials[idy]*orth/norms[idy]
 
         norms_ = chaospy.E(basis[idx]**2, dist, **kws)
-        if norms_ <= 0:
+        if norms_ <= 0:  # pragma: no cover
             logger.warning("Warning: Polynomial cutoff at term %d", idx)
             break
 

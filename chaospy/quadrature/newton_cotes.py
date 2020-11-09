@@ -48,7 +48,7 @@ Applying Smolyak sparse grid on Newton-Cotes::
 from __future__ import division
 try:
     from functools import lru_cache
-except ImportError:
+except ImportError:  # pragma: no cover
     from functools32 import lru_cache
 import numpy
 from scipy.integrate import newton_cotes
@@ -131,9 +131,8 @@ def _newton_cotes(order, lower, upper, segments=1, growth=False):
     order = 2**order if growth else order
 
     if segments != 1 and order > 2:
-        if not segments:
-            segments = int(numpy.sqrt(order))
-        assert segments < order, "few samples to distribute than intervals"
+        segments = segments if segments else int(numpy.sqrt(order))
+        assert segments < order, "fewer samples to distribute than intervals"
         abscissas = []
         weights = []
 

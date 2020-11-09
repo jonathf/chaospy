@@ -52,7 +52,7 @@ Applying the rule using Smolyak sparse grid::
 from __future__ import division
 try:
     from functools import lru_cache
-except ImportError:
+except ImportError:  # pragma: no covere
     from functools32 import lru_cache
 
 import numpy

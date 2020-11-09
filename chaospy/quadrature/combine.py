@@ -30,8 +30,6 @@ def combine(args):
     shapes = [arg.shape for arg in args]
 
     size = numpy.prod(shapes, 0)[0]*numpy.sum(shapes, 0)[1]
-    if size > 10**9:
-        raise MemoryError("Too large sets")
 
     out = args[0]
     for arg in args[1:]:
