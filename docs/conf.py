@@ -15,8 +15,9 @@
 
 # -- Project information -----------------------------------------------------
 
+import time
 project = 'ChaosPy'
-copyright = '2019, Jonathan Feinberg'
+copyright = '%d, Jonathan Feinberg' % time.gmtime().tm_year
 author = 'Jonathan Feinberg'
 
 # -- General configuration ---------------------------------------------------
@@ -76,14 +77,16 @@ nbsphinx_execute = "never"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = 'alabaster'
+html_theme = "alabaster"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 
 html_theme_options = {
+    "badge_branch": "master",
+    "codecov_button": True,
+    "fixed_sidebar": True,
     "github_user": "jonathf",
     "github_repo": "chaospy",
     "github_banner": True,
@@ -92,6 +95,8 @@ html_theme_options = {
     "logo_text_align": "center",
     "description": ("Uncertainty quantification with polynomial chaos "
                     "expansions and advanced Monte Carlo integration"),
+    "show_powered_by": False,
+    "show_relbars": True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
