@@ -113,5 +113,5 @@ Polynomial Behavior
 .. _Expansion Construction: ./polynomial/expansion_construction.ipynb
 .. _Polynomial Evaluation: ./polynomial/polynomial_evaluation.ipynb
 .. _Wiener-Askey Scheme: ./polynomial/wiener_askey_scheme.ipynb
-.. _Truncation Scheme: ./polynomial/truncation.ipynb
-.. _Lagrange Polynomials: ./polynomial/lagrange.ipynb
+.. _Truncation Scheme: ./polynomial/truncation_scheme.ipynb
+.. _Lagrange Polynomials: ./polynomial/lagrange_polynomials.ipynb
