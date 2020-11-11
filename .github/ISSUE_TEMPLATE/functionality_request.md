@@ -1,7 +1,6 @@
 ---
 name: Functionality request
-about: Is there something you want to do that you think isn't currently possible in
-  Chaospy
+about: Propose something new that you would like to see be implemented.
 title: ''
 labels: enhancement
 assignees: ''
@@ -20,4 +19,4 @@ Beyond the trivial cases, some context is often needed to understand a functiona
 * Blogpost/Wikipedia article.
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Add any other context about the feature request here.
