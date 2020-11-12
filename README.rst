@@ -103,7 +103,7 @@ For a more extensive guides on what is going on, see the `tutorial collection`_.
 Contributions and Related Projects
 ----------------------------------
 
-Also a few shout-outs:
+A few shout-outs to people who have contributed to the Chaospy project:
 
 +--------------+--------------------------------------------------------------+
 | `OpenTURNS`_ | Thanks to `Régis Lebrun`_ for both proposing a collaboration |
@@ -129,7 +129,7 @@ Also a few shout-outs:
 .. _Florian Künzner: https://github.com/flo2k
 
 Chaospy is being used in other related projects that requires uncertainty
-quantification components ``chaospy`` provides.
+quantification components ``chaospy`` provides. For example:
 
 +-----------------+-----------------------------------------------------------+
 | `easyVVUQ`_     | Library designed to facilitate verification, validation   |
