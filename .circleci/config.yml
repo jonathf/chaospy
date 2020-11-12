@@ -48,10 +48,6 @@ jobs:
       PYTHON_VERSION: 3.8.3
     steps:
       - checkout
-      - run:
-          name: "Ensure requirements.txt and poetry.lock matches"
-          command: |
-            test "$(cat requirements.txt)" = "$(poetry export)"
       - restore_cache:
           keys:
             - deps-py38-{{ checksum "poetry.lock" }}

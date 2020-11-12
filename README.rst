@@ -3,29 +3,28 @@
    :width: 200 px
    :align: center
 
-|circleci| |codecov| |readthedocs| |pypi|
-
-|license| |python-versions| |downloads|
+|circleci| |codecov| |readthedocs| |downloads| |pypi|
 
 .. |circleci| image:: https://img.shields.io/circleci/build/github/jonathf/chaospy/master
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
 .. |codecov| image:: https://img.shields.io/codecov/c/github/jonathf/chaospy
     :target: https://codecov.io/gh/jonathf/chaospy
 .. |readthedocs| image:: https://img.shields.io/readthedocs/chaospy
-    :target: http://chaospy.readthedocs.io/en/master/?badge=master
+    :target: https://chaospy.readthedocs.io/en/master/?badge=master
+.. |downloads| image:: https://img.shields.io/pypi/dm/chaospy
+    :target: https://pypistats.org/packages/chaospy
 .. |pypi| image:: https://img.shields.io/pypi/v/chaospy
     :target: https://pypi.org/project/chaospy
-.. |license| image:: https://img.shields.io/pypi/l/chaospy
-    :target: https://opensource.org/licenses/MIT
-.. |python-versions| image:: https://img.shields.io/pypi/pyversions/chaospy
-.. |downloads| image:: https://img.shields.io/pypi/dw/chaospy
-    :target: https://pypistats.org/packages/chaospy
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
 Python.
 
-.. contents:: Table of Contents:
+* Documentation: https://chaospy.readthedocs.io/en/master
+* Source code: https://github.com/jonathf/chaospy
+* Issues: https://github.com/jonathf/chaospy/issues
+* Journal article: `"Chaospy: An open source tool for designing methods of
+  uncertainty quantification" <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_
 
 Installation
 ------------
@@ -101,11 +100,36 @@ For a more extensive guides on what is going on, see the `tutorial collection`_.
 
 .. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorials
 
-Related Projects
-----------------
+Contributions and Related Projects
+----------------------------------
+
+A few shout-outs to people who have contributed to the Chaospy project:
+
++--------------+--------------------------------------------------------------+
+| `OpenTURNS`_ | Thanks to `Régis Lebrun`_ for both proposing a collaboration |
+|              | and creating an initial implementation of both               |
+|              | `Chaospy Compatibility`_ in `OpenTURNS`_ and                 |
+|              | `OpenTURNS Compatibility`_ in ``chaospy``.                   |
++--------------+--------------------------------------------------------------+
+| `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
+| `quadpy`_    | for several of the quadrature integration methods.           |
++--------------+--------------------------------------------------------------+
+| ``UQRF``     | Thanks to `Florian Künzner`_ for providing the initial       |
+|              | implementation of kernel density estimation and              |
+|              | quantity-of-interest distribution.                           |
++--------------+--------------------------------------------------------------+
+
+.. _OpenTURNS: http://openturns.github.io/openturns/latest
+.. _Régis Lebrun: https://github.com/regislebrun
+.. _Chaospy Compatibility: http://openturns.github.io/openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
+.. _OpenTURNS Compatibility: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.openturns_
+.. _orthopy: https://github.com/nschloe/orthopy
+.. _quadpy: https://github.com/nschloe/quadpy
+.. _Nico Schlömer: https://github.com/nschloe
+.. _Florian Künzner: https://github.com/flo2k
 
 Chaospy is being used in other related projects that requires uncertainty
-quantification components ``chaospy`` provides.
+quantification components ``chaospy`` provides. For example:
 
 +-----------------+-----------------------------------------------------------+
 | `easyVVUQ`_     | Library designed to facilitate verification, validation   |
@@ -130,31 +154,8 @@ quantification components ``chaospy`` provides.
 .. _UncertainPy: https://github.com/simetenn/uncertainpy
 .. _SparseSpACE: https://github.com/obersteiner/sparseSpACE
 
-Also a few shout-outs:
-
-+--------------+--------------------------------------------------------------+
-| `OpenTURNS`_ | Thanks to `Régis Lebrun`_ for both proposing a collaboration |
-|              | and creating an initial implementation of both               |
-|              | `Chaospy Compatibility`_ in `OpenTURNS`_ and                 |
-|              | `OpenTURNS Compatibility`_ in ``chaospy``.                   |
-+--------------+--------------------------------------------------------------+
-| `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
-| `quadpy`_    | for several of the quadrature integration methods.           |
-+--------------+--------------------------------------------------------------+
-| ``UQRF``     | Thanks to `Florian Künzner`_ for providing the initial       |
-|              | implementation of kernel density estimation and              |
-|              | quantity-of-interest distribution.                           |
-+--------------+--------------------------------------------------------------+
-
-.. _OpenTURNS: http://openturns.github.io/openturns/latest
-.. _Régis Lebrun: https://github.com/regislebrun
-.. _Chaospy Compatibility: http://openturns.github.io/openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
-.. _OpenTURNS Compatibility: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.openturns_
-.. _orthopy: https://github.com/nschloe/orthopy
-.. _quadpy: https://github.com/nschloe/quadpy
-.. _Nico Schlömer: https://github.com/nschloe
-.. _Florian Künzner: https://github.com/flo2k
-.. _sample distribution: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.samples
+For a more comprehensive list, see `Github's dependency graph
+<https://github.com/jonathf/chaospy/network/dependents>`_.
 
 Questions and Contributions
 ---------------------------
