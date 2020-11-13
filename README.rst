@@ -115,7 +115,7 @@ of ``forward_solver``:
     [q0 -0.0002*q0*q1**3+0.0051*q0*q1**2-0.101*q0*q1+q0]
 
 Since the model approximations are polynomials, we can do inference on them
-directly. For example::
+directly. For example:
 
 .. code-block:: python
 
