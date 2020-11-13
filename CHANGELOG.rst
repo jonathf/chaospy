@@ -1,20 +1,24 @@
 Master Branch
 =============
 
+Version 4.1.1 (2020-11-13)
+==========================
+
 ADDED:
   * `include_axis_dim` flag added to `Distribution.sample` to force the
     inclusion of extra dimension. (Currently first dimension is omitted is
     `len(dist) == 1`.)
-
 CHANGED:
   * `chaospy.E_cond` changed to accept simple polynomials as second argument,
     allowing for e.g. `chaospy.E_cond(q0*q1, q0, dist)` which can be
     interpreted as "expectation of `q0*q1` given `q0` with respect to `dist`".
   * Bugfixes to `chaospy.Spearman`
-
+  * Updates to the documentation.
 REMOVED:
   * Deprecated `report_on_exception`. Caused recursion problems, and only a
     semi-useful diagnostic tool to begin with.
+  * No more support for Python 3.5. This allows the poetry install to use
+    newer version of `numpy` and `scipy`.
 
 Version 4.1.0 (2020-11-05)
 ==========================
@@ -36,7 +40,6 @@ CHANGED:
   * Discretization default in Lanczos and Stieltjes changed from `fejer` to
     `clenshaw_curtis` as edge evaluation is better handled these days, and the
     latter is better for when edges are finite.
-
 REMOVED:
   * `chaospy.basis` and `chaospy.prange` (which was superseded by
     `chaospy.monomial` in June).
