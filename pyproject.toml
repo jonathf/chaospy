@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "chaospy"
-version = "4.1.0"
+version = "4.1.1"
 description = "Numerical tool for perfroming uncertainty quantification"
 license = "MIT"
 authors = ["Jonathan Feinberg"]
@@ -20,6 +20,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
+python = "^2.7||>=3.6"
 numpoly = "==1.0.8"
 numpy = "*"
 scipy = "*"

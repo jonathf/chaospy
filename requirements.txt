@@ -1,5 +1,5 @@
-functools32==3.2.3-2; python_version >= "2.7" and python_version < "3.0" and (python_version >= "2.7" and python_version < "3.0" or python_version < "3")
 numpoly==1.0.8
-numpy==1.16.6; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.4.0")
-scipy==1.2.3; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.4.0")
-six==1.15.0; (python_version >= "2.7" and python_full_version < "3.0.0") or (python_full_version >= "3.3.0")
+functools32>=3.2.3-2; python_version < "3.0"
+six>=1.15.0
+numpy>=1.16.1
+scipy>=1.2.3

@@ -29,74 +29,105 @@ Python.
 Installation
 ------------
 
-Installation should be straight forward::
+Installation should be straight forward from `PyPI <https://pypi.org/>`_:
 
-    pip install chaospy
+.. code-block:: bash
 
-And you should be ready to go.
+    $ pip install chaospy
 
 Example Usage
 -------------
 
-``chaospy`` is created to be simple and modular. A simple script to implement
-point collocation method will look as follows:
+``chaospy`` is created to work well inside numerical Python ecosystem. You
+therefore typically need to import `Numpy <https://numpy.org/>`_ along side
+``chaospy``:
 
 .. code-block:: python
 
-    import numpy
-    import chaospy
+    >>> import numpy
+    >>> import chaospy
 
-Wrap your code in a function:
-
-.. code-block:: python
-
-    coordinates = numpy.linspace(0, 10, 100)
-    def foo(coordinates, params):
-        """Function to do uncertainty quantification on."""
-        param_init, param_rate = params
-        return param_init*numpy.e**(-param_rate*coordinates)
-
-Construct a multivariate probability distribution:
+``chaospy`` is problem agnostic, so you can use your own code using any means
+you find fit. The only requirement is that the output is compatible with
+`numpy.ndarray` format:
 
 .. code-block:: python
 
-    distribution = chaospy.J(chaospy.Uniform(1, 2), chaospy.Uniform(0.1, 0.2))
+    >>> coordinates = numpy.linspace(0, 10, 100)
+    >>> def forward_solver(coordinates, parameters):
+    ...     """Function to do uncertainty quantification on."""
+    ...     param_init, param_rate = parameters
+    ...     return param_init*numpy.e**(-param_rate*coordinates)
 
-Construct polynomial chaos expansion:
-
-.. code-block:: python
-
-    polynomial_expansion = chaospy.generate_expansion(8, distribution)
-
-Generate random samples from for example Halton low-discrepancy sequence:
-
-.. code-block:: python
-
-    samples = distribution.sample(1000, rule="halton")
-
-Evaluate function for each sample:
+We here assume that ``parameters`` contains aleatory variability with known
+probability. We formalize this probability in ``chaospy`` as a joint
+probability distribution. For example:
 
 .. code-block:: python
 
-    evals = numpy.array([foo(coordinates, sample) for sample in samples.T])
+    >>> distribution = chaospy.J(
+    ...     chaospy.Uniform(1, 2), chaospy.Normal(0, 2))
+    >>> print(distribution)
+    J(Uniform(lower=1, upper=2), Normal(mu=0, sigma=2))
 
-Bring the parts together using point collocation method:
-
-.. code-block:: python
-
-    foo_approx = chaospy.fit_regression(
-        polynomial_expansion, samples, evals)
-
-Derive statistics from model approximation:
+Most probability distributions have an associated expansion of orthogonal
+polynomials. These can be automatically constructed:
 
 .. code-block:: python
 
-    expected = chaospy.E(foo_approx, distribution)
-    deviation = chaospy.Std(foo_approx, distribution)
-    sobol_main = chaospy.Sens_m(foo_approx, distribution)
-    sobol_total = chaospy.Sens_t(foo_approx, distribution)
+    >>> expansion = chaospy.generate_expansion(8, distribution)
+    >>> print(expansion[:5].round(8))
+    [1.0 q1 q0-1.5 q0*q1-1.5*q1 q0**2-3.0*q0+2.16666667]
 
-For a more extensive guides on what is going on, see the `tutorial collection`_.
+Here the polynomial is defined positional, such that ``q0`` and ``q1`` refers
+to the uniform and normal distribution respectively.
+
+The distribution can also be used to create (pseudo-)random samples and
+low-discrepancy sequences. For example to create Sobol sequence samples:
+
+.. code-block:: python
+
+    >>> samples = distribution.sample(1000, rule="sobol")
+    >>> print(samples[:, :4].round(8))
+    [[ 1.5         1.75        1.25        1.375     ]
+     [ 0.         -1.3489795   1.3489795  -0.63727873]]
+
+We can evaluating the forward solver using these samples:
+
+.. code-block:: python
+
+    >>> evaluations = numpy.array([
+    ...     forward_solver(coordinates, sample) for sample in samples.T])
+    >>> print(evaluations[:3, :5].round(8))
+    [[1.5        1.5        1.5        1.5        1.5       ]
+     [1.75       2.00546578 2.29822457 2.63372042 3.0181921 ]
+     [1.25       1.09076905 0.95182169 0.83057411 0.72477163]]
+
+Having all these components in place, we have enough components to perform
+point collocation. Or in other words, we can create a polynomial approximation
+of ``forward_solver``:
+
+.. code-block:: python
+
+    >>> approx_solver = chaospy.fit_regression(
+    ...     expansion, samples, evaluations)
+    >>> print(approx_solver[:2].round(4))
+    [q0 -0.0002*q0*q1**3+0.0051*q0*q1**2-0.101*q0*q1+q0]
+
+Since the model approximations are polynomials, we can do inference on them
+directly. For example:
+
+.. code-block:: python
+
+    >>> expected = chaospy.E(approx_solver, distribution)
+    >>> print(expected[:5].round(8))
+    [1.5        1.53092356 1.62757217 1.80240142 2.07915608]
+    >>> deviation = chaospy.Std(approx_solver, distribution)
+    >>> print(deviation[:5].round(8))
+    [0.28867513 0.43364958 0.76501802 1.27106355 2.07110879]
+
+For more extensive guides on this approach an others, see the `tutorial
+collection`_.
 
 .. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorials
 

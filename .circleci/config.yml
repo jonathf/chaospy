@@ -78,7 +78,7 @@ jobs:
             coverage run --source=chaospy/ --module \
                 pytest --nbval-lax --doctest-modules \
                 docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb \
-                chaospy/ tests/ docs/*.rst docs/*/*.rst
+                chaospy/ tests/ README.rst docs/*.rst docs/*/*.rst
             bash <(curl -s https://codecov.io/bash)
   deploy:
     executor: python-container
