@@ -35,6 +35,12 @@ Installation should be straight forward from `PyPI <https://pypi.org/>`_:
 
     $ pip install chaospy
 
+Or alternatively using `Conda <https://>`_:
+
+.. code-block:: bash
+
+    $ conda install -c conda-forge chaospy
+
 Example Usage
 -------------
 
