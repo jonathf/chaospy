@@ -3,7 +3,7 @@
    :width: 200 px
    :align: center
 
-|circleci| |codecov| |readthedocs| |downloads| |pypi|
+|circleci| |codecov| |readthedocs| |downloads| |pypi| |binder|
 
 .. |circleci| image:: https://img.shields.io/circleci/build/github/jonathf/chaospy/master
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
@@ -15,16 +15,17 @@
     :target: https://pypistats.org/packages/chaospy
 .. |pypi| image:: https://img.shields.io/pypi/v/chaospy
     :target: https://pypi.org/project/chaospy
+.. |binder| image:: https://mybinder.org/badge_logo.svg
+    :target: https://mybinder.org/v2/gh/jonathf/chaospy/binder?filepath=docs%2Fnotebooks
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
 Python.
 
-* Documentation: https://chaospy.readthedocs.io/en/master
-* Source code: https://github.com/jonathf/chaospy
-* Issues: https://github.com/jonathf/chaospy/issues
-* Journal article: `"Chaospy: An open source tool for designing methods of
-  uncertainty quantification" <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_
+* `Documentation <https://chaospy.readthedocs.io/en/master>`_
+* `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/binder?filepath=docs%2Fnotebooks>`_
+* `Source code <https://github.com/jonathf/chaospy>`_
+* `Issue tracker <https://github.com/jonathf/chaospy/issues>`_
 
 Installation
 ------------
@@ -35,7 +36,7 @@ Installation should be straight forward from `PyPI <https://pypi.org/>`_:
 
     $ pip install chaospy
 
-Or alternatively using `Conda <https://>`_:
+Or alternatively using `Conda <https://conda.io/>`_:
 
 .. code-block:: bash
 
@@ -205,10 +206,9 @@ Please feel free to
 * requesting new features
 * wanting to contribute with code
 
-If you are using this software in work that will be published, please cite the
-journal article: `Chaospy: An open source tool for designing methods of
-uncertainty quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.
-
-And if you use code to deal with stochastic dependencies, please also cite
+If you are going to publish work using this software, then please cite the
+article: `Chaospy: An open source tool for designing methods of uncertainty
+quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.
+In addition, if you deal with stochastic dependencies, please also cite:
 `Multivariate Polynomial Chaos Expansions with Dependent Variables
 <https://epubs.siam.org/doi/10.1137/15M1020447>`_.

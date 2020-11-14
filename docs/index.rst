@@ -13,7 +13,7 @@ Table of contents
     :maxdepth: 2
 
     installation
-    tutorials/README.rst
+    tutorials
     distributions/index.rst
     polynomial
     sampling/index.rst
