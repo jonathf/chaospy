@@ -1,0 +1,5 @@
+name: chaospy
+channels:
+  - conda-forge
+dependencies:
+  - chaospy
