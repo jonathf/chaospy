@@ -16,7 +16,7 @@
 # -- Project information -----------------------------------------------------
 
 import time
-project = 'ChaosPy'
+project = 'chaospy'
 copyright = '%d, Jonathan Feinberg' % time.gmtime().tm_year
 author = 'Jonathan Feinberg'
 
@@ -77,27 +77,19 @@ nbsphinx_execute = "never"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "alabaster"
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-
+html_theme = "pydata_sphinx_theme"
+html_logo = ".static/chaospy_logo2.svg"
 html_theme_options = {
-    "badge_branch": "master",
-    "codecov_button": True,
-    "fixed_sidebar": True,
+    "github_url": "https://github.com/jonathf/chaospy",
+    "use_edit_page_button": True,
+}
+html_context = {
     "github_user": "jonathf",
     "github_repo": "chaospy",
-    "github_banner": True,
-    "logo": "chaospy_logo.svg",
-    "logo_name": False,
-    "logo_text_align": "center",
-    "description": ("Uncertainty quantification with polynomial chaos "
-                    "expansions and advanced Monte Carlo integration"),
-    "show_powered_by": False,
-    "show_relbars": True,
+    "github_version": "master",
+    "doc_path": "docs",
 }
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -113,19 +105,19 @@ html_static_path = ['.static']
 # 'searchbox.html']``.
 
 html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'relations.html',
-        'searchbox.html',
-    ]
+    # '**': [
+    #     'about.html',
+    #     'navigation.html',
+    #     'relations.html',
+    #     'searchbox.html',
+    # ]
  }
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'chaospydoc'
+htmlhelp_basename = 'chaospy'
 
 
 # -- Options for LaTeX output ------------------------------------------------

@@ -67,33 +67,33 @@ explore different ways to use ``chaospy``.
    Lagrange polynomials are also used in Uncertainty quantification as an
    alternative strategy to polynomial chaos expansions.
 
-.. _Example Introduction: ./notebooks/01_example_introduction.ipynb
-.. _Monte Carlo Integration: ./notebooks/02_monte_carlo_integration.ipynb
-.. _Point Collocation: ./notebooks/03_point_collocation.ipynb
-.. _Pseudo-Spectral Projection: ./notebooks/04_pseudo_spectral_projection.ipynb
-.. _Scikit-Learn Regression: ./notebooks/05_scikitlearn_regression.ipynb
-.. _Intrusive Galerkin: ./notebooks/06_intrusive_galerkin.ipynb
-.. _Kernel Density Estimation: ./notebooks/07_kernel_density_estimation.ipynb
-.. _Gaussian Mixture Model: ./notebooks/08_gaussian_mixture_model.ipynb
-.. _Expansion Construction: ./notebooks/09_expansion_construction.ipynb
-.. _Polynomial Evaluation: ./notebooks/10_polynomial_evaluation.ipynb
-.. _Wiener-Askey Scheme: ./notebooks/11_wiener_askey_scheme.ipynb
-.. _Truncation Scheme: ./notebooks/12_truncation_scheme.ipynb
-.. _Lagrange Polynomials: ./notebooks/13_lagrange_polynomials.ipynb
+.. _Example Introduction: ./01_example_introduction.ipynb
+.. _Monte Carlo Integration: ./02_monte_carlo_integration.ipynb
+.. _Point Collocation: ./03_point_collocation.ipynb
+.. _Pseudo-Spectral Projection: ./04_pseudo_spectral_projection.ipynb
+.. _Scikit-Learn Regression: ./05_scikitlearn_regression.ipynb
+.. _Intrusive Galerkin: ./06_intrusive_galerkin.ipynb
+.. _Kernel Density Estimation: ./07_kernel_density_estimation.ipynb
+.. _Gaussian Mixture Model: ./08_gaussian_mixture_model.ipynb
+.. _Expansion Construction: ./09_expansion_construction.ipynb
+.. _Polynomial Evaluation: ./10_polynomial_evaluation.ipynb
+.. _Wiener-Askey Scheme: ./11_wiener_askey_scheme.ipynb
+.. _Truncation Scheme: ./12_truncation_scheme.ipynb
+.. _Lagrange Polynomials: ./13_lagrange_polynomials.ipynb
 
 .. toctree::
    :hidden:
 
-   notebooks/01_example_introduction
-   notebooks/02_monte_carlo_integration
-   notebooks/03_point_collocation
-   notebooks/04_pseudo_spectral_projection
-   notebooks/05_scikitlearn_regression
-   notebooks/06_intrusive_galerkin
-   notebooks/07_kernel_density_estimation
-   notebooks/08_gaussian_mixture_model
-   notebooks/09_expansion_construction
-   notebooks/10_polynomial_evaluation
-   notebooks/11_wiener_askey_scheme
-   notebooks/12_truncation_scheme
-   notebooks/13_lagrange_polynomials
+   01_example_introduction
+   02_monte_carlo_integration
+   03_point_collocation
+   04_pseudo_spectral_projection
+   05_scikitlearn_regression
+   06_intrusive_galerkin
+   07_kernel_density_estimation
+   08_gaussian_mixture_model
+   09_expansion_construction
+   10_polynomial_evaluation
+   11_wiener_askey_scheme
+   12_truncation_scheme
+   13_lagrange_polynomials

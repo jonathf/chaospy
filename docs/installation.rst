@@ -3,20 +3,46 @@
 Installation
 ============
 
-Installation should be straight forward::
+Installation should be straight forward from `pip <https://pypi.org/>`_:
+
+.. code-block:: bash
 
     pip install chaospy
 
-And you should be ready to go.
+Or if `Conda <https://conda.io/>`_ is more to your liking:
+
+.. code-block:: bash
+
+    conda install -c conda-forge chaospy
 
 Alternatively, to get the most current experimental version, the code can be
-installed from Github as follows::
+installed from `Github <https://github.com/>`_ as follows:
 
-    git clone git@github.com:jonathf/chaospy.git    # first time only
-    cd chaospy/
-    git checkout master
-    git pull                                        # after the first
-    pip install .
+* First time around, download the repository:
+
+  .. code-block:: bash
+
+      git clone git@github.com:jonathf/chaospy.git
+
+* Every time, move into the repository:
+
+  .. code-block:: bash
+
+      cd chaospy/
+
+* After  the first time, you want to update the branch to the most current
+  version of ``master``:
+
+  .. code-block:: bash
+
+      git checkout master
+      git pull
+
+* Install the latest version of ``chaospy`` with:
+
+  .. code-block:: bash
+
+      pip install .
 
 Development
 -----------
@@ -43,7 +69,7 @@ To run test:
 
 .. code-block:: bash
 
-    poetry run pytest --nbval --doctest-modules \
+    poetry run pytest --nbval-lax --doctest-modules \
         chaospy/ tests/ docs/*.rst docs/*/*.rst \
         docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb
 
@@ -63,18 +89,3 @@ stores output to the folder ``doc/.build/html``.
 
 Note that the documentation build assumes that ``pandoc`` is installed on your
 system and available in your path.
-
-Questions and Contributions
----------------------------
-
-Please feel free to
-`file an issue <https://github.com/jonathf/chaospy/issues>`_ for:
-
-* bug reporting
-* asking questions related to usage
-* requesting new features
-* wanting to contribute with code
-
-If you are using this software in work that will be published, please cite the
-journal article: `Chaospy: An open source tool for designing methods of
-uncertainty quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_

@@ -1,3 +1,4 @@
 nbsphinx
 sphinx_automodapi
+pydata_sphinx_theme
 setuptools==49.6.0
