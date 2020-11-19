@@ -989,7 +989,7 @@ description = "Polynomials as a numpy datatype"
 name = "numpoly"
 optional = false
 python-versions = "*"
-version = "1.0.9"
+version = "1.1.0"
 
 [package.dependencies]
 numpy = ">=1.16,<2.0"
@@ -1881,7 +1881,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "1bd430aa62a4c51f64474bf0fbc8937a3a4f4ec27b0538ff53d25baf7b5f8588"
+content-hash = "4f8004674d1969da56a9b70e19e061ff0767f9126d31af56c3d09a9e35cbe85f"
 python-versions = "^2.7||>=3.6"
 
 [metadata.files]
@@ -2404,8 +2404,8 @@ notebook = [
     {file = "notebook-6.1.5.tar.gz", hash = "sha256:3db37ae834c5f3b6378381229d0e5dfcbfb558d08c8ce646b1ad355147f5e91d"},
 ]
 numpoly = [
-    {file = "numpoly-1.0.9-py2.py3-none-any.whl", hash = "sha256:37ba7d20cc399dc65b9e9d75f239985dc9de77f922c318f5c6a1e3c0846f717e"},
-    {file = "numpoly-1.0.9.tar.gz", hash = "sha256:fc21e0590f9fd352b7dcb0737e89b0c00cc49d5e11ff162072fc790b49803f2e"},
+    {file = "numpoly-1.1.0-py2.py3-none-any.whl", hash = "sha256:fdd1ef6385d960f435b0bb37ae65ef70bf404061794849c4d2360350cc43434f"},
+    {file = "numpoly-1.1.0.tar.gz", hash = "sha256:614aa3533eef747ac9072f4749cad9e551adfc4feac28ff2f587211c93fa37f3"},
 ]
 numpy = [
     {file = "numpy-1.16.6-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:08bf4f66f190822f4642e036accde8da810b87fffc0b9409e7a00d9e54760099"},

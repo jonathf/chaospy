@@ -70,8 +70,7 @@ To run test:
 .. code-block:: bash
 
     poetry run pytest --nbval-lax --doctest-modules \
-        chaospy/ tests/ docs/*.rst docs/*/*.rst \
-        docs/tutorials/*.ipynb docs/tutorials/*/*.ipynb
+        chaospy/ tests/ docs/*/*.rst docs/*/*.ipynb README.rst
 
 Documentation
 -------------

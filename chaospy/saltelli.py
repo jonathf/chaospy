@@ -104,7 +104,7 @@ def Sens_m_sample(poly, dist, samples, rule="random"):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
-        >>> poly = chaospy.monomial(2, 3, names=2, reverse=False)
+        >>> poly = chaospy.monomial(2, 3, dimensions=2, reverse=False)
         >>> poly
         polynomial([q0**2, q0*q1, q1**2])
         >>> Sens_m_sample(poly, dist, 10000, rule="hammersley").round(4)
@@ -158,7 +158,7 @@ def Sens_m2_sample(poly, dist, samples, rule="random"):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(), 2)
-        >>> poly = chaospy.monomial(2, 3, names=2, reverse=False)
+        >>> poly = chaospy.monomial(2, 3, dimensions=2, reverse=False)
         >>> poly
         polynomial([q0**2, q0*q1, q1**2])
         >>> Sens_m2_sample(poly, dist, 10000, rule="halton").round(4)
@@ -237,7 +237,7 @@ def Sens_t_sample(poly, dist, samples, rule="random"):
 
     Examples:
         >>> dist = chaospy.Iid(chaospy.Uniform(0, 1), 2)
-        >>> poly = chaospy.monomial(2, 3, names=2, reverse=False)
+        >>> poly = chaospy.monomial(2, 3, dimensions=2, reverse=False)
         >>> poly
         polynomial([q0**2, q0*q1, q1**2])
         >>> Sens_t_sample(poly, dist, 10000, rule="halton").round(4)

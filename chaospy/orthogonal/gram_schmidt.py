@@ -58,7 +58,7 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
         order = numpoly.monomial(
             0,
             order+1,
-            names=numpoly.variable(2).names,
+            dimensions=numpoly.variable(2).names,
             graded=graded,
             reverse=reverse,
             cross_truncation=cross_truncation,

@@ -6,7 +6,7 @@ methods. All classes and functions exposed in ``chaospy.*`` namespace are
 public.
 
 .. toctree::
-    :hidden:
+    :maxdepth: 1
 
     descriptives
     distributions

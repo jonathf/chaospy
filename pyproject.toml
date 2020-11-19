@@ -21,7 +21,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^2.7||>=3.6"
-numpoly = "==1.0.9"
+numpoly = "*"
 numpy = "*"
 scipy = "*"
 functools32 = { version = "*", python = "^2.7" }
