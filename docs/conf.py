@@ -20,6 +20,11 @@ project = 'chaospy'
 copyright = '%d, Jonathan Feinberg' % time.gmtime().tm_year
 author = 'Jonathan Feinberg'
 
+# The short X.Y version
+import chaospy
+version = chaospy.__version__
+release = chaospy.__version__
+
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -38,7 +43,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.autosummary',
-    'sphinx_automodapi.automodapi',
     'nbsphinx',
 ]
 
@@ -72,6 +76,9 @@ pygments_style = None
 # Execute content of Jupyter notebooks:
 # "always", "never", "auto" (on empty cell only)
 nbsphinx_execute = "never"
+
+# Create stubs automatically for all auto-summaries:
+autosummary_generate = True
 
 # -- Options for HTML output -------------------------------------------------
 

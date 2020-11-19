@@ -6,7 +6,7 @@ from .variance import Var
 
 def Std(poly, dist=None, **kws):
     """
-    Element by element 2nd order statistics.
+    Standard deviation.
 
     Args:
         poly (numpoly.ndpoly, Distribution):

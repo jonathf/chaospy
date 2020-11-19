@@ -102,16 +102,10 @@ class Gumbel(CopulaDistribution):
     Gumbel Copula.
 
     .. math::
-        \phi(x;th) = \frac{x^{-th}-1}{th}
-        \phi^{-1}(q;th) = (q*th + 1)^{-1/th}
+        \phi(x; \theta) = \frac{x^{-\theta}-1}{\theta}
+        \phi^{-1}(q; \theta) = (q*\theta + 1)^{-1/\theta}
 
-    where `th` (or theta) is defined on the interval `[1,inf)`.
-
-    Args:
-        dist (Distribution):
-            The distribution to wrap
-        theta (float):
-            Copula parameter
+    where :math:`\theta` is defined on the interval `[1,inf)`.
 
     Examples:
         >>> distribution = chaospy.Gumbel(
@@ -140,6 +134,13 @@ class Gumbel(CopulaDistribution):
     """
 
     def __init__(self, dist, theta):
+        """
+        Args:
+            dist (Distribution):
+                The distribution to wrap
+            theta (float):
+                Copula parameter
+        """
         super(Gumbel, self).__init__(
             dist=dist,
             trans=gumbel(len(dist), theta),

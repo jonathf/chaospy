@@ -1,3 +1,4 @@
+"""Shift-Scale transformation"""
 import numpy
 from scipy.special import comb
 import numpoly
@@ -8,10 +9,10 @@ from .distribution import Distribution
 
 class ShiftScaleDistribution(Distribution):
     """
-    Shift-Scaling transformation.
+    Shift-Scale transformation.
 
-    Linear transforms any distribution of the form `A*X+b` where A is a scaling
-    matrix and `b` is a shift vector.
+    Linear transforms any distribution of the form `A*X+b` where A is a
+    scaling matrix and `b` is a shift vector.
 
     Args:
         dist (Distribution):

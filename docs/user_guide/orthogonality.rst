@@ -79,7 +79,15 @@ There are three algorithms available:
 |                        | dimensions.                                      |
 +------------------------+--------------------------------------------------+
 
-.. autofunction:: chaospy.orthogonal.frontend.generate_expansion
-.. autofunction:: chaospy.orthogonal.three_terms_recurrence.orth_ttr
-.. autofunction:: chaospy.orthogonal.cholesky.orth_chol
-.. autofunction:: chaospy.orthogonal.gram_schmidt.orth_gs
+.. _lagrange:
+
+Lagrange Polynomials
+--------------------
+
+Lagrange polynomials are not a method for creating orthogonal polynomials.
+Instead it is an interpolation method for creating an polynomial expansion that
+has the property that each polynomial interpolates exactly one point in space
+with the value 1 and has the value 0 for all other interpolation values.
+For more details, see this `article on Lagrange polynomials`_.
+
+.. _article on Lagrange polynomials: https://en.wikipedia.org/wiki/Lagrange_polynomial

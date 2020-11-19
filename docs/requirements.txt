@@ -2,3 +2,4 @@ nbsphinx
 sphinx_automodapi
 pydata_sphinx_theme
 setuptools==49.6.0
+git+https://github.com/jonathf/numpoly.git@master

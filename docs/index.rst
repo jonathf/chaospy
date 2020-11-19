@@ -1,12 +1,13 @@
 .. toctree::
     :hidden:
 
-    installation.rst
+    get_started.rst
     tutorials/index.rst
-    documentation/index.rst
-    aboutus.rst
+    user_guide/index.rst
+    reference/index.rst
+    about_us.rst
 
-chaospy documentation
+Chaospy documentation
 =====================
 
 Chaospy is a numerical tool for performing uncertainty quantification using
@@ -15,9 +16,8 @@ Python.
 
 Quick overview:
 
-* `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials>`_
-* `Source code <https://github.com/jonathf/chaospy>`_
-* `Issue tracker <https://github.com/jonathf/chaospy/issues>`_
-* `Code of Conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
-* `Contribution Guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
-* `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOg.md>`_
+* `Get Started <./get_started/index.rst>`_
+* `Tutorials <./tutorials/index.rst>`_
+* `User Guide <./user_guide/index.rst>`_
+* `API reference <./reference/index.rst>`_
+* `About us <./about_us/index.rst>`_

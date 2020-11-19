@@ -6,6 +6,10 @@ Tutorials
 Here is a collection of `Jupyter notebooks <https://jupyter.org/>`_ that
 explore different ways to use ``chaospy``.
 
+If you prefer to test the examples without installing the code locally, it is
+possible to `run the tutorials using Binder
+<https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials>`_.
+
 `Example Introduction`_
    The notebooks are all self contained, however many of the examples addressed
    is repeated a lot. In this introduction, the common example is explored in a

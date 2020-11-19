@@ -8,7 +8,7 @@ from .standard_deviation import Std
 
 def Skew(poly, dist=None, **kws):
     """
-    Skewness operator.
+    The third order statistical moment Kurtosis.
 
     Element by element 3rd order statistics of a distribution or polynomial.
 

@@ -1,3 +1,4 @@
+"""Collection of distribution baseclasses."""
 from .utils import *
 from .distribution import Distribution
 from .slice_ import ItemDistribution

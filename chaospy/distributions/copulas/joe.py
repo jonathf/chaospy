@@ -80,13 +80,7 @@ class joe(Archimedean):
 
 class Joe(CopulaDistribution):
     """
-    Joe Copula
-
-    Args:
-        dist (Distribution):
-            The distribution to wrap
-        theta (float):
-            Copula parameter. Required to be above 1.
+    Joe Copula.
 
     Examples:
         >>> distribution = chaospy.Joe(
@@ -115,6 +109,13 @@ class Joe(CopulaDistribution):
     """
 
     def __init__(self, dist, theta=2.):
+        """
+        Args:
+            dist (Distribution):
+                The distribution to wrap
+            theta (float):
+                Copula parameter. Required to be above 1.
+        """
         super(Joe, self).__init__(
             dist=dist,
             trans=joe(len(dist), theta),

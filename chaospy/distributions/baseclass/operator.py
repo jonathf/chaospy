@@ -1,3 +1,4 @@
+"""Operator transformation."""
 import numpy
 import chaospy
 
@@ -5,6 +6,7 @@ from ..baseclass import Distribution
 
 
 class OperatorDistribution(Distribution):
+    """Operator transformation."""
 
     def __init__(self, left, right, exclusion=None, repr_args=None):
         if not isinstance(left, Distribution):

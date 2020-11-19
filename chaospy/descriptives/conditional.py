@@ -10,7 +10,7 @@ from . import expected
 
 def E_cond(poly, freeze, dist, **kws):
     """
-    Conditional expected value operator.
+    Conditional expected value of a distribution or polynomial.
 
     1st order statistics of a polynomial on a given probability space
     conditioned on some of the variables.

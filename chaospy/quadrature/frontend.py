@@ -1,40 +1,4 @@
-"""
-Gaussian Quadratures Rules
---------------------------
-
-:ref:`gaussian`
-    The classical Gaussian quadrature scheme applied on any probability
-    distribution.
-:ref:`gauss_legendre`
-    Same as :ref:`gaussian` for uniform distribution, but applicable to other
-    distribution by incorporating the probability density as part of the
-    function to be integrated.
-:ref:`gauss_patterson`
-    Extension of Gauss-Legendre rule. Valid to order 8.
-:ref:`gauss_kronrod`
-    Extension to the Gauss-Patterson rule to include most distribution and any
-    order.
-:ref:`gauss_lobatto`
-    Gaussian quadrature rule that enforces the endpoints to be included in the
-    rule.
-:ref:`gauss_radau`
-    Gaussian quadrature rule that enforces that a single fixed point to be
-    included in the rule.
-
-Non-Gaussian Quadrature Rules
------------------------------
-
-:ref:`clenshaw_curtis`
-    Chebyshev nodes with endpoints included.
-:ref:`fejer`
-    Chebyshev nodes without endpoints included.
-:ref:`leja`
-    Fully nested quadrature method.
-:ref:`genz_keister`
-    Genz-Keizter 16 rule. Nested. Valid to order 8.
-:ref:`newton_cotes`
-    Numerical integration rule based on fixed width abscissas.
-"""
+"""Numerical quadrature node and weight generator."""
 import numpy
 import chaospy
 

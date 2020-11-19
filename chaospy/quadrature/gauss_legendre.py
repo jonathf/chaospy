@@ -69,7 +69,7 @@ def quad_gauss_legendre(
         \int_a^b p(x) f(x) dx \approx \sum_i f(X_i) W_i
 
     To get the behavior where the weight function is taken into consideration,
-    use :func:`~chaospy.quadrature.gaussian.quad_gaussian`.
+    use :func:`chaospy.quad_gaussian`.
 
     Args:
         order (int, numpy.ndarray):

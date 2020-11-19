@@ -1,6 +1,21 @@
 About Us
 ========
 
+Code of Conduct
+---------------
+
+`Code of Conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
+
+Contribution
+------------
+
+`Contribution Guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
+
+Changelog
+---------
+
+`Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOG.md>`_
+
 Questions
 ---------
 
@@ -15,13 +30,12 @@ Citations
 ---------
 
 If you are going to publish work using this software, then please cite the
-article:
-   `Chaospy: An open source tool for designing methods of uncertainty
-   quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_
+article: `Chaospy: An open source tool for designing methods of uncertainty
+quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_
 
 In addition, if you deal with stochastic dependencies, please also cite:
-   `Multivariate Polynomial Chaos Expansions with Dependent Variables
-   <https://epubs.siam.org/doi/10.1137/15M1020447>`_.
+`Multivariate Polynomial Chaos Expansions with Dependent Variables
+<https://epubs.siam.org/doi/10.1137/15M1020447>`_.
 
 Related Projects
 ----------------

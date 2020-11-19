@@ -1,3 +1,4 @@
+"""Collection of distributions."""
 from .alpha import Alpha
 from .anglit import Anglit
 from .beta import Beta, ArcSinus, PowerLaw, Wigner, PERT

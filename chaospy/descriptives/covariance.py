@@ -8,7 +8,7 @@ from .. import distributions
 
 def Cov(poly, dist=None, **kws):
     """
-    Covariance matrix, or 2rd order statistics.
+    Variance/Covariance matrix of a distribution or polynomial array.
 
     Args:
         poly (numpoly.ndpoly, Distribution) :

@@ -1,7 +1,7 @@
 .. _installation:
 
-Installation
-============
+Get Started
+===========
 
 Installation should be straight forward from `pip <https://pypi.org/>`_:
 

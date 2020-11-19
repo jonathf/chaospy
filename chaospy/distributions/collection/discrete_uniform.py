@@ -10,14 +10,6 @@ class DiscreteUniform(SimpleDistribution):
     """
     Discrete uniform probability distribution.
 
-    Args:
-        lower (float, chaospy.Distribution):
-            Lower threshold of distribution. Must be smaller than ``upper``.
-            Value will be rounded up to closes integer.
-        upper (float, chaospy.Distribution):
-            Upper threshold of distribution. Value will be rouned down to
-            closes integer.
-
     Examples:
         >>> distribution = chaospy.DiscreteUniform(2, 4)
         >>> distribution
@@ -40,6 +32,15 @@ class DiscreteUniform(SimpleDistribution):
     interpret_as_integer = True
 
     def __init__(self, lower, upper):
+        """
+        Args:
+            lower (float, chaospy.Distribution):
+                Lower threshold of distribution. Must be smaller than
+                ``upper``. Value will be rounded up to closes integer.
+            upper (float, chaospy.Distribution):
+                Upper threshold of distribution. Value will be rounded down to
+                closes integer.
+        """
         super(DiscreteUniform, self).__init__(dict(lower=lower, upper=upper))
         self._repr_args = [lower, upper]
 
