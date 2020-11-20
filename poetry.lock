@@ -239,6 +239,17 @@ version = "0.16"
 
 [[package]]
 category = "dev"
+description = "The Python ensemble sampling toolkit for MCMC"
+name = "emcee"
+optional = false
+python-versions = "*"
+version = "3.0.2"
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
+category = "dev"
 description = "Discover and load entry points from installed packages."
 name = "entrypoints"
 optional = false
@@ -276,6 +287,77 @@ name = "functools32"
 optional = false
 python-versions = "*"
 version = "3.2.3-2"
+
+[[package]]
+category = "dev"
+description = "GSTools: A geostatistical toolbox."
+name = "gstools"
+optional = false
+python-versions = "*"
+version = "1.1.1"
+
+[package.dependencies]
+emcee = ">=3.0.0"
+hankel = ">=0.3.6"
+numpy = ">=1.14.5"
+pyevtk = "*"
+scipy = ">=1.1.0"
+six = "*"
+
+[package.extras]
+plotting = ["pyvista", "matplotlib"]
+
+[[package]]
+category = "dev"
+description = "GSTools: A geostatistical toolbox."
+name = "gstools"
+optional = false
+python-versions = ">=3.5"
+version = "1.2.1"
+
+[package.dependencies]
+emcee = ">=3.0.0"
+hankel = ">=1.0.2"
+numpy = ">=1.14.5"
+pyevtk = ">=1.1.1"
+scipy = ">=1.1.0"
+
+[package.extras]
+dev = ["setuptools (>=41.0.1)", "setuptools_scm (>=3.5.0)", "cython (>=0.28.3)", "numpy (>=1.14.5)", "pytest-cov (>=2.8.0)", "pytest (>=5.3.0)", "numpydoc", "sphinx-gallery", "matplotlib", "pyvista", "pykrige"]
+doc = ["numpydoc", "sphinx-gallery", "matplotlib", "pyvista", "pykrige"]
+plotting = ["pyvista", "matplotlib"]
+test = ["pytest-cov (>=2.8.0)", "pytest (>=5.3.0)"]
+
+[[package]]
+category = "dev"
+description = "Hankel Transformations using method of Ogata 2005"
+name = "hankel"
+optional = false
+python-versions = "*"
+version = "0.3.9"
+
+[package.dependencies]
+mpmath = ">=0.18"
+numpy = ">=1.6.1"
+scipy = ">=0.12.0"
+
+[[package]]
+category = "dev"
+description = "Hankel Transformations using method of Ogata 2005"
+name = "hankel"
+optional = false
+python-versions = ">=3.5"
+version = "1.1.0"
+
+[package.dependencies]
+mpmath = ">=1.0.0"
+numpy = ">=1.9.3"
+scipy = ">=0.16.1"
+
+[package.extras]
+dev = ["pre-commit", "pytest", "pytest-cov", "ipykernel", "nbsphinx", "numpydoc", "pandoc", "sphinx (>=2.0)", "sphinx-rtd-theme"]
+docs = ["ipykernel", "nbsphinx", "numpydoc", "pandoc", "sphinx (>=2.0)", "sphinx-rtd-theme"]
+tests = ["pre-commit", "pytest", "pytest-cov"]
 
 [[package]]
 category = "dev"
@@ -758,6 +840,14 @@ six = ">=1.0.0,<2.0.0"
 
 [[package]]
 category = "dev"
+description = "Python library for arbitrary-precision floating-point arithmetic"
+name = "mpmath"
+optional = false
+python-versions = "*"
+version = "1.1.0"
+
+[[package]]
+category = "dev"
 description = "A client library for executing notebooks. Formerly nbconvert's ExecutePreprocessor."
 name = "nbclient"
 optional = false
@@ -1195,6 +1285,17 @@ version = "0.4.1"
 
 [package.dependencies]
 sphinx = "*"
+
+[[package]]
+category = "dev"
+description = "Export data as binary VTK files"
+name = "pyevtk"
+optional = false
+python-versions = "*"
+version = "1.1.1"
+
+[package.dependencies]
+numpy = ">=1.8.0"
 
 [[package]]
 category = "dev"
@@ -1881,7 +1982,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "unittest2", "jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "4f8004674d1969da56a9b70e19e061ff0767f9126d31af56c3d09a9e35cbe85f"
+content-hash = "79c7f60cf28ada341abb564439afa4abb1fc89bc9b9ef23687dbcaa1cda40422"
 python-versions = "^2.7||>=3.6"
 
 [metadata.files]
@@ -2097,6 +2198,10 @@ docutils = [
     {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
     {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
 ]
+emcee = [
+    {file = "emcee-3.0.2-py2.py3-none-any.whl", hash = "sha256:bffaa2e1830d90f4e2ae42ca8db9bef67b73eefe90bdedacf58c9a1977966184"},
+    {file = "emcee-3.0.2.tar.gz", hash = "sha256:035a44d7594fdd03efd10a522558cdfaa080e046ad75594d0bf2aec80ec35388"},
+]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
     {file = "entrypoints-0.3.tar.gz", hash = "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"},
@@ -2113,6 +2218,71 @@ funcsigs = [
 functools32 = [
     {file = "functools32-3.2.3-2.tar.gz", hash = "sha256:f6253dfbe0538ad2e387bd8fdfd9293c925d63553f5813c4e587745416501e6d"},
     {file = "functools32-3.2.3-2.zip", hash = "sha256:89d824aa6c358c421a234d7f9ee0bd75933a67c29588ce50aaa3acdf4d403fa0"},
+]
+gstools = [
+    {file = "gstools-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:35ec37d7ca11255481872bd55309ae57f3447827cd6ac30f0e3416062b63cfe1"},
+    {file = "gstools-1.1.1-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:5bbe85741dfa07733cb6f87dbf98c2cfdea11751b596800b453d471f0a31b68e"},
+    {file = "gstools-1.1.1-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:b66fe4dda26b0a4b11281167e22478ddcbfe447da9ded795b49492cdb2cff907"},
+    {file = "gstools-1.1.1-cp27-cp27m-win32.whl", hash = "sha256:80939108726438e92190a24ce2f86dfd6274bffea12781b96d62c67f2028cea8"},
+    {file = "gstools-1.1.1-cp27-cp27m-win_amd64.whl", hash = "sha256:725e734f5a8f032b35caa4508d070a6b7c0c4238b69566c7a39e31c0131546ed"},
+    {file = "gstools-1.1.1-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:3eb403a84d3a46661830102aa07c4cb1582d555969525acbc84dc33642380cf2"},
+    {file = "gstools-1.1.1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:8fd16418cde631638a92cc51a63324c3a8e7cb82db60cacd8429184dca26687b"},
+    {file = "gstools-1.1.1-cp34-cp34m-macosx_10_6_intel.whl", hash = "sha256:c4d9e6035fbd4d98a4ce8abe8ac5d4b0c1c7ebeb6381c3648faba10913df7d9a"},
+    {file = "gstools-1.1.1-cp34-cp34m-manylinux1_i686.whl", hash = "sha256:d280b1a53b64d0e60865b99d01d327135a78d266dfdd7e8ab27f4f6b51b674b3"},
+    {file = "gstools-1.1.1-cp34-cp34m-manylinux1_x86_64.whl", hash = "sha256:c4b757c82913340eb7780fbe053d85a60ab20b8f7c275129649e3d95edc4727c"},
+    {file = "gstools-1.1.1-cp34-cp34m-win32.whl", hash = "sha256:4017343ecef1a5e11accddec6fad5c05335291f46f38ef4fd986828c2c4464ed"},
+    {file = "gstools-1.1.1-cp34-cp34m-win_amd64.whl", hash = "sha256:1a2895d26170c7d7c5f6c70a093308a2078738cd3d81689f2c782cd7ecf9c7bd"},
+    {file = "gstools-1.1.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:30554b98b34c24db68fa7b31a8b5202701d9f9012c51419a8ad78543e38068a4"},
+    {file = "gstools-1.1.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:e3611f082f8fc175e87a607661317dc5e90089f802a47abdd508c0e730e752f3"},
+    {file = "gstools-1.1.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:69eb8d19f0362f8a1eea1448380374f73fbae095dee8930c9ab8444a85ce72b8"},
+    {file = "gstools-1.1.1-cp35-cp35m-win32.whl", hash = "sha256:1533ed9d96ee98f086f357f876272a57167c2a37579a7380f1e8f26fa409d5f3"},
+    {file = "gstools-1.1.1-cp35-cp35m-win_amd64.whl", hash = "sha256:6ffa92820d97053d516ca71166590c43c982ab4c7413714357149dd6a8ae1c29"},
+    {file = "gstools-1.1.1-cp36-cp36m-macosx_10_6_intel.whl", hash = "sha256:51f4422dcd48b968129a06da4920c734b4d3899675ef1fb796e724ca1153d588"},
+    {file = "gstools-1.1.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:523ebdaaf72febed122c09465d6710c51289f7f884101c3debe568d1875c7d9d"},
+    {file = "gstools-1.1.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:ed531c5fedbf384692977ca069bd18533a9dbfa7335b72f1ac61db003a2133f5"},
+    {file = "gstools-1.1.1-cp36-cp36m-win32.whl", hash = "sha256:ab94f92331eee8a70f808862614adc521e46b05be6e408c8d7ff27647a90dbc7"},
+    {file = "gstools-1.1.1-cp36-cp36m-win_amd64.whl", hash = "sha256:4e71d3366b8fe1409a905e6688ab015bd20c52d970e4dc9c3de6571010524af4"},
+    {file = "gstools-1.1.1-cp37-cp37m-macosx_10_6_intel.whl", hash = "sha256:035f4291bb98445afc7e8ef930678bd19e6fc88021756a19e04691a0018e45c3"},
+    {file = "gstools-1.1.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:4d5078c7cf5eef0ae27b5c130c1fb9d5eaf115cf573ff05cc80b7c35817416ed"},
+    {file = "gstools-1.1.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:f7069242bf8acf18c6337c821db669757c14709474241087cf25d65149595740"},
+    {file = "gstools-1.1.1-cp37-cp37m-win32.whl", hash = "sha256:45e2838e1c33d70cbcf5e05422843ec8fe73131f195e30d59a92362ad84bdb7c"},
+    {file = "gstools-1.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:0053a38ff60546c9f6175b41f791b357571d20ce84bdab3b3ec43a89be753ec9"},
+    {file = "gstools-1.1.1.tar.gz", hash = "sha256:4fcc6d664d2a47d201c7f0e01988c759cd1741d51c87753cbb1ee00e4ce75335"},
+    {file = "gstools-1.2.1-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:6db3775b9526ca72190f9401729b959694bfaca47cdd25d37a0f274ecd225ca0"},
+    {file = "gstools-1.2.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:ce3f6beef7d6fa8dc4bb544f8767ef68bdd56bb974f488e1f0886b1c1f025739"},
+    {file = "gstools-1.2.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:cedc9927a09d82fb74b9dc5a7ffce2de7c06a25b222a5ed9108f044e7ef5706b"},
+    {file = "gstools-1.2.1-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:d6baeb7ffac30ec70f83274f2e3e52ee852ba97d4241eefd59302469b183b78d"},
+    {file = "gstools-1.2.1-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:27f3d3aa48a8d8eb22b6d70ee0b8d59c2fcd482b6d473a103bdba670cb517c43"},
+    {file = "gstools-1.2.1-cp35-cp35m-win32.whl", hash = "sha256:6b503ebc184828c7c179bb916ed882d4a73377d975367a4232860117d7e7eee8"},
+    {file = "gstools-1.2.1-cp35-cp35m-win_amd64.whl", hash = "sha256:3f50719d0a06fc7d905084ea22d45480555cce77837607c7f90b7ff91614fd13"},
+    {file = "gstools-1.2.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:e0f97b545b4e078a334f3fe04a41853937657af0c9e39904d135dbbb8176ed21"},
+    {file = "gstools-1.2.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:9b9da8fc56827079ba5431991628d0c2a8a1a3ed138afb601d5782e66efacac5"},
+    {file = "gstools-1.2.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:7ab7fa3e44c573bfe0f83fb43c71527f2af306ffbebe204b47d7d1e7d0403307"},
+    {file = "gstools-1.2.1-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:439c2123b6e627b48837d5e45d5601faf624b47edb39bf1c8ebbf57ba8a9ba0f"},
+    {file = "gstools-1.2.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:d05e324da1d8e057b8514222f9d9537509687aec5f308f8b222e6687e9a1e94e"},
+    {file = "gstools-1.2.1-cp36-cp36m-win32.whl", hash = "sha256:05c37545ee43618e241b8679934fd80425be90157c463ec623c6a3d4ce0ccf43"},
+    {file = "gstools-1.2.1-cp36-cp36m-win_amd64.whl", hash = "sha256:e3e5db9ab44accea4f65410c0072ad576d3d70c0f8c7c95eb7bb43a3ef2c6728"},
+    {file = "gstools-1.2.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:42c4ad57e015c73a9cbf617a355a23b70de84f5e964b35ed0c3e32a40f909765"},
+    {file = "gstools-1.2.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:48a6d111b0f4f4e9c32980afcac7186bf28bde04510ef9a7bdc2ab5071ab0afd"},
+    {file = "gstools-1.2.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:3d6c2919896200db6403e6dc32034e2d0952dad80f61e7257cb11c32697c0dfc"},
+    {file = "gstools-1.2.1-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:335bfeb4c12f5ac579977b6680f9c8eed1d5ee62774a96fc7b7bbb055b9a8771"},
+    {file = "gstools-1.2.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:645f7f8457f89c61415a3c3e7e57a21066ec4b5cfc8cc03b3f4e016d104b7e69"},
+    {file = "gstools-1.2.1-cp37-cp37m-win32.whl", hash = "sha256:2871084f7d35d1c1d86f36a7ae174ebc6e06f922b20e41209a073a73f01df4df"},
+    {file = "gstools-1.2.1-cp37-cp37m-win_amd64.whl", hash = "sha256:95a3bc8e5d8ed82b3e5ab9e97184d9134a116efb18b25aa10e6ad757f5547f01"},
+    {file = "gstools-1.2.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:637218b9d9b789485f2977ab00f22e6df55a4ecbc5a17c9a39c58513e2caf0cf"},
+    {file = "gstools-1.2.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:27813e88e7460249dcda710f3d1f5b48d11bb9801b008e013a04074e14e6a275"},
+    {file = "gstools-1.2.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1efcbeed40a62e0b8760d58285312aa2e92e07c083c5e29f24cc7e5479b48ca1"},
+    {file = "gstools-1.2.1-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:abd361c7e8524793662c8f66eb0b0a4002539e58c1f305483dd83e6fc450f77c"},
+    {file = "gstools-1.2.1-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:137ac3f9e4c2717163a816f0bca827d9bf6e8ed44e396edbd7f5c1b5721ddac7"},
+    {file = "gstools-1.2.1-cp38-cp38-win32.whl", hash = "sha256:8176843992a11b3534d96d4ad9895d90b75a00d160a7d03ca409ca66ce4c13a1"},
+    {file = "gstools-1.2.1-cp38-cp38-win_amd64.whl", hash = "sha256:4daf370267241b39ff415246bbb05df425aadb9873e7cb6638e87369d6b5d4b9"},
+    {file = "gstools-1.2.1.tar.gz", hash = "sha256:14f6b1f276c63b03260d0159afab122dfc4e122dd58676f684d25d8ec33eb016"},
+]
+hankel = [
+    {file = "hankel-0.3.9-py3-none-any.whl", hash = "sha256:834e8a62510ad833c3c5f21b351f9e8ba10b6b00180fb72020f6e51e59472926"},
+    {file = "hankel-0.3.9.tar.gz", hash = "sha256:6c2c0ba5143efd6556e657349ca7927e0db3821a23e3458a3748f71c792de2a5"},
+    {file = "hankel-1.1.0-py3-none-any.whl", hash = "sha256:c3a30389d47178d78bd744a8eeca25305ba7dfcbe0687fee5c3843bd5a48382e"},
+    {file = "hankel-1.1.0.tar.gz", hash = "sha256:83764755e132a86c6c801f02722d544c69a469b2dda1a338eafb663c4c9053e4"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -2368,6 +2538,9 @@ more-itertools = [
     {file = "more_itertools-5.0.0-py2-none-any.whl", hash = "sha256:c0a5785b1109a6bd7fac76d6837fd1feca158e54e521ccd2ae8bfe393cc9d4fc"},
     {file = "more_itertools-5.0.0-py3-none-any.whl", hash = "sha256:fe7a7cae1ccb57d33952113ff4fa1bc5f879963600ed74918f1236e212ee50b9"},
 ]
+mpmath = [
+    {file = "mpmath-1.1.0.tar.gz", hash = "sha256:fc17abe05fbab3382b61a123c398508183406fa132e0223874578e20946499f6"},
+]
 nbclient = [
     {file = "nbclient-0.5.1-py3-none-any.whl", hash = "sha256:4d6b116187c795c99b9dba13d46e764d596574b14c296d60670c8dfe454db364"},
     {file = "nbclient-0.5.1.tar.gz", hash = "sha256:01e2d726d16eaf2cde6db74a87e2451453547e8832d142f73f72fddcd4fe0250"},
@@ -2557,6 +2730,9 @@ pydata-sphinx-theme = [
     {file = "pydata_sphinx_theme-0.1.0-py2.py3-none-any.whl", hash = "sha256:27d817ebfab69b539667c8cbdecca4970e0094da414a94b13c6accbd98a179af"},
     {file = "pydata-sphinx-theme-0.4.1.tar.gz", hash = "sha256:4e95d0dca0a64ba9471a89cdb6197cf8bb81b31f75ad0b7b6f0e85196fb7fe39"},
     {file = "pydata_sphinx_theme-0.4.1-py3-none-any.whl", hash = "sha256:b40a1b45dea0f1fa6c444b6c977ff25e20abf615c53e7e69ca771370dcd75579"},
+]
+pyevtk = [
+    {file = "pyevtk-1.1.1-py3-none-any.whl", hash = "sha256:0bd02406fe15fc34f6b0d34048e6531be004530ff3b63085d60ece66bc9bb376"},
 ]
 pygments = [
     {file = "Pygments-2.5.2-py2.py3-none-any.whl", hash = "sha256:2a3fe295e54a20164a9df49c75fa58526d3be48e14aceba6d6b1e8ac0bfd6f1b"},

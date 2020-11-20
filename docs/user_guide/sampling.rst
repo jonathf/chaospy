@@ -39,45 +39,45 @@ using direct sampling functions. The frontend for all these functions is the
 as the ``sample`` method, but also support some extra functionality by not
 being associated with a specific distribution. For example::
 
-    >>> samples = generate_samples(order=4)
+    >>> samples = chaospy.generate_samples(order=4)
     >>> samples.round(4)
     array([[0.6536, 0.115 , 0.9503, 0.4822]])
 
 Custom domain::
 
-    >>> samples = generate_samples(order=4, domain=[-1, 1])
+    >>> samples = chaospy.generate_samples(order=4, domain=[-1, 1])
     >>> samples.round(4)
     array([[ 0.7449, -0.5753, -0.9186, -0.2056]])
-    >>> samples = generate_samples(order=4, domain=chaospy.Normal(0, 1))
+    >>> samples = chaospy.generate_samples(order=4, domain=chaospy.Normal(0, 1))
     >>> samples.round(4)
     array([[-0.7286,  1.0016, -0.8166,  0.651 ]])
 
 Use a custom sampling scheme::
 
-    >>> generate_samples(order=4, rule="halton").round(4)
+    >>> chaospy.generate_samples(order=4, rule="halton").round(4)
     array([[0.75 , 0.125, 0.625, 0.375]])
 
 Multivariate case::
 
-    >>> samples = generate_samples(order=4, domain=[[-1, 0], [0, 1]])
+    >>> samples = chaospy.generate_samples(order=4, domain=[[-1, 0], [0, 1]])
     >>> samples.round(4)
     array([[-0.6078, -0.8177, -0.2565, -0.9304],
            [ 0.8853,  0.9526,  0.9311,  0.4154]])
     >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Uniform(0, 1))
-    >>> samples = generate_samples(order=4, domain=distribution)
+    >>> samples = chaospy.generate_samples(order=4, domain=distribution)
     >>> samples.round(4)
     array([[-1.896 ,  2.0975, -0.4135,  0.5437],
            [ 0.3619,  0.0351,  0.8551,  0.6573]])
 
 Antithetic variates::
 
-    >>> samples = generate_samples(order=8, rule="halton", antithetic=True)
+    >>> samples = chaospy.generate_samples(order=8, rule="halton", antithetic=True)
     >>> samples.round(4)
     array([[0.75 , 0.25 , 0.125, 0.875, 0.625, 0.375, 0.375, 0.625]])
 
 Multivariate antithetic variates::
 
-    >>> samples = generate_samples(
+    >>> samples = chaospy.generate_samples(
     ...     order=8, domain=2, rule="hammersley", antithetic=True)
     >>> samples.round(4)
     array([[0.75 , 0.25 , 0.75 , 0.25 , 0.125, 0.875, 0.125, 0.875],
@@ -144,20 +144,20 @@ using the ``antithetic`` flag::
 Antithetic variates contains compliment values of itself::
 
     >>> samples.round(4)
-    array([0.6536, 0.3464, 0.115 , 0.885 , 0.9503, 0.0497])
+    array([0.7657, 0.2343, 0.5541, 0.4459, 0.8851, 0.1149])
     >>> 1-samples.round(4)
-    array([0.3464, 0.6536, 0.885 , 0.115 , 0.0497, 0.9503])
+    array([0.2343, 0.7657, 0.4459, 0.5541, 0.1149, 0.8851])
 
 Antithetic variates can also be used in multiple dimensions::
 
     >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
     >>> samples = distribution.sample(6, antithetic=True)
     >>> samples.round(4)
-    array([[0.8725, 0.1275, 0.8725, 0.1275, 0.2123, 0.7877],
-           [0.3972, 0.3972, 0.6028, 0.6028, 0.2331, 0.2331]])
+    array([[0.0104, 0.9896, 0.0104, 0.9896, 0.0746, 0.9254],
+           [0.1333, 0.1333, 0.8667, 0.8667, 0.6979, 0.6979]])
     >>> 1-samples.round(4)
-    array([[0.1275, 0.8725, 0.1275, 0.8725, 0.7877, 0.2123],
-           [0.6028, 0.6028, 0.3972, 0.3972, 0.7669, 0.7669]])
+    array([[0.9896, 0.0104, 0.9896, 0.0104, 0.9254, 0.0746],
+           [0.8667, 0.8667, 0.1333, 0.1333, 0.3021, 0.3021]])
 
 Lastly, it is also possible to select which axes should be included when
 applying the variate by passing a boolean array. For axes that are "false", the
@@ -165,15 +165,15 @@ value is frozen in place::
 
     >>> samples = distribution.sample(6, antithetic=[True, False])
     >>> samples.round(4)
-    array([[0.2071, 0.7929, 0.7425, 0.2575, 0.3922, 0.6078],
-           [0.1823, 0.1823, 0.7435, 0.7435, 0.0696, 0.0696]])
+    array([[0.8831, 0.1169, 0.181 , 0.819 , 0.4325, 0.5675],
+           [0.0181, 0.0181, 0.6914, 0.6914, 0.4697, 0.4697]])
     >>> 1-samples.round(4)
-    array([[0.7929, 0.2071, 0.2575, 0.7425, 0.6078, 0.3922],
-           [0.8177, 0.8177, 0.2565, 0.2565, 0.9304, 0.9304]])
+    array([[0.1169, 0.8831, 0.819 , 0.181 , 0.5675, 0.4325],
+           [0.9819, 0.9819, 0.3086, 0.3086, 0.5303, 0.5303]])
     >>> samples = distribution.sample(6, antithetic=[False, True])
     >>> samples.round(4)
-    array([[0.8853, 0.8853, 0.9526, 0.9526, 0.9311, 0.9311],
-           [0.4154, 0.5846, 0.029 , 0.971 , 0.982 , 0.018 ]])
+    array([[0.1282, 0.1282, 0.8913, 0.8913, 0.9182, 0.9182],
+           [0.0731, 0.9269, 0.0454, 0.9546, 0.4386, 0.5614]])
     >>> 1-samples.round(4)
-    array([[0.1147, 0.1147, 0.0474, 0.0474, 0.0689, 0.0689],
-           [0.5846, 0.4154, 0.971 , 0.029 , 0.018 , 0.982 ]])
+    array([[0.8718, 0.8718, 0.1087, 0.1087, 0.0818, 0.0818],
+           [0.9269, 0.0731, 0.9546, 0.0454, 0.5614, 0.4386]])

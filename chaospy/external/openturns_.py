@@ -22,7 +22,7 @@ This distribution then behaves as a normal ``chaospy`` distribution::
 
     >>> distribution.pdf([-1, 0, 1]).round(4)
     array([0.242 , 0.3989, 0.242 ])
-    >>> distribution.mom([0, 1, 2])
+    >>> distribution.mom([0, 1, 2]).round(15)
     array([1., 0., 1.])
 
 The wrapper also supports multivariate distributions::
