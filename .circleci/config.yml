@@ -76,7 +76,7 @@ jobs:
           command: |
             source /home/circleci/venv/bin/activate
             coverage run --source=chaospy/ --module pytest --nbval-lax --doctest-modules \
-                chaospy/ tests/ docs/notebooks/*.ipynb docs/*.rst docs/*/*.rst README.rst
+                chaospy/ tests/ docs/*/*.ipynb docs/*/*.rst README.rst
             bash <(curl -s https://codecov.io/bash)
   deploy:
     executor: python-container

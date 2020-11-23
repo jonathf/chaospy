@@ -1,60 +1,4 @@
-"""
-Each sampling scheme can be accessed through the ``sample`` method on each
-distribution. But in addition, they can also be created on the unit hyper-cube
-using direct sampling functions. The frontend for all these functions is the
-:func:`~chaospy.distributions.sampler.generator.generate_samples` function. It
-allows for the same functionality as the ``sample`` method, but also support
-some extra functionality by not being associated with a specific distribution.
-For example::
-
-    >>> samples = generate_samples(order=4)
-    >>> samples.round(4)
-    array([[0.6536, 0.115 , 0.9503, 0.4822]])
-
-Custom domain::
-
-    >>> samples = generate_samples(order=4, domain=[-1, 1])
-    >>> samples.round(4)
-    array([[ 0.7449, -0.5753, -0.9186, -0.2056]])
-    >>> samples = generate_samples(order=4, domain=chaospy.Normal(0, 1))
-    >>> samples.round(4)
-    array([[-0.7286,  1.0016, -0.8166,  0.651 ]])
-
-Use a custom sampling scheme::
-
-    >>> generate_samples(order=4, rule="halton").round(4)
-    array([[0.75 , 0.125, 0.625, 0.375]])
-
-Multivariate case::
-
-    >>> samples = generate_samples(order=4, domain=[[-1, 0], [0, 1]])
-    >>> samples.round(4)
-    array([[-0.6078, -0.8177, -0.2565, -0.9304],
-           [ 0.8853,  0.9526,  0.9311,  0.4154]])
-    >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Uniform(0, 1))
-    >>> samples = generate_samples(order=4, domain=distribution)
-    >>> samples.round(4)
-    array([[-1.896 ,  2.0975, -0.4135,  0.5437],
-           [ 0.3619,  0.0351,  0.8551,  0.6573]])
-
-Antithetic variates::
-
-    >>> samples = generate_samples(order=8, rule="halton", antithetic=True)
-    >>> samples.round(4)
-    array([[0.75 , 0.25 , 0.125, 0.875, 0.625, 0.375, 0.375, 0.625]])
-
-Multivariate antithetic variates::
-
-    >>> samples = generate_samples(
-    ...     order=8, domain=2, rule="hammersley", antithetic=True)
-    >>> samples.round(4)
-    array([[0.75 , 0.25 , 0.75 , 0.25 , 0.125, 0.875, 0.125, 0.875],
-           [0.25 , 0.25 , 0.75 , 0.75 , 0.5  , 0.5  , 0.5  , 0.5  ]])
-
-Here as with the ``sample`` method, the flag ``rule`` is used to determine
-sampling scheme. The default ``rule="random"`` uses classical psuedo-random
-samples created using ``numpy.random``.
-"""
+"""Sample generator."""
 import logging
 import numpy
 from . import sequences, latin_hypercube
@@ -101,7 +45,7 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
             distribution, the domain it spans will be used.
         rule (str):
             rule for generating samples. The various rules are listed in
-            :mod:`chaospy.distributions.sampler.generator`.
+            :ref:`generator`.
         antithetic (tuple):
             Sequence of boolean values. Represents the axes to mirror using
             antithetic variable.

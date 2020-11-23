@@ -16,31 +16,31 @@
 .. |pypi| image:: https://img.shields.io/pypi/v/chaospy
     :target: https://pypi.org/project/chaospy
 .. |binder| image:: https://mybinder.org/badge_logo.svg
-    :target: https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Fnotebooks
+    :target: https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials
 
 Chaospy is a numerical tool for performing uncertainty quantification using
 polynomial chaos expansions and advanced Monte Carlo methods implemented in
 Python.
 
 * `Documentation <https://chaospy.readthedocs.io/en/master>`_
-* `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Fnotebooks>`_
+* `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials>`_
 * `Source code <https://github.com/jonathf/chaospy>`_
 * `Issue tracker <https://github.com/jonathf/chaospy/issues>`_
+* `Code of Conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
+* `Contribution Guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
+* `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOg.md>`
 
 Installation
 ------------
 
-Installation should be straight forward from `PyPI <https://pypi.org/>`_:
+Installation should be straight forward using `pip <https://pypi.org/>`_:
 
 .. code-block:: bash
 
     $ pip install chaospy
 
-Or alternatively using `Conda <https://conda.io/>`_:
-
-.. code-block:: bash
-
-    $ conda install -c conda-forge chaospy
+For more installation details, see the `installation guide
+<https://chaospy.readthedocs.io/en/master/installation.html>`.
 
 Example Usage
 -------------
@@ -137,78 +137,3 @@ For more extensive guides on this approach an others, see the `tutorial
 collection`_.
 
 .. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorials
-
-Contributions and Related Projects
-----------------------------------
-
-A few shout-outs to people who have contributed to the Chaospy project:
-
-+--------------+--------------------------------------------------------------+
-| `OpenTURNS`_ | Thanks to `Régis Lebrun`_ for both proposing a collaboration |
-|              | and creating an initial implementation of both               |
-|              | `Chaospy Compatibility`_ in `OpenTURNS`_ and                 |
-|              | `OpenTURNS Compatibility`_ in ``chaospy``.                   |
-+--------------+--------------------------------------------------------------+
-| `orthopy`_   | Thanks to `Nico Schlömer`_ for providing the implementation  |
-| `quadpy`_    | for several of the quadrature integration methods.           |
-+--------------+--------------------------------------------------------------+
-| ``UQRF``     | Thanks to `Florian Künzner`_ for providing the initial       |
-|              | implementation of kernel density estimation and              |
-|              | quantity-of-interest distribution.                           |
-+--------------+--------------------------------------------------------------+
-
-.. _OpenTURNS: http://openturns.github.io/openturns/latest
-.. _Régis Lebrun: https://github.com/regislebrun
-.. _Chaospy Compatibility: http://openturns.github.io/openturns/latest/user_manual/_generated/openturns.ChaospyDistribution.html
-.. _OpenTURNS Compatibility: https://chaospy.readthedocs.io/en/master/recipes/external.html#module-chaospy.external.openturns_
-.. _orthopy: https://github.com/nschloe/orthopy
-.. _quadpy: https://github.com/nschloe/quadpy
-.. _Nico Schlömer: https://github.com/nschloe
-.. _Florian Künzner: https://github.com/flo2k
-
-Chaospy is being used in other related projects that requires uncertainty
-quantification components ``chaospy`` provides. For example:
-
-+-----------------+-----------------------------------------------------------+
-| `easyVVUQ`_     | Library designed to facilitate verification, validation   |
-|                 | and uncertainty quantification.                           |
-+-----------------+-----------------------------------------------------------+
-| `STARFiSh`_     | Shell-based, scientific simulation program                |
-|                 | for blood flow in mammals.                                |
-+-----------------+-----------------------------------------------------------+
-| `Profit`_       | Probabilistic response model fitting via interactive      |
-|                 | tools.                                                    |
-+-----------------+-----------------------------------------------------------+
-| `UncertainPy`_  | Uncertainty quantification and sensitivity analysis,      |
-|                 | tailored towards computational neuroscience.              |
-+-----------------+-----------------------------------------------------------+
-| `SparseSpACE`_  | Spatially adaptive combination technique targeted to      |
-|                 | solve high dimensional numerical integration.             |
-+-----------------+-----------------------------------------------------------+
-
-.. _easyVVUQ: https://github.com/UCL-CCS/EasyVVUQ
-.. _STARFiSh: https://www.ntnu.no/starfish
-.. _Profit: https://github.com/redmod-team/profit
-.. _UncertainPy: https://github.com/simetenn/uncertainpy
-.. _SparseSpACE: https://github.com/obersteiner/sparseSpACE
-
-For a more comprehensive list, see `Github's dependency graph
-<https://github.com/jonathf/chaospy/network/dependents>`_.
-
-Questions and Contributions
----------------------------
-
-Please feel free to
-`file an issue <https://github.com/jonathf/chaospy/issues>`_ for:
-
-* bug reporting
-* asking questions related to usage
-* requesting new features
-* wanting to contribute with code
-
-If you are going to publish work using this software, then please cite the
-article: `Chaospy: An open source tool for designing methods of uncertainty
-quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_.
-In addition, if you deal with stochastic dependencies, please also cite:
-`Multivariate Polynomial Chaos Expansions with Dependent Variables
-<https://epubs.siam.org/doi/10.1137/15M1020447>`_.

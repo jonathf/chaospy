@@ -71,12 +71,6 @@ class Nataf(CopulaDistribution):
     """
     Nataf (normal) copula.
 
-    Args:
-        dist (Distribution):
-            The distribution to wrap.
-        covariance (numpy.ndarray):
-            Covariance matrix.
-
     Examples:
         >>> distribution = chaospy.Nataf(
         ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), covariance=[[1, .5], [.5, 1]])
@@ -104,6 +98,13 @@ class Nataf(CopulaDistribution):
     """
 
     def __init__(self, dist, covariance):
+        """
+        Args:
+            dist (Distribution):
+                The distribution to wrap.
+            covariance (numpy.ndarray):
+                Covariance matrix.
+        """
         assert len(dist) == len(covariance)
         return super(Nataf, self).__init__(
             dist=dist,

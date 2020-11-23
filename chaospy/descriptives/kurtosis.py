@@ -9,7 +9,7 @@ from .standard_deviation import Std
 
 def Kurt(poly, dist=None, fisher=True, **kws):
     """
-    Kurtosis operator.
+    The forth order statistical moment Kurtosis.
 
     Element by element 4rd order statistics of a distribution or polynomial.
 

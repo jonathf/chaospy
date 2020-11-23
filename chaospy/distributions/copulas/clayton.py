@@ -39,12 +39,6 @@ class Clayton(CopulaDistribution):
     """
     Clayton Copula.
 
-    Args:
-        dist (Distribution):
-            The distribution to wrap
-        theta (float):
-            Copula parameter. Required to be above 0.
-
     Examples:
         >>> distribution = chaospy.Clayton(
         ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2), theta=2)
@@ -72,6 +66,13 @@ class Clayton(CopulaDistribution):
     """
 
     def __init__(self, dist, theta=2.):
+        """
+        Args:
+            dist (Distribution):
+                The distribution to wrap
+            theta (float):
+                Copula parameter. Required to be above 0.
+        """
         assert theta > 0
         return super(Clayton, self).__init__(
             dist=dist,

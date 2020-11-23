@@ -9,34 +9,8 @@ from ..operators import J
 
 
 class binomial(SimpleDistribution):
-    """
-    Binomial probability distribution.
+    """Binomial probability distribution."""
 
-    Point density:
-        comb(N, x) p^x (1-p)^{N-x}      x in {0, 1, ..., N}
-
-    Examples:
-        >>> distribution = chaospy.Binomial(3, 0.5)
-        >>> distribution
-        Binomial(3, 0.5)
-        >>> xloc = numpy.arange(4)
-        >>> distribution.pdf(xloc).round(4)
-        array([0.125, 0.375, 0.375, 0.125])
-        >>> distribution.cdf(xloc).round(4)
-        array([0.125, 0.5  , 0.875, 1.   ])
-        >>> distribution.fwd([-0.5, -0.49, 0, 0.49, 0.5]).round(4)
-        array([0.    , 0.0013, 0.0625, 0.1238, 0.125 ])
-        >>> uloc = numpy.linspace(0, 1, 8)
-        >>> uloc.round(2)
-        array([0.  , 0.14, 0.29, 0.43, 0.57, 0.71, 0.86, 1.  ])
-        >>> distribution.inv(uloc).round(2)
-        array([-0.5 ,  0.55,  0.93,  1.31,  1.69,  2.07,  2.45,  3.5 ])
-        >>> distribution.sample(10)
-        array([2, 1, 0, 2, 2, 2, 2, 3, 3, 0])
-        >>> distribution.mom([1, 2, 3]).round(4)
-        array([1.5 , 3.  , 6.75])
-
-    """
     interpret_as_integer = True
 
     def __init__(self, size, prob):
@@ -79,6 +53,34 @@ class binomial(SimpleDistribution):
 
 
 class Binomial(J):
+    """
+    Binomial probability distribution.
+
+    Point density:
+        comb(N, x) p^x (1-p)^{N-x}      x in {0, 1, ..., N}
+
+    Examples:
+        >>> distribution = chaospy.Binomial(3, 0.5)
+        >>> distribution
+        Binomial(3, 0.5)
+        >>> xloc = numpy.arange(4)
+        >>> distribution.pdf(xloc).round(4)
+        array([0.125, 0.375, 0.375, 0.125])
+        >>> distribution.cdf(xloc).round(4)
+        array([0.125, 0.5  , 0.875, 1.   ])
+        >>> distribution.fwd([-0.5, -0.49, 0, 0.49, 0.5]).round(4)
+        array([0.    , 0.0013, 0.0625, 0.1238, 0.125 ])
+        >>> uloc = numpy.linspace(0, 1, 8)
+        >>> uloc.round(2)
+        array([0.  , 0.14, 0.29, 0.43, 0.57, 0.71, 0.86, 1.  ])
+        >>> distribution.inv(uloc).round(2)
+        array([-0.5 ,  0.55,  0.93,  1.31,  1.69,  2.07,  2.45,  3.5 ])
+        >>> distribution.sample(10)
+        array([2, 1, 0, 2, 2, 2, 2, 3, 3, 0])
+        >>> distribution.mom([1, 2, 3]).round(4)
+        array([1.5 , 3.  , 6.75])
+
+    """
 
     def __init__(self, size, prob):
         dist = binomial(size, prob)

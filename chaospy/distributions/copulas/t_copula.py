@@ -73,14 +73,6 @@ class TCopula(CopulaDistribution):
     """
     T-Copula.
 
-    Args:
-        dist (Distribution):
-            The distribution to wrap in a copula.
-        R (numpy.ndarray):
-            Covariance matrix defining dependencies..
-        df (float):
-            The degree of freedom in the underlying student-t distribution.
-
     Examples:
         >>> distribution = chaospy.TCopula(
         ...     chaospy.Iid(chaospy.Uniform(-1, 1), 2),
@@ -109,6 +101,15 @@ class TCopula(CopulaDistribution):
     """
 
     def __init__(self, dist, df, covariance):
+        """
+        Args:
+            dist (Distribution):
+                The distribution to wrap in a copula.
+            R (numpy.ndarray):
+                Covariance matrix defining dependencies..
+            df (float):
+                The degree of freedom in the underlying student-t distribution.
+        """
         assert len(dist) == len(covariance)
         df = float(df)
         covariance = numpy.asfarray(covariance)

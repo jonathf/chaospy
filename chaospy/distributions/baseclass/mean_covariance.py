@@ -1,3 +1,4 @@
+"""Mean-Covariance transformation."""
 import numpy
 from scipy.special import comb
 import numpoly

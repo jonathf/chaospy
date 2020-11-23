@@ -77,7 +77,7 @@ def orth_chol(
     basis = numpoly.monomial(
         start=1,
         stop=order+1,
-        names=numpoly.variable(dim).names,
+        dimensions=dim,
         graded=graded,
         reverse=reverse,
         cross_truncation=cross_truncation,

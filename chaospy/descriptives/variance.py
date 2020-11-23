@@ -7,7 +7,7 @@ from .expected import E
 
 def Var(poly, dist=None, **kws):
     """
-    Element by element 2nd order statistics.
+    The variance of a distribution or polynomial.
 
     Args:
         poly (numpoly.ndpoly, Distribution):

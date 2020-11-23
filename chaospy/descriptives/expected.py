@@ -5,7 +5,7 @@ import numpoly
 
 def E(poly, dist=None, **kws):
     """
-    Expected value operator.
+    The expected value of a distribution or polynomial.
 
     1st order statistics of a probability distribution or polynomial on a given
     probability space.

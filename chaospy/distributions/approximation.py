@@ -1,3 +1,4 @@
+"""Collection of approximation functions."""
 import logging
 
 import numpy
