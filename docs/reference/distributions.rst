@@ -1,3 +1,5 @@
+.. _distribution_collection:
+
 Distributions
 =============
 
@@ -111,6 +113,8 @@ Bound distributions
    TukeyLambda
    Uniform
 
+.. _multivariate_distributions:
+
 Multivariate distributions
 --------------------------
 
@@ -144,6 +148,15 @@ Copulas
    Joe
    Nataf
    TCopula
+
+User defined distribution
+-------------------------
+
+.. autosummary::
+   :template: distribution.rst
+   :toctree: api
+
+   UserDistribution
 
 Operators
 ---------
@@ -180,3 +193,13 @@ Mixtures
    :toctree: api
 
    GaussianMixture
+
+Approximation functions
+-----------------------
+
+.. autosummary::
+   :toctree: api
+
+   approximate_density
+   approximate_inverse
+   approximate_moment

@@ -1,45 +1,4 @@
-"""
-Constructing custom probability distributions is done by subclassing the
-distribution :class:`~chaospy.distributions.baseclass.simple.SimpleDistribution`::
-
-    >>> class Uniform(chaospy.SimpleDistribution):
-    ...     def __init__(self, lo=0, up=1):
-    ...         '''Initializer.'''
-    ...         super().__init__(parameters=dict(lo=lo, up=up))
-    ...     def _cdf(self, x_data, lo, up):
-    ...         '''Cumulative distribution function.'''
-    ...         return (x_data-lo)/(up-lo)
-    ...     def _lower(self, lo, up):
-    ...         '''Lower bound.'''
-    ...         return lo
-    ...     def _upper(self, lo, up):
-    ...         '''Upper bound.'''
-    ...         return up
-    ...     def _pdf(self, x_data, lo, up):
-    ...         '''Probability density function.'''
-    ...         return 1./(up-lo)
-    ...     def _ppf(self, q_data, lo, up):
-    ...         '''Point percentile function.'''
-    ...         return q_data*(up-lo)+lo
-
-Custom distributions needs to be initialized and wrapped. For example::
-
-    >>> dist = Uniform(-3, 3)
-    >>> dist.fwd([-3, 0, 3])  # Forward Rosenblatt transformation
-    array([0. , 0.5, 1. ])
-
-Here the method ``_cdf`` is an absolute requirement. In addition, either
-``_ppf``, or the couple ``_lower`` and ``_upper`` should be provided. The
-others are not required, but may increase speed and or accuracy of
-calculations. In addition to the once listed, it is also
-possible to define the following methods:
-
-``_mom``
-    Method for creating raw statistical moments, used by the ``mom`` method.
-``_ttr``
-    Method for creating coefficients from three terms recurrence method, used to
-    perform "analytical" Stiltjes' method.
-"""
+"""Distribution for the core probability distribution."""
 import numpy
 import chaospy
 

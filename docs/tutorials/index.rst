@@ -8,7 +8,7 @@ that explore different ways to use ``chaospy``.
 
 If you prefer to test the tutorials without installing any code locally, it is
 possible to `run the tutorials using Binder
-<https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials%2FREADME.ipynb>`_.
+<https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials>`_.
 
 .. toctree::
    :hidden:

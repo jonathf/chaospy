@@ -1,3 +1,5 @@
+.. _reference:
+
 API reference
 =============
 
@@ -8,6 +10,7 @@ public.
 .. toctree::
     :maxdepth: 1
 
+    high_level_interface
     descriptives
     distributions
     polynomial

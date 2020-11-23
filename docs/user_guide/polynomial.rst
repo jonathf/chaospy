@@ -1,5 +1,7 @@
-User guide
-==========
+.. _polynomial:
+
+Polynomial Representation
+=========================
 
 Introduction
 ------------

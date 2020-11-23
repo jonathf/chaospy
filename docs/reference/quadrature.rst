@@ -1,15 +1,9 @@
+.. _quadrature_collection:
+
 Quadrature Integration
 ======================
 
 .. currentmodule:: chaospy
-
-User Interface
---------------
-
-.. autosummary::
-   :toctree: api
-
-   generate_quadrature
 
 Gaussian Quadrature
 -------------------

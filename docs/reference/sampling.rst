@@ -1,5 +1,7 @@
-Variance Reduction
-==================
+.. _sampling_collection:
+
+Random and low-discrepency samples
+==================================
 
 .. currentmodule:: chaospy
 
@@ -10,6 +12,8 @@ Generator function
     :toctree: api
 
     generate_samples
+
+.. _low_discrepancy_sequences:
 
 Low-discrepancy sequences
 -------------------------

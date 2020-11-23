@@ -1,7 +1,7 @@
 Master Branch
 =============
 
-Version 4.2.0 (2020-11-20)
+Version 4.2.0 (2020-11-23)
 ==========================
 
 ADDED:
@@ -15,8 +15,8 @@ CHANGED:
     allowing for e.g. `chaospy.E_cond(q0*q1, q0, dist)` which can be
     interpreted as "expectation of `q0*q1` given `q0` with respect to `dist`".
   * Bugfixes to `chaospy.Spearman`
-  * Updates `numpoly` to version 1.1.0. (some small breaking changes).
   * Full refactorization of the documentation.
+  * Updates `numpoly` to version 1.1.0. (some small breaking changes).
 REMOVED:
   * Deprecated `report_on_exception`. Caused recursion problems, and only a
     semi-useful diagnostic tool to begin with.

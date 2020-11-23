@@ -3,14 +3,6 @@ Polynomial Expansions
 
 .. currentmodule:: chaospy
 
-User Interface
---------------
-
-.. autosummary::
-   :toctree: api
-
-   generate_expansion
-
 Orthogonal Expansions
 ---------------------
 

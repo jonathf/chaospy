@@ -1,44 +1,4 @@
-"""
-There are three ways to create a multivariate probability distribution in
-``chaospy``: Using the joint constructor
-:class:`~chaospy.distributions.operators.joint.J`, the identical independent
-distribution constructor: :class:`~chaospy.distributions.operators.iid.Iid`,
-and to one of the pre-constructed multivariate distribution defined in
-:ref:`listdistributions`.
-
-Constructing a multivariate probability distribution can be done using the
-:func:`~chaospy.distributions.operators.joint.J` constructor. E.g.::
-
-    >>> distribution = chaospy.J(chaospy.Normal(), chaospy.Uniform())
-    >>> distribution
-    J(Normal(mu=0, sigma=1), Uniform())
-
-The created multivariate distribution behaves much like the univariate case::
-
-    >>> mesh = numpy.mgrid[0.25:0.75:3j, 0.25:0.75:3j]
-    >>> mesh
-    array([[[0.25, 0.25, 0.25],
-            [0.5 , 0.5 , 0.5 ],
-            [0.75, 0.75, 0.75]],
-    <BLANKLINE>
-           [[0.25, 0.5 , 0.75],
-            [0.25, 0.5 , 0.75],
-            [0.25, 0.5 , 0.75]]])
-    >>> distribution.cdf(mesh).round(4)
-    array([[0.1497, 0.2994, 0.449 ],
-           [0.1729, 0.3457, 0.5186],
-           [0.1933, 0.3867, 0.58  ]])
-    >>> distribution.pdf(mesh).round(4)
-    array([[0.3867, 0.3867, 0.3867],
-           [0.3521, 0.3521, 0.3521],
-           [0.3011, 0.3011, 0.3011]])
-    >>> distribution.sample(6, rule="halton").round(4)
-    array([[-1.1503,  0.3186, -0.3186,  1.1503, -1.5341,  0.1573],
-           [ 0.4444,  0.7778,  0.2222,  0.5556,  0.8889,  0.037 ]])
-    >>> distribution.mom([[2, 4, 6], [1, 2, 3]]).round(10)
-    array([0.5 , 1.  , 3.75])
-
-"""
+"""Joint random variable."""
 import logging
 import numpy
 import chaospy
