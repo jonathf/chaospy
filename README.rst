@@ -1,4 +1,4 @@
-.. image:: https://github.com/jonathf/chaospy/raw/master/docs/.static/chaospy_logo.svg
+.. image:: https://github.com/jonathf/chaospy/raw/master/docs/_static/chaospy_logo.svg
    :height: 200 px
    :width: 200 px
    :align: center
