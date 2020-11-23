@@ -28,7 +28,7 @@ Python.
 * `Issue tracker <https://github.com/jonathf/chaospy/issues>`_
 * `Code of Conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
 * `Contribution Guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
-* `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOg.md>`
+* `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOg.md>`_
 
 Installation
 ------------
@@ -40,7 +40,7 @@ Installation should be straight forward using `pip <https://pypi.org/>`_:
     $ pip install chaospy
 
 For more installation details, see the `installation guide
-<https://chaospy.readthedocs.io/en/master/installation.html>`.
+<https://chaospy.readthedocs.io/en/master/installation.html>`_.
 
 Example Usage
 -------------
