@@ -76,7 +76,7 @@ class Binomial(J):
         >>> distribution.inv(uloc).round(2)
         array([-0.5 ,  0.55,  0.93,  1.31,  1.69,  2.07,  2.45,  3.5 ])
         >>> distribution.sample(10)
-        array([2, 1, 0, 2, 2, 2, 2, 3, 3, 0])
+        array([1, 3, 2, 1, 0, 1, 1, 0, 2, 1])
         >>> distribution.mom([1, 2, 3]).round(4)
         array([1.5 , 3.  , 6.75])
 

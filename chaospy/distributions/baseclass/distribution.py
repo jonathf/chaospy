@@ -491,6 +491,9 @@ class Distribution(object):
         out = sampler.generator.generate_samples(
             order=size_, domain=self, rule=rule, antithetic=antithetic)
 
+        for idx, dist in enumerate(self):
+            if dist.interpret_as_integer:
+                out[idx] = numpy.round(out[idx])
         if self.interpret_as_integer:
             out = numpy.round(out).astype(int)
         out = out.reshape(shape)
