@@ -53,11 +53,11 @@ class DiscreteUniform(SimpleDistribution):
 
     def _lower(self, lower, upper):
         """Lower bounds."""
-        return numpy.round(lower)-0.5
+        return numpy.round(lower)-0.5+1e-10
 
     def _upper(self, lower, upper):
         """Upper bounds."""
-        return numpy.round(upper)+0.5
+        return numpy.round(upper)+0.5-1e-10
 
     def _pdf(self, x_data, lower, upper):
         """Probability density function."""

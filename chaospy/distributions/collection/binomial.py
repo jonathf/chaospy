@@ -41,10 +41,10 @@ class binomial(SimpleDistribution):
         return special.comb(size, x_data)*prob**x_data*(1-prob)**(size-x_data)
 
     def _lower(self, size, prob):
-        return -0.5
+        return -0.5+1e-10
 
     def _upper(self, size, prob):
-        return numpy.round(size)+0.5
+        return numpy.round(size)+0.5-1e-10
 
     def _mom(self, k_data, size, prob):
         x_data = numpy.arange(int(size)+1, dtype=int)
@@ -76,7 +76,7 @@ class Binomial(J):
         >>> distribution.inv(uloc).round(2)
         array([-0.5 ,  0.55,  0.93,  1.31,  1.69,  2.07,  2.45,  3.5 ])
         >>> distribution.sample(10)
-        array([2, 1, 0, 2, 2, 2, 2, 3, 3, 0])
+        array([1, 3, 2, 1, 0, 1, 1, 0, 2, 1])
         >>> distribution.mom([1, 2, 3]).round(4)
         array([1.5 , 3.  , 6.75])
 

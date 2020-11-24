@@ -441,29 +441,21 @@ class Distribution(object):
 
         Changing the sampling scheme, use the following ``rule`` flag:
 
-        +----------------------+-----------------------------------------------+
-        | key                  | Description                                   |
-        +======================+===============================================+
-        | ``chebyshev``        | Roots of first order Chebyshev polynomials.   |
-        +----------------------+-----------------------------------------------+
-        | ``nested_chebyshev`` | Chebyshev nodes adjusted to ensure nested.    |
-        +----------------------+-----------------------------------------------+
-        | ``korobov``          | Korobov lattice.                              |
-        +----------------------+-----------------------------------------------+
-        | ``random``           | Classical (Pseudo-)Random samples.            |
-        +----------------------+-----------------------------------------------+
-        | ``grid``             | Regular spaced grid.                          |
-        +----------------------+-----------------------------------------------+
-        | ``nested_grid``      | Nested regular spaced grid.                   |
-        +----------------------+-----------------------------------------------+
-        | ``latin_hypercube``  | Latin hypercube samples.                      |
-        +----------------------+-----------------------------------------------+
-        | ``sobol``            | Sobol low-discrepancy sequence.               |
-        +----------------------+-----------------------------------------------+
-        | ``halton``           | Halton low-discrepancy sequence.              |
-        +----------------------+-----------------------------------------------+
-        | ``hammersley``       | Hammersley low-discrepancy sequence.          |
-        +----------------------+-----------------------------------------------+
+        ----------------------  -------------------------------------------
+        key                     description
+        ----------------------  -------------------------------------------
+        ``additive_recursion``  Modulus of golden ratio samples.
+        ``chebyshev``           Roots of first order Chebyshev polynomials.
+        ``grid``                Regular spaced grid.
+        ``halton``              Halton low-discrepancy sequence.
+        ``hammersley``          Hammersley low-discrepancy sequence.
+        ``korobov``             Korobov lattice.
+        ``latin_hypercube``     Latin hypercube samples.
+        ``nested_chebyshev``    Chebyshev nodes adjusted to ensure nested.
+        ``nested_grid``         Nested regular spaced grid.
+        ``random``              Classical (Pseudo-)Random samples.
+        ``sobol``               Sobol low-discrepancy sequence.
+        ----------------------  -------------------------------------------
 
         All samples are created on the ``[0, 1]``-hypercube, which then is
         mapped into the domain of the distribution using the inverse Rosenblatt
@@ -499,6 +491,9 @@ class Distribution(object):
         out = sampler.generator.generate_samples(
             order=size_, domain=self, rule=rule, antithetic=antithetic)
 
+        for idx, dist in enumerate(self):
+            if dist.interpret_as_integer:
+                out[idx] = numpy.round(out[idx])
         if self.interpret_as_integer:
             out = numpy.round(out).astype(int)
         out = out.reshape(shape)
