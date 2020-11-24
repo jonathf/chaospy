@@ -41,10 +41,10 @@ class binomial(SimpleDistribution):
         return special.comb(size, x_data)*prob**x_data*(1-prob)**(size-x_data)
 
     def _lower(self, size, prob):
-        return -0.5
+        return -0.5+1e-10
 
     def _upper(self, size, prob):
-        return numpy.round(size)+0.5
+        return numpy.round(size)+0.5-1e-10
 
     def _mom(self, k_data, size, prob):
         x_data = numpy.arange(int(size)+1, dtype=int)

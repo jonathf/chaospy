@@ -61,6 +61,7 @@ you find fit. The only requirement is that the output is compatible with
 .. code-block:: python
 
     >>> coordinates = numpy.linspace(0, 10, 100)
+
     >>> def forward_solver(coordinates, parameters):
     ...     """Function to do uncertainty quantification on."""
     ...     param_init, param_rate = parameters
@@ -72,8 +73,8 @@ probability distribution. For example:
 
 .. code-block:: python
 
-    >>> distribution = chaospy.J(
-    ...     chaospy.Uniform(1, 2), chaospy.Normal(0, 2))
+    >>> distribution = chaospy.J(chaospy.Uniform(1, 2), chaospy.Normal(0, 2))
+
     >>> print(distribution)
     J(Uniform(lower=1, upper=2), Normal(mu=0, sigma=2))
 
@@ -83,6 +84,7 @@ polynomials. These can be automatically constructed:
 .. code-block:: python
 
     >>> expansion = chaospy.generate_expansion(8, distribution)
+
     >>> print(expansion[:5].round(8))
     [1.0 q1 q0-1.5 q0*q1-1.5*q1 q0**2-3.0*q0+2.16666667]
 
@@ -95,6 +97,7 @@ low-discrepancy sequences. For example to create Sobol sequence samples:
 .. code-block:: python
 
     >>> samples = distribution.sample(1000, rule="sobol")
+
     >>> print(samples[:, :4].round(8))
     [[ 1.5         1.75        1.25        1.375     ]
      [ 0.         -1.3489795   1.3489795  -0.63727873]]
@@ -103,8 +106,9 @@ We can evaluating the forward solver using these samples:
 
 .. code-block:: python
 
-    >>> evaluations = numpy.array([
-    ...     forward_solver(coordinates, sample) for sample in samples.T])
+    >>> evaluations = numpy.array([forward_solver(coordinates, sample)
+    ...                            for sample in samples.T])
+
     >>> print(evaluations[:3, :5].round(8))
     [[1.5        1.5        1.5        1.5        1.5       ]
      [1.75       2.00546578 2.29822457 2.63372042 3.0181921 ]
@@ -116,8 +120,8 @@ of ``forward_solver``:
 
 .. code-block:: python
 
-    >>> approx_solver = chaospy.fit_regression(
-    ...     expansion, samples, evaluations)
+    >>> approx_solver = chaospy.fit_regression(expansion, samples, evaluations)
+
     >>> print(approx_solver[:2].round(4))
     [q0 -0.0002*q0*q1**3+0.0051*q0*q1**2-0.101*q0*q1+q0]
 
@@ -127,9 +131,10 @@ directly. For example:
 .. code-block:: python
 
     >>> expected = chaospy.E(approx_solver, distribution)
+    >>> deviation = chaospy.Std(approx_solver, distribution)
+
     >>> print(expected[:5].round(8))
     [1.5        1.53092356 1.62757217 1.80240142 2.07915608]
-    >>> deviation = chaospy.Std(approx_solver, distribution)
     >>> print(deviation[:5].round(8))
     [0.28867513 0.43364958 0.76501802 1.27106355 2.07110879]
 
