@@ -18,7 +18,6 @@ class J(Distribution):
     """
 
     def __init__(self, *args, **kwargs):
-        dists = []
         repr_args = []
         owners = {}
         index = []
@@ -34,8 +33,8 @@ class J(Distribution):
                 idx += len(arg)
             elif len(arg) > 1:
                 repr_args.append(arg)
-                owners.update({idx2: (idx1, arg)
-                               for idx1, idx2 in enumerate(range(idx, idx+len(arg)))})
+                owners.update({idx2: (idx1, arg) for idx1, idx2 in enumerate(
+                    range(len(index), len(index)+len(arg)))})
                 index += [idx]*len(arg)
                 idx += 1
             else:

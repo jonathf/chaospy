@@ -73,11 +73,24 @@ class UserDistribution(SimpleDistribution):
         """
         self._cdf = cdf
         repr_args = [str(cdf)]
-        for name in ["pdf", "lower", "upper", "ppf", "mom", "ttr"]:
-            value = locals()[name]
-            if value is not None:
-                repr_args.append("%s=%s" % (name, value))
-                setattr(self, "_"+name, value)
+        if pdf is not None:
+            repr_args.append("pdf=%s" % pdf)
+            self._pdf = pdf
+        if lower is not None:
+            repr_args.append("lower=%s" % lower)
+            self._lower = lower
+        if upper is not None:
+            repr_args.append("upper=%s" % upper)
+            self._upper = upper
+        if ppf is not None:
+            repr_args.append("ppf=%s" % ppf)
+            self._ppf = ppf
+        if mom is not None:
+            repr_args.append("mom=%s" % mom)
+            self._mom = mom
+        if ttr is not None:
+            repr_args.append("ttr=%s" % ttr)
+            self._ttr = ttr
 
         parameters = parameters if parameters else {}
         if parameters:

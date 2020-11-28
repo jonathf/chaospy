@@ -76,7 +76,7 @@ class Wald(ShiftScaleDistribution):
         >>> distribution.pdf(xloc).round(3)
         array([0.   , 0.297, 0.275, 0.2  , 0.105, 0.   ])
         >>> distribution.sample(4).round(3)
-        array([0.653, 1.904, 1.698, 1.161])
+        array([2.804, 2.114, 3.364, 1.637])
 
     """
 

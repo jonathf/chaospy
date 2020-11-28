@@ -91,8 +91,12 @@ def approximate_inverse(
             if isinstance(distribution._parameters[name], chaospy.Distribution):
                 cache[(idx, distribution._parameters[name])] = param
 
+    cache_copy = cache.copy()
+
     for idx_ in range(2*iterations):
 
+        cache.clear()
+        cache.update(cache_copy)
         # evaluate function:
         uloc = numpy.where(
             indices, distribution._cdf(xloc, **parameters)-qloc, uloc)
@@ -129,6 +133,8 @@ def approximate_inverse(
         # print("Too many iterations required to estimate inverse.")
         # print("%d out of %d did not converge." % (numpy.sum(indices), len(indices)))
 
+    cache.clear()
+    cache.update(cache_copy)
     logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
     # print("%s: ppf approx used %d steps" % (distribution, idx_/2))
     return xloc
@@ -140,7 +146,7 @@ def approximate_moment(
         distribution,
         k_loc,
         order=None,
-        rule="fejer",
+        rule="clenshaw_curtis",
         **kwargs
 ):
     """
@@ -170,7 +176,7 @@ def approximate_moment(
 
     """
     if order is None:
-        order = int(1000./numpy.log2(len(distribution)+1))
+        order = int(1e6**(1./len(distribution)))
     assert isinstance(order, int)
     assert isinstance(distribution, chaospy.Distribution)
     k_loc = tuple(numpy.asarray(k_loc).tolist())
@@ -196,7 +202,7 @@ def approximate_density(
         idx,
         xloc,
         cache=None,
-        tolerance=1e-7
+        step_size=1e-7
 ):
     """
     Approximate the probability density function.
@@ -211,8 +217,9 @@ def approximate_density(
         cache (Optional[Dict[Distribution, Tuple[numpy.ndarray, numpy.ndarray]]]):
             Current state in the evaluation graph. If omitted, assume that
             evaluations should be done from scratch.
-        tolerance (float):
-            Acceptable error level for the approximations
+        step_size (float):
+            The relative step size between two points used to calculate the
+            derivative.
 
     Returns:
         numpy.ndarray: Local probability density function with
@@ -228,17 +235,26 @@ def approximate_density(
         array([0.0242, 0.0399, 0.0242])
 
     """
-    cache = cache or {}
+    cache = {} if cache is None else cache
+    assert (idx, distribution) not in cache
     xloc = numpy.asfarray(xloc)
     assert xloc.ndim == 1
     lower, upper = numpy.min(xloc), numpy.max(xloc)
     middle = .5*(lower+upper)
-    tolerance = (numpy.where(xloc < middle, tolerance, -tolerance)*
+    step_size = (numpy.where(xloc < middle, step_size, -step_size)*
                  numpy.clip(numpy.abs(xloc), 1, None))
 
-    floc1 = distribution._get_fwd(xloc, idx, cache=cache.copy())
-    floc2 = distribution._get_fwd(xloc+tolerance, idx, cache=cache.copy())
-    floc = numpy.abs((floc2-floc1)/tolerance)
+    cache1 = cache.copy()
+    floc1 = distribution._get_fwd(xloc, idx, cache=cache1)
+    cache2 = cache.copy()
+    floc2 = distribution._get_fwd(xloc+step_size, idx, cache=cache2)
+    floc = numpy.abs((floc2-floc1)/step_size)
+
+    # weave a history of pdf from two cdf streams
+    for key in set(cache1).difference(cache):
+        cache[key] = cache1[key][0], ((cache2[key][1]-cache1[key][1])/
+                                      (cache2[key][0]-cache1[key][0]))
+
 
     assert floc.shape == xloc.shape
     return floc

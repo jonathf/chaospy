@@ -21,12 +21,6 @@ class LowerUpperDistribution(Distribution):
         upper (float, Sequence[float], Distribution):
             Upper bounds.
 
-    Attributes:
-        shift (numpy.ndarray):
-            The shift of the distribution.
-        scale (numpy.ndarray):
-            The scale of the distribution.
-
     """
 
     def __init__(
@@ -45,11 +39,14 @@ class LowerUpperDistribution(Distribution):
         dependencies, parameters, rotation, = chaospy.declare_dependencies(
             distribution=self,
             parameters=dict(lower=lower, upper=upper),
+            is_operator=True,
             rotation=rotation,
+            extra_parameters=dict(dist=dist),
         )
         super(LowerUpperDistribution, self).__init__(
             parameters=parameters,
             dependencies=dependencies,
+            rotation=rotation,
             repr_args=repr_args,
         )
         self._dist = dist

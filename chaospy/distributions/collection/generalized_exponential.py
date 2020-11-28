@@ -73,7 +73,7 @@ class GeneralizedExponential(ShiftScaleDistribution):
         >>> distribution.pdf(xloc).round(3)
         array([3.   , 3.26 , 2.925, 2.223, 1.24 , 0.   ])
         >>> distribution.sample(4).round(3)
-        array([0.006, 0.108, 0.089, 0.04 ])
+        array([0.123, 0.477, 0.059, 0.036])
 
     """
 
