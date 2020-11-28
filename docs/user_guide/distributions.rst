@@ -166,8 +166,7 @@ variable can be made dependent through a copula as follows:
 
 where :math:`C` is the copula function, and :math:`F_{Q_i}` are marginal
 distribution functions.  One of the more popular classes of copulas is the
-Archimedean copulas.
-.. \cite{sklar_random_1996}.
+Archimedean copulas :cite:`sklar_random_1996`.
 They are defined as follows:
 
 .. math::
@@ -187,9 +186,8 @@ reformulation is as follows:
     \frac{\tfrac{\partial}{\partial u_0}
     C(u_0,u_1)}{\tfrac{\partial}{\partial u_0} C(u_0,1)}
 
-This definition can also be generalized in to multiple variables using the
-formula provided by Nelsen 1999.
-.. cite:: nelsen_introduction_1999
+.. This definition can also be generalized in to multiple variables using the
+.. formula provided by :cite:`Nelsen 1999.
 
 The definition of the Rosenblatt transform can require multiple
 differentiations.  An analytical formulation is usually not feasible, so the

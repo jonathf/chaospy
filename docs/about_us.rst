@@ -80,31 +80,10 @@ For a more comprehensive list, see `Github's dependency graph
 Citations
 ---------
 
-If you are going to publish work using this software, then please cite the
-article `Chaospy: An open source tool for designing methods of uncertainty
-quantification <http://dx.doi.org/10.1016/j.jocs.2015.08.008>`_::
-
-    @article{feinberg_chaospy_2015,
-        title = {Chaospy: An open source tool for designing methods of uncertainty quantification},
-        author = {Jonathan Feinberg and Hans Petter Langtangen},
-        journal = {Journal of Computational Science},
-        volume = {11},
-        year = {2015},
-        pages = {46-57}
-    }
-
+If you are going to publish work using this software, then please cite
+:cite:`feinberg_chaospy_2015`.
 In addition, if you deal with stochastic dependencies, please also cite
-`Multivariate Polynomial Chaos Expansions with Dependent Variables
-<https://epubs.siam.org/doi/10.1137/15M1020447>`_::
-
-    @article {feinberg_multivariate_2018,
-        title = {Multivariate Polynomial Chaos Expansions with Dependent Variables},
-        author =  {Jonathan Feinberg and Vinzenz Gregor Eck and Hans Petter Langtangen},
-        journal = {SIAM Journal on Scientific Computing},
-        volume = {40},
-        year = {2018},
-        pages = {199-223}
-    }
+:cite:`feinberg_multivariate_2018`.
 
 Brand marks
 -----------

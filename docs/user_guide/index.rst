@@ -13,6 +13,7 @@ User guide
     polynomial.rst
     orthogonality.rst
     descriptive.rst
+    zbibliography.rst
 
 The user guide covers most of ``chaospy`` by topic area. Each topic discusses
 area of ``chaospy`` approaches the problem, with small examples along the way.

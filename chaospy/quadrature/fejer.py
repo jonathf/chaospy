@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fejér proposed two quadrature rules very similar to :ref:`clenshaw_curtis`.
-The only difference is that the endpoints are set to zero. That is, Fejér only
-used the interior extrema of the Chebyshev polynomials, i.e. the true
-stationary points. This makes this a better method for performing quadrature on
-infinite intervals, as the evaluation does not contain illegal values.
+Generate the quadrature abscissas and weights in Fejer quadrature.
 
 Example usage
 -------------
@@ -57,16 +53,24 @@ import numpy
 import chaospy
 
 from .combine import combine_quadrature
+from .clenshaw_curtis import _clenshaw_curtis
 
 
 def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
     """
-    Generate the quadrature abscissas and weights in Fejer quadrature.
+    Generate the quadrature abscissas and weights in Fejér quadrature.
+
+    Fejér proposed two quadrature rules very similar to
+    :func:`quad_clenshaw_curtis`. The only difference is that the endpoints are
+    removed. That is, Fejér only used the interior extrema of the Chebyshev
+    polynomials, i.e. the true stationary points. This makes this a better
+    method for performing quadrature on infinite intervals, as the evaluation
+    does not contain illegal values.
 
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
+        domain (chaospy.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
@@ -78,13 +82,15 @@ def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
             Nested samples only exist when the number of segments are fixed.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray):
-            abscissas:
-                The quadrature points for where to evaluate the model function
-                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
-                number of samples.
-            weights:
-                The quadrature weights with ``weights.shape == (N,)``.
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function
+            with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+            number of samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
+
+    Notes:
+        Implemented as proposed by Waldvogel :cite:`waldvogel_fast_2006`.
 
     Example:
         >>> abscissas, weights = quad_fejer(3, (0, 1))
@@ -149,21 +155,5 @@ def _fejer(order, segments=1):
         assert len(weights) == order+1
         return numpy.array(abscissas), numpy.array(weights)
 
-    order = int(order)
-    if order == 0:
-        return numpy.array([.5]), numpy.array([1.])
-    order += 2
-
-    theta = (order-numpy.arange(order+1))*numpy.pi/order
-    abscissas = 0.5*numpy.cos(theta) + 0.5
-
-    idx, idy = numpy.mgrid[:order+1, :order//2]
-    weights = 2*numpy.cos(2*(idy+1)*theta[idx])/(4*idy*(idy+2)+3)
-    if order % 2 == 0:
-        weights[:, -1] *= 0.5
-    weights = (1-numpy.sum(weights, -1)) / order
-
-    abscissas = abscissas[1:-1]
-    weights = weights[1:-1]
-    assert len(abscissas) == order-1
-    return abscissas, weights
+    abscissas, weights = _clenshaw_curtis(order+2, segments)
+    return abscissas[1:-1], weights[1:-1]

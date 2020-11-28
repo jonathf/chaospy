@@ -1,13 +1,6 @@
 """
-Clenshaw-Curtis quadrature method is a good all-around quadrature method
-comparable to Gaussian quadrature, but typically limited to finite intervals
-without a specific weight function. In addition to be quite accurate, the
-weights and abscissas can be calculated quite fast.
+Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
-Another thing to note is that Clenshaw-Curtis, with an appropriate growth rule
-is fully nested. This means, if one applies a method that combines different
-order of quadrature rules, the number of evaluations can often be reduced as
-the abscissas can be used across levels.
 
 Example usage
 -------------
@@ -65,10 +58,20 @@ def quad_clenshaw_curtis(order, domain, growth=False, segments=1):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
+    Clenshaw-Curtis quadrature method is a good all-around quadrature method
+    comparable to Gaussian quadrature, but typically limited to finite
+    intervals without a specific weight function. In addition to be quite
+    accurate, the weights and abscissas can be calculated quite fast.
+
+    Another thing to note is that Clenshaw-Curtis, with an appropriate growth
+    rule is fully nested. This means, if one applies a method that combines
+    different order of quadrature rules, the number of evaluations can often be
+    reduced as the abscissas can be used across levels.
+
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
+        domain (chaospy.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
@@ -80,13 +83,15 @@ def quad_clenshaw_curtis(order, domain, growth=False, segments=1):
             Nested samples only exist when the number of segments are fixed.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray):
-            abscissas:
-                The quadrature points for where to evaluate the model function
-                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
-                number of samples.
-            weights:
-                The quadrature weights with ``weights.shape == (N,)``.
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function
+            with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+            number of samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
+
+    Notes:
+        Implemented as proposed by Waldvogel :cite:`waldvogel_fast_2006`.
 
     Example:
         >>> abscissas, weights = quad_clenshaw_curtis(4, (0, 1))
@@ -99,6 +104,7 @@ def quad_clenshaw_curtis(order, domain, growth=False, segments=1):
         array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
         >>> weights.round(4)
         array([0.0833, 0.3333, 0.1667, 0.3333, 0.0833])
+
     """
     if isinstance(domain, chaospy.Distribution):
         abscissas, weights = quad_clenshaw_curtis(
@@ -194,18 +200,27 @@ def _clenshaw_curtis(order, segments=1):
 
     if order == 0:
         return numpy.array([.5]), numpy.array([1.])
+    elif order == 1:
+        return numpy.array([0., 1.]), numpy.array([0.5, 0.5])
 
     theta = (order-numpy.arange(order+1))*numpy.pi/order
-    abscissas = 0.5*numpy.cos(theta) + 0.5
+    abscissas = 0.5*numpy.cos(theta)+0.5
 
-    idx, idy = numpy.mgrid[:order+1, :order//2]
-    weights = 2*numpy.cos(2*(idy+1)*theta[idx])/(4*idy*(idy+2)+3)
-    if order % 2 == 0:
-        weights[:, -1] *= 0.5
-    weights = (1-numpy.sum(weights, -1)) / order
+    N = numpy.arange(1, order, 2)
+    length = len(N)
+    m = order-length
 
-    weights[0] /= 2
-    weights[-1] /= 2
+    v0 = numpy.concatenate([2./(N*(N-2)), [1./N[-1]], numpy.zeros(m)])
+    v2 = -v0[:-1]-v0[:0:-1]
+    g0 = -numpy.ones(order)
+    g0[length] += order
+    g0[m] += order
+    g = g0/(order**2-1+(order%2))
 
-    assert len(abscissas) == order+1
-    return abscissas, weights
+    w = numpy.fft.ihfft(v2+g)
+    assert max(w.imag) < 1e-15
+    w = w.real
+
+    weights = numpy.concatenate([w, w[len(w)-2+(order%2)::-1]])
+
+    return abscissas, weights/2
