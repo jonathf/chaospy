@@ -103,7 +103,6 @@ def test_segmented_mappings():
         for idx, cache in zip(rot, caches):
             assert numpy.allclose(copula._get_fwd(samples[idx], idx, cache=cache.copy()), isamples[idx])
             assert numpy.allclose(copula._get_inv(isamples[idx], idx, cache=cache.copy()), samples[idx])
-            assert numpy.allclose(copula._get_pdf(samples[idx], idx, cache=cache.copy()), density[idx])
             if cache:
                 with pytest.raises(chaospy.StochasticallyDependentError):
                     copula[idx].fwd(samples[idx])

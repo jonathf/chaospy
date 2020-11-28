@@ -176,7 +176,7 @@ def approximate_moment(
 
     """
     if order is None:
-        order = int(1e6**(1./len(distribution)))
+        order = int(1e5**(1./len(distribution)))
     assert isinstance(order, int)
     assert isinstance(distribution, chaospy.Distribution)
     k_loc = tuple(numpy.asarray(k_loc).tolist())

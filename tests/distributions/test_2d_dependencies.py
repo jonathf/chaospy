@@ -40,9 +40,8 @@ def test_2d_dependent_moment():
     with raises(chaospy.UnsupportedFeature):
         JOINT2.mom((1, 1, 1, 1), allow_approx=False)
 
-    reference = 21.8341749
-    assert numpy.isclose(JOINT1.mom((1, 1, 1, 1), allow_approx=True), reference)
-    assert numpy.isclose(JOINT2.mom((1, 1, 1, 1), allow_approx=True), reference)
+    assert numpy.isclose(JOINT1.mom((1, 1, 1, 1), allow_approx=True), 22, rtol=1e-1)
+    assert numpy.isclose(JOINT2.mom((1, 1, 1, 1), allow_approx=True), 22, rtol=1e-1)
 
 
 def test_2d_dependent_density():

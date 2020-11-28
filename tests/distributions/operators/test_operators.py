@@ -5,10 +5,9 @@ import chaospy
 
 def test_operator_slicing():
     dists = [
-        chaospy.Normal([2, 2, 3]),  # ShiftScale
-        chaospy.Uniform(1, [3, 3, 5]),  # LowerUpper
+        chaospy.J(chaospy.Normal(2), chaospy.Normal(2), chaospy.Normal(3)),  # ShiftScale
+        chaospy.J(chaospy.Uniform(1, 3), chaospy.Uniform(1, 3), chaospy.Uniform(1, 5)),  # LowerUpper
         chaospy.MvNormal([2, 2, 3], numpy.eye(3)),  # MeanCovariance
-        chaospy.J(chaospy.Uniform(1, 3), chaospy.Uniform(1, [3, 5])),  # Joint
     ]
     for dist in dists:
 
