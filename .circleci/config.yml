@@ -58,7 +58,7 @@ jobs:
             sudo apt install pandoc
             if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
-              /home/circleci/venv/bin/pip install poetry==1.0.9
+              /home/circleci/venv/bin/pip install poetry==1.0.9 Cython
             fi
             source /home/circleci/venv/bin/activate
             poetry install

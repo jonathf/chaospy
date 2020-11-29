@@ -35,7 +35,7 @@ class wald(SimpleDistribution):
         return 0.
 
     def _upper(self, mu):
-        xloc = numpy.full_like(mu, 5.)
+        xloc = numpy.full_like(mu, 5., dtype=float)
         indices = 1-self._cdf(xloc, mu) > 1e-15
         while numpy.any(indices):
             idx1 = 1-self._cdf(xloc+indices*5., mu) > 1e-15

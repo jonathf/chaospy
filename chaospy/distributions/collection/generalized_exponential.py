@@ -25,7 +25,7 @@ class generalized_exponential(SimpleDistribution):
 
     def _upper(self, a, b, c):
         a, b, c = numpy.broadcast_arrays(a, b, c)
-        xloc = numpy.full_like(a, 10.)
+        xloc = numpy.full_like(a, 10., dtype=float)
         indices = 1-self._cdf(xloc, a, b, c) > 1e-10
         while numpy.any(indices):
             idx1 = 1-self._cdf(xloc+indices*10., a, b, c) > 1e-10
