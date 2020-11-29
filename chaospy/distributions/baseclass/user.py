@@ -1,4 +1,5 @@
 """Distribution with user-provided methods."""
+import numpy
 import chaospy
 
 from .simple import SimpleDistribution
@@ -73,6 +74,8 @@ class UserDistribution(SimpleDistribution):
         """
         self._cdf = cdf
         repr_args = [str(cdf)]
+        if ppf is None and (lower is None or upper is None):
+            raise chaospy.UnsupportedFeature("either ppf or lower+upper should be provided.")
         if pdf is not None:
             repr_args.append("pdf=%s" % pdf)
             self._pdf = pdf
@@ -100,3 +103,15 @@ class UserDistribution(SimpleDistribution):
 
         super(UserDistribution, self).__init__(
             repr_args=repr_args, parameters=parameters)
+
+    def _lower(self, **parameters):
+        x_loc = 0.
+        for param in parameters.values():
+            x_loc, _ = numpy.broadcast_arrays(x_loc, param)
+        return self._ppf(x_loc, **parameters)
+
+    def _upper(self, **parameters):
+        x_loc = 1.
+        for param in parameters.values():
+            x_loc, _ = numpy.broadcast_arrays(x_loc, param)
+        return self._ppf(x_loc, **parameters)

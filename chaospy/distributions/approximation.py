@@ -82,16 +82,13 @@ def approximate_inverse(
     uupper = 1-qloc
     indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
-    if parameters is None:
-        parameters = distribution.get_parameters(idx, cache, assert_numerical=True)
-    else:
+    cache_copy = cache.copy()
+    parameters_copy = distribution._parameters.copy()
+    if parameters is not None:
+
         assert not any([isinstance(value, chaospy.Distribution)
                         for value in parameters.values()])
-        for name, param in parameters.items():
-            if isinstance(distribution._parameters[name], chaospy.Distribution):
-                cache[(idx, distribution._parameters[name])] = param
-
-    cache_copy = cache.copy()
+        distribution._parameters.update(parameters)
 
     for idx_ in range(2*iterations):
 
@@ -99,7 +96,7 @@ def approximate_inverse(
         cache.update(cache_copy)
         # evaluate function:
         uloc = numpy.where(
-            indices, distribution._cdf(xloc, **parameters)-qloc, uloc)
+            indices, distribution._get_fwd(xloc, idx, cache)-qloc, uloc)
 
         # convergence criteria:
         indices &= numpy.abs(uloc) > tolerance
@@ -115,7 +112,14 @@ def approximate_inverse(
         # Newton increment every second iteration:
         xloc_ = numpy.inf
         if idx_ % 2 == 0:
-            derivative = distribution._pdf(xloc, **parameters)
+            cache.clear()
+            cache.update(cache_copy)
+            try:
+                derivative = distribution._get_pdf(xloc, idx, cache)
+            except chaospy.UnsupportedFeature:
+                cache.clear()
+                cache.update(cache_copy)
+                derivative = approximate_density(distribution, idx, xloc, cache)
             derivative = numpy.where(derivative, derivative, 1)
             xloc_ = xloc-uloc/derivative
 
@@ -135,6 +139,8 @@ def approximate_inverse(
 
     cache.clear()
     cache.update(cache_copy)
+    distribution._parameters.clear()
+    distribution._parameters.update(parameters_copy)
     logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
     # print("%s: ppf approx used %d steps" % (distribution, idx_/2))
     return xloc

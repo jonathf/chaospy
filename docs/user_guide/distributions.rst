@@ -213,10 +213,6 @@ distribution :class:`chaospy.UserDistribution`. Start by defining
     ...     '''Cumulative distribution function.'''
     ...     return (x_loc-lo)/(up-lo)
 
-    >>> def pdf(x_loc, lo, up):
-    ...     '''Probability density function.'''
-    ...     return 1./(up-lo)
-
     >>> def lower(lo, up):
     ...     '''Lower bounds function.'''
     ...     return lo
@@ -230,7 +226,7 @@ Custom distributions can be create with these functions as input:
 .. code-block:: python
 
     >>> distribution = chaospy.UserDistribution(
-    ...     cdf=cdf, pdf=pdf, lower=lower,
+    ...     cdf=cdf, lower=lower,
     ...     upper=upper, parameters=dict(lo=-1, up=1))
 
 The distribution can then be used in the same was as any other
@@ -247,15 +243,78 @@ The distribution can then be used in the same was as any other
     >>> distribution.lower, distribution.upper
     (array([-1.]), array([1.]))
 
-Here cumulative density function ``cdf`` is an absolute requirement. In
-addition, either ``ppf``, or the couple ``lower`` and ``upper`` should be
-provided. The others are not required, but may increase speed and or accuracy
-of calculations. In addition to the once listed, it is also possible to define
-the following methods:
+Alternative, it is possible to define the same distribution using forward and
+inverse maps:
 
-``mom``
-    Method for creating raw statistical moments, used by the
-    :func:`~chaospy.Distribution.mom` method.
-``ttr``
-    Method for creating coefficients from three terms recurrence method, used to
-    perform "analytical" Stiltjes' method.
+.. code-block:: python
+
+    >>> def ppf(q_loc, lo, up):
+    ...     '''Point percentile function.'''
+    ...     return q_loc*(up-lo)+lo
+
+    >>> distribution = chaospy.UserDistribution(
+    ...     cdf=cdf, ppf=ppf, parameters=dict(lo=-1, up=1))
+
+    >>> distribution.fwd(numpy.linspace(-2, 2, 7)).round(4)
+    array([0.    , 0.    , 0.1667, 0.5   , 0.8333, 1.    , 1.    ])
+    >>> distribution.pdf(numpy.linspace(-2, 2, 7)).round(4)
+    array([0. , 0. , 0.5, 0.5, 0.5, 0. , 0. ])
+    >>> distribution.inv(numpy.linspace(0, 1, 7)).round(4)
+    array([-1.    , -0.6667, -0.3333,  0.    ,  0.3333,  0.6667,  1.    ])
+    >>> distribution.lower, distribution.upper
+    (array([-1.]), array([1.]))
+
+In other words either `cdf`, `lower` and `upper`, or `cdf` and `ppf` is
+the minimal requirement to define a distribution. Providing e.g. `cdf` alone
+yields an error:
+
+.. code-block:: python
+
+    >>> chaospy.UserDistribution(cdf=cdf, parameters=dict(lo=-1, up=1))
+    Traceback (most recent call last):
+        ...
+    chaospy.UnsupportedFeature: either ppf or lower+upper should be provided.
+
+
+In addition to the required fields, there are a few optional ones. these does
+not provide new functionality, but allow for increased accuracy and/or
+lower computational cost for the operations where they are used. These include
+raw statistical moments which is used by the method
+:func:`~chaospy.Distribution.mom`:
+
+.. code-block:: python
+
+    >>> def mom(k, lo, up):
+    ...     '''Raw statistical moment.'''
+    ...     return (up**(k+1)-lo**(k+1))/(k+1)/(up-lo)
+
+And three terms recurrence coefficients which is used by the method
+:func:`~chaospy.Distribution.ttr` to bypass Stieltjes' method:
+
+.. code-block:: python
+
+    >>> def ttr(k, lo, up):
+    ...     '''Three terms recurrence.'''
+    ...     return 0.5*up+0.5*lo, k**2/(4*k**2-1)*lo**2
+
+A fully defined distribution can be created as follows:
+
+.. code-block:: python
+
+    >>> distribution = chaospy.UserDistribution(
+    ...     cdf=cdf, ppf=ppf, lower=lower, upper=upper,
+    ...     mom=mom, ttr=ttr, parameters=dict(lo=-1, up=1))
+
+    >>> distribution.fwd(numpy.linspace(-2, 2, 7)).round(4)
+    array([0.    , 0.    , 0.1667, 0.5   , 0.8333, 1.    , 1.    ])
+    >>> distribution.pdf(numpy.linspace(-2, 2, 7)).round(4)
+    array([0. , 0. , 0.5, 0.5, 0.5, 0. , 0. ])
+    >>> distribution.inv(numpy.linspace(0, 1, 7)).round(4)
+    array([-1.    , -0.6667, -0.3333,  0.    ,  0.3333,  0.6667,  1.    ])
+    >>> distribution.lower, distribution.upper
+    (array([-1.]), array([1.]))
+    >>> distribution.mom([1, 2, 3])
+    array([0.        , 0.33333333, 0.        ])
+    >>> distribution.ttr([0, 1, 2])
+    array([[ 0.        ,  0.        ,  0.        ],
+           [-0.        ,  0.33333333,  0.26666667]])

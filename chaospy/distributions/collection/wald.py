@@ -35,16 +35,14 @@ class wald(SimpleDistribution):
         return 0.
 
     def _upper(self, mu):
-        qloc = numpy.repeat(1-1e-12, mu.size)
-        out = chaospy.approximate_inverse(
-            distribution=self,
-            idx=0,
-            qloc=qloc,
-            parameters=dict(mu=mu),
-            bounds=(0., 60+numpy.e**(1./(mu+0.1))),
-            tolerance=1e-15,
-        )
-        return out
+        xloc = numpy.full_like(mu, 5.)
+        indices = 1-self._cdf(xloc, mu) > 1e-15
+        while numpy.any(indices):
+            idx1 = 1-self._cdf(xloc+indices*5., mu) > 1e-15
+            idx2 = 1-self._cdf(xloc+indices*25., mu) > 1e-15
+            xloc[indices] += numpy.where(idx2[indices], 25., 5.)
+            indices[idx1 & ~idx2] = False
+        return xloc
 
 
 class Wald(ShiftScaleDistribution):
@@ -70,13 +68,13 @@ class Wald(ShiftScaleDistribution):
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
         >>> xloc.round(3)
-        array([ 0.   ,  1.416,  2.099,  2.94 ,  4.287, 54.701])
+        array([ 0.   ,  1.416,  2.099,  2.94 ,  4.287, 60.   ])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)
         array([0.   , 0.297, 0.275, 0.2  , 0.105, 0.   ])
         >>> distribution.sample(4).round(3)
-        array([2.804, 2.114, 3.364, 1.637])
+        array([3.246, 3.984, 2.721, 5.34 ])
 
     """
 

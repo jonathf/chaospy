@@ -45,13 +45,13 @@ jobs:
   test:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.8.3
+      PYTHON_VERSION: 3.9.0
     steps:
       - checkout
       - restore_cache:
           keys:
-            - deps-py38-{{ checksum "poetry.lock" }}
-            - deps-py38-
+            - deps-py39-{{ checksum "poetry.lock" }}
+            - deps-py39-
       - run:
           name: "Installation"
           command: |
@@ -63,7 +63,7 @@ jobs:
             source /home/circleci/venv/bin/activate
             poetry install
       - save_cache:
-          key: deps-py38-{{ checksum "poetry.lock" }}
+          key: deps-py39-{{ checksum "poetry.lock" }}
           paths:
             - /home/circleci/venv
       - run:
@@ -81,7 +81,7 @@ jobs:
   deploy:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.8.3
+      PYTHON_VERSION: 3.9.0
     steps:
       - checkout
       - run:
@@ -94,7 +94,7 @@ jobs:
               test "$CIRCLE_TAG" = "v$PROJECT_TAG"
       - restore_cache:
           keys:
-            - deps-py38-{{ checksum "poetry.lock" }}
+            - deps-py39-{{ checksum "poetry.lock" }}
       - run:
           name: "Publish to PyPI"
           command: |
