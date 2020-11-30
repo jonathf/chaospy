@@ -46,23 +46,15 @@ class MeanCovarianceDistribution(Distribution):
 
         if not isinstance(mean, Distribution):
             assert mean.ndim == 1, "Parameter 'mean' have too many dimensions"
-            assert len(mean) == length
-        assert len(mean) in (1, length)
+        assert len(mean) == length
 
         exclusion = dist._exclusion.copy()
         if len(dist) == 1 and length > 1:
             dist = chaospy.Iid(dist, length)
 
         covariance = numpy.asarray(covariance)
-        assert covariance.ndim <= 2, (
-            "Covariance must either be scalar, vector or matrix")
-        if covariance.ndim == 0:
-            covariance = numpy.eye(length)*covariance
-        elif covariance.ndim == 1:
-            covariance = numpy.diag(covariance)
         assert covariance.shape == (length, length), (
             "Parameters 'mean' and 'covariance' have shape mismatch.")
-        assert len(covariance) == length
 
         if rotation is not None:
             rotation = list(rotation)
@@ -77,12 +69,8 @@ class MeanCovarianceDistribution(Distribution):
             dependencies[idx] = accumulant.copy()
 
         if isinstance(mean, Distribution):
-            if len(mean) == 1:
-                for dependency in dependencies:
-                    dependency.update(mean._dependencies[0])
-            else:
-                for dep1, dep2 in zip(dependencies, mean._dependencies):
-                    dep1.update(dep2)
+            for dep1, dep2 in zip(dependencies, mean._dependencies):
+                dep1.update(dep2)
 
         self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
         self._covariance = covariance
@@ -187,12 +175,3 @@ class MeanCovarianceDistribution(Distribution):
         out = sum(self._dist.mom(key)*coeff
                   for key, coeff in zip(poly.exponents, poly.coefficients))
         return out
-
-    def _ttr(self, kloc, idx, mean, sigma, dim, mut, cache):
-        if dim > 1:
-            raise chaospy.StochasticallyDependentError(
-                "TTR require stochastically independent components.")
-        coeff0, coeff1 = self._dist._get_ttr(kloc, idx)
-        coeff0 = coeff0*sigma+mean[dim]
-        coeff1 = coeff1*sigma*sigma
-        return coeff0, coeff1

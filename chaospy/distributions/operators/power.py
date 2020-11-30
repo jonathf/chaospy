@@ -43,12 +43,12 @@ class Power(OperatorDistribution):
         right = self._parameters["right"]
 
         if isinstance(left, Distribution):
-            left_upper = left._get_upper(idx, cache=self._upper_cache)
-            left_lower = left._get_lower(idx, cache=self._lower_cache)
+            left_upper = left._get_upper(idx, cache=self._upper_cache).astype(float)
+            left_lower = left._get_lower(idx, cache=self._lower_cache).astype(float)
 
             if isinstance(right, Distribution):
-                right_upper = right._get_upper(idx, cache=self._upper_cache)
-                right_lower = right._get_lower(idx, cache=self._lower_cache)
+                right_upper = right._get_upper(idx, cache=self._upper_cache).astype(float)
+                right_lower = right._get_lower(idx, cache=self._lower_cache).astype(float)
 
                 out = numpy.min(numpy.broadcast_arrays(
                     left_lower.T**right_lower.T,
@@ -64,8 +64,8 @@ class Power(OperatorDistribution):
 
         else:
             assert isinstance(right, Distribution)
-            right_upper = right._get_upper(idx, cache=self._upper_cache)
-            right_lower = right._get_lower(idx, cache=self._lower_cache)
+            right_upper = right._get_upper(idx, cache=self._upper_cache).astype(float)
+            right_lower = right._get_lower(idx, cache=self._lower_cache).astype(float)
             out = numpy.min([left[idx]**right_lower,
                              left[idx]**right_upper], axis=0).T
 
@@ -91,12 +91,12 @@ class Power(OperatorDistribution):
         left = self._parameters["left"]
         right = self._parameters["right"]
         if isinstance(left, Distribution):
-            left_lower = left._get_lower(idx, cache=self._lower_cache)
-            left_upper = left._get_upper(idx, cache=self._upper_cache)
+            left_lower = left._get_lower(idx, cache=self._lower_cache).astype(float)
+            left_upper = left._get_upper(idx, cache=self._upper_cache).astype(float)
 
             if isinstance(right, Distribution):
-                right_lower = right._get_lower(idx, cache=self._lower_cache)
-                right_upper = right._get_upper(idx, cache=self._upper_cache)
+                right_lower = right._get_lower(idx, cache=self._lower_cache).astype(float)
+                right_upper = right._get_upper(idx, cache=self._upper_cache).astype(float)
 
                 out = numpy.max(numpy.broadcast_arrays(
                     (left_lower.T**right_lower.T).T,
@@ -111,8 +111,8 @@ class Power(OperatorDistribution):
 
         else:
             assert isinstance(right, Distribution)
-            right_lower = right._get_lower(idx, cache=self._lower_cache)
-            right_upper = right._get_upper(idx, cache=self._upper_cache)
+            right_lower = right._get_lower(idx, cache=self._lower_cache).astype(float)
+            right_upper = right._get_upper(idx, cache=self._upper_cache).astype(float)
             out = numpy.max([left[idx]**right_lower,
                              left[idx]**right_upper], axis=0)
 

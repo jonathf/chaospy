@@ -122,6 +122,7 @@ def discretized_stieltjes(
 
     if rule is None:
         rule = "discrete" if dist.interpret_as_integer else "clenshaw_curtis"
+    order = int(order)
     order_ = (2*order-1.)/scaling
     beta = beta_old = numpy.nan
     var = numpoly.variable()
@@ -129,7 +130,7 @@ def discretized_stieltjes(
     norms = numpy.ones(order+2)
     coeffs = numpy.ones((2, order+1))
 
-    while not numpy.all(numpy.abs(coeffs[1]-beta_old) < tolerance):
+    while not numpy.all(numpy.abs(coeffs[1]-beta_old) < tolerance/2):
 
         beta_old = coeffs[1].copy()
         order_ = max(order_*scaling, order_+1)

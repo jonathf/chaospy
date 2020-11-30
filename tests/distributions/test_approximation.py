@@ -35,3 +35,14 @@ def test_approximate_moment(monkeypatch):
     with raises(chaospy.UnsupportedFeature):
         DIST.mom([1, 2, 3, 4], allow_approx=False)
     assert numpy.allclose(DIST.mom([1, 2, 3, 4], allow_approx=True), ref_moments)
+
+
+def test_three_terms_recurrence(monkeypatch):
+    ref_coefs = DIST.ttr(4)
+    monkeypatch.setattr(DIST, "_ttr",
+                        lambda k, **_: chaospy.Distribution._ttr(DIST, k))
+    monkeypatch.delitem(DIST._ttr_cache, (0, 4))  # value is cached
+    with raises(chaospy.UnsupportedFeature):
+        DIST.ttr(4)
+    coefs, _, _ = chaospy.discretized_stieltjes(4, DIST)
+    assert numpy.allclose(coefs[:, 0, -1], ref_coefs, rtol=1e-4)

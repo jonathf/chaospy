@@ -55,17 +55,19 @@ class LowerUpperDistribution(Distribution):
         parameters = super(LowerUpperDistribution, self).get_parameters(
             idx, cache, assert_numerical=assert_numerical)
         lower = parameters["lower"]
+        upper = parameters["upper"]
+
         if isinstance(lower, Distribution):
             lower = lower._get_cache(idx, cache, get=0)
-        if idx is not None and len(lower) > 1:
-            lower = lower[idx]
-        upper = parameters["upper"]
         if isinstance(upper, Distribution):
             upper = upper._get_cache(idx, cache, get=0)
-        if idx is not None and len(upper) > 1:
+        assert (not isinstance(lower, Distribution) and
+                not isinstance(upper, Distribution))
+
+        if len(lower) > 1:
+            lower = lower[idx]
+        if len(upper) > 1:
             upper = upper[idx]
-        assert not assert_numerical or not (isinstance(lower, Distribution) or
-                                            isinstance(upper, Distribution))
         assert numpy.all(upper.ravel() > lower.ravel()), (
             "condition not satisfied: `upper > lower`")
         lower0 = self._dist._get_lower(idx, cache.copy())
@@ -75,12 +77,6 @@ class LowerUpperDistribution(Distribution):
         parameters = self._dist.get_parameters(idx, cache, assert_numerical=assert_numerical)
         return dict(dist=self._dist, scale=scale, shift=shift, parameters=parameters)
 
-    def _lower(self, dist, scale, shift, parameters):
-        return dist._lower(**parameters)*scale+shift
-
-    def _upper(self, dist, scale, shift, parameters):
-        return dist._upper(**parameters)*scale+shift
-
     def _ppf(self, qloc, dist, scale, shift, parameters):
         return dist._ppf(qloc, **parameters)*scale+shift
 
@@ -89,6 +85,32 @@ class LowerUpperDistribution(Distribution):
 
     def _pdf(self, xloc, dist, scale, shift, parameters):
         return dist._pdf((xloc-shift)/scale, **parameters)/scale
+
+    def get_lower_parameters(self, idx, cache):
+        parameters = super(LowerUpperDistribution, self).get_parameters(
+            idx, cache, assert_numerical=False)
+        lower = parameters["lower"]
+        if isinstance(lower, Distribution):
+            lower = lower._get_cache(idx, cache, get=0)
+        if isinstance(lower, Distribution):
+            lower = lower._get_lower(idx, cache)
+        return dict(lower=lower)
+
+    def _lower(self, lower):
+        return lower
+
+    def get_upper_parameters(self, idx, cache):
+        parameters = super(LowerUpperDistribution, self).get_parameters(
+            idx, cache, assert_numerical=False)
+        upper = parameters["upper"]
+        if isinstance(upper, Distribution):
+            upper = upper._get_cache(idx, cache, get=0)
+        if isinstance(upper, Distribution):
+            upper = upper._get_upper(idx, cache)
+        return dict(upper=upper)
+
+    def _upper(self, upper):
+        return upper
 
     def _mom(self, kloc, dist, scale, shift, parameters):
         del parameters

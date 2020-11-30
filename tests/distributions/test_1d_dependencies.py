@@ -26,6 +26,10 @@ def test_1d_dependent_bounds():
     assert numpy.allclose(JOINT2.lower, [0, 1])
     assert numpy.allclose(JOINT2.upper, [35.84367486, 2])
 
+    dist = chaospy.Uniform(DIST1, DIST1+2)
+    assert dist.lower == 1
+    assert dist.upper == 4
+
 
 def test_1d_dependent_mapping():
     """Ensure inverse and forward behaves as expected for dependent 1-D distributions."""

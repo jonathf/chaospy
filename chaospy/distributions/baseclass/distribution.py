@@ -431,8 +431,7 @@ class Distribution(object):
         """In-process function for getting pdf-values."""
         logger = logging.getLogger(__name__)
         assert x_data.ndim == 1
-        if (idx, self) in cache:
-            return cache[idx, self][1]
+        assert (idx, self) not in cache, "repeated evals"
         lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
         upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
         parameters = self.get_parameters(idx, cache, assert_numerical=True)
@@ -449,8 +448,6 @@ class Distribution(object):
             logger.debug("%s[%s]: %s - %s - %s", self, idx, lower, x_data, upper)
             out = numpy.where(indices, 0, ret_val)
 
-        if self in cache:
-            out = numpy.where(x_data == cache[self][0], out, 0)
         cache[idx, self] = (x_data, out)
         assert out.ndim == 1, (self, out, cache)
         return out
