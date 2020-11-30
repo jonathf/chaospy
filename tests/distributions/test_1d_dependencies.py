@@ -17,6 +17,16 @@ def test_1d_stochastic_dependencies():
     assert JOINT2.stochastic_dependent
 
 
+def test_1d_dependent_bounds():
+    """Ensure lower and upper bounds works for dependent 1-D distributions."""
+    assert numpy.isclose(DIST2.lower, 0)
+    assert numpy.isclose(DIST2.upper, 35.84367486)
+    assert numpy.allclose(JOINT1.lower, [1, 0])
+    assert numpy.allclose(JOINT1.upper, [2, 35.84367486])
+    assert numpy.allclose(JOINT2.lower, [0, 1])
+    assert numpy.allclose(JOINT2.upper, [35.84367486, 2])
+
+
 def test_1d_dependent_mapping():
     """Ensure inverse and forward behaves as expected for dependent 1-D distributions."""
     grid = numpy.array([[0, 0, 1, 1], [0, 1, 0, 1]])
@@ -30,6 +40,9 @@ def test_1d_dependent_mapping():
 
 def test_1d_dependent_moment():
     """Ensure raw statistical moments behaves as expected for dependent 1-D distributions."""
+    assert DIST1.mom(1) == 1.5
+    with raises(chaospy.StochasticallyDependentError):
+        DIST2.mom(1)
     with raises(chaospy.UnsupportedFeature):
         JOINT1.mom((1, 1), allow_approx=False)
     with raises(chaospy.UnsupportedFeature):
