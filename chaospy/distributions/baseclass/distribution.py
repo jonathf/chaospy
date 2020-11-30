@@ -571,7 +571,7 @@ class Distribution(object):
         K = K.reshape(dim, size)
         try:
             out = [self._get_mom(kdata) for kdata in K.T]
-            logger.debug("%s: PDF calculated successfully", str(self))
+            logger.debug("%s: moment calculated successfully", str(self))
         except chaospy.UnsupportedFeature:
             if allow_approx:
                 logger.info(
@@ -579,7 +579,7 @@ class Distribution(object):
                     "Approximating moments with quadrature.", str(self))
                 out = [chaospy.approximate_moment(self, kdata) for kdata in K.T]
             else:
-                raise
+                out = [self._get_mom(kdata) for kdata in K.T]
         out = numpy.array(out)
         assert out.size == numpy.prod(shape), (out, shape)
         return out.reshape(shape)
@@ -641,7 +641,7 @@ class Distribution(object):
         self._ttr_cache[idx, kdata] = (alpha, beta)
         return alpha, beta
 
-    def _mom(self, kloc, **kwargs):
+    def _ttr(self, kloc, **kwargs):
         raise chaospy.UnsupportedFeature(
             "three terms recursion not supported for this distribution")
 
