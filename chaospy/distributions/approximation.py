@@ -75,6 +75,8 @@ def approximate_inverse(
     else:
         xlower = numpy.broadcast_to(bounds[0], qloc.shape)
         xupper = numpy.broadcast_to(bounds[1], qloc.shape)
+        _lower, distribution._lower = distribution._lower, lambda **kws: xlower
+        _upper, distribution._upper = distribution._upper, lambda **kws: xupper
 
     xloc = xlower+qloc*(xlower+xupper) if xloc0 is None else xloc0
     uloc = numpy.zeros(qloc.shape)
@@ -141,6 +143,9 @@ def approximate_inverse(
     cache.update(cache_copy)
     distribution._parameters.clear()
     distribution._parameters.update(parameters_copy)
+    if bounds is not None:
+        distribution._lower = _lower
+        distribution._upper = _upper
     logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
     # print("%s: ppf approx used %d steps" % (distribution, idx_/2))
     return xloc

@@ -24,15 +24,15 @@ class generalized_exponential(SimpleDistribution):
         return 0.
 
     def _upper(self, a, b, c):
-        a, b, c = numpy.broadcast_arrays(a, b, c)
-        xloc = numpy.full_like(a, 10., dtype=float)
-        indices = 1-self._cdf(xloc, a, b, c) > 1e-10
-        while numpy.any(indices):
-            idx1 = 1-self._cdf(xloc+indices*10., a, b, c) > 1e-10
-            idx2 = 1-self._cdf(xloc+indices*100., a, b, c) > 1e-10
-            xloc[indices] += numpy.where(idx2[indices], 100., 10.)
-            indices[idx1 & ~idx2] = False
-        return xloc
+        qloc, a, b, c = numpy.broadcast_arrays(1-1e-12, a, b, c)
+        return chaospy.approximate_inverse(
+            distribution=self,
+            idx=0,
+            qloc=qloc,
+            parameters=dict(a=a, b=b, c=c),
+            bounds=(0., 500./a/b/c),
+            tolerance=1e-15,
+        )
 
 
 class GeneralizedExponential(ShiftScaleDistribution):
@@ -67,13 +67,13 @@ class GeneralizedExponential(ShiftScaleDistribution):
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
         >>> xloc.round(3)
-        array([ 0.   ,  0.063,  0.127,  0.204,  0.321, 10.   ])
+        array([0.   , 0.063, 0.127, 0.204, 0.321, 4.062])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)
         array([3.   , 3.26 , 2.925, 2.223, 1.24 , 0.   ])
         >>> distribution.sample(4).round(3)
-        array([0.436, 0.003, 0.024, 0.076])
+        array([0.08 , 0.316, 0.318, 0.003])
 
     """
 

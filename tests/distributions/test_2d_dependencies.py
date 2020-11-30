@@ -33,15 +33,15 @@ def test_2d_dependencies():
     assert numpy.allclose(JOINT2.inv(grid2), inv_map2)
 
 
-# def test_2d_dependent_moment():
-#     """Ensure raw statistical moments behaves as expected for dependent 1-D distributions."""
-#     with raises(chaospy.UnsupportedFeature):
-#         JOINT1.mom((1, 1, 1, 1), allow_approx=False)
-#     with raises(chaospy.UnsupportedFeature):
-#         JOINT2.mom((1, 1, 1, 1), allow_approx=False)
+def test_2d_dependent_moment():
+    """Ensure raw statistical moments behaves as expected for dependent 1-D distributions."""
+    with raises(chaospy.UnsupportedFeature):
+        JOINT1.mom((1, 1, 1, 1), allow_approx=False)
+    with raises(chaospy.UnsupportedFeature):
+        JOINT2.mom((1, 1, 1, 1), allow_approx=False)
 
-#     assert numpy.isclose(JOINT1.mom((1, 1, 1, 1), allow_approx=True), 22, rtol=1e-1)
-#     assert numpy.isclose(JOINT2.mom((1, 1, 1, 1), allow_approx=True), 22, rtol=1e-1)
+    assert numpy.isclose(JOINT1.mom((1, 1, 1, 1), allow_approx=True), 22, rtol=1e-1)
+    assert numpy.isclose(JOINT2.mom((1, 1, 1, 1), allow_approx=True), 22, rtol=1e-1)
 
 
 def test_2d_dependent_density():
