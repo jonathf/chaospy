@@ -1,21 +1,5 @@
 """
-Gauss-Kronrod quadrature is an adaptive method for Gaussian quadrature rule. It
-builds on top of other quadrature rules by extending "pure" Gaussian quadrature
-rules with extra abscissas and new weights such that already used abscissas can
-be reused. For more details, see `Wikipedia article`_.
-
-For each order ``N`` taken with ordinary Gaussian quadrature, Gauss-Kronrod
-will create ``2N+1`` abscissas where all of the ``N`` "old" abscissas are all
-interlaced between the "new" ones.
-
-The algorithm is well suited for any Jacobi scheme, i.e. quadrature involving
-Uniform or Beta distribution, and might work on others as well. However, it
-will not work everywhere. For example `Kahaner and Monegato`_ showed that
-higher order Gauss-Kronrod quadrature for Gauss-Hermite and Gauss-Laguerre does
-not exist.
-
-.. _Wikipedia article: https://en.wikipedia.org/wiki/Gauss%E2%80%93Kronrod_quadrature_formula
-.. _Kahaner and Monegato: https://link.springer.com/article/10.1007/BF01590820
+Generate Gauss-Kronrod quadrature abscissas and weights.
 
 Example usage
 -------------
@@ -89,17 +73,6 @@ Multivariate support::
     array([0.006, 0.027, 0.035, 0.026, 0.004, 0.016, 0.067, 0.086, 0.065,
            0.011, 0.02 , 0.085, 0.11 , 0.083, 0.014, 0.016, 0.067, 0.086,
            0.065, 0.011, 0.006, 0.027, 0.035, 0.026, 0.004])
-
-Sources
--------
-
-Code is adapted from `quadpy`_, which adapted his code from `W. Gautschi`_.
-Algorithm for calculating Kronrod-Jacobi matrices was first published in paper
-by `D. P. Laurie`_.
-
-.. _quadpy: https://github.com/nschloe/quadpy
-.. _W. Gautschi: https://www.cs.purdue.edu/archives/2002/wxg/codes/OPQ.html
-.. _D. P. Laurie: https://doi.org/10.1090/S0025-5718-97-00861-2
 """
 from __future__ import division
 import math
@@ -120,7 +93,25 @@ def quad_gauss_kronrod(
         n_max=5000,
 ):
     """
-    Generate the abscissas and weights in Gauss-Kronrod quadrature.
+    Generate Gauss-Kronrod quadrature abscissas and weights.
+
+    Gauss-Kronrod quadrature is an adaptive method for Gaussian quadrature
+    rule. It builds on top of other quadrature rules by extending "pure"
+    Gaussian quadrature rules with extra abscissas and new weights such that
+    already used abscissas can be reused. For more details, see `Wikipedia
+    article
+    <https://en.wikipedia.org/wiki/Gauss%E2%80%93Kronrod_quadrature_formula>`_.
+
+    For each order ``N`` taken with ordinary Gaussian quadrature, Gauss-Kronrod
+    will create ``2N+1`` abscissas where all of the ``N`` "old" abscissas are
+    all interlaced between the "new" ones.
+
+    The algorithm is well suited for any Jacobi scheme, i.e. quadrature
+    involving Uniform or Beta distribution, and might work on others as well.
+    However, it will not work everywhere. For example `Kahaner and Monegato
+    <https://link.springer.com/article/10.1007/BF01590820>`_ showed that higher
+    order Gauss-Kronrod quadrature for Gauss-Hermite and Gauss-Laguerre does
+    not exist.
 
     Args:
         order (int):
@@ -157,6 +148,13 @@ def quad_gauss_kronrod(
         ValueError:
             Error raised if Kronrod algorithm results in negative recurrence
             coefficients.
+
+    Notes:
+        Code is adapted from `quadpy <https://github.com/nschloe/quadpy>`_,
+        which adapted his code from `W. Gautschi
+        <https://www.cs.purdue.edu/archives/2002/wxg/codes/OPQ.html>`_.
+        Algorithm for calculating Kronrod-Jacobi matrices was first published
+        Algorithm as proposed by Laurie :cite:`laurie_calculation_1997`.
 
     Example:
         >>> distribution = chaospy.Uniform(-1, 1)

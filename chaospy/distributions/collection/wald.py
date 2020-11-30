@@ -22,7 +22,7 @@ class wald(SimpleDistribution):
     def _cdf(self, x, mu):
         trm1 = 1./mu-x
         trm2 = 1./mu+x
-        isqx = numpy.tile(numpy.inf, x.shape)
+        isqx = numpy.full_like(x, numpy.inf)
         indices = x > 0
         isqx[indices] = 1./numpy.sqrt(x[indices])
         out = 1.-special.ndtr(isqx*trm1)
@@ -76,7 +76,7 @@ class Wald(ShiftScaleDistribution):
         >>> distribution.pdf(xloc).round(3)
         array([0.   , 0.297, 0.275, 0.2  , 0.105, 0.   ])
         >>> distribution.sample(4).round(3)
-        array([0.653, 1.904, 1.698, 1.161])
+        array([0.61 , 1.401, 1.274, 2.115])
 
     """
 

@@ -37,6 +37,7 @@ def check_dependencies(distribution):
             ...
         chaospy.StochasticallyDependentError: \
 Normal(mu=Uniform(), sigma=1) has dangling dependencies
+
     """
     current = set()
     for idx in distribution._rotation:
@@ -90,6 +91,7 @@ def declare_dependencies(
         is_operator=False,
         dependency_type="iid",
         length=None,
+        extra_parameters=None,
 ):
     """
     Convenience function for declaring distribution dependencies.
@@ -103,20 +105,40 @@ def declare_dependencies(
         parameters (Dict[str, Any]):
             The distribution parameters that should be included in the
             declaration.
+        rotation (Optional[Sequence[int]]):
+            The order of which the dependencies should be resolved.
+            Automatically calculated if omitted.
         is_operator (bool):
             Operators do not themselves contain uncertainty, but only inherits
             from parameters and/or wrapped distribution.
         wrapper_dist (Optional[chaospy.Distribution]):
             Distributions that are thin-wrappers to some other distribution
             should inherent dependencies.
+        extra_parameters(Optional[Dict[str, Any]]):
+            Extra parameters that should be included in the declaration, but
+            not considered a direct part of the distribution. Assumed to be
+            pre-processed.
+
+    Returns:
+        dependencies (List[Set[int]]):
+            Dependency reference numbers, one collection per dimension. Single
+            element implies stochstically independent.
+        parameters (Dict[str, Any]):
+            Same as `parameters`, but updated to all conform to the same size.
+        rotation (List[int]):
+            Same as `rotation` if provided. If not, the automatically
+            calculated one is returned.
+
     """
+    extra_parameters = extra_parameters.copy() if extra_parameters else {}
     parameters = parameters.copy()
     for name, parameter in list(parameters.items()):
         if not isinstance(parameter, chaospy.Distribution):
             parameters[name] = numpy.atleast_1d(parameter)
     if length is None:
         if rotation is None:
-            length = max([len(parameter) for parameter in parameters.values()]+[1])
+            length = max([len(parameter) for parameter in extra_parameters.values()]+
+                         [len(parameter) for parameter in parameters.values()]+[1])
         else:
             length = len(rotation)
     if rotation is None:
@@ -134,10 +156,13 @@ def declare_dependencies(
             if len(parameter) != length:
                 raise chaospy.StochasticallyDependentError(
                     "dependencies must be same length as parent")
-            for dep1, dep2 in zip(dependencies, parameter._dependencies):
-                dep1.update(dep2)
         else:
             parameters[name] = parameter*numpy.ones(length, dtype=int)
+    for name, parameter in list(parameters.items())+list(extra_parameters.items()):
+        if isinstance(parameter, chaospy.Distribution):
+            for dep1, dep2 in zip(dependencies, parameter._dependencies):
+                dep1.update(dep2)
+    assert len(dependencies) == length
     return dependencies, parameters, rotation
 
 
@@ -151,15 +176,41 @@ def init_dependencies(
     """
     Declare stochastic dependency to an underlying random variable.
 
+    To be used inside distribution initializers ``__init__`` to map out the
+    dependency structure.
+
     Args:
         distribution (chaospy.Distribution):
             Distribution to declare dependency for.
-        count (int):
-            The number of variables to declare.
+        rotation (Sequence[int]):
+            The order of which the dependencies should be resolved.
+        dependency_type (str):
+            The type of dependency structure to create. Choose from "iid"
+            (independent) and "accumulate" (saturated dependencies).
 
     Returns:
         (List[Set[int]]):
             Unique integer identifiers that represents dependencies.
+
+    Examples:
+        >>> from chaospy.distributions.baseclass.utils import DISTRIBUTION_IDENTIFIERS
+        >>> DISTRIBUTION_IDENTIFIERS.clear()
+        >>> core = chaospy.Normal()
+        >>> core._dependencies
+        [{0}]
+        >>> DISTRIBUTION_IDENTIFIERS
+        {0: normal()}
+        >>> distribution = chaospy.Iid(core, 2)
+        >>> distribution._dependencies
+        [{1}, {2}]
+        >>> chaospy.init_dependencies(distribution, [0, 1])
+        [{3}, {4}]
+        >>> chaospy.init_dependencies(distribution, [0, 1], "accumulate")
+        [{5}, {5, 6}]
+        >>> chaospy.init_dependencies(distribution, [1, 0])
+        [{8}, {7}]
+        >>> DISTRIBUTION_IDENTIFIERS[8]
+        Iid(Normal(mu=0, sigma=1), 2)
 
     """
     rotation = numpy.asarray(rotation)
@@ -186,6 +237,28 @@ def init_dependencies(
 def format_repr_kwargs(**parameters):
     """
     Format arguments for REPR output.
+
+    Remove arguments if value are the same as their defaults. But only if that
+    applies to all arguments.
+
+    Args:
+        parameters (Tuple[Any, numpy.number]):
+            Parameters to format. First value is the parameters and the second
+            is the parameters default. Using None for the default means no
+            default.
+
+    Returns:
+        (List[str]):
+            Positional argument to be used for REPR output.
+
+    Examples:
+        >>> chaospy.format_repr_kwargs(a=(4, 3), b=(chaospy.Uniform(), 4))
+        ['a=4', 'b=Uniform()']
+        >>> chaospy.format_repr_kwargs(a=(4, 3), b=(4, 4))
+        ['a=4', 'b=4']
+        >>> chaospy.format_repr_kwargs(a=(3, 3), b=(4, 4))
+        []
+
     """
     out = []
 

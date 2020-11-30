@@ -126,7 +126,10 @@ class Distribution(object):
         """In-processes function for getting lower bounds."""
         if (idx, self) in cache:
             return cache[idx, self][0]
-        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        if hasattr(self, "get_lower_parameters"):
+            parameters = self.get_lower_parameters(idx, cache)
+        else:
+            parameters = self.get_parameters(idx, cache, assert_numerical=False)
         out = self._lower(**parameters)
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
@@ -151,7 +154,10 @@ class Distribution(object):
         """In-processes function for getting upper bounds."""
         if (idx, self) in cache:
             return cache[idx, self][0]
-        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        if hasattr(self, "get_upper_parameters"):
+            parameters = self.get_upper_parameters(idx, cache)
+        else:
+            parameters = self.get_parameters(idx, cache, assert_numerical=False)
         out = self._upper(**parameters)
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
@@ -335,7 +341,7 @@ class Distribution(object):
         raise chaospy.UnsupportedFeature(
             "%s: does not support analytical ppf." % self)
 
-    def pdf(self, x_data, decompose=False):
+    def pdf(self, x_data, decompose=False, allow_approx=True, step_size=1e-7):
         """
         Probability density function.
 
@@ -352,6 +358,18 @@ class Distribution(object):
             decompose (bool):
                 Decompose multivariate probability density `p(x), p(y|x), ...`
                 instead of multiplying them together into `p(x, y, ...)`.
+            allow_approx (bool):
+                Allow the density to be estimated using numerical derivative of
+                forward mapping if analytical approach fails. Raises error
+                instead if false.
+            step_size (float):
+                The relative step size between two points used to calculate the
+                derivative, assuming approximation is being used.
+
+        Raises:
+            chaospy.UnsupportedFeature:
+                If analytical calculation is not possible and `allow_approx` is
+                false.
 
         Returns:
             (numpy.ndarray):
@@ -389,7 +407,20 @@ class Distribution(object):
         f_data = numpy.zeros(x_data.shape)
         cache = {}
         for idx in self._rotation:
-            f_data[idx] = self._get_pdf(x_data[idx], idx, cache)
+            try:
+                cache_ = cache.copy()
+                f_data[idx] = self._get_pdf(x_data[idx], idx, cache)
+            except chaospy.UnsupportedFeature:
+                if allow_approx:
+                    logger.info(
+                        "%s: has stochastic dependencies; "
+                        "Approximating density with numerical derivative.", str(self)
+                    )
+                    cache = cache_
+                    f_data[idx] = chaospy.approximate_density(
+                        self, idx, x_data[idx], cache=cache, step_size=step_size)
+                else:
+                    raise
 
         f_data = f_data.reshape(shape)
         if len(self) > 1 and not decompose:
@@ -405,10 +436,7 @@ class Distribution(object):
         lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
         upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
         parameters = self.get_parameters(idx, cache, assert_numerical=True)
-        try:
-            ret_val = self._pdf(x_data, **parameters)
-        except chaospy.UnsupportedFeature:
-            ret_val = chaospy.approximate_density(self, idx, x_data, cache)
+        ret_val = self._pdf(x_data, **parameters)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
 
         out = numpy.zeros(x_data.shape)
@@ -499,7 +527,7 @@ class Distribution(object):
         out = out.reshape(shape)
         return out
 
-    def mom(self, K, allow_approx=True, **kws):
+    def mom(self, K, allow_approx=True, **kwargs):
         """
         Raw statistical moments.
 
@@ -512,11 +540,17 @@ class Distribution(object):
                 Index of the raw moments. k.shape must be compatible with
                 distribution shape.  Sampling scheme when performing Monte
                 Carlo
-            rule (str):
-                rule for estimating the moment if the analytical method fails.
-            antithetic (numpy.ndarray):
-                List of bool. Represents the axes to mirror using antithetic
-                variable during MCI.
+            allow_approx (bool):
+                Allow the moments to be calculated using quadrature integration
+                if analytical approach fails. Raises error instead if false.
+            kwargs (Any):
+                Arguments passed to :func:`chaospy.approximate_moment` if
+                approximation is used.
+
+        Raises:
+            chaospy.UnsupportedFeature:
+                If analytical calculation is not possible and `allow_approx` is
+                false.
 
         Returns:
             (numpy.ndarray):
@@ -530,13 +564,14 @@ class Distribution(object):
         dim = len(self)
 
         if dim > 1:
+            assert len(self) == shape[0]
             shape = shape[1:]
 
         size = int(K.size/dim)
         K = K.reshape(dim, size)
         try:
             out = [self._get_mom(kdata) for kdata in K.T]
-            logger.debug("%s: PDF calculated successfully", str(self))
+            logger.debug("%s: moment calculated successfully", str(self))
         except chaospy.UnsupportedFeature:
             if allow_approx:
                 logger.info(
@@ -544,7 +579,7 @@ class Distribution(object):
                     "Approximating moments with quadrature.", str(self))
                 out = [chaospy.approximate_moment(self, kdata) for kdata in K.T]
             else:
-                raise
+                out = [self._get_mom(kdata) for kdata in K.T]
         out = numpy.array(out)
         assert out.size == numpy.prod(shape), (out, shape)
         return out.reshape(shape)
@@ -553,7 +588,10 @@ class Distribution(object):
         """In-process function for getting moments."""
         if tuple(kdata) in self._mom_cache:
             return self._mom_cache[tuple(kdata)]
-        parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
+        if hasattr(self, "get_mom_parameters"):
+            parameters = self.get_mom_parameters()
+        else:
+            parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
         assert "idx" not in parameters, (self, parameters)
         ret_val = float(self._mom(kdata, **parameters))
         assert not isinstance(ret_val, Distribution), (self, ret_val)
@@ -591,7 +629,10 @@ class Distribution(object):
         """In-process function for getting TTR-values."""
         if (idx, kdata) in self._ttr_cache:
             return self._ttr_cache[idx, kdata]
-        parameters = self.get_parameters(idx, cache={}, assert_numerical=True)
+        if hasattr(self, "get_ttr_parameters"):
+            parameters = self.get_ttr_parameters(idx)
+        else:
+            parameters = self.get_parameters(idx, cache={}, assert_numerical=True)
         alpha, beta = self._ttr(kdata, **parameters)
         assert not isinstance(alpha, Distribution), (self, alpha)
         assert not isinstance(beta, Distribution), (self, beta)
@@ -600,7 +641,7 @@ class Distribution(object):
         self._ttr_cache[idx, kdata] = (alpha, beta)
         return alpha, beta
 
-    def _mom(self, kloc, **kwargs):
+    def _ttr(self, kloc, **kwargs):
         raise chaospy.UnsupportedFeature(
             "three terms recursion not supported for this distribution")
 

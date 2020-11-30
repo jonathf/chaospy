@@ -1,11 +1,28 @@
 Master Branch
 =============
 
+ADDED:
+  * Lower level override `get_*_parameters` functions to differentiate between
+    density/fwd/inv, mom, ttr, and lower/upper.
+  * New `allow_approx` flag in `Distribution.pdf`.
+  * More docs and tests.
+  * Support for bibliography in docs.
+CHANGED:
+  * Updated Clenshaw-Curtis and Fejér algorithm which scales much better.
+  * More aggressive sample use in `approximate_moment` as bottleneck was the
+    quadrature (Clenshaw-Curtis and Fejér).
+  * Better support for density approximation. Allow for more contexts by
+    weaving a full density history.
+  * Bugfix: wrappers distribution no longer ignores wrapped distribution during
+    dependency declaration. Ignoring them have in some cases caused some
+    variables not to be declared correctly.
+
 Version 4.2.1 (2020-11-24)
 ==========================
 
 CHANGED:
   * Bugfix in rounding for discrete distributions.
+  * Bugfix in rule for when to round discrete variables.
 
 Version 4.2.0 (2020-11-23)
 ==========================

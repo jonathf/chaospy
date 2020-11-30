@@ -45,25 +45,25 @@ jobs:
   test:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.8.3
+      PYTHON_VERSION: 3.9.0
     steps:
       - checkout
       - restore_cache:
           keys:
-            - deps-py38-{{ checksum "poetry.lock" }}
-            - deps-py38-
+            - deps-py39-{{ checksum "poetry.lock" }}
+            - deps-py39-
       - run:
           name: "Installation"
           command: |
             sudo apt install pandoc
             if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
-              /home/circleci/venv/bin/pip install poetry==1.0.9
+              /home/circleci/venv/bin/pip install poetry==1.0.9 Cython
             fi
             source /home/circleci/venv/bin/activate
             poetry install
       - save_cache:
-          key: deps-py38-{{ checksum "poetry.lock" }}
+          key: deps-py39-{{ checksum "poetry.lock" }}
           paths:
             - /home/circleci/venv
       - run:
@@ -81,7 +81,7 @@ jobs:
   deploy:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.8.3
+      PYTHON_VERSION: 3.9.0
     steps:
       - checkout
       - run:
@@ -94,7 +94,7 @@ jobs:
               test "$CIRCLE_TAG" = "v$PROJECT_TAG"
       - restore_cache:
           keys:
-            - deps-py38-{{ checksum "poetry.lock" }}
+            - deps-py39-{{ checksum "poetry.lock" }}
       - run:
           name: "Publish to PyPI"
           command: |

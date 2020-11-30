@@ -1,22 +1,5 @@
 """
-The Gauss-Patterson quadrature is a nested family which begins with the
-Gauss-Legendre rules of orders 1 and 3, and then successively inserts one new
-abscissa in each subinterval. Thus, after the second rule, the Gauss-Patterson
-rules do not have the super-high precision of the Gauss-Legendre rules. They
-trade this precision in exchange for the advantages of nestedness. This means
-that Gauss-Patterson rules are only available for orders of 1, 3, 7, 15, 31,
-63, 127, 255 or 511.
-
-Sources
----------
-
-This code is an adapted of John Burkardt's implementation in Fortran. The
-algorithm is taken from "Handbook of Computational Methods for Integration" by
-P. Kythe and M. Schaeferkotter, and `The Optimal Addition of Points to
-Quadrature Formulae`_.
-
-.. _The Optimal Addition of Points to Quadrature Formulae: \
-    https://www.jstor.org/stable/2004583
+Generate Gauss-Patterson quadrature abscissa and weights.
 
 Example usage
 -------------
@@ -41,22 +24,35 @@ from .combine import combine
 
 def quad_gauss_patterson(order, domain):
     """
-    Generate sets abscissas and weights for Gauss-Patterson quadrature.
+    Generate Gauss-Patterson quadrature abscissa and weights.
+
+    The Gauss-Patterson quadrature is a nested family which begins with the
+    Gauss-Legendre rules of orders 1 and 3, and then successively inserts one
+    new abscissa in each subinterval. Thus, after the second rule, the
+    Gauss-Patterson rules do not have the super-high precision of the
+    Gauss-Legendre rules. They trade this precision in exchange for the
+    advantages of nestedness. This means that Gauss-Patterson rules are only
+    available for orders of 1, 3, 7, 15, 31, 63, 127, 255 or 511.
 
     Args:
         order (int):
             The quadrature order. Must be in the interval (0, 8).
-        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
+        domain (chaospy.Distribution, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray):
-            abscissas:
-                The quadrature points for where to evaluate the model function
-                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
-                number of samples.
-            weights:
-                The quadrature weights with ``weights.shape == (N,)``.
+        abscissas: (numpy.ndarray):
+            The quadrature points for where to evaluate the model function
+            with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+            number of samples.
+        weights: (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
+
+    Notes:
+        This code is an adapted of John Burkardt's implementation in Fortran.
+        The algorithm is taken from "Handbook of Computational Methods for
+        Integration":cite:`kythe_handbook_2004`, and "The Optimal Addition of
+        Points to Quadrature Formulae":cite:`patterson_optimum_1968`.
 
     Example:
         >>> abscissas, weights = chaospy.quad_gauss_patterson(
