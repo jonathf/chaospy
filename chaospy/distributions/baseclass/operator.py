@@ -35,27 +35,45 @@ class OperatorDistribution(Distribution):
         self._lower_cache = {}
         self._upper_cache = {}
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(OperatorDistribution, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
-        assert set(parameters) == {"cache", "left", "right", "idx"}
-
-        if isinstance(parameters["left"], Distribution):
-            parameters["left"] = parameters["left"]._get_cache(idx, cache=parameters["cache"], get=0)
-        elif len(parameters["left"]) > 1 and idx is not None:
-            parameters["left"] = parameters["left"][idx]
-        if isinstance(parameters["right"], Distribution):
-            parameters["right"] = parameters["right"]._get_cache(idx, cache=parameters["cache"], get=0)
-        elif len(parameters["right"]) > 1 and idx is not None:
-            parameters["right"] = parameters["right"][idx]
-
-        if assert_numerical:
-            assert (not isinstance(parameters["left"], Distribution) or
-                    not isinstance(parameters["right"], Distribution))
+    def _get_left_right(self, idx, cache):
         if cache is not self._cache_copy:
             self._cache_copy = cache
             self._lower_cache = {}
             self._upper_cache = {}
-        if idx is None:
-            del parameters["idx"]
-        return parameters
+        parameters = super(OperatorDistribution, self).get_parameters(idx, cache)
+        assert set(parameters) == {"cache", "left", "right", "idx"}
+
+        left = parameters["left"]
+        if isinstance(left, Distribution):
+            left = left._get_cache(idx, cache=cache, get=0)
+        elif len(left) > 1 and idx is not None:
+            left = left[idx]
+        right = parameters["right"]
+        if isinstance(right, Distribution):
+            right = right._get_cache(idx, cache=cache, get=0)
+        elif len(right) > 1 and idx is not None:
+            right = right[idx]
+        return left, right
+
+    def get_parameters(self, idx, cache):
+        left, right = self._get_left_right(idx, cache)
+        assert not isinstance(left, Distribution) or not isinstance(right, Distribution)
+        return dict(idx=idx, left=left, right=right, cache=cache)
+
+    def get_lower_parameters(self, idx, cache):
+        left, right = self._get_left_right(idx, cache)
+        return dict(idx=idx, left=left, right=right, cache=cache)
+
+    def get_upper_parameters(self, idx, cache):
+        left, right = self._get_left_right(idx, cache)
+        return dict(idx=idx, left=left, right=right, cache=cache)
+
+    def get_mom_parameters(self):
+        left, right = self._get_left_right(idx=None, cache={})
+        return dict(left=left, right=right)
+
+    def get_ttr_parameters(self, idx):
+        left, right = self._get_left_right(idx=idx, cache={})
+        assert not isinstance(left, Distribution) or not isinstance(right, Distribution)
+        left, right = self._get_left_right(idx=idx, cache={})
+        return dict(idx=idx, left=left, right=right)

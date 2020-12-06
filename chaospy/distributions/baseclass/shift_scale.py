@@ -63,64 +63,71 @@ class ShiftScaleDistribution(Distribution):
         permute[numpy.arange(len(self._rotation), dtype=int), self._rotation] = 1
         self._permute = permute
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-
+    def _get_shift_scale(self, idx, cache):
         shift = self._parameters["shift"]
         if isinstance(shift, Distribution):
             shift = shift._get_cache(idx, cache, get=0)
-        elif idx is not None and len(shift) > 1:
-            shift = shift[idx]
-
         scale = self._parameters["scale"]
         if isinstance(scale, Distribution):
             scale = scale._get_cache(idx, cache, get=0)
-        elif idx is not None and len(scale) > 1:
-            scale = scale[idx]
+        return shift, scale
+
+    def get_parameters(self, idx, cache):
+        shift, scale = self._get_shift_scale(idx, cache)
+        assert not isinstance(shift, Distribution) and not isinstance(scale, Distribution)
+        [shift], [scale] = shift, scale
         assert scale > 0, "condition not satisfied: `scale > 0`"
+        return dict(idx=idx, shift=shift, scale=scale, cache=cache)
 
-        assert not assert_numerical or not (isinstance(shift, Distribution) or
-                                            isinstance(scale, Distribution))
+    def _ppf(self, qloc, idx, shift, scale, cache):
+        return self._dist._get_inv(qloc, idx, cache=cache)*scale+shift
 
-        return dict(idx=idx, dist=self._dist, shift=shift, scale=scale, cache=cache)
+    def _cdf(self, xloc, idx, shift, scale, cache):
+        return self._dist._get_fwd((xloc-shift)/scale, idx, cache=cache)
 
-    def _ppf(self, qloc, idx, dist, shift, scale, cache):
-        return dist._get_inv(qloc, idx, cache=cache)*scale+shift
-
-    def _cdf(self, xloc, idx, dist, shift, scale, cache):
-        return dist._get_fwd((xloc-shift)/scale, idx, cache=cache)
-
-    def _pdf(self, xloc, idx, dist, shift, scale, cache):
-        return dist._get_pdf((xloc-shift)/scale, idx, cache=cache)/scale
+    def _pdf(self, xloc, idx, shift, scale, cache):
+        return self._dist._get_pdf((xloc-shift)/scale, idx, cache=cache)/scale
 
     def get_mom_parameters(self):
-        parameters = self.get_parameters(
-            idx=None, cache={}, assert_numerical=False)
-        del parameters["idx"]
-        del parameters["cache"]
-        return parameters
+        shift, scale = self._get_shift_scale(idx=None, cache={})
+        return dict(shift=shift, scale=scale)
 
-    def _mom(self, kloc, dist, shift, scale):
+    def _mom(self, kloc, shift, scale):
         poly = numpoly.variable(len(self))
         poly = numpoly.sum(scale*poly, axis=-1)+shift
         poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
-        out = sum([dist._get_mom(key)*coeff
+        out = sum([self._dist._get_mom(key)*coeff
                    for key, coeff in zip(poly.exponents, poly.coefficients)])
         return out
 
     def get_ttr_parameters(self, idx):
-        parameters = self.get_parameters(
-            idx=idx, cache={}, assert_numerical=False)
-        del parameters["cache"]
-        return parameters
+        shift, scale = self._get_shift_scale(idx, cache={})
+        return dict(idx=idx, shift=shift, scale=scale)
 
-    def _ttr(self, kloc, idx, dist, shift, scale):
-        coeff0, coeff1 = dist._get_ttr(kloc, idx)
+    def _ttr(self, kloc, idx, shift, scale):
+        coeff0, coeff1 = self._dist._get_ttr(kloc, idx)
         coeff0 = coeff0*scale+shift
         coeff1 = coeff1*scale*scale
         return coeff0, coeff1
 
-    def _lower(self, idx, dist, shift, scale, cache):
-        return dist._get_lower(idx, cache=cache)*scale+shift
+    def get_lower_parameters(self, idx, cache):
+        shift, scale = self._get_shift_scale(idx, cache)
+        if isinstance(shift, Distribution):
+            shift = shift._get_lower(idx, cache)
+        if isinstance(scale, Distribution):
+            scale = scale._get_upper(idx, cache)
+        return dict(idx=idx, shift=shift, scale=scale, cache=cache)
 
-    def _upper(self, idx, dist, shift, scale, cache):
-        return dist._get_upper(idx, cache=cache)*scale+shift
+    def _lower(self, idx, shift, scale, cache):
+        return self._dist._get_lower(idx, cache=cache)*scale+shift
+
+    def get_upper_parameters(self, idx, cache):
+        shift, scale = self._get_shift_scale(idx, cache)
+        if isinstance(shift, Distribution):
+            shift = shift._get_upper(idx, cache)
+        if isinstance(scale, Distribution):
+            scale = scale._get_upper(idx, cache)
+        return dict(idx=idx, shift=shift, scale=scale, cache=cache)
+
+    def _upper(self, idx, shift, scale, cache):
+        return self._dist._get_upper(idx, cache=cache)*scale+shift

@@ -60,10 +60,20 @@ class nataf(Distribution):
     def _pdf(self, xloc, idx, cache):
         raise chaospy.UnsupportedFeature("Copula not supported.")
 
-    def _lower(self, idx, cache):
+    def get_lower_parameters(self, idx, cache):
+        del idx
+        del cache
+        return dict()
+
+    def _lower(self):
         return 0.
 
-    def _upper(self, idx, cache):
+    def get_upper_parameters(self, idx, cache):
+        del idx
+        del cache
+        return dict()
+
+    def _upper(self):
         return 1.
 
 

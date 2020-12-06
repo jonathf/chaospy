@@ -77,20 +77,13 @@ class Archimedean(Distribution):
             repr_args=[length, "theta=%s" % theta],
         )
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(Archimedean, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+    def get_parameters(self, idx, cache):
+        parameters = super(Archimedean, self).get_parameters(idx, cache)
         theta = parameters["theta"]
 
         if idx is None:
             return dict(theta=theta, cache=cache)
         return dict(idx=idx, theta=theta, cache=cache)
-
-    def _lower(self, idx, theta, cache):
-        return 0.
-
-    def _upper(self, idx, theta, cache):
-        return 1.
 
     def _ppf(self, qloc, idx, theta, cache):
         raise chaospy.UnsupportedFeature("Copula not supported.")
@@ -122,6 +115,22 @@ class Archimedean(Distribution):
         out2 = self._copula(xloc2, theta, order=idx)
         out = numpy.where(out2, out1, 0)/numpy.where(out2, out2, 1)
         return out
+
+    def get_lower_parameters(self, idx, cache):
+        del idx
+        del cache
+        return dict()
+
+    def _lower(self):
+        return 0.
+
+    def get_upper_parameters(self, idx, cache):
+        del idx
+        del cache
+        return dict()
+
+    def _upper(self):
+        return 1.
 
     def _copula(self, x_loc, theta, order=0):
         assert isinstance(x_loc, numpy.ndarray)

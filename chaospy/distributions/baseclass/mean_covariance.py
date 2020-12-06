@@ -88,10 +88,8 @@ class MeanCovarianceDistribution(Distribution):
             repr_args=repr_args,
         )
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(MeanCovarianceDistribution, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
-
+    def get_parameters(self, idx, cache):
+        parameters = super(MeanCovarianceDistribution, self).get_parameters(idx, cache)
         mean = parameters["mean"]
         if idx is None:
             return dict(mean=mean, sigma=self._covariance, cache=cache)
@@ -120,14 +118,6 @@ class MeanCovarianceDistribution(Distribution):
             mu_transform = 0
 
         return dict(idx=idx, mean=mean, sigma=sigma, dim=dim, mut=mu_transform, cache=cache)
-
-    def _lower(self, idx, mean, sigma, dim, mut, cache):
-        out = mean[dim]+sigma*self._dist._get_lower(idx, cache)
-        return out
-
-    def _upper(self, idx, mean, sigma, dim, mut, cache):
-        out = mean[dim]+sigma*self._dist._get_upper(idx, cache)
-        return out
 
     def _pdf(self, xloc, idx, mean, sigma, dim, mut, cache):
         if dim:
@@ -165,6 +155,21 @@ class MeanCovarianceDistribution(Distribution):
         zloc = self._fwd_transform[idx, :len(xloc)].dot((xloc.T-mean[:len(xloc)]).T)
         uloc = self._dist._get_fwd(zloc, idx, cache)
         return uloc
+
+    get_lower_parameters = get_parameters
+
+    def _lower(self, idx, mean, sigma, dim, mut, cache):
+        out = mean[dim]+sigma*self._dist._get_lower(idx, cache)
+        return out
+
+    get_upper_parameters = get_parameters
+
+    def _upper(self, idx, mean, sigma, dim, mut, cache):
+        out = mean[dim]+sigma*self._dist._get_upper(idx, cache)
+        return out
+
+    def get_mom_parameters(self):
+        return self.get_parameters(idx=None, cache={})
 
     def _mom(self, kloc, mean, sigma, cache):
         poly = numpoly.variable(len(self))

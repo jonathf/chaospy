@@ -65,16 +65,14 @@ class Negative(OperatorDistribution):
         del right
         return -left._get_inv(1-uloc, idx, cache)
 
-    def _mom(self, kloc, left, right, cache):
+    def _mom(self, kloc, left, right):
         """Statistical moments."""
         del right
-        del cache
         return (-1)**numpy.sum(kloc)*left._get_mom(kloc)
 
-    def _ttr(self, kloc, idx, left, right, cache):
+    def _ttr(self, kloc, idx, left, right):
         """Three terms recurrence coefficients."""
         del right
-        del cache
         alpha, beta = left._get_ttr(kloc, idx)
         return -alpha, beta
 

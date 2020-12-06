@@ -211,7 +211,7 @@ class Power(OperatorDistribution):
             out = (left.T**out.T).T
         return out
 
-    def _mom(self, k, left, right, cache):
+    def _mom(self, k, left, right):
         """
         Statistical moments.
 
@@ -228,7 +228,6 @@ class Power(OperatorDistribution):
             array([1.    , 0.7213, 0.541 , 0.4208])
 
         """
-        del cache
         if isinstance(right, Distribution):
             raise chaospy.UnsupportedFeature(
                 "distribution as exponent not supported.")

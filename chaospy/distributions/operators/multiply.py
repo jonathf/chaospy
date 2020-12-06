@@ -253,7 +253,7 @@ class Multiply(OperatorDistribution):
         pdf.T[valids.T] /= right.T[valids.T]
         return numpy.abs(pdf)
 
-    def _mom(self, key, left, right, cache):
+    def _mom(self, key, left, right):
         """
         Statistical moments.
 
@@ -268,7 +268,6 @@ class Multiply(OperatorDistribution):
             array([1.    , 0.25  , 0.1111, 0.0625])
 
         """
-        del cache
         if isinstance(left, Distribution):
             if chaospy.shares_dependencies(left, right):
                 raise chaospy.StochasticallyDependentError(
@@ -284,9 +283,8 @@ class Multiply(OperatorDistribution):
             right = (numpy.array(right).T**key).T
         return numpy.prod(left)*numpy.prod(right)
 
-    def _ttr(self, kloc, idx, left, right, cache):
+    def _ttr(self, kloc, idx, left, right):
         """Three terms recurrence coefficients."""
-        del cache
         if isinstance(right, Distribution):
             if isinstance(left, Distribution):
                 raise chaospy.StochasticallyDependentError(

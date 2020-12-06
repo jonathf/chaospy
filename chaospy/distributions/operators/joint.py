@@ -59,14 +59,12 @@ class J(Distribution):
         )
         self._owners = owners
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        del assert_numerical  # joint is never numerical on its own.
-        parameters = super(J, self).get_parameters(
-            idx, cache, assert_numerical=False)
-        if idx is None:
-            return dict(index=parameters["index"])
+    def get_parameters(self, idx, cache):
+        parameters = super(J, self).get_parameters(idx, cache)
         idx, dist = self._owners[idx]
         return dict(idx=idx, dist=dist, cache=cache)
+
+    get_lower_parameters = get_parameters
 
     def _lower(self, idx, dist, cache):
         """
@@ -80,6 +78,8 @@ class J(Distribution):
             array([0., 0.])
         """
         return dist._get_lower(idx, cache)
+
+    get_upper_parameters = get_parameters
 
     def _upper(self, idx, dist, cache):
         """
@@ -140,6 +140,10 @@ class J(Distribution):
         """
         return dist._get_inv(qloc, idx, cache)
 
+    def get_mom_parameters(self):
+        parameters = super(J, self).get_parameters(idx=None, cache={})
+        return dict(index=parameters["index"])
+
     def _mom(self, kloc, index):
         """
         Example:
@@ -165,7 +169,12 @@ class J(Distribution):
             output *= self._owners[unique_idx][1]._get_mom(kloc[index == unique_idx])
         return output
 
-    def _ttr(self, kloc, idx, dist, cache):
+    def get_ttr_parameters(self, idx):
+        parameters = super(J, self).get_parameters(idx, cache={})
+        idx, dist = self._owners[idx]
+        return dict(idx=idx, dist=dist)
+
+    def _ttr(self, kloc, idx, dist):
         """
         Example:
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal(), chaospy.Exponential())
@@ -209,7 +218,7 @@ class J(Distribution):
         if isinstance(index, int):
             if index <= -len(self) or index >= len(self):
                 raise IndexError("list index out of range")
-            return self.get_parameters(index, cache={}, assert_numerical=False)["dist"]
+            return self.get_parameters(index, cache={})["dist"]
         if isinstance(index, slice):
             start = 0 if index.start is None else index.start
             stop = len(self) if index.stop is None else index.stop
@@ -220,7 +229,7 @@ class J(Distribution):
     def _cache(self, idx, cache):
         if idx is None:
             return self
-        parameters = self.get_parameters(idx, cache, assert_numerical=False)
+        parameters = self.get_parameters(idx, cache)
         out = parameters["dist"]._get_cache(parameters["idx"], cache)
         if isinstance(out, chaospy.Distribution):
             return self

@@ -167,7 +167,7 @@ class Add(OperatorDistribution):
         xloc = left._get_inv(uloc, idx, cache=cache)
         return (xloc.T+numpy.asfarray(right).T).T
 
-    def _mom(self, keys, left, right, cache):
+    def _mom(self, keys, left, right):
         """
         Statistical moments.
 
@@ -180,7 +180,6 @@ class Add(OperatorDistribution):
             array([ 1.    ,  2.5   ,  6.3333, 16.25  ])
 
         """
-        del cache
         keys_ = numpy.mgrid[tuple(slice(0, key+1, 1) for key in keys)]
         keys_ = keys_.reshape(len(self), -1)
 
@@ -204,7 +203,7 @@ class Add(OperatorDistribution):
             out += coef*left[idx]*right[idx]*numpy.all(key <= keys)
         return out
 
-    def _ttr(self, kloc, idx, left, right, cache):
+    def _ttr(self, kloc, idx, left, right):
         """
         Three terms recurrence coefficients.
 
@@ -220,7 +219,6 @@ class Add(OperatorDistribution):
                    [-0.    ,  0.0833,  0.0667,  0.0643]])
 
         """
-        del cache
         if isinstance(right, Distribution):
             left, right = right, left
         coeff0, coeff1 = left._get_ttr(kloc, idx)
