@@ -54,6 +54,10 @@ def quad_leja(
             weights:
                 The quadrature weights with ``weights.shape == (N,)``.
 
+    Notes:
+        Implemented as proposed in Narayan and Jakeman
+        :cite:`narayan_adaptive_2014`.
+
     Example:
         >>> abscissas, weights = quad_leja(
         ...     2, chaospy.Iid(chaospy.Normal(0, 1), 2))
