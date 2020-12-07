@@ -1,7 +1,11 @@
 Master Branch
 =============
 
+Version 4.2.2 (2020-12-07)
+==========================
+
 ADDED:
+  * Increase the number of dimensions supported in Sobol sequence to 1111.
   * Lower level override `get_*_parameters` functions to differentiate between
     density/fwd/inv, mom, ttr, and lower/upper.
   * New `allow_approx` flag in `Distribution.pdf`.
@@ -16,6 +20,7 @@ CHANGED:
   * Bugfix: wrappers distribution no longer ignores wrapped distribution during
     dependency declaration. Ignoring them have in some cases caused some
     variables not to be declared correctly.
+  * Documentation update.
 
 Version 4.2.1 (2020-11-24)
 ==========================
