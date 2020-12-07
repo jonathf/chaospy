@@ -44,7 +44,7 @@ Monto Carlo is your best choice, it might be worth taking a look at
     weight function to be defined and incorporated implicit.
 
     To address this issue, the weight functions are incorporated into the
-    weight terms by substituting :math:`W^*_i \leftarrao W_i p(X_i)`, giving
+    weight terms by substituting :math:`W^*_i \leftarraow W_i p(X_i)`, giving
     us:
 
     .. math::
