@@ -11,9 +11,10 @@ in convergence is proportional to :math:`1/\sqrt{K}` where :math:`K` is the
 number of samples.  It is somewhat better with variance reduction techniques
 that often reaches errors proportional to :math:`1/K`. For a full overview of
 the convergence rate of the various methods, see for example the excellent book
-`handbook of Monte Carlo methods` by Kroese, Taimre and Botev. However as the
-number of dimensions grows, Monte Carlo convergence rate stays the same, making
-it immune to the curse of dimensionality.
+"handbook of Monte Carlo methods" by Kroese, Taimre and Botev
+:cite:`kroese_handbook_2011`. However as the number of dimensions grows, Monte
+Carlo convergence rate stays the same, making it immune to the curse of
+dimensionality.
 
 Generating random samples can be done from the distribution instance method
 :func:`~chaospy.Distribution.sample` as discussed in the :ref:`tutorial`. For

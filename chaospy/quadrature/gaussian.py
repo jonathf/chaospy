@@ -58,6 +58,10 @@ def quad_gaussian(
             For non-canonical random variables, the construction might fail
             because of illegal numerical operations.
 
+    Notes:
+        Quadrature constructed as outlined by Walter Gautschi
+        :cite:`gautschi_construction_1968`.
+
     Examples:
         >>> distribution = chaospy.Normal(0, 1)
         >>> abscissas, weights = chaospy.quad_gaussian(

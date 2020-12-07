@@ -64,8 +64,10 @@ There are three algorithms available:
 | Algorithm              | Description                                      |
 +------------------------+--------------------------------------------------+
 | three_terms_recurrence | Three terms recurrence coefficients generated    |
-|                        | using Stieltjes and Golub-Welsch method. The     |
-|                        | most stable of the methods, but do not work on   |
+|                        | using Stieltjes :cite:`stieltjes_quelques_1884`  |
+|                        | and Golub-Welsch method                          |
+|                        | :cite:`golub_calculation_1967`. The most stable  |
+|                        | of the methods, but do not work on               |
 |                        | dependent distributions.                         |
 +------------------------+--------------------------------------------------+
 | gram_schmidt           | Gram-Schmidt orthogonalization method applied on |
