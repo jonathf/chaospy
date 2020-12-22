@@ -1,7 +1,6 @@
 r"""Collection of quadrature methods."""
 from .frontend import generate_quadrature
 from .sparse_grid import construct_sparse_grid
-from .combine import combine
 
 from .clenshaw_curtis import quad_clenshaw_curtis
 from .discrete import quad_discrete

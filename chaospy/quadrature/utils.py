@@ -4,10 +4,7 @@ import numpy
 import chaospy
 
 
-def ensure_output(
-        quad_func,
-        **kwargs,
-):
+def ensure_output(quad_func, **kwargs):
     kwargs = {key: (value.item() if isinstance(value, numpy.ndarray) else value)
               for key, value in kwargs.items()}
     abscissas, weights = quad_func(**kwargs)
@@ -18,10 +15,7 @@ def ensure_output(
     return abscissas, weights
 
 
-def ensure_input(
-    quad_func,
-    **kwargs,
-):
+def ensure_input(quad_func, **kwargs):
     sizables = {key: value for key, value in kwargs.items()
                 if isinstance(value, (int, float, numpy.ndarray))}
     nonsizables = {key: value for key, value in kwargs.items()
@@ -35,11 +29,7 @@ def ensure_input(
 
 
 
-def distribution_to_domain(
-    quad_func,
-    distribution,
-    **kwargs
-):
+def distribution_to_domain(quad_func, distribution, **kwargs):
     assert isinstance(distribution, chaospy.Distribution)
     abscissas, weights = quad_func(
         lower=distribution.lower,
@@ -55,10 +45,7 @@ def distribution_to_domain(
     return abscissas, weights
 
 
-def univariate_to_multivariate(
-    quad_func,
-    **kwargs,
-):
+def univariate_to_multivariate(quad_func, **kwargs):
     sizables = {key: value for key, value in kwargs.items()
                 if isinstance(value, (int, float, numpy.ndarray))}
     keys = list(sizables)
@@ -80,12 +67,7 @@ def univariate_to_multivariate(
     return combine_quadrature(abscissas, weights)
 
 
-def split_into_segments(
-    quad_func,
-    order,
-    segments,
-    **kwargs,
-):
+def split_into_segments(quad_func, order, segments, **kwargs):
     if segments == 1 or order <= 2:
         return quad_func(order=order, **kwargs)
     if not segments:
@@ -114,13 +96,7 @@ def split_into_segments(
     return abscissas, weights
 
 
-def scale_samples(
-    quad_func,
-    order,
-    lower,
-    upper,
-    **kwargs,
-):
+def scale_samples(quad_func, order, lower, upper, **kwargs):
     abscissas, weights = quad_func(order=order, **kwargs)
     weights = weights*(upper-lower)
     abscissas = (abscissas.T*(upper-lower)+lower).T
@@ -145,7 +121,7 @@ def combine(args):
 
     Examples:
         >>> A, B = [1,2], [[4,4],[5,6]]
-        >>> chaospy.quadrature.combine([A, B])
+        >>> combine([A, B])
         array([[1, 4, 4],
                [1, 5, 6],
                [2, 4, 4],

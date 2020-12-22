@@ -1,7 +1,7 @@
 r"""Create Gaussian quadrature nodes and weights."""
 import chaospy
 
-from .combine import combine_quadrature
+from .utils import combine_quadrature
 
 
 def quad_gaussian(

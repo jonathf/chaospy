@@ -121,12 +121,12 @@ Gauss-Legendre samples::
 .. note::
     Some quadrature rules are only partially nested at certain orders. These
     include e.g. :func:`chaospy.quad_clenshaw_curtis`,
-    :func:`chaospy.quad_fejer` and :func:`chaospy.quad_newton_cotes`. To
-    exploit this nested-nes, the default behavior is to only include orders
-    that are properly nested. This implies that flipping the flag ``sparse``
-    will result in a somewhat different scheme. To fix the scheme one way or
-    the other, explicitly include the flag ``growth=False`` or ``growth=True``
-    respectively.
+    :func:`chaospy.quad_fejer_1`, :func:`chaospy.quad_fejer_2` and
+    :func:`chaospy.quad_newton_cotes`. To exploit this nested-nes, the default
+    behavior is to only include orders that are properly nested. This implies
+    that flipping the flag ``sparse`` will result in a somewhat different
+    scheme. To fix the scheme one way or the other, explicitly include the flag
+    ``growth=False`` or ``growth=True`` respectively.
 
 .. _gaussian:
 

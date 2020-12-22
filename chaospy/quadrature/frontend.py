@@ -16,6 +16,7 @@ from .genz_keister import quad_genz_keister
 from .grid import quad_grid
 from .leja import quad_leja
 from .newton_cotes import quad_newton_cotes
+from .utils import combine
 
 QUAD_NAMES = {
     "c": "clenshaw_curtis", "clenshaw_curtis": "clenshaw_curtis",
@@ -175,8 +176,8 @@ def generate_quadrature(
             )
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
-        abscissas = chaospy.combine([abscissa.T for abscissa in abscissas]).T
-        weights = numpy.prod(chaospy.combine([weight.T for weight in weights]), -1)
+        abscissas = combine([abscissa.T for abscissa in abscissas]).T
+        weights = numpy.prod(combine([weight.T for weight in weights]), -1)
 
     assert abscissas.shape == (len(dist), len(weights))
     if dist.interpret_as_integer:

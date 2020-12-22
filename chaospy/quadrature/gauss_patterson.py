@@ -19,7 +19,7 @@ With increasing order::
 import numpy
 import chaospy
 
-from .combine import combine
+from .utils import combine
 
 
 def quad_gauss_patterson(order, domain):

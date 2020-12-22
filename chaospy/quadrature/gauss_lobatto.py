@@ -35,7 +35,7 @@ import numpy
 from scipy.linalg import solve_banded, solve
 import chaospy
 
-from .combine import combine_quadrature
+from .utils import combine_quadrature
 
 
 def quad_gauss_lobatto(

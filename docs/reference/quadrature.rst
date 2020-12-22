@@ -24,7 +24,8 @@ Other Quadrature Rules
 .. autosummary::
    :toctree: api
 
-   quad_fejer
+   quad_fejer_1
+   quad_fejer_2
    quad_clenshaw_curtis
    quad_discrete
    quad_genz_keister

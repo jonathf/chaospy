@@ -80,7 +80,7 @@ import math
 import numpy
 import chaospy
 
-from .combine import combine_quadrature
+from .utils import combine_quadrature
 
 
 def quad_gauss_kronrod(
