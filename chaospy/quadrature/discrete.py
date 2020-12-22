@@ -41,8 +41,7 @@ The first few orders with exponential growth rule where the nodes are nested::
 import numpy
 import chaospy
 
-from .combine import combine_quadrature
-from .grid import quad_grid
+from .hypercube import hypercube_quadrature
 
 
 def quad_discrete(order, domain=(0, 1), growth=False, segments=1):
@@ -56,7 +55,7 @@ def quad_discrete(order, domain=(0, 1), growth=False, segments=1):
     Args:
         order (int, numpy.ndarray):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
+        domain (:class:`chaospy.Distribution`, :class:`numpy.ndarray`):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             if true sets the growth rule for the quadrature rule to only
@@ -83,23 +82,19 @@ def quad_discrete(order, domain=(0, 1), growth=False, segments=1):
         array([0.2, 0.2, 0.2, 0.2, 0.2])
 
     """
-    if isinstance(domain, chaospy.Distribution):
-        abscissas, weights = quad_discrete(order, (domain.lower, domain.upper), growth=growth, segments=segments)
-        eps = 1e-14*(domain.upper-domain.lower)
-        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        weights *= domain.pdf(abscissas_).flatten()
-        weights /= numpy.sum(weights)
-        return abscissas, weights
+    order = numpy.asarray(order)
+    order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
+    return hypercube_quadrature(
+        quad_func=_discrete,
+        order=order,
+        domain=domain,
+        segments=segments,
+        auto_scale=False,
+    )
 
-    del segments  # Basically segments doesn't do much here
-    if growth:
-        order = numpy.where(order > 0, 2**(order), 0)
 
-    order = numpy.atleast_1d(order)
-    order, lower, upper = numpy.broadcast_arrays(order, domain[0], domain[1])
-    assert order.ndim == 1, "too many dimensions"
-
-    order_max = numpy.round(upper-lower).astype(int)-1
-    order = numpy.where(order > order_max, order_max, order)
-
-    return quad_grid(order, (lower, upper))
+def _discrete(order, lower, upper):
+    order = min(order, round(upper-lower)-1)
+    abscissas = numpy.linspace(lower, upper, 2*order+3)[1::2]
+    weights = numpy.full(order+1, 1./(order+1))
+    return abscissas, weights

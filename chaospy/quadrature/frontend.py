@@ -4,7 +4,8 @@ import chaospy
 
 from .clenshaw_curtis import quad_clenshaw_curtis
 from .discrete import quad_discrete
-from .fejer import quad_fejer
+from .fejer_1 import quad_fejer_1
+from .fejer_2 import quad_fejer_2
 from .gaussian import quad_gaussian
 from .gauss_patterson import quad_gauss_patterson
 from .gauss_legendre import quad_gauss_legendre
@@ -18,7 +19,8 @@ from .newton_cotes import quad_newton_cotes
 
 QUAD_NAMES = {
     "c": "clenshaw_curtis", "clenshaw_curtis": "clenshaw_curtis",
-    "f": "fejer", "fejer": "fejer",
+    "f": "fejer_2", "fejer": "fejer_2",
+    "fejer_1": "fejer_1", "fejer_2": "fejer_2",
     "g": "gaussian", "gaussian": "gaussian",
     "e": "gauss_legendre", "gauss_legendre": "gauss_legendre",
     "l": "gauss_lobatto", "gauss_lobatto": "gauss_lobatto",
@@ -33,7 +35,8 @@ QUAD_NAMES = {
 }
 QUAD_FUNCTIONS = {
     "clenshaw_curtis": quad_clenshaw_curtis,
-    "fejer": quad_fejer,
+    "fejer_1": quad_fejer_1,
+    "fejer_2": quad_fejer_2,
     "gaussian": quad_gaussian,
     "gauss_kronrod": quad_gauss_kronrod,
     "gauss_legendre": quad_gauss_legendre,
@@ -208,8 +211,8 @@ def _generate_quadrature(order, dist, rule, **kwargs):
     rule = QUAD_NAMES[rule.lower()]
     parameters = {}
 
-    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
-        parameters.update(growth=kwargs["growth"], segments=kwargs["segments"])
+    if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "discrete"):
+        parameters.update(segments=kwargs["segments"], growth=kwargs["growth"])
 
     if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
         parameters.update(tolerance=kwargs["tolerance"], scaling=kwargs["scaling"],

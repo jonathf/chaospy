@@ -31,7 +31,7 @@ from .combine import combine
 def quad_leja(
         order,
         dist,
-        rule="fejer",
+        rule="fejer_2",
 ):
     """
     Generate Leja quadrature node.

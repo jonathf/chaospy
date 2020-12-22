@@ -1,13 +1,5 @@
 """
-Gauss-Radau formula for numerical estimation of integrals. It requires
-:math:`m+1` points and fits all Polynomials to degree :math:`2m`, so it
-effectively fits exactly all Polynomials of degree :math:`2m-3`.
-
-Gauss-Radau is defined by having two abscissas to be fixed to the endpoints,
-while the others are built around these points. So if a distribution is defined
-on the interval ``(a, b)``, then both ``a`` and ``b`` are abscissas in this
-scheme. Note though that this does not always possible to achieve in practice,
-and an error might be raised.
+Generate the abscissas and weights in Gauss-Loboto quadrature.
 
 Example usage
 -------------
@@ -50,13 +42,22 @@ def quad_gauss_lobatto(
         order,
         dist,
         recurrence_algorithm="stieltjes",
-        rule="fejer",
+        rule="fejer_2",
         tolerance=1e-10,
         scaling=3,
         n_max=5000,
 ):
     """
     Generate the abscissas and weights in Gauss-Loboto quadrature.
+
+    Also known as Lobatto quadrature, named after Dutch mathematician Rehuel
+    Lobatto. It is similar to Gaussian quadrature with the following
+    differences:
+
+    * The integration points include the end points of the integration
+      interval.
+    * It is accurate for polynomials up to degree :math:`2n–3`, where :math:`n`
+      is the number of integration points.
 
     Args:
         order (int):

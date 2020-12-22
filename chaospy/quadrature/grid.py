@@ -7,10 +7,10 @@ continuous ones.
 import numpy
 import chaospy
 
-from .combine import combine_quadrature
+from .hypercube import hypercube_quadrature
 
 
-def quad_grid(order, domain=(0, 1)):
+def quad_grid(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate the quadrature abscissas and weights for simple grid.
 
@@ -40,19 +40,18 @@ def quad_grid(order, domain=(0, 1)):
         array([0.25, 0.25, 0.25, 0.25])
 
     """
-    if isinstance(domain, chaospy.Distribution):
-        abscissas, weights = quad_grid(order, (domain.lower, domain.upper))
-        eps = 1e-14*(domain.upper-domain.lower)
-        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        weights *= domain.pdf(abscissas_).flatten()
-        weights /= numpy.sum(weights)
-        return abscissas, weights
+    order = numpy.asarray(order)
+    order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
+    return hypercube_quadrature(
+        quad_func=_grid,
+        order=order,
+        domain=domain,
+        segments=segments,
+    )
 
-    order = numpy.atleast_1d(order)
-    order, lower, upper = numpy.broadcast_arrays(order, domain[0], domain[1])
-    assert order.ndim == 1, "too many dimensions"
-    abscissas = tuple(numpy.linspace(0, 1, 2*order_+3)[1::2] for order_ in order)
-    weights = tuple(numpy.repeat(1./(order_+1), order_+1) for order_ in order)
 
-    abscissas_, weights_ = combine_quadrature(abscissas, weights, (lower, upper))
-    return abscissas_, weights_
+def _grid(order):
+    order = int(order)
+    abscissas = numpy.linspace(0, 1, 2*order+3)[1::2]
+    weights = numpy.full(order+1, 1./(order+1))
+    return abscissas, weights

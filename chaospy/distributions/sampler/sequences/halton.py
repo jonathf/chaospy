@@ -1,29 +1,11 @@
 """
-Create samples from the `Halton sequence`_.
-
-In statistics, Halton sequences are sequences used to generate points in space
-for numerical methods such as Monte Carlo simulations. Although these sequences
-are deterministic, they are of low discrepancy, that is, appear to be random
-for many purposes. They were first introduced in 1960 and are an example of
-a quasi-random number sequence. They generalise the one-dimensional van der
-Corput sequences.
+Create samples from the Halton sequence.
 
 Example usage
 -------------
 
 Standard usage::
 
-    >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
-    >>> samples = distribution.sample(3, rule="halton")
-    >>> samples.round(4)
-    array([[0.125 , 0.625 , 0.375 ],
-           [0.4444, 0.7778, 0.2222]])
-    >>> samples = distribution.sample(4, rule="halton")
-    >>> samples.round(4)
-    array([[0.125 , 0.625 , 0.375 , 0.875 ],
-           [0.4444, 0.7778, 0.2222, 0.5556]])
-
-.. _Halton sequence: https://en.wikipedia.org/wiki/Halton_sequence
 """
 import numpy
 
@@ -33,9 +15,15 @@ from .primes import create_primes
 
 def create_halton_samples(order, dim=1, burnin=-1, primes=()):
     """
-    Create Halton sequence.
+    Create samples from the Halton sequence.
 
-    For ``dim == 1`` the sequence falls back to Van Der Corput sequence.
+    In statistics, Halton sequences are sequences used to generate points in
+    space for numerical methods such as Monte Carlo simulations. Although these
+    sequences are deterministic, they are of low discrepancy, that is, appear
+    to be random for many purposes. They were first introduced in 1960 and are
+    an example of a quasi-random number sequence. They generalise the
+    one-dimensional van der Corput sequences. For ``dim == 1`` the sequence
+    falls back to Van Der Corput sequence.
 
     Args:
         order (int):
@@ -49,8 +37,21 @@ def create_halton_samples(order, dim=1, burnin=-1, primes=()):
             The (non-)prime base to calculate values along each axis. If
             empty, growing prime values starting from 2 will be used.
 
-    Returns (numpy.ndarray):
-        Halton sequence with ``shape == (dim, order)``.
+    Returns:
+        (numpy.ndarray):
+            Halton sequence with ``shape == (dim, order)``.
+
+    Examples:
+        >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Uniform(0, 1))
+        >>> samples = distribution.sample(3, rule="halton")
+        >>> samples.round(4)
+        array([[0.125 , 0.625 , 0.375 ],
+               [0.4444, 0.7778, 0.2222]])
+        >>> samples = distribution.sample(4, rule="halton")
+        >>> samples.round(4)
+        array([[0.125 , 0.625 , 0.375 , 0.875 ],
+               [0.4444, 0.7778, 0.2222, 0.5556]])
+
     """
     primes = list(primes)
     if not primes:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Generate the quadrature abscissas and weights in Fejer quadrature.
+"""Generate the quadrature abscissas and weights in Fejer quadrature."""
 
+"""
 Example usage
 -------------
 
@@ -43,29 +43,24 @@ Applying the rule using Smolyak sparse grid::
            -0.273,  0.184, -0.021,  0.074,  0.184,  0.082, -0.021,  0.082,
             0.074])
 """
-from __future__ import division
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no cover
-    from functools32 import lru_cache
 
 import numpy
 import chaospy
 
-from .combine import combine_quadrature
+from .hypercube import hypercube_quadrature
 from .clenshaw_curtis import _clenshaw_curtis
 
 
-def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
+def quad_fejer_2(order, domain=(0, 1), growth=False, segments=1):
     """
-    Generate the quadrature abscissas and weights in Fejér quadrature.
+    Generate the quadrature abscissas and weights in Fejér type II quadrature.
 
     Fejér proposed two quadrature rules very similar to
-    :func:`quad_clenshaw_curtis`. The only difference is that the endpoints are
-    removed. That is, Fejér only used the interior extrema of the Chebyshev
-    polynomials, i.e. the true stationary points. This makes this a better
-    method for performing quadrature on infinite intervals, as the evaluation
-    does not contain illegal values.
+    :func:`chaospy.quad_clenshaw_curtis`. The only difference is that the
+    endpoints are removed. That is, Fejér only used the interior extrema of the
+    Chebyshev polynomials, i.e. the true stationary points. This makes this a
+    better method for performing quadrature on infinite intervals, as the
+    evaluation does not contain endpoint values.
 
     Args:
         order (int, numpy.ndarray):
@@ -93,67 +88,33 @@ def quad_fejer(order, domain=(0, 1), growth=False, segments=1):
         Implemented as proposed by Waldvogel :cite:`waldvogel_fast_2006`.
 
     Example:
-        >>> abscissas, weights = quad_fejer(3, (0, 1))
+        >>> abscissas, weights = quad_fejer_2(3, (0, 1))
         >>> abscissas.round(4)
         array([[0.0955, 0.3455, 0.6545, 0.9045]])
         >>> weights.round(4)
         array([0.1804, 0.2996, 0.2996, 0.1804])
-        >>> abscissas, weights = quad_fejer(3, (0, 1), segments=2)
+        >>> abscissas, weights = quad_fejer_2(3, (0, 1), segments=2)
         >>> abscissas.round(4)
-        array([[0.125, 0.375, 0.625, 0.875]])
+        array([[0.0732, 0.25  , 0.4268, 0.625 , 0.875 ]])
         >>> weights.round(4)
-        array([0.2222, 0.2222, 0.2222, 0.2222])
+        array([0.1333, 0.2   , 0.1333, 0.2222, 0.2222])
+
     """
-    if isinstance(domain, chaospy.Distribution):
-        abscissas, weights = quad_fejer(
-            order, (domain.lower, domain.upper), growth)
-        eps = 1e-14*(domain.upper-domain.lower)
-        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        weights *= domain.pdf(abscissas_).flatten()
-        weights /= numpy.sum(weights)
-        return abscissas, weights
-
-    order = numpy.asarray(order, dtype=int).flatten()
-    lower, upper = numpy.array(domain)
-    lower = numpy.asarray(lower).flatten()
-    upper = numpy.asarray(upper).flatten()
-
-    dim = max(lower.size, upper.size, order.size)
-
-    order = order*numpy.ones(dim, dtype=int)
-    lower = lower*numpy.ones(dim)
-    upper = upper*numpy.ones(dim)
-    segments = segments*numpy.ones(dim, dtype=int)
-
-    if growth:
-        order = numpy.where(order > 0, 2**(order+1)-2, 0)
-
-    abscissas, weights = zip(*[_fejer(order_, segment)
-                               for order_, segment in zip(order, segments)])
-
-    return combine_quadrature(abscissas, weights, (lower, upper))
+    order = numpy.asarray(order)
+    order = numpy.where(growth, numpy.where(order > 0, 2**(order+1)-2, 0), order)
+    return hypercube_quadrature(
+        quad_func=_fejer_type_2,
+        order=order,
+        domain=domain,
+        segments=segments,
+    )
 
 
-@lru_cache(None)
-def _fejer(order, segments=1):
-    """Backend method."""
-    if segments != 1 and order > 2:
-        if not segments:
-            segments = int(numpy.sqrt(order))
-        assert segments < order, "few samples to distribute than intervals"
-        abscissas = []
-        weights = []
+def _fejer_type_2(order):
+    """
+    Backend for Fejer type II quadrature.
 
-        nodes = numpy.linspace(0, 1, segments+1)
-        for idx, (lower, upper) in enumerate(zip(nodes[:-1], nodes[1:])):
-            order_ = order//segments + (idx+1 < (order%segments))
-            abscissa, weight = _fejer(order_, segments=1)
-            abscissas.extend(abscissa*(upper-lower) + lower)
-            weights.extend(weight*(upper-lower))
-
-        assert len(abscissas) == order+1, (len(abscissas), order+1)
-        assert len(weights) == order+1
-        return numpy.array(abscissas), numpy.array(weights)
-
-    abscissas, weights = _clenshaw_curtis(order+2, segments)
+    Same as Clenshaw-Curtis, but with the end nodes removed.
+    """
+    abscissas, weights = _clenshaw_curtis(order+2)
     return abscissas[1:-1], weights[1:-1]

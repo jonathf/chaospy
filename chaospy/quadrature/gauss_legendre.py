@@ -1,13 +1,5 @@
 r"""
-The Gauss-Legendre quadrature rule is properly supported by in :ref:`gaussian`.
-However, as Gauss-Legendre is a special case where the weight function is
-constant, it can in principle be used to integrate any weighting function. In
-other words, this is the same Gauss-Legendre integration rule, but only in the
-context of uniform distribution as weight function. Normalization of the
-weights will be used to achieve the general integration form.
-
-It is also worth noting that this specific implementation of Gauss-Legendre is
-faster to compute than the general version in :ref:`gaussian`.
+Generate the quadrature nodes and weights in Gauss-Legendre quadrature.
 
 Example usage
 -------------
@@ -39,37 +31,35 @@ Using an alternative distribution::
 The abscissas stays the same, but the weights are re-adjusted for the new
 weight function.
 """
+try:
+    from functools import lru_cache
+except ImportError:  # pragma: no cover
+    from functools32 import lru_cache
+
 import numpy
 import chaospy
 
-from .combine import combine_quadrature
+from .hypercube import hypercube_quadrature
 
 
 def quad_gauss_legendre(
         order,
         domain=(0, 1),
-        recurrence_algorithm="stieltjes",
-        rule="clenshaw_curtis",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+        segments=1,
 ):
     r"""
     Generate the quadrature nodes and weights in Gauss-Legendre quadrature.
 
-    Note that this rule exists to allow for integrating functions with weight
-    functions without actually adding the quadrature. Like:
+    The Gauss-Legendre quadrature rule is properly supported by in
+    :ref:`gaussian`. However, as Gauss-Legendre is a special case where the
+    weight function is constant, it can in principle be used to integrate any
+    weighting function. In other words, this is the same Gauss-Legendre
+    integration rule, but only in the context of uniform distribution as weight
+    function. Normalization of the weights will be used to achieve the general
+    integration form.
 
-    .. math:
-        \int_a^b p(x) f(x) dx \approx \sum_i p(X_i) f(X_i) W_i
-
-    instead of the more traditional:
-
-    .. math:
-        \int_a^b p(x) f(x) dx \approx \sum_i f(X_i) W_i
-
-    To get the behavior where the weight function is taken into consideration,
-    use :func:`chaospy.quad_gaussian`.
+    It is also worth noting that this specific implementation of Gauss-Legendre
+    is faster to compute than the general version in :ref:`gaussian`.
 
     Args:
         order (int, numpy.ndarray):
@@ -100,54 +90,41 @@ def quad_gauss_legendre(
             weights:
                 The quadrature weights with ``weights.shape == (N,)``.
 
+    Notes:
+        This rule exists to allow for integrating functions with weight
+        functions without actually adding the quadrature. Like:
+
+        .. math:
+            \int_a^b p(x) f(x) dx \approx \sum_i p(X_i) f(X_i) W_i
+
+        instead of the more traditional:
+
+        .. math:
+            \int_a^b p(x) f(x) dx \approx \sum_i f(X_i) W_i
+
+        To get the behavior where the weight function is taken into
+        consideration, use :func:`chaospy.quad_gaussian`.
+
     Example:
         >>> abscissas, weights = quad_gauss_legendre(3)
         >>> abscissas.round(4)
         array([[0.0694, 0.33  , 0.67  , 0.9306]])
         >>> weights.round(4)
         array([0.1739, 0.3261, 0.3261, 0.1739])
+
     """
-    from ..distributions.baseclass import Distribution
-    from ..distributions.collection import Uniform
-    if isinstance(domain, Distribution):
-        abscissas, weights = quad_gauss_legendre(
-            order=order,
-            domain=(domain.lower, domain.upper),
-            recurrence_algorithm=recurrence_algorithm,
-            rule=rule,
-            tolerance=tolerance,
-            scaling=scaling,
-            n_max=n_max,
-        )
-        eps = 1e-14*(domain.upper-domain.lower)
-        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        weights *= domain.pdf(abscissas_).flatten()
-        weights /= numpy.sum(weights)
-        return abscissas, weights
-
-    order = numpy.asarray(order, dtype=int).flatten()
-    lower, upper = numpy.array(domain)
-    lower = numpy.asarray(lower).flatten()
-    upper = numpy.asarray(upper).flatten()
-
-    dim = max(lower.size, upper.size, order.size)
-    order = numpy.ones(dim, dtype=int)*order
-    lower = numpy.ones(dim)*lower
-    upper = numpy.ones(dim)*upper
-
-    coefficients = chaospy.construct_recurrence_coefficients(
-        order=numpy.max(order),
-        dist=Uniform(0, 1),
-        recurrence_algorithm=recurrence_algorithm,
-        rule=rule,
-        tolerance=tolerance,
-        scaling=scaling,
-        n_max=n_max,
+    order = numpy.asarray(order)
+    return hypercube_quadrature(
+        _gauss_legendre,
+        order=order,
+        domain=domain,
+        segments=segments,
     )
 
-    abscissas, weights = zip(*[chaospy.coefficients_to_quadrature(
-        coefficients[:order_+1]) for order_ in order])
-    abscissas = list(numpy.asarray(abscissas).reshape(dim, -1))
-    weights = list(numpy.asarray(weights).reshape(dim, -1))
 
-    return combine_quadrature(abscissas, weights, (lower, upper))
+@lru_cache(None)
+def _gauss_legendre(order):
+    coefficients = chaospy.construct_recurrence_coefficients(
+        order=int(order), dist=chaospy.Uniform(0, 1))
+    [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
+    return abscissas, weights

@@ -5,7 +5,8 @@ from .combine import combine
 
 from .clenshaw_curtis import quad_clenshaw_curtis
 from .discrete import quad_discrete
-from .fejer import quad_fejer
+from .fejer_1 import quad_fejer_1
+from .fejer_2 import quad_fejer_2
 from .gaussian import quad_gaussian
 from .gauss_patterson import quad_gauss_patterson
 from .gauss_legendre import quad_gauss_legendre

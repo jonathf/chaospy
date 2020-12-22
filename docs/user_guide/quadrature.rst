@@ -302,7 +302,7 @@ Gegenbaur            :math:`(1-x^2)^{a-0.5}` ``Beta(a+.5,a+.5,-1,1)``  :math:`2^
 ==================== ======================= ========================= ===================
 
 However, the list is not limited to these cases. Any and all valid weight
-function are supported this way. However, not all weight functions does not
-work very well. E.g. using the log-normal probability density function as
-a weight function is known to scale badly. Which one works or not, depends on
-context, so any non-standard use has to be done with some care.
+function are supported this way. However, not all weight functions work equally
+well. E.g. using the log-normal probability density function as a weight
+function is known to scale badly. Which one works or not, depends on context,
+so any non-standard use has to be done with some care.
