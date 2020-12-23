@@ -4,7 +4,7 @@ Frontend for the Hermite Genz-Keister quadrature rule.
 import numpy
 import scipy.special
 
-from ..combine import combine
+from ..utils import combine
 from .gk16 import quad_genz_keister_16
 from .gk18 import quad_genz_keister_18
 from .gk22 import quad_genz_keister_22

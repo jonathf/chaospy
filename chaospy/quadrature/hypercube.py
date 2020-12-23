@@ -26,6 +26,11 @@ def hypercube_quadrature(
         segments=numpy.array(segments)
 
     )
+    if auto_scale:
+        quad_func = partial(
+            scale_samples,
+            quad_func=quad_func,
+        )
     quad_func = partial(
         univariate_to_multivariate,
         quad_func=quad_func,
@@ -34,11 +39,6 @@ def hypercube_quadrature(
         ensure_input,
         quad_func=quad_func,
     )
-    if auto_scale:
-        quad_func = partial(
-            scale_samples,
-            quad_func=quad_func,
-        )
 
     if isinstance(domain, chaospy.Distribution):
         quad_func = partial(

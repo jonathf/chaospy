@@ -70,7 +70,7 @@ def create_chebyshev_samples(order, dim=1):
 
     """
     x_data = .5*numpy.cos(numpy.arange(order, 0, -1)*numpy.pi/(order+1)) + .5
-    x_data = chaospy.quadrature.combine([x_data]*dim)
+    x_data = chaospy.quadrature.utils.combine([x_data]*dim)
     return x_data.T
 
 

@@ -20,11 +20,13 @@ def ensure_input(quad_func, **kwargs):
                 if isinstance(value, (int, float, numpy.ndarray))}
     nonsizables = {key: value for key, value in kwargs.items()
                    if not isinstance(value, (int, float, numpy.ndarray))}
-    if sizables:
-        keys = list(sizables)
-        args = numpy.broadcast_arrays(*[sizables[key] for key in keys])
-        assert args and args[0].ndim <= 1, kwargs
-        sizables = {key: value for key, value in zip(keys, args)}
+
+    sizables["_"] = numpy.zeros(len(kwargs.get("domain", [0])))
+    keys = list(sizables)
+    args = numpy.broadcast_arrays(*[sizables[key] for key in keys])
+    assert args and args[0].ndim <= 1, kwargs
+    sizables = {key: value for key, value in zip(keys, args)}
+    del sizables["_"]
     return quad_func(**sizables, **nonsizables)
 
 

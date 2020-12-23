@@ -61,7 +61,7 @@ def create_grid_samples(order, dim=1):
 
     """
     x_data = numpy.arange(1, order+1)/(order+1.)
-    x_data = chaospy.quadrature.combine([x_data]*dim)
+    x_data = chaospy.quadrature.utils.combine([x_data]*dim)
     return x_data.T
 
 

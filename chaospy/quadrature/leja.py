@@ -25,7 +25,7 @@ import numpy
 from scipy.optimize import fminbound
 import chaospy
 
-from .combine import combine
+from .utils import combine
 
 
 def quad_leja(
