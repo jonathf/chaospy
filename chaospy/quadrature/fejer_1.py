@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Generate the quadrature abscissas and weights in Fejér type I quadrature."""
 try:
     from functools import lru_cache
 except ImportError:  # pragma: no cover

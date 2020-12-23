@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Generate the abscissas and weights in Gauss-Loboto quadrature.
 
