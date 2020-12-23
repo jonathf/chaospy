@@ -39,5 +39,4 @@ Utility Functions
    :toctree: api
 
    kronrod_jacobi
-   combine
    construct_sparse_grid

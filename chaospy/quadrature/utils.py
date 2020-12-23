@@ -27,8 +27,8 @@ def ensure_input(quad_func, **kwargs):
     assert args and args[0].ndim <= 1, kwargs
     sizables = {key: value for key, value in zip(keys, args)}
     del sizables["_"]
-    return quad_func(**sizables, **nonsizables)
-
+    sizables.update(**nonsizables)
+    return quad_func(**sizables)
 
 
 def distribution_to_domain(quad_func, distribution, **kwargs):
