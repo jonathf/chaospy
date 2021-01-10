@@ -9,7 +9,7 @@ With increasing order::
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_radau")
+    ...         order, distribution, rule="radau")
     ...     print(abscissas.round(2), weights.round(2))
     [[-1.]] [1.]
     [[-1.   0.2]] [0.17 0.83]
@@ -22,7 +22,7 @@ Multivariate samples::
     >>> distribution = chaospy.J(
     ...     chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> abscissas, weights = chaospy.generate_quadrature(
-    ...     1, distribution, rule="gauss_radau")
+    ...     1, distribution, rule="radau")
     >>> abscissas.round(3)
     array([[0.   , 0.   , 0.667, 0.667],
            [0.   , 0.5  , 0.   , 0.5  ]])
@@ -33,7 +33,7 @@ To change the fixed point, the direct generating function has to be used::
 
     >>> distribution = chaospy.Uniform(lower=-1, upper=1)
     >>> for fixed_point in numpy.linspace(-1, 1, 6):
-    ...     abscissas, weights = chaospy.quad_gauss_radau(
+    ...     abscissas, weights = chaospy.quadrature.radau(
     ...         2, distribution, fixed_point)
     ...     print(abscissas.round(2), weights.round(2))
     [[-1.   -0.58  0.18  0.82]] [0.06 0.33 0.39 0.22]
@@ -45,7 +45,7 @@ To change the fixed point, the direct generating function has to be used::
 
 However, a fixed point at 0 is not allowed::
 
-    >>> chaospy.quad_gauss_radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> chaospy.quadrature.radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
     ...     3, distribution, fixed_point=0)
     Traceback (most recent call last):
         ...
@@ -58,7 +58,7 @@ import chaospy
 from .utils import combine_quadrature
 
 
-def quad_gauss_radau(
+def radau(
         order,
         dist,
         fixed_point=None,
@@ -111,14 +111,14 @@ def quad_gauss_radau(
             The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_gauss_radau(4, chaospy.Uniform(-1, 1))
+        >>> distribution = chaospy.Uniform(-1, 1)
+        >>> abscissas, weights = chaospy.quadrature.radau(4, distribution)
         >>> abscissas.round(3)
         array([[-1.   , -0.887, -0.64 , -0.295,  0.094,  0.468,  0.771,  0.955]])
         >>> weights.round(3)
         array([0.016, 0.093, 0.152, 0.188, 0.196, 0.174, 0.125, 0.057])
 
     """
-    assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if fixed_point is None:
         fixed_point = dist.lower
     else:

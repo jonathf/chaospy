@@ -1,42 +1,64 @@
 .. _quadrature_collection:
 
-Quadrature Integration
+Quadrature integration
 ======================
 
-.. currentmodule:: chaospy
+.. currentmodule:: chaospy.quadrature
 
-Gaussian Quadrature
+Standard library
+----------------
+
+.. autosummary::
+   :toctree: api
+
+   clenshaw_curtis
+   fejer_1
+   fejer_2
+   gaussian
+   grid
+   legendre_proxy
+   leja
+   newton_cotes
+
+Discrete densities
+------------------
+
+.. autosummary::
+   :toctree: api
+
+   discrete
+
+Gaussian extensions
 -------------------
 
 .. autosummary::
    :toctree: api
 
-   quad_gaussian
-   quad_gauss_legendre
-   quad_gauss_kronrod
-   quad_gauss_lobatto
-   quad_gauss_patterson
-   quad_gauss_radau
+   legendre
+   kronrod
+   lobatto
+   patterson
+   radau
 
-Other Quadrature Rules
-----------------------
-
-.. autosummary::
-   :toctree: api
-
-   quad_fejer_1
-   quad_fejer_2
-   quad_clenshaw_curtis
-   quad_discrete
-   quad_genz_keister
-   quad_leja
-   quad_newton_cotes
-
-Utility Functions
------------------
+Gaussian predefined
+-------------------
 
 .. autosummary::
    :toctree: api
 
+   chebyshev_1
+   chebyshev_2
+   gegenbauer
+   hermite
+   jacobi
+   legendre
+   laguerre
+
+Helper functions
+----------------
+
+.. autosummary::
+   :toctree: api
+
+   sparse_grid
    kronrod_jacobi
-   construct_sparse_grid

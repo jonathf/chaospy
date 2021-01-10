@@ -10,7 +10,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def quad_clenshaw_curtis(order, domain=(0., 1.), growth=False, segments=1):
+def clenshaw_curtis(order, domain=(0., 1.), growth=False, segments=1):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
@@ -25,9 +25,9 @@ def quad_clenshaw_curtis(order, domain=(0., 1.), growth=False, segments=1):
     reduced as the abscissas can be used across levels.
 
     Args:
-        order (int, :class:`numpy.ndarray`):
+        order (int, numpy.ndarray):
             Quadrature order.
-        domain (:class:`chaospy.Distribution`, :class:`numpy.ndarray`):
+        domain (:class:`chaospy.Distribution`, numpy.ndarray):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
@@ -39,43 +39,46 @@ def quad_clenshaw_curtis(order, domain=(0., 1.), growth=False, segments=1):
             Nested samples only appear when the number of segments are fixed.
 
     Returns:
-        abscissas (:class:`numpy.ndarray`):
+        abscissas (numpy.ndarray):
             The quadrature points for where to evaluate the model function
             with ``abscissas.shape == (len(dist), steps)`` where ``steps`` is
             the number of samples.
-        weights (:class:`numpy.ndarray`):
+        weights (numpy.ndarray):
             The quadrature weights with ``weights.shape == (steps,)``.
 
     Notes:
         Implemented as proposed by Waldvogel :cite:`waldvogel_fast_2006`.
 
     Example:
-        >>> abscissas, weights = quad_clenshaw_curtis(4, (0, 1))
+        >>> abscissas, weights = chaospy.quadrature.clenshaw_curtis(4, (0, 1))
         >>> abscissas.round(4)
         array([[0.    , 0.1464, 0.5   , 0.8536, 1.    ]])
         >>> weights.round(4)
         array([0.0333, 0.2667, 0.4   , 0.2667, 0.0333])
-        >>> abscissas, weights = quad_clenshaw_curtis(4, (0, 1), segments=2)
-        >>> abscissas.round(4)
-        array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
-        >>> weights.round(4)
-        array([0.0833, 0.3333, 0.1667, 0.3333, 0.0833])
+
+    See also:
+        :func:`chaospy.quadrature.gaussian`
+        :func:`chaospy.quadrature.fejer_1`
+        :func:`chaospy.quadrature.fejer_2`
 
     """
     order = numpy.asarray(order)
     order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
     return hypercube_quadrature(
-        quad_func=_clenshaw_curtis,
+        quad_func=clenshaw_curtis_simple,
         order=order,
         domain=domain,
         segments=segments,
     )
 
 
-
 @lru_cache(None)
-def _clenshaw_curtis(order):
-    """Backend for Clenshaw-Curtis quadrature."""
+def clenshaw_curtis_simple(order):
+    """
+    Backend for Clenshaw-Curtis quadrature.
+
+    Use :func:`chaospy.quadrature.clenshaw_curtis` instead.
+    """
     order = int(order)
     if order == 0:
         return numpy.array([.5]), numpy.array([1.])

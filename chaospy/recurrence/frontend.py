@@ -97,8 +97,8 @@ def construct_recurrence_coefficients(
 
     assert recurrence_algorithm in RECURRENCE_ALGORITHMS, (
         "recurrence algorithm '%s' not recognized" % recurrence_algorithm)
-    assert not rule.startswith("gauss"), (
-        "recursive Gaussian quadrature construct")
+    assert rule not in ("gaussian", "kronrod", "lobatto", "radau"), (
+        "recursive Gaussian quadrature construct; %s provided" % rule)
 
     if recurrence_algorithm == "chebyshev":
         moments = dist.mom(numpy.arange(2*(order+1), dtype=int))

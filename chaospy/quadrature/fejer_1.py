@@ -9,16 +9,13 @@ import numpy
 from .hypercube import hypercube_quadrature
 
 
-def quad_fejer_1(order, domain=(0, 1), growth=False, segments=1):
+def fejer_1(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate the quadrature abscissas and weights in Fejér type I quadrature.
 
     Fejér proposed two quadrature rules very similar to
-    :func:`chaospy.quad_clenshaw_curtis`. The only difference is that the
-    endpoints are removed. That is, Fejér only used the interior extrema of the
-    Chebyshev polynomials, i.e. the true stationary points. This makes this a
-    better method for performing quadrature on infinite intervals, as the
-    evaluation does not contain endpoint values.
+    :func:`chaospy.quadrature.clenshaw_curtis`, except that it does not
+    include endpoints, making it more suitable to integrate unbound interval.
 
     Args:
         order (int, numpy.ndarray):
@@ -46,22 +43,22 @@ def quad_fejer_1(order, domain=(0, 1), growth=False, segments=1):
         Implemented as proposed by Waldvogel :cite:`waldvogel_fast_2006`.
 
     Example:
-        >>> abscissas, weights = quad_fejer_1(3, (0, 1))
+        >>> abscissas, weights = chaospy.quadrature.fejer_1(3, (0, 1))
         >>> abscissas.round(4)
         array([[0.0381, 0.3087, 0.6913, 0.9619]])
         >>> weights.round(4)
         array([0.1321, 0.3679, 0.3679, 0.1321])
-        >>> abscissas, weights = quad_fejer_1(3, (0, 1), segments=2)
-        >>> abscissas.round(4)
-        array([[0.0335, 0.25  , 0.4665, 0.5732, 0.9268]])
-        >>> weights.round(4)
-        array([0.1111, 0.2778, 0.1111, 0.25  , 0.25  ])
+
+    See also:
+        :func:`chaospy.quadrature.gaussian`
+        :func:`chaospy.quadrature.clenshaw_curtis`
+        :func:`chaospy.quadrature.fejer_2`
 
     """
     order = numpy.asarray(order)
     order = numpy.where(growth, 2*3**order-1, order)
     return hypercube_quadrature(
-        quad_func=_fejer_type_1,
+        quad_func=fejer_1_simple,
         order=order,
         domain=domain,
         segments=segments,
@@ -69,7 +66,7 @@ def quad_fejer_1(order, domain=(0, 1), growth=False, segments=1):
 
 
 @lru_cache(None)
-def _fejer_type_1(order):
+def fejer_1_simple(order):
     """Backend for Fejer type I quadrature."""
     order = int(order)
     if order == 0:

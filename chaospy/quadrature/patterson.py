@@ -7,22 +7,26 @@ Example usage
 With increasing order::
 
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
-    >>> for order in range(3):  # doctest: +NORMALIZE_WHITESPACE
+    >>> for order in range(3):
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_patterson")
+    ...         order, distribution, rule="patterson")
     ...     print(abscissas.round(2), weights.round(2))
     [[0.]] [1.]
     [[-0.77  0.    0.77]] [0.17 0.67 0.17]
-    [[-0.96 -0.77 -0.43  0.    0.43  0.77  0.96]]
-     [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
+    [[-0.96 -0.77 -0.43  0.    0.43  0.77  0.96]] [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
 """
+try:
+    from functools import lru_cache
+except ImportError:  # pragma: no cover
+    from functools32 import lru_cache
+
 import numpy
 import chaospy
 
-from .utils import combine
+from .hypercube import hypercube_quadrature
 
 
-def quad_gauss_patterson(order, domain):
+def patterson(order, domain):
     """
     Generate Gauss-Patterson quadrature abscissa and weights.
 
@@ -32,7 +36,7 @@ def quad_gauss_patterson(order, domain):
     Gauss-Patterson rules do not have the super-high precision of the
     Gauss-Legendre rules. They trade this precision in exchange for the
     advantages of nestedness. This means that Gauss-Patterson rules are only
-    available for orders of 1, 3, 7, 15, 31, 63, 127, 255 or 511.
+    available for orders of 0, 2, 6, 14, 30, 62, 126, 254 or 510.
 
     Args:
         order (int):
@@ -55,8 +59,8 @@ def quad_gauss_patterson(order, domain):
         Points to Quadrature Formulae":cite:`patterson_optimum_1968`.
 
     Example:
-        >>> abscissas, weights = chaospy.quad_gauss_patterson(
-        ...     1, chaospy.Iid(chaospy.Uniform(0, 1), 2))
+        >>> distribution = chaospy.Iid(chaospy.Uniform(0, 1), 2)
+        >>> abscissas, weights = chaospy.quadrature.patterson(1, distribution)
         >>> abscissas.round(3)
         array([[0.113, 0.113, 0.113, 0.5  , 0.5  , 0.5  , 0.887, 0.887, 0.887],
                [0.113, 0.5  , 0.887, 0.113, 0.5  , 0.887, 0.113, 0.5  , 0.887]])
@@ -64,48 +68,30 @@ def quad_gauss_patterson(order, domain):
         array([0.077, 0.123, 0.077, 0.123, 0.198, 0.123, 0.077, 0.123, 0.077])
 
     """
-    if isinstance(domain, chaospy.Distribution):
-        abscissas, weights = quad_gauss_patterson(
-            order, (domain.lower, domain.upper))
-        eps = 1e-14*(domain.upper-domain.lower)
-        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        weights *= domain.pdf(abscissas_).flatten()
-        weights /= numpy.sum(weights)
-        return abscissas, weights
-
-    domain = numpy.array(numpy.broadcast_arrays(*domain))
-    lower, upper = numpy.atleast_2d(domain.T).T
-    lower, upper, order = numpy.broadcast_arrays(lower, upper, order)
-
-    if lower.size > 1:
-        values = [quad_gauss_patterson(order_, (lower_, upper_))
-                  for order_, lower_, upper_ in zip(order, lower, upper)]
-
-        abscissas = [value[0][0] for value in values]
-        weights = [value[1] for value in values]
-        abscissas = combine(abscissas).T
-        weights = numpy.prod(combine(weights), -1)
-        return abscissas, weights
-
-    order = sorted(PATTERSON_VALUES.keys())[int(order)]
-    abscissas, weights = PATTERSON_VALUES[int(order)]
-
-    abscissas = .5*(abscissas*(upper-lower)+upper+lower)
-    abscissas = abscissas.reshape(1, abscissas.size)
-    weights /= numpy.sum(weights)
-
+    abscissas, weights = hypercube_quadrature(
+        patterson_simple,
+        order=int(order),
+        domain=domain,
+    )
     return abscissas, weights
+
+
+@lru_cache(None)
+def patterson_simple(order):
+    assert order < 9
+    abscissas, weights = PATTERSON_VALUES[int(order)]
+    return numpy.array(abscissas)*0.5+0.5, numpy.array(weights)/2.
 
 
 PATTERSON_VALUES = {
     0 : ((0e+00,), (2.0e+00,)),
-    3 : ((
+    1 : ((
         -0.77459666924148337704e+00, 0.0e+00, 0.77459666924148337704e+00,
     ), (
         0.555555555555555555556e+00, 0.888888888888888888889e+00,
         0.555555555555555555556e+00,
     )),
-    7 : ((
+    2 : ((
         -0.96049126870802028342e+00, -0.77459666924148337704e+00,
         -0.43424374934680255800e+00, 0.0e+00, 0.43424374934680255800e+00,
         0.77459666924148337704e+00, 0.96049126870802028342e+00,
@@ -115,7 +101,7 @@ PATTERSON_VALUES = {
         0.401397414775962222905e+00, 0.268488089868333440729e+00,
         0.104656226026467265194e+00,
     )),
-    15 : ((
+    3 : ((
         -0.99383196321275502221e+00, -0.96049126870802028342e+00,
         -0.88845923287225699889e+00, -0.77459666924148337704e+00,
         -0.62110294673722640294e+00, -0.43424374934680255800e+00,
@@ -133,7 +119,7 @@ PATTERSON_VALUES = {
         0.0929271953151245376859e+00, 0.0516032829970797396969e+00,
         0.0170017196299402603390e+00,
     )),
-    31 : ((
+    4 : ((
         -0.99909812496766759766e+00, -0.99383196321275502221e+00,
         -0.98153114955374010687e+00, -0.96049126870802028342e+00,
         -0.92965485742974005667e+00, -0.88845923287225699889e+00,
@@ -167,7 +153,7 @@ PATTERSON_VALUES = {
         0.0164460498543878109338e+00, 0.00843456573932110624631e+00,
         0.00254478079156187441540e+00,
     )),
-    63 : ((
+    5 : ((
         -0.99987288812035761194e+00, -0.99909812496766759766e+00,
         -0.99720625937222195908e+00, -0.99383196321275502221e+00,
         -0.98868475754742947994e+00, -0.98153114955374010687e+00,
@@ -233,7 +219,7 @@ PATTERSON_VALUES = {
         0.00257904979468568827243e+00, 0.00126515655623006801137e+00,
         0.000363221481845530659694e+00,
     )),
-    127 : ((
+    6 : ((
         -0.99998243035489159858e+00, -0.99987288812035761194e+00,
         -0.99959879967191068325e+00, -0.99909812496766759766e+00,
         -0.99831663531840739253e+00, -0.99720625937222195908e+00,
@@ -363,7 +349,7 @@ PATTERSON_VALUES = {
         0.000377746646326984660274e+00, 0.000180739564445388357820e+00,
         0.0000505360952078625176247e+00,
     )),
-    255 : ((
+    7 : ((
         -0.99999759637974846462e+00, -0.99998243035489159858e+00,
         -0.99994399620705437576e+00, -0.99987288812035761194e+00,
         -0.99976049092443204733e+00, -0.99959879967191068325e+00,
@@ -621,7 +607,7 @@ PATTERSON_VALUES = {
         0.53275293669780613125e-04, 0.25157870384280661489e-04,
         0.69379364324108267170e-05,
     )),
-    511 : ((
+    8 : ((
         -0.999999672956734384381e+00, -0.999997596379748464620e+00,
         -0.999992298136257588028e+00, -0.999982430354891598580e+00,
         -0.999966730098486276883e+00, -0.999943996207054375764e+00,

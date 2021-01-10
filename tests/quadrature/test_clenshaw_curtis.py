@@ -43,7 +43,7 @@ def test_setup(request):
 def test_clenshaw_curtis(test_setup):
     """Test Clenshaw Curtis quadrature."""
     kwargs, nodes0, weights0 = test_setup
-    nodes, weights = chaospy.quad_clenshaw_curtis(**kwargs)
+    nodes, weights = chaospy.quadrature.clenshaw_curtis(**kwargs)
     assert nodes.shape == nodes0.shape, nodes
     assert numpy.allclose(nodes, nodes0)
     assert numpy.allclose(weights, weights0)

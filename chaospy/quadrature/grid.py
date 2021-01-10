@@ -10,7 +10,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def quad_grid(order, domain=(0, 1), growth=False, segments=1):
+def grid(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate the quadrature abscissas and weights for simple grid.
 
@@ -27,12 +27,12 @@ def quad_grid(order, domain=(0, 1), growth=False, segments=1):
             The weights are all equal to `1/len(weights[0])`.
 
     Example:
-        >>> abscissas, weights = chaospy.quad_grid(4, chaospy.Uniform(-1, 1))
+        >>> abscissas, weights = chaospy.quadrature.grid(4, chaospy.Uniform(-1, 1))
         >>> abscissas.round(4)
         array([[-0.8, -0.4,  0. ,  0.4,  0.8]])
         >>> weights.round(4)
         array([0.2, 0.2, 0.2, 0.2, 0.2])
-        >>> abscissas, weights = chaospy.quad_grid([1, 1])
+        >>> abscissas, weights = chaospy.quadrature.grid([1, 1])
         >>> abscissas.round(4)
         array([[0.25, 0.25, 0.75, 0.75],
                [0.25, 0.75, 0.25, 0.75]])
@@ -41,16 +41,21 @@ def quad_grid(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 3**order-1, 0), order)
     return hypercube_quadrature(
-        quad_func=_grid,
+        quad_func=grid_simple,
         order=order,
         domain=domain,
         segments=segments,
     )
 
 
-def _grid(order):
+def grid_simple(order):
+    """
+    Backend for grid quadrature.
+
+    Use :func:`chaospy.quadrature.grid` instead.
+    """
     order = int(order)
     abscissas = numpy.linspace(0, 1, 2*order+3)[1::2]
     weights = numpy.full(order+1, 1./(order+1))

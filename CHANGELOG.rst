@@ -1,6 +1,34 @@
 Master Branch
 =============
 
+Refactoring `quadrature` module.
+
+ADDED:
+  * `chaospy.quadrature.fejer_1` is added.
+  * Dedicated classical quadrature schemes added: ``
+CHANGED:
+  * Refactored hypercube quadrature to common backend. This gives lots of flags
+    like `seqments` and
+  * All `caospy.quad_*` functions announced to be deprecated.
+    `chaospy.quadrature.*` to take their place. So instead of
+    `chaospy.quad_clenshaw_curtis`, do `chaospy.quadrature.clenshaw_curtis`.
+    This to make clearer sub-module structure to chaospy as it grows. Warning
+    is raised if old functions are used for now.
+  * `gauss_`-prefixes removed so to make names sorter and more consist. Instead
+    of `chaospy.quad_gauss_radau` and flag `rule="gauss_radau"`, we now have
+    `chaospy.quadrature.radau` and flag `rule="radau"`.
+  * Renaming `fejer -> fejer_2` is in-fact Fejer type II and `fejer_1` is added
+    to the mix.
+  * Rename `legendre -> legendre_proxy` as `legendre` is now reserved for pure
+    legendre.
+  * Patterson growth rule changed from `0, 3, 7, ...` to `0, 1, 2, ...` but
+    maps backwards. Defaults to not have growth parameter, as setting it false
+    makes no sense.
+  * Renamed: `chaospy.generate_sparse_grid -> chaospy.quadrature.sparse_grid`
+REMOVED:
+  * Genz-Keister deprecated as it does not fit the `chaospy` scheme very well.
+
+
 Version 4.2.2 (2020-12-07)
 ==========================
 

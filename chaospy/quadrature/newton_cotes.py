@@ -49,12 +49,12 @@ try:
 except ImportError:  # pragma: no cover
     from functools32 import lru_cache
 import numpy
-from scipy.integrate import newton_cotes
+from scipy import integrate
 
 from .hypercube import hypercube_quadrature
 
 
-def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
+def newton_cotes(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate the abscissas and weights in Newton-Cotes quadrature.
 
@@ -85,12 +85,12 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Examples:
-        >>> abscissas, weights = quad_newton_cotes(4)
+        >>> abscissas, weights = chaospy.quadrature.newton_cotes(4)
         >>> abscissas.round(4)
         array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
         >>> weights.round(4)
         array([0.0778, 0.3556, 0.1333, 0.3556, 0.0778])
-        >>> abscissas, weights = quad_newton_cotes(4, segments=2)
+        >>> abscissas, weights = chaospy.quadrature.newton_cotes(4, segments=2)
         >>> abscissas.round(4)
         array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
         >>> weights.round(4)
@@ -112,4 +112,4 @@ def _newton_cotes(order):
     """Backend for Newton-Cotes quadrature rule."""
     if order == 0:
         return numpy.full((1, 1), 0.5), numpy.ones(1)
-    return numpy.linspace(0, 1, order+1), newton_cotes(order)[0]/order
+    return numpy.linspace(0, 1, order+1), integrate.newton_cotes(order)[0]/order

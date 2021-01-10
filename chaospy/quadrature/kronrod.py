@@ -7,10 +7,11 @@ Example usage
 Generate Gauss-Kronrod quadrature rules::
 
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
-    >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
+    >>> for order in range(5):  # doctest: +NORMALIZE_WHITESPACE
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_kronrod")
+    ...         order, distribution, rule="kronrod")
     ...     print(abscissas.round(2), weights.round(2))
+    [[0.]] [1.]
     [[-0.65 -0.    0.65]] [0.23 0.53 0.23]
     [[-0.82 -0.45  0.    0.45  0.82]] [0.07 0.26 0.34 0.26 0.07]
     [[-0.89 -0.65 -0.34 -0.    0.34  0.65  0.89]]
@@ -26,7 +27,7 @@ Gauss-Legendre::
     ...     abscissas1, weights1 = chaospy.generate_quadrature(
     ...         order, distribution, rule="gaussian")
     ...     abscissas2, weights2 = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_kronrod")
+    ...         order+1, distribution, rule="kronrod")
     ...     print(abscissas1.round(2), abscissas2[:, 1::2].round(2))
     [[0.]] [[-0.]]
     [[-0.58  0.58]] [[-0.58  0.58]]
@@ -41,7 +42,7 @@ Gauss-Kronrod build on top of Gauss-Hermite quadrature::
     ...     abscissas1, weights1 = chaospy.generate_quadrature(
     ...         order, distribution, rule="gaussian")
     ...     abscissas2, weights2 = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_kronrod")
+    ...         order+1, distribution, rule="kronrod")
     ...     print(abscissas1.round(2), abscissas2.round(2))
     [[0.]] [[-1.73  0.    1.73]]
     [[-1.  1.]] [[-2.45 -1.    0.    1.    2.45]]
@@ -50,7 +51,7 @@ Applying Gauss-Kronrod to Gauss-Hermite quadrature, for an order known to not
 exist::
 
     >>> chaospy.generate_quadrature(  # doctest: +IGNORE_EXCEPTION_DETAIL
-    ...     5, distribution, rule="gauss_kronrod")
+    ...     5, distribution, rule="kronrod")
     Traceback (most recent call last):
         ...
     numpy.linalg.LinAlgError: \
@@ -61,7 +62,7 @@ Multivariate support::
     >>> distribution = chaospy.J(
     ...     chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> abscissas, weights = chaospy.generate_quadrature(
-    ...     1, distribution, rule="gauss_kronrod")
+    ...     2, distribution, rule="kronrod")
     >>> abscissas.round(3)
     array([[0.037, 0.037, 0.037, 0.037, 0.037, 0.211, 0.211, 0.211, 0.211,
             0.211, 0.5  , 0.5  , 0.5  , 0.5  , 0.5  , 0.789, 0.789, 0.789,
@@ -83,7 +84,7 @@ import chaospy
 from .utils import combine_quadrature
 
 
-def quad_gauss_kronrod(
+def kronrod(
         order,
         dist,
         recurrence_algorithm="stieltjes",
@@ -158,14 +159,13 @@ def quad_gauss_kronrod(
 
     Example:
         >>> distribution = chaospy.Uniform(-1, 1)
-        >>> abscissas, weights = quad_gauss_kronrod(3, distribution)
+        >>> abscissas, weights = chaospy.quadrature.kronrod(4, distribution)
         >>> abscissas.round(2)
         array([[-0.98, -0.86, -0.64, -0.34,  0.  ,  0.34,  0.64,  0.86,  0.98]])
         >>> weights.round(3)
         array([0.031, 0.085, 0.133, 0.163, 0.173, 0.163, 0.133, 0.085, 0.031])
-    """
-    assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
 
+    """
     length = int(numpy.ceil(3*(order+1) / 2.0))
     coefficients = chaospy.construct_recurrence_coefficients(
         order=length,
@@ -177,7 +177,7 @@ def quad_gauss_kronrod(
         n_max=n_max,
     )
 
-    coefficients = [kronrod_jacobi(order+1, coeffs) for coeffs in coefficients]
+    coefficients = [kronrod_jacobi(order, coeffs) for coeffs in coefficients]
 
     abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
     return combine_quadrature(abscissas, weights)
@@ -202,7 +202,8 @@ def kronrod_jacobi(order, coeffs):
         Three terms recurrence coefficients of the Gauss-Kronrod quadrature
         rule.
     """
-    assert len(coeffs[0]) == int(math.ceil(3*order/2.0))+1
+    if not order:
+        return kronrod_jacobi(1, coeffs)[:, :1]
 
     bound = int(math.floor(3*order/2.0))+1
     coeffs_a = numpy.zeros(2*order+1)

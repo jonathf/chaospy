@@ -10,7 +10,7 @@ With increasing order::
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_lobatto")
+    ...         order, distribution, rule="lobatto")
     ...     print(X.round(2), W.round(2))
     [[-1.]] [1.]
     [[-1.  1.]] [0.5 0.5]
@@ -22,7 +22,7 @@ Multivariate samples::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
-    ...     2, distribution, rule="gauss_lobatto")
+    ...     2, distribution, rule="lobatto")
     >>> X.round(3)
     array([[-0.   , -0.   , -0.   , -0.   ,  0.276,  0.276,  0.276,  0.276,
              0.724,  0.724,  0.724,  0.724,  1.   ,  1.   ,  1.   ,  1.   ],
@@ -39,7 +39,7 @@ import chaospy
 from .utils import combine_quadrature
 
 
-def quad_gauss_lobatto(
+def lobatto(
         order,
         dist,
         recurrence_algorithm="stieltjes",
@@ -91,12 +91,13 @@ def quad_gauss_lobatto(
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_gauss_lobatto(
-        ...     4, chaospy.Uniform(-1, 1))
+        >>> distribution = chaospy.Uniform(-1, 1)
+        >>> abscissas, weights = chaospy.quadrature.lobatto(4, distribution)
         >>> abscissas.round(3)
         array([[-1.   , -0.872, -0.592, -0.209,  0.209,  0.592,  0.872,  1.   ]])
         >>> weights.round(3)
         array([0.018, 0.105, 0.171, 0.206, 0.206, 0.171, 0.105, 0.018])
+
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if order == 0:
