@@ -47,7 +47,7 @@ import chaospy
 
 def create_grid_samples(order, dim=1):
     """
-    Create samples from a regular grid.
+    Generate samples from a regular grid.
 
     Args:
         order (int):
@@ -55,11 +55,13 @@ def create_grid_samples(order, dim=1):
         dim (int):
             The number of dimensions in the grid
 
-    Returns (numpy.ndarray):
-        Regular grid with ``shape == (dim, order)``.
+    Returns:
+        (numpy.ndarray):
+            Regular grid with ``shape == (dim, order)``.
+
     """
     x_data = numpy.arange(1, order+1)/(order+1.)
-    x_data = chaospy.quadrature.combine([x_data]*dim)
+    x_data = chaospy.quadrature.utils.combine([x_data]*dim)
     return x_data.T
 
 

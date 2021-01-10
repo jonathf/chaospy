@@ -6,3 +6,4 @@ from .halton import create_halton_samples
 from .hammersley import create_hammersley_samples
 from .sobol import create_sobol_samples
 from .korobov import create_korobov_samples
+from .van_der_corput import create_van_der_corput_samples

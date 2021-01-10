@@ -1,13 +1,6 @@
+# -*- coding: utf-8 -*-
 """
-Gauss-Radau formula for numerical estimation of integrals. It requires
-:math:`m+1` points and fits all Polynomials to degree :math:`2m`, so it
-effectively fits exactly all Polynomials of degree :math:`2m-3`.
-
-Gauss-Radau is defined by having two abscissas to be fixed to the endpoints,
-while the others are built around these points. So if a distribution is defined
-on the interval ``(a, b)``, then both ``a`` and ``b`` are abscissas in this
-scheme. Note though that this does not always possible to achieve in practice,
-and an error might be raised.
+Generate the abscissas and weights in Gauss-Loboto quadrature.
 
 Example usage
 -------------
@@ -17,7 +10,7 @@ With increasing order::
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     X, W = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_lobatto")
+    ...         order, distribution, rule="lobatto")
     ...     print(X.round(2), W.round(2))
     [[-1.]] [1.]
     [[-1.  1.]] [0.5 0.5]
@@ -29,7 +22,7 @@ Multivariate samples::
 
     >>> distribution = chaospy.J(chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> X, W = chaospy.generate_quadrature(
-    ...     2, distribution, rule="gauss_lobatto")
+    ...     2, distribution, rule="lobatto")
     >>> X.round(3)
     array([[-0.   , -0.   , -0.   , -0.   ,  0.276,  0.276,  0.276,  0.276,
              0.724,  0.724,  0.724,  0.724,  1.   ,  1.   ,  1.   ,  1.   ],
@@ -43,20 +36,29 @@ import numpy
 from scipy.linalg import solve_banded, solve
 import chaospy
 
-from .combine import combine_quadrature
+from .utils import combine_quadrature
 
 
-def quad_gauss_lobatto(
+def lobatto(
         order,
         dist,
         recurrence_algorithm="stieltjes",
-        rule="fejer",
+        rule="fejer_2",
         tolerance=1e-10,
         scaling=3,
         n_max=5000,
 ):
     """
     Generate the abscissas and weights in Gauss-Loboto quadrature.
+
+    Also known as Lobatto quadrature, named after Dutch mathematician Rehuel
+    Lobatto. It is similar to Gaussian quadrature with the following
+    differences:
+
+    * The integration points include the end points of the integration
+      interval.
+    * It is accurate for polynomials up to degree :math:`2n–3`, where :math:`n`
+      is the number of integration points.
 
     Args:
         order (int):
@@ -89,12 +91,13 @@ def quad_gauss_lobatto(
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_gauss_lobatto(
-        ...     4, chaospy.Uniform(-1, 1))
+        >>> distribution = chaospy.Uniform(-1, 1)
+        >>> abscissas, weights = chaospy.quadrature.lobatto(4, distribution)
         >>> abscissas.round(3)
         array([[-1.   , -0.872, -0.592, -0.209,  0.209,  0.592,  0.872,  1.   ]])
         >>> weights.round(3)
         array([0.018, 0.105, 0.171, 0.206, 0.206, 0.171, 0.105, 0.018])
+
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if order == 0:
