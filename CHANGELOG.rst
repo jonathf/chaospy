@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.3.2 (2021-01-20)
+==========================
+
+FIXED:
+  * Correct triangle repr.
+
 Version 4.2.2 (2020-12-07)
 ==========================
 
@@ -17,15 +23,16 @@ CHANGED:
     quadrature (Clenshaw-Curtis and Fejér).
   * Better support for density approximation. Allow for more contexts by
     weaving a full density history.
-  * Bugfix: wrappers distribution no longer ignores wrapped distribution during
+  * Documentation update.
+FIXED:
+  * Wrappers distribution no longer ignores wrapped distribution during
     dependency declaration. Ignoring them have in some cases caused some
     variables not to be declared correctly.
-  * Documentation update.
 
 Version 4.2.1 (2020-11-24)
 ==========================
 
-CHANGED:
+FIXED:
   * Bugfix in rounding for discrete distributions.
   * Bugfix in rule for when to round discrete variables.
 
@@ -42,9 +49,10 @@ CHANGED:
   * `chaospy.E_cond` changed to accept simple polynomials as second argument,
     allowing for e.g. `chaospy.E_cond(q0*q1, q0, dist)` which can be
     interpreted as "expectation of `q0*q1` given `q0` with respect to `dist`".
-  * Bugfixes to `chaospy.Spearman`
   * Full refactorization of the documentation.
   * Updates `numpoly` to version 1.1.0. (some small breaking changes).
+FIXED:
+  * Bugfixes to `chaospy.Spearman`
 REMOVED:
   * Deprecated `report_on_exception`. Caused recursion problems, and only a
     semi-useful diagnostic tool to begin with.
