@@ -52,7 +52,7 @@ class Triangle(LowerUpperDistribution):
     Examples:
         >>> distribution = chaospy.Triangle(-1, 0 ,1)
         >>> distribution
-        Triangle(-1, 0.5, 1)
+        Triangle(-1, 0, 1)
         >>> uloc = numpy.linspace(0, 1, 6)
         >>> uloc
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
@@ -71,11 +71,11 @@ class Triangle(LowerUpperDistribution):
     """
 
     def __init__(self, lower=-1, midpoint=0, upper=1):
+        repr_args = [lower, midpoint, upper]
         midpoint = (midpoint-lower)*1./(upper-lower)
         super(Triangle, self).__init__(
             dist=triangle(midpoint),
             lower=lower,
             upper=upper,
-            repr_args=["midpoint=%s" % midpoint],
         )
-        self._repr_args = [lower, midpoint, upper]
+        self._repr_args = repr_args
