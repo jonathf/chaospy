@@ -1,5 +1,5 @@
 nbsphinx
 pydata_sphinx_theme
-sphinxcontrib-bibtex
+sphinxcontrib-bibtex==1.0.0
 setuptools==49.6.0
 git+https://github.com/jonathf/numpoly.git@master
