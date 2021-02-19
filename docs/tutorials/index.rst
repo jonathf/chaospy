@@ -122,8 +122,8 @@ alternative strategy to polynomial chaos expansions.
 Use a combination of ``chaospy``, ``scikit-learn`` and ``gstools`` to
 create a polynomial chaos kriging model.
 
-`SEIR: Coupled differential equations  <./seir_model_pce.ipnb>`_
-----------------------------------------------------------------
+`SEIR: Coupled differential equations  <./seir_model_pce.ipynb>`_
+-----------------------------------------------------------------
 
 A complete epidemological example modelling uncertainty in a set coupled
 differential equation, with the use of ``scipy.integration`` and
