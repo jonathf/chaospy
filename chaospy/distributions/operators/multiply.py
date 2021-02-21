@@ -32,22 +32,22 @@ Construct joint multiplication distribution::
     Multiply(Uniform(lower=-1, upper=0), Uniform(lower=-3, upper=-2))
     >>> joint1 = chaospy.J(lhs, multiplication)
     >>> joint1.lower
-    array([-1., -0.])
+    array([-1.,  0.])
     >>> joint1.upper
     array([0., 3.])
     >>> joint2 = chaospy.J(rhs, multiplication)
     >>> joint2.lower
-    array([-3., -0.])
+    array([-3.,  0.])
     >>> joint2.upper
     array([-2.,  3.])
     >>> joint3 = chaospy.J(multiplication, lhs)
     >>> joint3.lower
-    array([-0., -1.])
+    array([ 0., -1.])
     >>> joint3.upper
     array([3., 0.])
     >>> joint4 = chaospy.J(multiplication, rhs)
     >>> joint4.lower
-    array([-0., -3.])
+    array([ 0., -3.])
     >>> joint4.upper
     array([ 3., -2.])
 
@@ -253,7 +253,7 @@ class Multiply(OperatorDistribution):
         pdf.T[valids.T] /= right.T[valids.T]
         return numpy.abs(pdf)
 
-    def _mom(self, key, left, right, cache):
+    def _mom(self, key, left, right):
         """
         Statistical moments.
 
@@ -268,7 +268,6 @@ class Multiply(OperatorDistribution):
             array([1.    , 0.25  , 0.1111, 0.0625])
 
         """
-        del cache
         if isinstance(left, Distribution):
             if chaospy.shares_dependencies(left, right):
                 raise chaospy.StochasticallyDependentError(
@@ -284,9 +283,8 @@ class Multiply(OperatorDistribution):
             right = (numpy.array(right).T**key).T
         return numpy.prod(left)*numpy.prod(right)
 
-    def _ttr(self, kloc, idx, left, right, cache):
+    def _ttr(self, kloc, idx, left, right):
         """Three terms recurrence coefficients."""
-        del cache
         if isinstance(right, Distribution):
             if isinstance(left, Distribution):
                 raise chaospy.StochasticallyDependentError(

@@ -47,7 +47,7 @@ class SimpleDistribution(Distribution):
         )
 
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
+    def get_parameters(self, idx, cache):
         """
         Get distribution parameters.
 
@@ -69,36 +69,45 @@ class SimpleDistribution(Distribution):
                 means the dependency is unresolved.
 
         """
-        parameters = super(SimpleDistribution, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+        parameters = super(SimpleDistribution, self).get_parameters(idx, cache)
         del parameters["cache"]
         del parameters["idx"]
         for key, value in parameters.items():
             if isinstance(value, Distribution):
                 value = value._get_cache(idx, cache, get=0)
-                if isinstance(value, Distribution) and assert_numerical:
+                if isinstance(value, Distribution):
                     raise chaospy.UnsupportedFeature(
                         "operation not supported for %s with dependencies" % self)
                 parameters[key] = value
         return parameters
 
     def get_upper_parameters(self, idx, cache):
-        parameters = self.get_parameters(idx=idx, cache=cache, assert_numerical=False)
+        parameters = super(SimpleDistribution, self).get_parameters(idx, cache)
+        del parameters["cache"]
+        del parameters["idx"]
         for key, value in parameters.items():
             if isinstance(value, Distribution):
-                parameters[key] = value._get_upper(idx, cache)
+                value = value._get_cache(idx, cache, get=0)
+            if isinstance(value, Distribution):
+                value = value._get_upper(idx, cache)
+            parameters[key] = value
         return parameters
 
     def get_lower_parameters(self, idx, cache):
-        parameters = self.get_parameters(idx=idx, cache=cache, assert_numerical=False)
+        parameters = super(SimpleDistribution, self).get_parameters(idx, cache)
+        del parameters["cache"]
+        del parameters["idx"]
         for key, value in parameters.items():
+            if isinstance(value, Distribution):
+                value = value._get_cache(idx, cache, get=0)
             if isinstance(value, Distribution):
                 parameters[key] = value._get_lower(idx, cache)
         return parameters
 
     def get_mom_parameters(self):
-        parameters = self.get_parameters(
-            idx=None, cache={}, assert_numerical=False)
+        parameters = super(SimpleDistribution, self).get_parameters(idx=None, cache={})
+        del parameters["idx"]
+        del parameters["cache"]
         if any([isinstance(value, Distribution) for value in parameters.values()]):
             raise chaospy.UnsupportedFeature(
                 "operation not supported for %s with dependencies" % self)
@@ -108,6 +117,15 @@ class SimpleDistribution(Distribution):
         """Default moment generator, throws error."""
         raise chaospy.UnsupportedFeature(
             "%s: does not support analytical raw moments." % self)
+
+    def get_ttr_parameters(self, idx):
+        parameters = super(SimpleDistribution, self).get_parameters(idx=idx, cache={})
+        del parameters["idx"]
+        del parameters["cache"]
+        if any([isinstance(value, Distribution) for value in parameters.values()]):
+            raise chaospy.UnsupportedFeature(
+                "operation not supported for %s with dependencies" % self)
+        return parameters
 
     def _ttr(self, kloc, **kwargs):
         """Default TTR generator, throws error."""

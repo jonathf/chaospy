@@ -96,9 +96,8 @@ class KernelDensityBaseclass(Distribution):
         self._kernel0 = None
         self._kernel1 = None
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(KernelDensityBaseclass, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+    def get_parameters(self, idx, cache):
+        parameters = super(KernelDensityBaseclass, self).get_parameters(idx, cache)
         if idx is None:
             del parameters["idx"]
         else:

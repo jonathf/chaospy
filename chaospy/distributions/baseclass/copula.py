@@ -31,18 +31,9 @@ class CopulaDistribution(Distribution):
             repr_args=repr_args,
         )
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(CopulaDistribution, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
-        if idx is None:
-            del parameters["idx"]
+    def get_parameters(self, idx, cache):
+        parameters = super(CopulaDistribution, self).get_parameters(idx, cache)
         return parameters
-
-    def _lower(self, idx, dist, trans, cache):
-        return dist._get_lower(idx, cache=cache)
-
-    def _upper(self, idx, dist, trans, cache):
-        return dist._get_upper(idx, cache=cache)
 
     def _cdf(self, xloc, idx, dist, trans, cache):
         output = dist._get_fwd(xloc, idx, cache=cache)
@@ -58,3 +49,19 @@ class CopulaDistribution(Distribution):
         density = dist._get_pdf(xloc, idx, cache=cache.copy())
         return trans._get_pdf(
             dist._get_fwd(xloc, idx, cache=cache), idx, cache=cache)*density
+
+    def get_lower_parameters(self, idx, cache):
+        parameters = self.get_parameters(idx, cache)
+        del parameters["trans"]
+        return parameters
+
+    def _lower(self, idx, dist, cache):
+        return dist._get_lower(idx, cache=cache)
+
+    def get_upper_parameters(self, idx, cache):
+        parameters = self.get_parameters(idx, cache)
+        del parameters["trans"]
+        return parameters
+
+    def _upper(self, idx, dist, cache):
+        return dist._get_upper(idx, cache=cache)

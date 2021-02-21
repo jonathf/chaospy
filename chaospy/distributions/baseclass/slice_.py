@@ -16,14 +16,13 @@ class ItemDistribution(Distribution):
             repr_args=[index, parent],
         )
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
+    def get_parameters(self, idx, cache):
         """Get distribution parameters."""
         assert idx == 0 or idx is None, "Indexes only have a single component"
         if idx == 0:
             idx = int(self._parameters["index"])
         parent = self._parameters["parent"]
-        parameters = parent.get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+        parameters = parent.get_parameters(idx, cache)
         return dict(parent=parent, parameters=parameters)
 
     def __repr__(self):

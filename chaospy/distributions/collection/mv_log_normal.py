@@ -79,12 +79,8 @@ class MvLogNormal(Distribution):
             repr_args=repr_args,
         )
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(MvLogNormal, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
-        if idx is None:
-            parameters.pop("idx")
-        return parameters
+    def get_parameters(self, idx, cache):
+        return super(MvLogNormal, self).get_parameters(idx, cache)
 
     def _pdf(self, xloc, idx, mu, sigma, cache):
         dim = self._rotation.index(idx)
@@ -139,14 +135,29 @@ class MvLogNormal(Distribution):
         out = numpy.e**xloc
         return out
 
+    def get_mom_parameters(self):
+        parameters = super(MvLogNormal, self).get_parameters(idx=None, cache={})
+        del parameters["idx"]
+        return parameters
+
     def _mom(self, kloc, mu, sigma, cache):
         output =  numpy.dot(kloc, mu)
         output += .5*numpy.dot(numpy.dot(kloc, sigma), kloc)
         output =  numpy.e**(output)
         return output
 
-    def _lower(self, idx, mu, sigma, cache):
+    def get_lower_parameters(self, idx, cache):
+        del idx
+        del cache
+        return dict()
+
+    def _lower(self):
         return 0.
 
-    def _upper(self, idx, mu, sigma, cache):
+    def get_upper_parameters(self, idx, cache):
+        parameters = self.get_parameters(idx=idx, cache=cache)
+        del parameters["cache"]
+        return parameters
+
+    def _upper(self, idx, mu, sigma):
         return numpy.exp(7.1*numpy.sqrt(sigma[idx, idx])) + mu[idx]

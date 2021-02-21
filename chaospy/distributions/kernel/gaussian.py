@@ -64,7 +64,10 @@ class GaussianKDE(KernelDensityBaseclass):
         """The integrand of the underlying density kernel."""
         return special.ndtr(z_loc)
 
-    def _mom(self, k_loc, cache):
+    def get_mom_parameters(self):
+        return dict()
+
+    def _mom(self, k_loc):
         """Raw statistical moments."""
         length = self.samples.shape[-1]
         h_mat = numpy.broadcast_to(
@@ -81,14 +84,18 @@ class GaussianKDE(KernelDensityBaseclass):
         ])
         return numpy.sum(out*self.weights)
 
-    def _lower(self, idx, dim, cache):
-        """Lower bounds."""
-        del dim
+    def get_lower_parameters(self, idx, cache):
         del cache
+        return dict(idx=idx)
+
+    def _lower(self, idx):
+        """Lower bounds."""
         return (self.samples[idx]-10*numpy.sqrt(self.h_mat[:, idx, idx]).T).min(-1)
 
-    def _upper(self, idx, dim, cache):
-        """Upper bounds."""
-        del dim
+    def get_upper_parameters(self, idx, cache):
         del cache
+        return dict(idx=idx)
+
+    def _upper(self, idx):
+        """Upper bounds."""
         return (self.samples[idx]+10*numpy.sqrt(self.h_mat[:, idx, idx]).T).max(-1)

@@ -58,10 +58,10 @@ class Logn(OperatorDistribution):
     def _ppf(self, uloc, idx, left, right, cache):
         return numpy.log(left._get_inv(uloc, idx, cache))/numpy.log(right)
 
-    def _mom(self, kloc, left, right, cache):
+    def _mom(self, kloc, left, right):
         raise chaospy.UnsupportedFeature("%s: Analytical moments for logarithm not supported", self)
 
-    def _ttr(self, kloc, idx, left, right, cache):
+    def _ttr(self, kloc, idx, left, right):
         raise chaospy.UnsupportedFeature("%s: Analytical TTR for logarithm not supported", self)
 
 

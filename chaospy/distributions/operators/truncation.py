@@ -91,9 +91,8 @@ class Trunc(Distribution):
         )
         self._dist = dist
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super(Trunc, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+    def get_parameters(self, idx, cache):
+        parameters = super(Trunc, self).get_parameters(idx, cache)
         assert set(parameters) == {"cache", "lower", "upper", "idx"}
 
         if isinstance(parameters["lower"], Distribution):
@@ -104,42 +103,11 @@ class Trunc(Distribution):
             parameters["upper"] = parameters["upper"]._get_cache(idx, cache=parameters["cache"], get=0)
         elif len(parameters["upper"]) > 1 and idx is not None:
             parameters["upper"] = parameters["upper"][idx]
-        if assert_numerical:
-            assert (not isinstance(parameters["lower"], Distribution) or
-                    not isinstance(parameters["upper"], Distribution))
+        assert (not isinstance(parameters["lower"], Distribution) or
+                not isinstance(parameters["upper"], Distribution))
         if idx is None:
             del parameters["idx"]
         return parameters
-
-    def _lower(self, idx, lower, upper, cache):
-        """
-        Distribution lower bound.
-
-        Examples:
-            >>> chaospy.Trunc(chaospy.Uniform(), upper=0.6).lower
-            array([0.])
-            >>> chaospy.Trunc(chaospy.Uniform(), lower=0.6).lower
-            array([0.6])
-        """
-        del upper
-        if isinstance(lower, Distribution):
-            lower = lower._get_lower(idx, cache=cache)
-        return lower
-
-    def _upper(self, idx, lower, upper, cache):
-        """
-        Distribution lower bound.
-
-        Examples:
-            >>> chaospy.Trunc(chaospy.Uniform(), upper=0.6).upper
-            array([0.6])
-            >>> chaospy.Trunc(chaospy.Uniform(), lower=0.6).upper
-            array([1.])
-        """
-        del lower
-        if isinstance(upper, Distribution):
-            upper = upper._get_upper(idx, cache=cache)
-        return upper
 
     def _cdf(self, xloc, idx, lower, upper, cache):
         """
@@ -208,3 +176,50 @@ class Trunc(Distribution):
         lower = self._dist._get_fwd(lower, idx, cache=cache.copy())
         upper = self._dist._get_fwd(upper, idx, cache=cache.copy())
         return self._dist._get_inv(qloc*upper*(1-lower)+lower, idx, cache=cache)
+
+    def get_lower_parameters(self, idx, cache):
+        parameters = super(Trunc, self).get_parameters(idx, cache)
+        lower = parameters["lower"]
+        if isinstance(lower, Distribution):
+            lower = lower._get_cache(idx, cache=parameters["cache"], get=0)
+        if isinstance(lower, Distribution):
+            lower = lower._get_lower(idx, cache)
+        if len(parameters["lower"]) > 1:
+            lower = lower[idx]
+        return dict(lower=lower)
+
+
+    def _lower(self, lower):
+        """
+        Distribution lower bound.
+
+        Examples:
+            >>> chaospy.Trunc(chaospy.Uniform(), upper=0.6).lower
+            array([0.])
+            >>> chaospy.Trunc(chaospy.Uniform(), lower=0.6).lower
+            array([0.6])
+        """
+        return lower
+
+    def get_upper_parameters(self, idx, cache):
+        parameters = super(Trunc, self).get_parameters(idx, cache)
+        upper = parameters["upper"]
+        if isinstance(upper, Distribution):
+            upper = upper._get_cache(idx, cache=parameters["cache"], get=0)
+        if isinstance(upper, Distribution):
+            upper = upper._get_upper(idx, cache)
+        if len(parameters["upper"]) > 1:
+            upper = upper[idx]
+        return dict(upper=upper)
+
+    def _upper(self, upper):
+        """
+        Distribution lower bound.
+
+        Examples:
+            >>> chaospy.Trunc(chaospy.Uniform(), upper=0.6).upper
+            array([0.6])
+            >>> chaospy.Trunc(chaospy.Uniform(), lower=0.6).upper
+            array([1.])
+        """
+        return upper

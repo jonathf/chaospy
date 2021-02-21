@@ -69,7 +69,7 @@ class Distribution(object):
             rotation = sorted(enumerate(self._dependencies), key=lambda x: len(x[1]))
             rotation = [key for key, _ in rotation]
         rotation = list(rotation)
-        assert len(set(rotation)) == len(dependencies)
+        assert len(set(rotation)) == len(rotation) == len(dependencies)
         assert min(rotation) == 0
         assert max(rotation) == len(dependencies)-1
         self._rotation = rotation
@@ -82,16 +82,15 @@ class Distribution(object):
         self._repr_args = list(repr_args)
         self._mom_cache = {(0,)*len(dependencies): 1.}
         self._ttr_cache = {}
-        self._indices = {}
 
-        self._all_dependencies = {dep for deps in self._dependencies for dep in deps}
-        if len(self._all_dependencies) < len(dependencies):
+        dependencies = {dep for deps in self._dependencies for dep in deps}
+        if len(dependencies) < len(dependencies):
             raise chaospy.StochasticallyDependentError(
                 "%s is an under-defined probability distribution." % self)
 
         for key, param in list(parameters.items()):
             if isinstance(param, Distribution):
-                if self._all_dependencies.intersection(param._exclusion):
+                if dependencies.intersection(param._exclusion):
                     raise chaospy.StochasticallyDependentError((
                         "%s contains dependencies that can not also exist "
                         "other places in the dependency hierarchy") % param)
@@ -99,9 +98,8 @@ class Distribution(object):
             else:
                 self._parameters[key] = numpy.asarray(param)
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
+    def get_parameters(self, idx, cache):
         """Get distribution parameters."""
-        del assert_numerical
         out = self._parameters.copy()
         assert isinstance(cache, dict)
         if idx is not None:
@@ -126,11 +124,10 @@ class Distribution(object):
         """In-processes function for getting lower bounds."""
         if (idx, self) in cache:
             return cache[idx, self][0]
-        if hasattr(self, "get_lower_parameters"):
-            parameters = self.get_lower_parameters(idx, cache)
-        else:
-            parameters = self.get_parameters(idx, cache, assert_numerical=False)
+
+        parameters = self.get_lower_parameters(idx, cache)
         out = self._lower(**parameters)
+
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert out.ndim == 1, (self, out, cache)
@@ -154,11 +151,10 @@ class Distribution(object):
         """In-processes function for getting upper bounds."""
         if (idx, self) in cache:
             return cache[idx, self][0]
-        if hasattr(self, "get_upper_parameters"):
-            parameters = self.get_upper_parameters(idx, cache)
-        else:
-            parameters = self.get_parameters(idx, cache, assert_numerical=False)
+
+        parameters = self.get_upper_parameters(idx, cache)
         out = self._upper(**parameters)
+
         assert not isinstance(out, Distribution), (self, out)
         out = numpy.atleast_1d(out)
         assert out.ndim == 1, (self, out, cache)
@@ -190,6 +186,7 @@ class Distribution(object):
         x_data = numpy.asfarray(x_data)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
+
         cache = {}
         q_data = numpy.zeros(x_data.shape)
         for idx in self._rotation:
@@ -210,7 +207,7 @@ class Distribution(object):
         assert (idx, self) not in cache, "repeated evaluation"
         lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
         upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
-        parameters = self.get_parameters(idx, cache, assert_numerical=True)
+        parameters = self.get_parameters(idx, cache)
         ret_val = self._cdf(x_data, **parameters)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         out = numpy.zeros(x_data.shape)
@@ -310,7 +307,7 @@ class Distribution(object):
         lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), q_data.shape)
         upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), q_data.shape)
         try:
-            parameters = self.get_parameters(idx, cache, assert_numerical=True)
+            parameters = self.get_parameters(idx, cache)
             ret_val = self._ppf(q_data, **parameters)
         except chaospy.UnsupportedFeature:
             ret_val = chaospy.approximate_inverse(
@@ -431,11 +428,10 @@ class Distribution(object):
         """In-process function for getting pdf-values."""
         logger = logging.getLogger(__name__)
         assert x_data.ndim == 1
-        if (idx, self) in cache:
-            return cache[idx, self][1]
+        assert (idx, self) not in cache, "repeated evals"
         lower = numpy.broadcast_to(self._get_lower(idx, cache=cache.copy()), x_data.shape)
         upper = numpy.broadcast_to(self._get_upper(idx, cache=cache.copy()), x_data.shape)
-        parameters = self.get_parameters(idx, cache, assert_numerical=True)
+        parameters = self.get_parameters(idx, cache)
         ret_val = self._pdf(x_data, **parameters)
         assert not isinstance(ret_val, Distribution), (self, ret_val)
 
@@ -449,8 +445,6 @@ class Distribution(object):
             logger.debug("%s[%s]: %s - %s - %s", self, idx, lower, x_data, upper)
             out = numpy.where(indices, 0, ret_val)
 
-        if self in cache:
-            out = numpy.where(x_data == cache[self][0], out, 0)
         cache[idx, self] = (x_data, out)
         assert out.ndim == 1, (self, out, cache)
         return out
@@ -588,10 +582,7 @@ class Distribution(object):
         """In-process function for getting moments."""
         if tuple(kdata) in self._mom_cache:
             return self._mom_cache[tuple(kdata)]
-        if hasattr(self, "get_mom_parameters"):
-            parameters = self.get_mom_parameters()
-        else:
-            parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
+        parameters = self.get_mom_parameters()
         assert "idx" not in parameters, (self, parameters)
         ret_val = float(self._mom(kdata, **parameters))
         assert not isinstance(ret_val, Distribution), (self, ret_val)
@@ -629,10 +620,7 @@ class Distribution(object):
         """In-process function for getting TTR-values."""
         if (idx, kdata) in self._ttr_cache:
             return self._ttr_cache[idx, kdata]
-        if hasattr(self, "get_ttr_parameters"):
-            parameters = self.get_ttr_parameters(idx)
-        else:
-            parameters = self.get_parameters(idx, cache={}, assert_numerical=True)
+        parameters = self.get_ttr_parameters(idx)
         alpha, beta = self._ttr(kdata, **parameters)
         assert not isinstance(alpha, Distribution), (self, alpha)
         assert not isinstance(beta, Distribution), (self, beta)
