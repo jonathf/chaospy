@@ -1,7 +1,13 @@
 Master Branch
 =============
 
-Version 4.3.2 (2021-01-20)
+Version 4.2.4 (2021-02-23)
+==========================
+
+FIXED:
+  * Correct bounds for Mean-Covariance distributions.
+
+Version 4.2.3 (2021-01-20)
 ==========================
 
 FIXED:

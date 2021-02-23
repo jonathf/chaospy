@@ -133,13 +133,12 @@ class MeanCovarianceDistribution(Distribution):
 
         return dict(idx=idx, mean=mean, sigma=sigma, dim=dim, mut=mu_transform, cache=cache)
 
+
     def _lower(self, idx, mean, sigma, dim, mut, cache):
-        out = mean[dim]+sigma*self._dist._get_lower(idx, cache)
-        return out
+        return mean[dim]-7.5*numpy.sqrt(self._covariance[idx, idx])
 
     def _upper(self, idx, mean, sigma, dim, mut, cache):
-        out = mean[dim]+sigma*self._dist._get_upper(idx, cache)
-        return out
+        return mean[dim]+7.5*numpy.sqrt(self._covariance[idx, idx])
 
     def _pdf(self, xloc, idx, mean, sigma, dim, mut, cache):
         if dim:
