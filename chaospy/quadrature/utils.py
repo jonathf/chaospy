@@ -1,5 +1,7 @@
-"""Function to combine two dataset together with a tensor product."""
+from __future__ import division
+from functools import partial
 import numpy
+import chaospy
 
 
 def combine(args):
@@ -20,7 +22,7 @@ def combine(args):
 
     Examples:
         >>> A, B = [1,2], [[4,4],[5,6]]
-        >>> chaospy.quadrature.combine([A, B])
+        >>> combine([A, B])
         array([[1, 4, 4],
                [1, 5, 6],
                [2, 4, 4],
@@ -74,6 +76,6 @@ def combine_quadrature(
     weights = numpy.prod(weights, -1)
 
     assert len(weights.shape) == 1
-    assert abscissas.shape == (dim,) + weights.shape
+    assert abscissas.shape == (dim,) + weights.shape, (abscissas, weights)
 
     return abscissas, weights

@@ -1,10 +1,10 @@
 r"""Create Gaussian quadrature nodes and weights."""
 import chaospy
 
-from .combine import combine_quadrature
+from .utils import combine_quadrature
 
 
-def quad_gaussian(
+def gaussian(
         order,
         dist,
         recurrence_algorithm="stieltjes",
@@ -51,9 +51,9 @@ def quad_gaussian(
 
     Raises:
         NotImplementedError:
-            In the case of recurrence algorithm ``analytical``, error is raised
-            if the distribution does not implement the three terms recurrence
-            algorithm analytically.
+            In the case of ``analytical`` three terms recurrence algorithm,
+            error is raised if the distribution does not implement the feature.
+            coefficients.
         numpy.linalg.LinAlgError:
             For non-canonical random variables, the construction might fail
             because of illegal numerical operations.
@@ -64,20 +64,19 @@ def quad_gaussian(
 
     Examples:
         >>> distribution = chaospy.Normal(0, 1)
-        >>> abscissas, weights = chaospy.quad_gaussian(
-        ...     5, distribution, recurrence_algorithm="stieltjes")
+        >>> abscissas, weights = chaospy.quadrature.gaussian(5, distribution)
         >>> abscissas.round(4)
         array([[-3.3243, -1.8892, -0.6167,  0.6167,  1.8892,  3.3243]])
         >>> weights.round(4)
         array([0.0026, 0.0886, 0.4088, 0.4088, 0.0886, 0.0026])
         >>> distribution = chaospy.J(chaospy.Uniform(), chaospy.Normal())
-        >>> abscissas, weights = chaospy.quad_gaussian(
-        ...     2, distribution, recurrence_algorithm="chebyshev")
+        >>> abscissas, weights = chaospy.quadrature.gaussian(2, distribution)
         >>> abscissas.round(2)
         array([[ 0.11,  0.11,  0.11,  0.5 ,  0.5 ,  0.5 ,  0.89,  0.89,  0.89],
                [-1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73, -1.73,  0.  ,  1.73]])
         >>> weights.round(3)
         array([0.046, 0.185, 0.046, 0.074, 0.296, 0.074, 0.046, 0.185, 0.046])
+
     """
     coefficients = chaospy.construct_recurrence_coefficients(
         order=order,
