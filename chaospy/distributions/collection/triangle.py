@@ -67,11 +67,17 @@ class Triangle(LowerUpperDistribution):
         array([ 0.168, -0.52 ,  0.685, -0.018])
         >>> distribution.mom(1).round(4)
         0.0
+        >>> distribution = chaospy.Triangle(-1, 2 ,1)
+        Traceback (most recent call last):
+        AssertionError: Condition not satisfied: `lower <= midpoint <= upper`
 
     """
 
     def __init__(self, lower=-1, midpoint=0, upper=1):
         repr_args = [lower, midpoint, upper]
+        assert lower <= midpoint <= upper, (
+            "Condition not satisfied: `lower <= midpoint <= upper`"
+        )
         midpoint = (midpoint-lower)*1./(upper-lower)
         super(Triangle, self).__init__(
             dist=triangle(midpoint),
