@@ -1,6 +1,4 @@
 """
-Newton-Cotes quadrature, are a group of formulas for numerical integration
-based on evaluating the integrand at equally spaced points.
 
 Example usage
 -------------
@@ -51,19 +49,22 @@ try:
 except ImportError:  # pragma: no cover
     from functools32 import lru_cache
 import numpy
-from scipy.integrate import newton_cotes
+from scipy import integrate
 
-from .combine import combine_quadrature
+from .hypercube import hypercube_quadrature
 
 
-def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
+def newton_cotes(order, domain=(0, 1), growth=False, segments=1):
     """
     Generate the abscissas and weights in Newton-Cotes quadrature.
 
+    Newton-Cotes quadrature, are a group of formulas for numerical integration
+    based on evaluating the integrand at equally spaced points.
+
     Args:
-        order (int, numpy.ndarray):
+        order (int, numpy.ndarray:):
             Quadrature order.
-        domain (chaospy.distributions.baseclass.Distribution, numpy.ndarray):
+        domain (:func:`chaospy.Distribution`, ;class:`numpy.ndarray`):
             Either distribution or bounding of interval to integrate over.
         growth (bool):
             If True sets the growth rule for the quadrature rule to only
@@ -84,75 +85,31 @@ def quad_newton_cotes(order, domain=(0, 1), growth=False, segments=1):
                 The quadrature weights with ``weights.shape == (N,)``.
 
     Examples:
-        >>> abscissas, weights = quad_newton_cotes(4)
+        >>> abscissas, weights = chaospy.quadrature.newton_cotes(4)
         >>> abscissas.round(4)
         array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
         >>> weights.round(4)
         array([0.0778, 0.3556, 0.1333, 0.3556, 0.0778])
-        >>> abscissas, weights = quad_newton_cotes(4, segments=2)
+        >>> abscissas, weights = chaospy.quadrature.newton_cotes(4, segments=2)
         >>> abscissas.round(4)
         array([[0.  , 0.25, 0.5 , 0.75, 1.  ]])
         >>> weights.round(4)
-        array([0.1667, 0.6667, 0.3333, 0.6667, 0.1667])
+        array([0.0833, 0.3333, 0.1667, 0.3333, 0.0833])
+
     """
-    from ..distributions.baseclass import Distribution
-    if isinstance(domain, Distribution):
-        abscissas, weights = quad_newton_cotes(
-            order, (domain.lower, domain.upper), growth, segments)
-        eps = 1e-14*(domain.upper-domain.lower)
-        abscissas_ = numpy.clip(abscissas.T, domain.lower+eps, domain.upper-eps).T
-        weights *= domain.pdf(abscissas_).flatten()
-        weights /= numpy.sum(weights)
-        return abscissas, weights
-
-    order = numpy.asarray(order, dtype=int).flatten()
-    lower, upper = domain
-    lower = numpy.asarray(lower).flatten()
-    upper = numpy.asarray(upper).flatten()
-    dim = max(lower.size, upper.size, order.size)
-
-    order = order*numpy.ones(dim, dtype=int)
-    lower = lower*numpy.ones(dim)
-    upper = upper*numpy.ones(dim)
-    segments = segments*numpy.ones(dim, dtype=int)
-
-    results = [_newton_cotes(*args, growth=growth)
-               for args in zip(order, lower, upper, segments)]
-    abscissas = [args[0] for args in results]
-    weights = [args[1] for args in results]
-    return combine_quadrature(abscissas, weights)
+    order = numpy.asarray(order)
+    order = numpy.where(growth, numpy.where(order, 2**order, 0), order)
+    return hypercube_quadrature(
+        _newton_cotes,
+        order=order,
+        domain=domain,
+        segments=segments,
+    )
 
 
 @lru_cache(None)
-def _newton_cotes(order, lower, upper, segments=1, growth=False):
+def _newton_cotes(order):
     """Backend for Newton-Cotes quadrature rule."""
     if order == 0:
-        return numpy.array([0.5*(lower+upper)]), numpy.ones(1)
-    order = 2**order if growth else order
-
-    if segments != 1 and order > 2:
-        segments = segments if segments else int(numpy.sqrt(order))
-        assert segments < order, "fewer samples to distribute than intervals"
-        abscissas = []
-        weights = []
-
-        nodes = numpy.linspace(0, 1, segments+1)
-        for lower, upper in zip(nodes[:-1], nodes[1:]):
-
-            abscissa, weight = _newton_cotes(order//segments, lower, upper)
-            weight = weight*(upper-lower)
-            if abscissas:
-                weights[-1] += weight[0]
-                abscissa = abscissa[1:]
-                weight = weight[1:]
-            abscissas.extend(abscissa)
-            weights.extend(weight)
-
-        assert len(abscissas) == order+1
-        assert len(weights) == order+1
-        return numpy.array(abscissas), numpy.array(weights)
-
-    return (
-        numpy.linspace(lower, upper, order+1),
-        newton_cotes(order)[0]/(upper-lower)/order,
-    )
+        return numpy.full((1, 1), 0.5), numpy.ones(1)
+    return numpy.linspace(0, 1, order+1), integrate.newton_cotes(order)[0]/order
