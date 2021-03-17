@@ -14,9 +14,9 @@ def _get_triang_param_lb_and_ub(name, value):
             ub = value.upper.max()
         else:
             raise ValueError(
-                f"{name} must be either a number or a distribution "
-                f"with lower and upper bounds; not a '{type(value).__name__}' "
-                 "object"
+                "%s must be either a number or a distribution " % name
+              + "with lower and upper bounds; not a '%s' " % type(value).__name__
+              + "object"
             )
     return lb, ub
 
