@@ -83,7 +83,7 @@ class Triangle(LowerUpperDistribution):
         0.0
         >>> distribution = chaospy.Triangle(-1, 2 ,1)
         Traceback (most recent call last):
-        AssertionError: Condition not satisfied: `lower <= midpoint <= upper`
+        ValueError: condition not satisfied: `lower <= midpoint <= upper`
 
     """
 
