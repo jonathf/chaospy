@@ -5,6 +5,20 @@ from scipy import special, misc
 from ..baseclass import SimpleDistribution, LowerUpperDistribution
 from .beta import beta_
 
+def _get_triang_param_lb_and_ub(name, value):
+    try:
+        lb = ub = float(value)
+    except:
+        if hasattr(value, 'lower') and hasattr(value, 'upper'):
+            lb = value.lower.min()
+            ub = value.upper.max()
+        else:
+            raise ValueError(
+                f"{name} must be either a number or a distribution "
+                f"with lower and upper bounds; not a '{type(value).__name__}' "
+                 "object"
+            )
+    return lb, ub
 
 class triangle(SimpleDistribution):
     """Triangle probability distribution."""
@@ -75,9 +89,13 @@ class Triangle(LowerUpperDistribution):
 
     def __init__(self, lower=-1, midpoint=0, upper=1):
         repr_args = [lower, midpoint, upper]
-        assert lower <= midpoint <= upper, (
-            "Condition not satisfied: `lower <= midpoint <= upper`"
-        )
+        _, lower_ub = _get_triang_param_lb_and_ub('lower', lower)
+        mid_lb, mid_ub = _get_triang_param_lb_and_ub('midpoint', midpoint)
+        upper_lb, _ = _get_triang_param_lb_and_ub('upper', upper)
+        if not (lower_ub <= mid_lb  and mid_ub <= upper_lb):
+            raise ValueError(
+                "condition not satisfied: `lower <= midpoint <= upper`"
+            )
         midpoint = (midpoint-lower)*1./(upper-lower)
         super(Triangle, self).__init__(
             dist=triangle(midpoint),
