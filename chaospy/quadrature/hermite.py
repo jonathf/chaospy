@@ -27,7 +27,7 @@ def hermite(order, mu=0., sigma=1., physicist=False):
         sigma (float):
             Scale parameter.
         physicist (bool):
-            Use physicist weights instead of probabilist.
+            Use physicist weights instead of probabilist variant.
 
     Returns:
         abscissas (numpy.ndarray):

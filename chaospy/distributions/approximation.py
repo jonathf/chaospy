@@ -175,7 +175,7 @@ def approximate_moment(
         rule (str):
             Quadrature rule for integrating moments.
         kwargs:
-            Extra args passed to `chaospy.generate_quadrature`.
+            Extra args passed to :func:`chaospy.generate_quadrature`.
 
     Examples:
         >>> distribution = chaospy.Uniform(1, 4)

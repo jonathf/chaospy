@@ -5,52 +5,79 @@ Polynomials
 
 .. currentmodule:: chaospy
 
+Variable constructors
+---------------------
+
+.. autosummary::
+   :toctree: api
+
+   variable
+   polynomial
+   aspolynomial
+   symbols
+   polynomial_from_attributes
+   ndpoly.from_attributes
+   polynomial_from_roots
+
+Expansions
+----------
+
+.. autosummary::
+   :toctree: api
+
+   monomial
+   expansion.lagrange
+
+Orthogonal constructors
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api
+
+   expansion.stieltjes
+   expansion.cholesky
+   expansion.gram_schmidt
+
+Pre-defined orthogonal
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api
+
+   expansion.chebyshev_1
+   expansion.chebyshev_2
+   expansion.gegenbauer
+   expansion.hermite
+   expansion.jacobi
+   expansion.laguerre
+   expansion.legendre
+
 Baseclass
 ---------
 
 .. autosummary::
-    :template: ndpoly.rst
-    :toctree: api
+   :template: ndpoly.rst
+   :toctree: api
 
-    ndpoly
-
-.. autosummary::
-    :toctree: api
-
-    ndpoly.coefficients
-    ndpoly.dtype
-    ndpoly.exponents
-    ndpoly.indeterminants
-    ndpoly.keys
-    ndpoly.names
-    ndpoly.values
-    ndpoly.KEY_OFFSET
-
-Exceptions
-----------
+   ndpoly
 
 .. autosummary::
-    :toctree: api
+   :toctree: api
 
-    FeatureNotSupported
+   ndpoly.coefficients
+   ndpoly.dtype
+   ndpoly.exponents
+   ndpoly.indeterminants
+   ndpoly.keys
+   ndpoly.names
+   ndpoly.values
+   ndpoly.KEY_OFFSET
 
-Constructors
-------------
-
-.. autosummary::
-    :toctree: api
-
-    variable
-    polynomial
-    aspolynomial
-    monomial
-    symbols
-    polynomial_from_attributes
-    ndpoly.from_attributes
-    polynomial_from_roots
+Helper functions
+----------------
 
 Leading coefficient
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -60,7 +87,7 @@ Leading coefficient
    sortable_proxy
 
 Polynomial specific
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -74,7 +101,7 @@ Polynomial specific
    ndpoly.tonumpy
 
 Array creation
---------------
+~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -89,7 +116,7 @@ Array creation
    zeros_like
 
 Arithmetics
------------
+~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -106,7 +133,7 @@ Arithmetics
    square
 
 Division
---------
+~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -122,7 +149,7 @@ Division
    true_divide
 
 Logic
------
+~~~~~
 
 .. autosummary::
    :toctree: api
@@ -142,7 +169,7 @@ Logic
    not_equal
 
 Rounding
---------
+~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -155,7 +182,7 @@ Rounding
    round_
 
 Sums/Products
--------------
+~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -166,7 +193,7 @@ Sums/Products
    sum
 
 Differentiation
----------------
+~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -178,7 +205,7 @@ Differentiation
    hessian
 
 Min/Max
--------
+~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -193,7 +220,7 @@ Min/Max
    minimum
 
 Conditionals
-------------
+~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -204,7 +231,7 @@ Conditionals
    where
 
 Save/Load
----------
+~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -217,7 +244,7 @@ Save/Load
    savez_compressed
 
 Stacking/Splitting
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -234,7 +261,7 @@ Stacking/Splitting
    vstack
 
 Shape manipulation
-------------------
+~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -251,7 +278,7 @@ Shape manipulation
    transpose
 
 Miscellaneous
--------------
+~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -267,7 +294,7 @@ Miscellaneous
    result_type
 
 Global options
---------------
+~~~~~~~~~~~~~~
 
 .. autosummary::
    :toctree: api
@@ -277,11 +304,12 @@ Global options
    set_options
 
 Utilities
----------
+~~~~~~~~~
 
 .. autosummary::
    :toctree: api
 
+   cross_truncate
+   FeatureNotSupported
    glexindex
    glexsort
-   cross_truncate
