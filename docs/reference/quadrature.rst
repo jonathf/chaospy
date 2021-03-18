@@ -40,7 +40,7 @@ Gaussian extensions
    patterson
    radau
 
-Gaussian predefined
+Predefined Gaussian
 -------------------
 
 .. autosummary::

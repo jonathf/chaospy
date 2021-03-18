@@ -25,6 +25,8 @@ from .newton_cotes import newton_cotes
 from .patterson import patterson
 from .radau import radau
 
+__all__ = ["generate_quadrature", "sparse_grid", "combine"]
+
 
 INTEGRATION_COLLECTION = {
     "clenshaw_curtis": clenshaw_curtis,
@@ -43,11 +45,8 @@ INTEGRATION_COLLECTION = {
 }
 
 
-def quadrature_deprecation_warning(name, func=None):
+def quadrature_deprecation_warning(name, func):
     """Announce deprecation warning for quad-func."""
-
-    if func is None:
-        func = globals()[name]
     quad_name = "quad_%s" % name
 
     @wraps(func)
@@ -60,6 +59,7 @@ def quadrature_deprecation_warning(name, func=None):
         return func(*args, **kwargs)
 
     globals()[quad_name] = wrapped
+    __all__.append(quad_name)
 
 quadrature_deprecation_warning("clenshaw_curtis", clenshaw_curtis)
 quadrature_deprecation_warning("discrete", discrete)

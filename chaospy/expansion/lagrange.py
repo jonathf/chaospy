@@ -4,9 +4,9 @@ from scipy.special import comb
 import numpoly
 
 
-def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
+def lagrange(abscissas, graded=True, reverse=True, sort=None):
     """
-    Create Lagrange polynomials.
+    Create Lagrange polynomial expansion.
 
     Args:
         abscissas (numpy.ndarray):
@@ -22,13 +22,13 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
             considered bigger than ``q0**3*q1``, instead of the opposite.
 
     Example:
-        >>> chaospy.lagrange_polynomial([4]).round(4)
+        >>> chaospy.expansion.lagrange([4]).round(4)
         polynomial([4.0])
-        >>> chaospy.lagrange_polynomial([-10, 10]).round(4)
+        >>> chaospy.expansion.lagrange([-10, 10]).round(4)
         polynomial([-0.05*q0+0.5, 0.05*q0+0.5])
-        >>> chaospy.lagrange_polynomial([-1, 0, 1]).round(4)
+        >>> chaospy.expansion.lagrange([-1, 0, 1]).round(4)
         polynomial([0.5*q0**2-0.5*q0, -q0**2+1.0, 0.5*q0**2+0.5*q0])
-        >>> poly = chaospy.lagrange_polynomial([[1, 0, 1], [0, 1, 2]])
+        >>> poly = chaospy.expansion.lagrange([[1, 0, 1], [0, 1, 2]])
         >>> poly.round(4)
         polynomial([-0.5*q1+0.5*q0+0.5, -q0+1.0, 0.5*q1+0.5*q0-0.5])
         >>> poly([1, 0, 1], [0, 1, 2]).round(14)
@@ -37,7 +37,7 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
                [0., 0., 1.]])
         >>> nodes = numpy.array([[ 0.17,  0.15,  0.17,  0.19],
         ...                      [14.94, 16.69, 16.69, 16.69]])
-        >>> poly = chaospy.lagrange_polynomial(nodes)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        >>> poly = chaospy.expansion.lagrange(nodes)  # doctest: +IGNORE_EXCEPTION_DETAIL
         Traceback (most recent call last):
             ...
         LinAlgError: Lagrange abscissas resulted in invertible matrix

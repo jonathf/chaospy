@@ -18,9 +18,9 @@ def test_operator_E():
     assert np.allclose(cp.E(poly, dist), res)
 
 
-def test_orth_ttr():
+def test_expansion_stieltjes():
     dist = cp.Normal(0, 1)
-    orth = cp.orth_ttr(5, dist)
+    orth = cp.expansion.stieltjes(5, dist)
     outer = cp.outer(orth, orth)
     Cov1 = cp.E(outer, dist)
     Diatoric = Cov1 - np.diag(np.diag(Cov1))
@@ -30,16 +30,16 @@ def test_orth_ttr():
     assert np.allclose(Cov1[1:,1:], Cov2)
 
 
-def test_orth_chol():
+def test_expansion_cholesky():
     dist = cp.Normal(0, 1)
-    orth1 = cp.orth_ttr(5, dist, normed=True)
-    orth2 = cp.orth_chol(5, dist, normed=True)
+    orth1 = cp.expansion.cholesky(5, dist, normed=True)
+    orth2 = cp.expansion.cholesky(5, dist, normed=True)
     eps = cp.sum((orth1-orth2)**2)
     assert np.allclose(eps(np.linspace(-100, 100, 5)), 0)
 
 
-def test_orth_norms():
+def test_expansion_stieltjes_norms():
     dist = cp.Normal(0, 1)
-    orth = cp.orth_ttr(5, dist, normed=True)
+    orth = cp.expansion.stieltjes(5, dist, normed=True)
     norms = cp.E(orth**2, dist)
     assert np.allclose(norms, 1)

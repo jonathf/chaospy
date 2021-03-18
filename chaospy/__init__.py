@@ -12,7 +12,7 @@ from numpoly import *
 
 import chaospy.descriptives
 import chaospy.distributions
-import chaospy.orthogonal
+import chaospy.expansion
 import chaospy.spectral
 import chaospy.quadrature
 import chaospy.saltelli
@@ -20,7 +20,7 @@ import chaospy.regression
 import chaospy.recurrence
 
 from chaospy.distributions import *
-from chaospy.orthogonal import *
+from chaospy.expansion import *
 from chaospy.spectral import *
 from chaospy.quadrature import *
 from chaospy.saltelli import *

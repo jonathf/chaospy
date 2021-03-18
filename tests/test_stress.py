@@ -50,15 +50,10 @@ def test_quasimc():
 
 def test_orthogonals():
     dist = cp.Iid(cp.Normal(), dim)
-    cp.orth_gs(order, dist)
-    cp.orth_ttr(order, dist)
-    cp.orth_chol(order, dist)
+    cp.expansion.gram_schmidt(order, dist)
+    cp.expansion.stieltjes(order, dist)
+    cp.expansion.cholesky(order, dist)
 
-
-# def test_approx_orthogonals():
-#     dist = cp.Iid(normal(), dim)
-#     cp.orth_ttr(order, dist)
-#
 
 def test_quadrature():
     dist = cp.Iid(cp.Normal(), dim)
@@ -78,7 +73,7 @@ def test_approx_quadrature():
 
 def test_integration():
     dist = cp.Iid(cp.Normal(), dim)
-    orth, norms = cp.orth_ttr(order, dist, retall=1)
+    orth, norms = cp.expansion.stieltjes(order, dist, retall=1)
     gq = cp.generate_quadrature
     nodes, weights = gq(order, dist, rule="C")
     vals = np.zeros((len(weights), size))
@@ -87,7 +82,7 @@ def test_integration():
 
 def test_regression():
     dist = cp.Iid(cp.Normal(), dim)
-    orth, norms = cp.orth_ttr(order, dist, retall=1)
+    orth, norms = cp.expansion.stieltjes(order, dist, retall=1)
     data = dist.sample(samples)
     vals = np.zeros((samples, size))
     cp.fit_regression(orth, data, vals)
@@ -95,7 +90,7 @@ def test_regression():
 
 def test_descriptives():
     dist = cp.Iid(cp.Normal(), dim)
-    orth = cp.orth_ttr(order, dist)
+    orth = cp.expansion.stieltjes(order, dist)
     cp.E(orth, dist)
     cp.Var(orth, dist)
     cp.Cov(orth, dist)

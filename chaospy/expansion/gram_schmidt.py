@@ -6,7 +6,7 @@ import numpoly
 import chaospy
 
 
-def orth_gs(order, dist, normed=False, graded=True, reverse=True,
+def gram_schmidt(order, dist, normed=False, graded=True, reverse=True,
             retall=False, cross_truncation=1., **kws):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
@@ -41,12 +41,12 @@ def orth_gs(order, dist, normed=False, graded=True, reverse=True,
 
     Examples:
         >>> distribution = chaospy.J(chaospy.Normal(), chaospy.Normal())
-        >>> polynomials, norms = chaospy.orth_gs(2, distribution, retall=True)
+        >>> polynomials, norms = chaospy.expansion.gram_schmidt(2, distribution, retall=True)
         >>> polynomials.round(10)
         polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
         >>> norms.round(10)
         array([1., 1., 1., 2., 1., 2.])
-        >>> polynomials = chaospy.orth_gs(2, distribution, normed=True)
+        >>> polynomials = chaospy.expansion.gram_schmidt(2, distribution, normed=True)
         >>> polynomials.round(3)
         polynomial([1.0, q1, q0, 0.707*q1**2-0.707, q0*q1, 0.707*q0**2-0.707])
 
