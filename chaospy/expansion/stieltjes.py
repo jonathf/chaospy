@@ -38,10 +38,10 @@ does not support the method, the coefficients are instead calculated using the
 discretized Stieltjes method (described in the `paper by Golub and Welsch`_).
 
 In ``chaospy`` constructing orthogonal polynomial using the three term
-recurrence scheme can be done through ``orth_ttr``. For example::
+recurrence scheme can be done through ``stieltjes``. For example::
 
     >>> dist = chaospy.Iid(chaospy.Gamma(1), 2)
-    >>> orths = chaospy.orth_ttr(2, dist)
+    >>> orths = chaospy.expansion.stieltjes(2, dist)
     >>> orths.round(4)
     polynomial([1.0, q1-1.0, q0-1.0, q1**2-4.0*q1+2.0, q0*q1-q1-q0+1.0,
                 q0**2-4.0*q0+2.0])
@@ -59,7 +59,7 @@ import numpoly
 import chaospy
 
 
-def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
+def stieltjes(order, dist, normed=False, graded=True, reverse=True,
              retall=False, cross_truncation=1.):
     """
     Create orthogonal polynomial expansion from three terms recurrence formula.
@@ -98,12 +98,12 @@ def orth_ttr(order, dist, normed=False, graded=True, reverse=True,
 
     Examples:
         >>> distribution = chaospy.J(chaospy.Normal(), chaospy.Normal())
-        >>> polynomials, norms = chaospy.orth_ttr(2, distribution, retall=True)
+        >>> polynomials, norms = chaospy.expansion.stieltjes(2, distribution, retall=True)
         >>> polynomials.round(10)
         polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
         >>> norms.round(10)
         array([1., 1., 1., 2., 1., 2.])
-        >>> polynomials = chaospy.orth_ttr(2, distribution, normed=True)
+        >>> polynomials = chaospy.expansion.stieltjes(2, distribution, normed=True)
         >>> polynomials.round(3)
         polynomial([1.0, q1, q0, 0.707*q1**2-0.707, q0*q1, 0.707*q0**2-0.707])
 
