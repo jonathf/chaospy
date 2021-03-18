@@ -29,7 +29,7 @@ import numpoly
 
 
 
-def orth_chol(
+def cholesky(
     order,
     dist,
     normed=False,
@@ -66,7 +66,7 @@ def orth_chol(
 
     Examples:
         >>> distribution = chaospy.Normal()
-        >>> expansion, norms = chaospy.orth_chol(3, distribution, retall=True)
+        >>> expansion, norms = chaospy.expansion.cholesky(3, distribution, retall=True)
         >>> expansion.round(4)
         polynomial([1.0, q0, q0**2-1.0, q0**3-3.0*q0])
         >>> norms

@@ -11,7 +11,6 @@ User guide
     sampling.rst
     quadrature.rst
     polynomial.rst
-    orthogonality.rst
     descriptive.rst
     zbibliography.rst
 
@@ -70,18 +69,6 @@ The user guide is split into the following topics:
 
 .. |polynomial| image:: figures/polynomial.png
     :target: ./polynomial.html
-    :align: middle
-
-:ref:`orthogonality`
---------------------
-
-+-----------------+-----------------------------------------------------------+
-| |orthogonality| | Creation, manipulation and analysis of orthogonal         |
-|                 | polynomials for use in model approximations.              |
-+-----------------+-----------------------------------------------------------+
-
-.. |orthogonality| image:: figures/orthogonality.png
-    :target: ./orthogonality.html
     :align: middle
 
 :ref:`quadrature`

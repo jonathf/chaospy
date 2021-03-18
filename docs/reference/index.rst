@@ -14,7 +14,6 @@ public.
     descriptives
     distributions
     polynomial
-    orthogonal
     sampling
     quadrature
     recurrence

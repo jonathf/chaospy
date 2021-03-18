@@ -1,10 +1,5 @@
 """
-
-Example usage
--------------
-
-Standard usage::
-
+Generates samples from the Sobol sequence.
 
 Papers::
 
@@ -35,7 +30,6 @@ Papers::
     Preprint IPM Akad. Nauk SSSR,
     Number 40, Moscow 1976.
 
-.. _Sobel sequence: https://en.wikipedia.org/wiki/Sobol_sequence
 """
 import math
 
