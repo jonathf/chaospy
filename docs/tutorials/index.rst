@@ -19,6 +19,7 @@ possible to `run the tutorials using Binder
    pseudo_spectral_projection
    scikitlearn_regression
    intrusive_galerkin
+   stochastic_dependencies
    kernel_density_estimation
    gaussian_mixture_model
    wiener_askey_scheme
@@ -80,6 +81,15 @@ method, unlike the non-intrusive method described in `Point
 Collocation <./point_collocation.ipynb>`_ and `Pseudo-Spectral
 Projection <./pseudo_spectral_projection.ipynb>`_. It requires a bit
 more use of the mathematical hand holding to apply properly.
+
+`Stochastic Dependencies <./stochastic_dependencies.ipynb>`_
+------------------------------------------------------------
+
+Stochastically dependencies in the input variables requires a more advanced
+approach than the stochastically independent counterparts.
+This tutorial shows how to employ *generalized polynomial chaos expansion*
+in both the case of `Point Collocation <./point_collocation.ipynb>`_ and
+`Pseudo-Spectral Projection <./pseudo_spectral_projection.ipynb>`_.
 
 `Kernel density estimation <./kernel_density_estimation.ipynb>`_
 ----------------------------------------------------------------
