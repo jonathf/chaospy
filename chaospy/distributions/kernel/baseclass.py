@@ -136,6 +136,12 @@ class KernelDensityBaseclass(Distribution):
 
         return out
 
+    def _kernel(self, zloc):
+        raise NotImplementedError()
+
+    def _ikernel(self, zloc):
+        raise NotImplementedError()
+
     def _cdf(self, x_loc, idx, dim, cache):
         """Forward mapping."""
         s, t = numpy.mgrid[:x_loc.shape[-1], :self._samples.shape[-1]]

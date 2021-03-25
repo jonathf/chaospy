@@ -206,15 +206,28 @@ def _generate_quadrature(order, dist, rule, **kwargs):
             return abscissas, weights
 
     rule = QUAD_NAMES[rule.lower()]
-    parameters = {}
-
-    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
-        parameters.update(growth=kwargs["growth"], segments=kwargs["segments"])
-
-    if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
-        parameters.update(tolerance=kwargs["tolerance"], scaling=kwargs["scaling"],
-                          n_max=kwargs["n_max"], recurrence_algorithm=kwargs["recurrence_algorithm"])
 
     quad_function = QUAD_FUNCTIONS[rule]
-    abscissas, weights = quad_function(order, dist, **parameters)
+    parameters = {}
+    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
+        abscissas, weights = quad_function(
+            order,
+            dist,
+            growth=kwargs["growth"],
+            segments=kwargs["segments"],
+        )
+
+    elif rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
+        abscissas, weights = quad_function(
+            order,
+            dist,
+            tolerance=kwargs["tolerance"],
+            scaling=kwargs["scaling"],
+            n_max=kwargs["n_max"],
+            recurrence_algorithm=kwargs["recurrence_algorithm"],
+        )
+
+    else:
+        abscissas, weights = quad_function(order, dist)
+
     return abscissas, weights

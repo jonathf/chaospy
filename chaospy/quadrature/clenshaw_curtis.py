@@ -43,10 +43,7 @@ Applying the rule using Smolyak sparse grid::
            -0.022,  0.267,  0.028, -0.022,  0.028])
 """
 from __future__ import division
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no covere
-    from functools32 import lru_cache
+from functools import lru_cache
 
 import numpy
 import chaospy

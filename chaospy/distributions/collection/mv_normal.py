@@ -76,18 +76,23 @@ class MvNormal(MeanCovarianceDistribution):
             if isinstance(mean, chaospy.Distribution):
                 raise chaospy.UnsupportedFeature(
                     "Analytical moment of a conditional not supported")
-        out = 0.
-        for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
-            coef = numpy.prod(special.comb(k.T, kdx).T, 0)
-            diff = k.T-kdx
-            pos = diff >= 0
-            diff = diff*pos
-            pos = numpy.all(pos)
-            location_ = numpy.prod(mean**diff, -1)
+        return moment(k, mean, sigma)
 
-            out = out+pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
 
-        return out
+def moment(k, mean, sigma):
+    """Moment of multivariate normal."""
+    out = 0.
+    for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
+        coef = numpy.prod(special.comb(k.T, kdx).T, 0)
+        diff = k.T-kdx
+        pos = diff >= 0
+        diff = diff*pos
+        pos = numpy.all(pos)
+        location_ = numpy.prod(mean**diff, -1)
+
+        out = out+pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
+
+    return out
 
 
 def isserlis_moment(k, scale):

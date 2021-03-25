@@ -64,10 +64,7 @@ The same formula defined recursively:
     iphi^{n}(u) &= sum_{i=1}^{n} comb(n, i-1) iphi^{n-i}(u) \sigma(u, i, \theta)
   \end{eqnarray}
 """
-try:
-    from functools import lru_cache
-except ImportError:
-    from functools32 import lru_cache
+from functools import lru_cache
 import numpy
 from scipy import special
 

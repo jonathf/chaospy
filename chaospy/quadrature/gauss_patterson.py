@@ -90,7 +90,7 @@ def quad_gauss_patterson(order, domain):
     order = sorted(PATTERSON_VALUES.keys())[int(order)]
     abscissas, weights = PATTERSON_VALUES[int(order)]
 
-    abscissas = .5*(abscissas*(upper-lower)+upper+lower)
+    abscissas = .5*(numpy.array(abscissas)*(upper-lower)+upper+lower)
     abscissas = abscissas.reshape(1, abscissas.size)
     weights /= numpy.sum(weights)
 
