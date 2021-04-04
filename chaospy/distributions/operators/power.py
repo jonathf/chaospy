@@ -8,6 +8,8 @@ from ..baseclass import Distribution, OperatorDistribution
 class Power(OperatorDistribution):
     """Power operator."""
 
+    _operator = lambda self, left, right: left**right
+
     def __init__(self, left, right):
         """
         Constructor.

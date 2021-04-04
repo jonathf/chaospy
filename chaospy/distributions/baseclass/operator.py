@@ -59,3 +59,8 @@ class OperatorDistribution(Distribution):
         if idx is None:
             del parameters["idx"]
         return parameters
+
+    def _cache(self, idx, cache, get):
+        assert get == 0
+        parameters = self.get_parameters(idx, cache)
+        return self._operator(parameters["left"], parameters["right"])

@@ -32,6 +32,8 @@ from ..baseclass import Distribution, OperatorDistribution
 class Negative(OperatorDistribution):
     """Negative of a distribution."""
 
+    _operator = lambda self, left, right: -left
+
     def __init__(self, dist):
         """
         Constructor.

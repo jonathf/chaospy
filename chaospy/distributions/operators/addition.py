@@ -80,6 +80,8 @@ from ..baseclass import Distribution, OperatorDistribution
 class Add(OperatorDistribution):
     """Addition operator."""
 
+    _operator = lambda self, left, right: (left.T+right.T).T
+
     def __init__(self, left, right):
         super(Add, self).__init__(
             left=left,
@@ -103,7 +105,7 @@ class Add(OperatorDistribution):
             left = left._get_lower(idx, cache=cache)
         if isinstance(right, Distribution):
             right = right._get_lower(idx, cache=cache)
-        return left+right
+        return self._operator(left, right)
 
     def _upper(self, idx, left, right, cache):
         """
@@ -122,7 +124,7 @@ class Add(OperatorDistribution):
             left = left._get_upper(idx, cache=cache)
         if isinstance(right, Distribution):
             right = right._get_upper(idx, cache=cache)
-        return (left.T+right.T).T
+        return self._operator(left, right)
 
     def _cdf(self, xloc, idx, left, right, cache):
         if isinstance(right, Distribution):
@@ -165,7 +167,8 @@ class Add(OperatorDistribution):
         if isinstance(right, Distribution):
             left, right = right, left
         xloc = left._get_inv(uloc, idx, cache=cache)
-        return (xloc.T+numpy.asfarray(right).T).T
+        right = numpy.asfarray(right)
+        return self._operator(xloc, right)
 
     def _mom(self, keys, left, right, cache):
         """

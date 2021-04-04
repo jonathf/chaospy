@@ -70,13 +70,15 @@ class ShiftScaleDistribution(Distribution):
             shift = shift._get_cache(idx, cache, get=0)
         elif idx is not None and len(shift) > 1:
             shift = shift[idx]
+        assert not isinstance(shift, Distribution), shift
 
         scale = self._parameters["scale"]
         if isinstance(scale, Distribution):
             scale = scale._get_cache(idx, cache, get=0)
         elif idx is not None and len(scale) > 1:
             scale = scale[idx]
-        assert scale > 0, "condition not satisfied: `scale > 0`"
+        assert not isinstance(scale, Distribution), scale
+        assert numpy.all([scale]) > 0, "condition not satisfied: `scale > 0`"
 
         assert not assert_numerical or not (isinstance(shift, Distribution) or
                                             isinstance(scale, Distribution))

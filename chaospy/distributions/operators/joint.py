@@ -62,7 +62,7 @@ class J(Distribution):
     def get_parameters(self, idx, cache, assert_numerical=True):
         del assert_numerical  # joint is never numerical on its own.
         parameters = super(J, self).get_parameters(
-            idx, cache, assert_numerical=False)
+            idx=idx, cache=cache, assert_numerical=False)
         if idx is None:
             return dict(index=parameters["index"])
         idx, dist = self._owners[idx]
@@ -217,11 +217,11 @@ class J(Distribution):
             index = range(start, stop, step)
         return J(*[self[idx] for idx in index])
 
-    def _cache(self, idx, cache):
+    def _cache(self, idx, cache, get):
         if idx is None:
             return self
-        parameters = self.get_parameters(idx, cache, assert_numerical=False)
-        out = parameters["dist"]._get_cache(parameters["idx"], cache)
+        parameters = self.get_parameters(idx=idx, cache=cache, assert_numerical=False)
+        out = parameters["dist"]._get_cache(idx=parameters["idx"], cache=cache, get=get)
         if isinstance(out, chaospy.Distribution):
             return self
         return out

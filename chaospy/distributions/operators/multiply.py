@@ -89,6 +89,8 @@ from ..baseclass import Distribution, OperatorDistribution
 class Multiply(OperatorDistribution):
     """Multiplication."""
 
+    _operator = lambda self, left, right: (left.T*right.T).T
+
     def __init__(self, left, right):
         """
         Args:
