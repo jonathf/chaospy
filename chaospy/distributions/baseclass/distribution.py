@@ -681,19 +681,10 @@ class Distribution(object):
 
         """
         if (idx, self) in cache:
-            out = cache[idx, self]
-        else:
-            out = self._cache(idx=idx, cache=cache, get=get)
-        if not isinstance(out, Distribution) and get is not None:
             assert get in (0, 1)
-            out = out[get]
-        return out
-        if self in cache:
-            out = cache[idx, self]
+            out = cache[idx, self][get]
         else:
             out = self._cache(idx=idx, cache=cache, get=get)
-        if not isinstance(out, Distribution):
-            out = out[1]
         return out
 
     def _cache(self, idx, cache, get):

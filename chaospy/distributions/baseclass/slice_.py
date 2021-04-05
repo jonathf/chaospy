@@ -53,10 +53,9 @@ class ItemDistribution(Distribution):
         raise chaospy.StochasticallyDependentError("TTR not supported")
 
     def _cache(self, idx, cache, get):
-        del get
         if idx is None:
             return self
         assert idx == 0
         idx = int(self._parameters["index"])
         parent = self._parameters["parent"]
-        return parent._get_cache(idx, cache)
+        return parent._get_cache(idx, cache, get)
