@@ -78,9 +78,6 @@ def test_dependencies():
     dist = chaospy.MvNormal(mu=mu, sigma=[[1, 0.5], [0.5, 1]])
     joint = chaospy.J(mu, dist)
 
-    with pytest.raises(chaospy.StochasticallyDependentError):
-        dist.mom((1, 1))
-
     samples = joint.sample(100000)
     mean = numpy.array([1/2., 3/2., 1/2., 3/2.])
     covariance = numpy.array([[1/12.,    0.,  1/12.,     0.],

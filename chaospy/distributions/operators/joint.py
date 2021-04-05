@@ -143,10 +143,6 @@ class J(Distribution):
     def _mom(self, kloc, index):
         """
         Example:
-            >>> d0 = chaospy.Uniform()
-            >>> dist = chaospy.J(d0, d0+chaospy.Uniform())
-            >>> dist.mom([1, 1]).round(4)
-            0.5834
             >>> dist = chaospy.J(chaospy.Uniform(), chaospy.Normal())
             >>> dist.mom([[0, 0, 1], [0, 1, 1]]).round(4)
             array([1., 0., 0.])

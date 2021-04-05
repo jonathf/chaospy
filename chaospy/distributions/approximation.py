@@ -186,15 +186,14 @@ def approximate_moment(
         7.0
 
     """
-    if order is None:
-        order = int(1e5**(1./len(distribution)))
-    assert isinstance(order, int)
     assert isinstance(distribution, chaospy.Distribution)
     k_loc = tuple(numpy.asarray(k_loc).tolist())
     assert len(k_loc) == len(distribution), "incorrect size of exponents"
     assert all([isinstance(k, int) for k in k_loc]), (
         "exponents must be integers: %s found" % type(k_loc[0]))
+    assert len(distribution) == 1, "only 1-D distributions support approximate moment."
 
+    order = int(1e5 if order is None else order)
     if (distribution, order) not in MOMENTS_QUADS:
         MOMENTS_QUADS[distribution, order] = chaospy.generate_quadrature(
             order, distribution, rule=rule, **kwargs)

@@ -62,12 +62,6 @@ Inverse transformations::
     array([[3.01, 3.5 , 3.99],
            [5.11, 6.  , 6.89]])
 
-Raw moments::
-
-    >>> joint1.mom([(0, 1, 1), (1, 0, 1)]).round(4)
-    array([ 6.    ,  2.5   , 15.0834])
-    >>> joint2.mom([(0, 1, 1), (1, 0, 1)]).round(4)
-    array([ 6.    ,  3.5   , 21.0834])
 """
 from __future__ import division
 from scipy.special import comb

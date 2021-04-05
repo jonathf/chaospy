@@ -38,18 +38,6 @@ def test_1d_dependent_mapping():
     assert numpy.allclose(JOINT1.fwd(inv_map1), grid)
     assert numpy.allclose(JOINT2.fwd(inv_map2), grid)
 
-def test_1d_dependent_moment():
-    """Ensure raw statistical moments behaves as expected for dependent 1-D distributions."""
-    assert DIST1.mom(1) == 1.5
-    with raises(chaospy.StochasticallyDependentError):
-        DIST2.mom(1)
-    with raises(chaospy.UnsupportedFeature):
-        JOINT1.mom((1, 1), allow_approx=False)
-    with raises(chaospy.UnsupportedFeature):
-        JOINT2.mom((1, 1), allow_approx=False)
-    assert numpy.isclose(JOINT1.mom((1, 1), allow_approx=True), 2.33334206)
-    assert numpy.isclose(JOINT2.mom((1, 1), allow_approx=True), 2.33334206)
-
 
 def test_1d_dependent_density():
     """Ensure probability density function behaves as expected for dependent 1-D distributions."""
