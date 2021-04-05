@@ -18,127 +18,98 @@
 .. |binder| image:: https://mybinder.org/badge_logo.svg
     :target: https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials
 
-Chaospy is a numerical tool for performing uncertainty quantification using
-polynomial chaos expansions and advanced Monte Carlo methods implemented in
-Python.
-
 * `Documentation <https://chaospy.readthedocs.io/en/master>`_
 * `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials>`_
-* `Source code <https://github.com/jonathf/chaospy>`_
-* `Issue tracker <https://github.com/jonathf/chaospy/issues>`_
-* `Code of Conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
-* `Contribution Guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
-* `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOg.md>`_
+* `Code of conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
+* `Contribution guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
+* `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOG.md>`_
+* `License <https://github.com/jonathf/chaospy/blob/master/LICENCE.txt>`_
+
+Chaospy is a numerical toolbox for performing uncertainty quantification using
+polynomial chaos expansions, advanced Monte Carlo methods implemented in
+Python. It also include a full suite of tools for doing low-discrepancy
+sampling, quadrature creation, polynomial manipulations, and a lot more.
+
+The philosophy behind ``chaospy`` is not to be a single tool that solves every
+uncertainty quantification problem, but instead be a specific tools to aid to
+let the user solve problems themselves. This includes both well established
+problems, but also to be a foundry for experimenting with new problems, that
+are not so well established. To do this, emphasis is put on the following:
+
+* Focus on an easy to use interface that embraces the `pythonic code style
+  <https://docs.python-guide.org/writing/style/>`_.
+* Make sure the code is "composable", such a way that changing one part of the
+  code with something user defined should be easy and encouraged.
+* Try to support a broad width of the various methods for doing uncertainty
+  quantification where that makes sense to involve ``chaospy``.
+* Make sure that ``chaospy`` plays nice with a large set of of other other
+  similar projects. This includes `numpy <https://numpy.org/>`_, `scipy
+  <https://scipy.org/>`_, `scikit-learn <https://scikit-learn.org>`_,
+  `statsmodels <https://statsmodels.org/>`_, `openturns
+  <https://openturns.org/>`_, and `gstools <https://geostat-framework.org/>`_
+  to mention a few.
+* Contribute all code to the community open source.
 
 Installation
-------------
+============
 
-Installation should be straight forward using `pip <https://pypi.org/>`_:
+Installation should be straight forward from `pip <https://pypi.org/>`_:
 
 .. code-block:: bash
 
-    $ pip install chaospy
+    pip install chaospy
 
-For more installation details, see the `installation guide
-<https://chaospy.readthedocs.io/en/master/installation.html>`_.
+Or if `Conda <https://conda.io/>`_ is more to your liking:
 
-Example Usage
+.. code-block:: bash
+
+    conda install -c conda-forge chaospy
+
+Then go over to the
+`tutorial collection <https://chaospy.readthedocs.io/en/master/tutorials>`_
+to see how to use the toolbox.
+
+Development
+===========
+
+Chaospy uses `poetry`_ to manage its development installation. Assuming
+`poetry`_ installed on your system, installing ``chaospy`` for development can
+be done from the repository root with the command::
+
+    poetry install
+
+This will install all required dependencies and chaospy into a virtual
+environment. If you are not already managing your own virtual environment, you
+can use poetry to activate and deactivate with::
+
+    poetry shell
+    exit
+
+.. _poetry: https://poetry.eustace.io/
+
+Testing
+-------
+
+To ensure that the code run on your local system, run the following:
+
+.. code-block:: bash
+
+    poetry run pytest --nbval-lax --doctest-modules \
+        chaospy/ tests/ docs/*/*.{rst,ipynb}
+
+Documentation
 -------------
 
-``chaospy`` is created to work well inside numerical Python ecosystem. You
-therefore typically need to import `Numpy <https://numpy.org/>`_ along side
-``chaospy``:
+The documentation build assumes that ``pandoc`` is installed on your
+system and available in your path.
 
-.. code-block:: python
+To build documentation locally on your system, use ``make`` from the ``docs/``
+folder:
 
-    >>> import numpy
-    >>> import chaospy
+.. code-block:: bash
 
-``chaospy`` is problem agnostic, so you can use your own code using any means
-you find fit. The only requirement is that the output is compatible with
-`numpy.ndarray` format:
+    cd docs/
+    make html
 
-.. code-block:: python
-
-    >>> coordinates = numpy.linspace(0, 10, 100)
-
-    >>> def forward_solver(coordinates, parameters):
-    ...     """Function to do uncertainty quantification on."""
-    ...     param_init, param_rate = parameters
-    ...     return param_init*numpy.e**(-param_rate*coordinates)
-
-We here assume that ``parameters`` contains aleatory variability with known
-probability. We formalize this probability in ``chaospy`` as a joint
-probability distribution. For example:
-
-.. code-block:: python
-
-    >>> distribution = chaospy.J(chaospy.Uniform(1, 2), chaospy.Normal(0, 2))
-
-    >>> print(distribution)
-    J(Uniform(lower=1, upper=2), Normal(mu=0, sigma=2))
-
-Most probability distributions have an associated expansion of orthogonal
-polynomials. These can be automatically constructed:
-
-.. code-block:: python
-
-    >>> expansion = chaospy.generate_expansion(8, distribution)
-
-    >>> print(expansion[:5].round(8))
-    [1.0 q1 q0-1.5 q0*q1-1.5*q1 q0**2-3.0*q0+2.16666667]
-
-Here the polynomial is defined positional, such that ``q0`` and ``q1`` refers
-to the uniform and normal distribution respectively.
-
-The distribution can also be used to create (pseudo-)random samples and
-low-discrepancy sequences. For example to create Sobol sequence samples:
-
-.. code-block:: python
-
-    >>> samples = distribution.sample(1000, rule="sobol")
-
-    >>> print(samples[:, :4].round(8))
-    [[ 1.5         1.75        1.25        1.375     ]
-     [ 0.         -1.3489795   1.3489795  -0.63727873]]
-
-We can evaluating the forward solver using these samples:
-
-.. code-block:: python
-
-    >>> evaluations = numpy.array([forward_solver(coordinates, sample)
-    ...                            for sample in samples.T])
-
-    >>> print(evaluations[:3, :5].round(8))
-    [[1.5        1.5        1.5        1.5        1.5       ]
-     [1.75       2.00546578 2.29822457 2.63372042 3.0181921 ]
-     [1.25       1.09076905 0.95182169 0.83057411 0.72477163]]
-
-Having all these components in place, we have enough components to perform
-point collocation. Or in other words, we can create a polynomial approximation
-of ``forward_solver``:
-
-.. code-block:: python
-
-    >>> approx_solver = chaospy.fit_regression(expansion, samples, evaluations)
-
-    >>> print(approx_solver[:2].round(4))
-    [q0 -0.0002*q0*q1**3+0.0051*q0*q1**2-0.101*q0*q1+q0]
-
-Since the model approximations are polynomials, we can do inference on them
-directly. For example:
-
-.. code-block:: python
-
-    >>> expected = chaospy.E(approx_solver, distribution)
-    >>> deviation = chaospy.Std(approx_solver, distribution)
-
-    >>> print(expected[:5].round(8))
-    [1.5        1.53092356 1.62757217 1.80240142 2.07915608]
-    >>> print(deviation[:5].round(8))
-    [0.28867513 0.43364958 0.76501802 1.27106355 2.07110879]
-
-For more extensive guides on this approach an others, see the `tutorial
-collection`_.
-
-.. _tutorial collection: https://chaospy.readthedocs.io/en/master/tutorials
+Run ``make`` without argument to get a list of build targets.
+The HTML target stores output to the folder ``doc/.build/html``.

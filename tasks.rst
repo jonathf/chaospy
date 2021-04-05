@@ -101,31 +101,6 @@ to evaluate that polynomial chaos expansion has converged, is to repeat the
 analysis done with optimal Gaussian, also holds true when expanded to the
 Kronrod example.
 
-Splitting quadrature intervals
-------------------------------
-
-Difficulty: hard
-
-Quadrature rules works better if it is possible to split the distribution into
-chunks and doing individual evaluation on each chunk. In other words, instead
-of 100 nodes over one distribution, split the distribution into intervals and
-do 10 nodes for each interval. Each sub-quadrature rule is then combined into
-a single quadrature rule at the end.
-
-The interface ``chaospy.quadrature.frontend:generate_quadrature`` should be
-updated to include interval splitting.
-
-Why this can be a bit tricky:
-
-* Some distributions lend themselves to optimal interval points. A optional
-  method could be added to each distribution defining their own interval
-  splits.
-* This problem should preferably be extended to the multivariate case, where
-  intervals are replaced with segments in multivariate space.
-* If a quadrature rule includes samples at the ends, sub-rules can overlap.
-  For those samples, only one should be kept, and the weight function should be
-  updated to include the sum of both.
-
 Discrete distributions
 ----------------------
 
@@ -136,21 +111,6 @@ and ``chaospy.Binomial``. Use these as templates and the literature to extend
 ``chaospy.distribution.collection`` with the thee distributions:
 Hyper-geometric, Negative-Binomial and Poisson. If other distributions also
 makes sense, add as one sees fit.
-
-Kernel Density Estimation (KDE)
--------------------------------
-
-Difficulty: hard
-
-Current (experimental) implementation of KDE using ``statsmodels`` is slow, and
-have to high inaccuracies for it to be useful. See discussion:
-https://github.com/jonathf/chaospy/issues/83
-
-With a Gaussian kernel, it should be possible to implement KDE efficiently
-using only ``scipy.special.ndtr`` and ``scipy.special.ndtri``.
-
-This require a little bit of research into both the theory of KDE and how
-``chaospy`` implements mappings using Rosenblatt-transformations.
 
 Better Lagrange Polynomial Support
 ----------------------------------
@@ -164,16 +124,3 @@ This does not require re-inventing the wheel, as there are others who have
 solve it before. For examples, it should be possible to get inspired/copy from:
 `https://people.sc.fsu.edu/~jburkardt/m_src/lagrange_nd/lagrange_nd.html`_
 `https://sandialabs.github.io/pyapprox/tensor_product_lagrange_interpolation.html`_
-
-Support for Gaussian Mixture Models
------------------------------------
-
-Difficulty: hard
-
-In theory it should be possible to implement Gaussian Mixture Models in
-``chaospy``. See discussion for overview:
-`https://github.com/jonathf/chaospy/issues/187`_
-
-This requires some work, and a viable solution that isn't computationally
-prohibitively expensive might not be possible without using a compiled
-language.

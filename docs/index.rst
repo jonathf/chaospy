@@ -1,16 +1,15 @@
-Chaospy documentation
-=====================
+Chaospy
+=======
 
 .. toctree::
     :hidden:
 
-    get_started
     tutorials/index
     user_guide/index
     reference/index
     about_us
 
-Chaospy is a numerical tool for performing uncertainty quantification using
+Chaospy is a numerical toolbox for performing uncertainty quantification using
 polynomial chaos expansions, advanced Monte Carlo methods implemented in
 Python. It also include a full suite of tools for doing low-discrepancy
 sampling, quadrature creation, polynomial manipulations, and a lot more.
@@ -35,31 +34,24 @@ are not so well established. To do this, emphasis is put on the following:
   to mention a few.
 * Contribute all code to the community open source.
 
-:ref:`installation`
--------------------
+.. _installation:
 
-Everything need to install ``chaospy`` locally on your own system, bot for normal usage and as a developer that wants to edit the code.
+Installation
+------------
 
-:ref:`tutorial`
----------------
+Installation should be straight forward from `pip <https://pypi.org/>`_:
 
-A collection of illustrative tutorials to get inspiration to what you can do
-with ``chaospy``. Each example can be looked upon as complete stories
-without going into the details too much.
+.. code-block:: bash
 
-:ref:`user_guide`
------------------
+    pip install chaospy
 
-A more thorough overview of what ``chaospy`` can offer. This section also
-provides some of the theoretical background for some of the methods.
+Or if `Conda <https://conda.io/>`_ is more to your liking:
 
-:ref:`reference`
-----------------
+.. code-block:: bash
 
-A complete collection of the public API. This includes all functions, classes,
-methods which might be of interest when using `chaospy`.
+    conda install -c conda-forge chaospy
 
-:ref:`about_us`
----------------
-
-Information about who the developers of chaospy are and how to get in contact.
+For developer installation, go to the `chaospy repository
+<https://github.com/jonathf/chaospy>`_. Otherwise, check out the `tutorial
+collection <https://chaospy.readthedocs.io/en/master/tutorials>`_ to see how to
+use the toolbox.

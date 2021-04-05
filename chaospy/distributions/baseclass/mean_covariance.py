@@ -111,7 +111,6 @@ class MeanCovarianceDistribution(Distribution):
         if isinstance(mean, Distribution):
             mean = [mean._get_cache(dim, cache, get=0)
                     for dim in range(len(mean))]
-            print(mean)
             if any([isinstance(condition, chaospy.Distribution)
                     for condition in mean]):
                 raise chaospy.StochasticallyDependentError(
