@@ -25,13 +25,13 @@ import numpy
 from scipy.optimize import fminbound
 import chaospy
 
-from .combine import combine
+from .utils import combine
 
 
-def quad_leja(
+def leja(
         order,
         dist,
-        rule="fejer",
+        rule="fejer_2",
 ):
     """
     Generate Leja quadrature node.
@@ -59,8 +59,8 @@ def quad_leja(
         :cite:`narayan_adaptive_2014`.
 
     Example:
-        >>> abscissas, weights = quad_leja(
-        ...     2, chaospy.Iid(chaospy.Normal(0, 1), 2))
+        >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 2)
+        >>> abscissas, weights = chaospy.quadrature.leja(2, distribution)
         >>> abscissas.round(2)
         array([[-1.41, -1.41, -1.41,  0.  ,  0.  ,  0.  ,  1.76,  1.76,  1.76],
                [-1.41,  0.  ,  1.76, -1.41,  0.  ,  1.76, -1.41,  0.  ,  1.76]])
@@ -73,7 +73,7 @@ def quad_leja(
             raise chaospy.StochasticallyDependentError(
                 "Leja quadrature do not supper distribution with dependencies.")
         order = numpy.broadcast_to(order, len(dist))
-        out = [quad_leja(order[_], dist[_]) for _ in range(len(dist))]
+        out = [leja(order[_], dist[_]) for _ in range(len(dist))]
         abscissas = [_[0][0] for _ in out]
         weights = [_[1] for _ in out]
         abscissas = combine(abscissas).T

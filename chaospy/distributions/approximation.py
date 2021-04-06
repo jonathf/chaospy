@@ -156,7 +156,7 @@ MOMENTS_QUADS = {}
 def approximate_moment(
         distribution,
         k_loc,
-        order=None,
+        order=100000,
         rule="clenshaw_curtis",
         **kwargs
 ):
@@ -171,12 +171,11 @@ def approximate_moment(
         k_loc (Sequence[int, ...]):
             The exponents of the moments of interest with ``shape == (dim,)``.
         order (int):
-            The quadrature order used in approximation. If omitted, calculated
-            to be ``1000/log2(len(distribution)+1)``.
+            The quadrature order used in approximation.
         rule (str):
             Quadrature rule for integrating moments.
         kwargs:
-            Extra args passed to `chaospy.generate_quadrature`.
+            Extra args passed to :func:`chaospy.generate_quadrature`.
 
     Examples:
         >>> distribution = chaospy.Uniform(1, 4)

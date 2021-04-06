@@ -1,14 +1,5 @@
 """
-Gauss-Radau formula for numerical estimation of integrals. It requires
-:math:`m+1` points and fits all Polynomials to degree :math:`2m`, so it
-effectively fits exactly all Polynomials of degree :math:`2m-1`.
-
-It allows for a single abscissas to be user defined, while the others are built
-around this point.
-
-Canonically, Radau is built around Legendre weight function with the fixed
-point at the left end. Not all distributions/fixed point combinations allows
-for the building of a quadrature scheme.
+Generate the quadrature nodes and weights in Gauss-Radau quadrature.
 
 Example usage
 -------------
@@ -18,7 +9,7 @@ With increasing order::
     >>> distribution = chaospy.Beta(2, 2, lower=-1, upper=1)
     >>> for order in range(4):  # doctest: +NORMALIZE_WHITESPACE
     ...     abscissas, weights = chaospy.generate_quadrature(
-    ...         order, distribution, rule="gauss_radau")
+    ...         order, distribution, rule="radau")
     ...     print(abscissas.round(2), weights.round(2))
     [[-1.]] [1.]
     [[-1.   0.2]] [0.17 0.83]
@@ -31,7 +22,7 @@ Multivariate samples::
     >>> distribution = chaospy.J(
     ...     chaospy.Uniform(0, 1), chaospy.Beta(4, 5))
     >>> abscissas, weights = chaospy.generate_quadrature(
-    ...     1, distribution, rule="gauss_radau")
+    ...     1, distribution, rule="radau")
     >>> abscissas.round(3)
     array([[0.   , 0.   , 0.667, 0.667],
            [0.   , 0.5  , 0.   , 0.5  ]])
@@ -42,7 +33,7 @@ To change the fixed point, the direct generating function has to be used::
 
     >>> distribution = chaospy.Uniform(lower=-1, upper=1)
     >>> for fixed_point in numpy.linspace(-1, 1, 6):
-    ...     abscissas, weights = chaospy.quad_gauss_radau(
+    ...     abscissas, weights = chaospy.quadrature.radau(
     ...         2, distribution, fixed_point)
     ...     print(abscissas.round(2), weights.round(2))
     [[-1.   -0.58  0.18  0.82]] [0.06 0.33 0.39 0.22]
@@ -54,7 +45,7 @@ To change the fixed point, the direct generating function has to be used::
 
 However, a fixed point at 0 is not allowed::
 
-    >>> chaospy.quad_gauss_radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> chaospy.quadrature.radau(  # doctest: +IGNORE_EXCEPTION_DETAIL
     ...     3, distribution, fixed_point=0)
     Traceback (most recent call last):
         ...
@@ -64,10 +55,10 @@ import numpy
 import scipy.linalg
 import chaospy
 
-from .combine import combine_quadrature
+from .utils import combine_quadrature
 
 
-def quad_gauss_radau(
+def radau(
         order,
         dist,
         fixed_point=None,
@@ -80,15 +71,26 @@ def quad_gauss_radau(
     """
     Generate the quadrature nodes and weights in Gauss-Radau quadrature.
 
+    Gauss-Radau formula for numerical estimation of integrals. It requires
+    :math:`m+1` points and fits all Polynomials to degree :math:`2m`, so it
+    effectively fits exactly all Polynomials of degree :math:`2m-1`.
+
+    It allows for a single abscissas to be user defined, while the others are
+    built around this point.
+
+    Canonically, Radau is built around Legendre weight function with the fixed
+    point at the left end. Not all distributions/fixed point combinations
+    allows for the building of a quadrature scheme.
+
     Args:
         order (int):
             Quadrature order.
-        dist (chaospy.distributions.baseclass.Distribution):
+        dist (:class:`chaospy.Distribution`):
             The distribution weights to be used to create higher order nodes
             from.
         fixed_point (float):
             Fixed point abscissas assumed to be included in the quadrature. If
-            imitted, use distribution lower point ``dist.range()[0]``.
+            omitted, use distribution lower bound.
         rule (str):
             In the case of ``lanczos`` or ``stieltjes``, defines the
             proxy-integration scheme.
@@ -101,22 +103,22 @@ def quad_gauss_radau(
             if that fails.
 
     Returns:
-        (numpy.ndarray, numpy.ndarray):
-            abscissas:
-                The quadrature points for where to evaluate the model function
-                with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
-                number of samples.
-            weights:
-                The quadrature weights with ``weights.shape == (N,)``.
+        abscissas (numpy.ndarray):
+            The quadrature points for where to evaluate the model function
+            with ``abscissas.shape == (len(dist), N)`` where ``N`` is the
+            number of samples.
+        weights (numpy.ndarray):
+            The quadrature weights with ``weights.shape == (N,)``.
 
     Example:
-        >>> abscissas, weights = quad_gauss_radau(4, chaospy.Uniform(-1, 1))
+        >>> distribution = chaospy.Uniform(-1, 1)
+        >>> abscissas, weights = chaospy.quadrature.radau(4, distribution)
         >>> abscissas.round(3)
         array([[-1.   , -0.887, -0.64 , -0.295,  0.094,  0.468,  0.771,  0.955]])
         >>> weights.round(3)
         array([0.016, 0.093, 0.152, 0.188, 0.196, 0.174, 0.125, 0.057])
+
     """
-    assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if fixed_point is None:
         fixed_point = dist.lower
     else:

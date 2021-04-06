@@ -1,50 +1,40 @@
 """Numerical quadrature node and weight generator."""
+import logging
 import numpy
 import chaospy
 
-from .clenshaw_curtis import quad_clenshaw_curtis
-from .discrete import quad_discrete
-from .fejer import quad_fejer
-from .gaussian import quad_gaussian
-from .gauss_patterson import quad_gauss_patterson
-from .gauss_legendre import quad_gauss_legendre
-from .gauss_lobatto import quad_gauss_lobatto
-from .gauss_kronrod import quad_gauss_kronrod
-from .gauss_radau import quad_gauss_radau
-from .genz_keister import quad_genz_keister
-from .grid import quad_grid
-from .leja import quad_leja
-from .newton_cotes import quad_newton_cotes
+from .utils import combine
+from .sparse_grid import sparse_grid
 
-QUAD_NAMES = {
+SHORT_NAME_TABLE = {
     "c": "clenshaw_curtis", "clenshaw_curtis": "clenshaw_curtis",
-    "f": "fejer", "fejer": "fejer",
+    "f1": "fejer_1", "fejer_1": "fejer_1",
+    "f2": "fejer_2", "fejer_2": "fejer_2",
     "g": "gaussian", "gaussian": "gaussian",
-    "e": "gauss_legendre", "gauss_legendre": "gauss_legendre",
-    "l": "gauss_lobatto", "gauss_lobatto": "gauss_lobatto",
-    "k": "gauss_kronrod", "gauss_kronrod": "gauss_kronrod",
-    "p": "gauss_patterson", "gauss_patterson": "gauss_patterson",
-    "r": "gauss_radau", "gauss_radau": "gauss_radau",
-    "z": "genz_keister", "genz_keister": "genz_keister",
+    "e": "legendre", "legendre": "legendre",
+    "l": "lobatto", "lobatto": "lobatto",
+    "k": "kronrod", "kronrod": "kronrod",
+    "p": "patterson", "patterson": "patterson",
+    "r": "radau", "radau": "radau",
     "j": "leja", "leja": "leja",
     "n": "newton_cotes", "newton_cotes": "newton_cotes",
     "d": "discrete", "discrete": "discrete",
     "i": "grid", "grid": "grid",
+    "z16": "genz_keister_16", "genz_keister_16": "genz_keister_16",
+    "z18": "genz_keister_18", "genz_keister_18": "genz_keister_18",
+    "z22": "genz_keister_22", "genz_keister_22": "genz_keister_22",
+    "z24": "genz_keister_24", "genz_keister_24": "genz_keister_24",
 }
-QUAD_FUNCTIONS = {
-    "clenshaw_curtis": quad_clenshaw_curtis,
-    "fejer": quad_fejer,
-    "gaussian": quad_gaussian,
-    "gauss_kronrod": quad_gauss_kronrod,
-    "gauss_legendre": quad_gauss_legendre,
-    "gauss_lobatto": quad_gauss_lobatto,
-    "gauss_patterson": quad_gauss_patterson,
-    "gauss_radau": quad_gauss_radau,
-    "genz_keister": quad_genz_keister,
-    "leja": quad_leja,
-    "newton_cotes": quad_newton_cotes,
-    "discrete": quad_discrete,
-    "grid": quad_grid,
+DEPRECATED_SHORT_NAMES = {
+    "f": "f2",
+    "fejer": "fejer_2",
+    "gauss_kronrod": "kronrod",
+    "gauss_lobatto": "lobatto",
+    "gauss_patterson": "patterson",
+    "gauss_radau": "radau",
+    "gauss_legendre": "legendre",
+    "z": "genz_keister_24",
+    "genz_keister": "genz_keister_24",
 }
 
 
@@ -108,12 +98,31 @@ def generate_quadrature(
     Examples:
         >>> distribution = chaospy.Iid(chaospy.Normal(0, 1), 2)
         >>> abscissas, weights = generate_quadrature(
-        ...     1, distribution, rule=("gaussian", "fejer"))
+        ...     1, distribution, rule=("gaussian", "fejer_2"))
         >>> abscissas.round(3)
         array([[-1.  , -1.  ,  1.  ,  1.  ],
                [-4.11,  4.11, -4.11,  4.11]])
         >>> weights.round(3)
-        array([0.25, 0.25, 0.25, 0.25])
+        array([0.222, 0.222, 0.222, 0.222])
+
+    See also:
+        :func:`chaospy.quadrature.clenshaw_curtis`
+        :func:`chaospy.quadrature.fejer_1`
+        :func:`chaospy.quadrature.fejer_2`
+        :func:`chaospy.quadrature.gaussian`
+        :func:`chaospy.quadrature.legendre_proxy`
+        :func:`chaospy.quadrature.lobatto`
+        :func:`chaospy.quadrature.kronrod`
+        :func:`chaospy.quadrature.patterson`
+        :func:`chaospy.quadrature.radau`
+        :func:`chaospy.quadrature.leja`
+        :func:`chaospy.quadrature.newton_cotes`
+        :func:`chaospy.quadrature.discrete`
+        :func:`chaospy.quadrature.grid`
+        :func:`chaospy.quadrature.genz_keister_16`
+        :func:`chaospy.quadrature.genz_keister_18`
+        :func:`chaospy.quadrature.genz_keister_22`
+        :func:`chaospy.quadrature.genz_keister_24`
 
     """
     if not rule:
@@ -123,7 +132,7 @@ def generate_quadrature(
         ]
 
     if sparse:
-        return chaospy.sparse_grid.construct_sparse_grid(
+        return sparse_grid(
             order=order,
             dist=dist,
             growth=growth,
@@ -135,9 +144,10 @@ def generate_quadrature(
         )
 
     if len(dist) == 1 or dist.stochastic_dependent:
-        if not isinstance(rule, str) and len(rule) == 1:
+        if not isinstance(rule, str) and len(set(rule)) == 1:
             rule = rule[0]
-        assert isinstance(rule, str), "dependencies require rule consistency"
+        assert isinstance(rule, str), (
+            "dependencies require rule consistency; %s provided" % rule)
         abscissas, weights = _generate_quadrature(
             order=order,
             dist=dist,
@@ -172,8 +182,8 @@ def generate_quadrature(
             )
             for order_, dist_, rule_ in zip(order, dist, rule)
         ])
-        abscissas = chaospy.combine([abscissa.T for abscissa in abscissas]).T
-        weights = numpy.prod(chaospy.combine([weight.T for weight in weights]), -1)
+        abscissas = combine([abscissa.T for abscissa in abscissas]).T
+        weights = numpy.prod(combine([weight.T for weight in weights]), -1)
 
     assert abscissas.shape == (len(dist), len(weights))
     if dist.interpret_as_integer:
@@ -183,6 +193,7 @@ def generate_quadrature(
 
 def _generate_quadrature(order, dist, rule, **kwargs):
 
+    logger = logging.getLogger(__name__)
     if isinstance(dist, chaospy.OperatorDistribution):
 
         args = ("left", "right")
@@ -205,16 +216,30 @@ def _generate_quadrature(order, dist, rule, **kwargs):
             abscissas = (abscissas.T*const.T).T
             return abscissas, weights
 
-    rule = QUAD_NAMES[rule.lower()]
+    rule = rule.lower()
+    if rule in DEPRECATED_SHORT_NAMES:
+        logger.warning("quadrature rule '%s' is renamed to '%s'; "
+                       "error will be raised in the future",
+                       rule, DEPRECATED_SHORT_NAMES[rule])
+        rule = DEPRECATED_SHORT_NAMES[rule]
+    rule = SHORT_NAME_TABLE[rule]
+
     parameters = {}
 
-    if rule in ("clenshaw_curtis", "fejer", "newton_cotes", "discrete"):
-        parameters.update(growth=kwargs["growth"], segments=kwargs["segments"])
+    if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "discrete", "grid"):
+        parameters["growth"] = kwargs["growth"]
 
-    if rule in ("gaussian", "gauss_kronrod", "gauss_radau", "gauss_lobatto"):
-        parameters.update(tolerance=kwargs["tolerance"], scaling=kwargs["scaling"],
-                          n_max=kwargs["n_max"], recurrence_algorithm=kwargs["recurrence_algorithm"])
+    if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "grid", "legendre"):
+        parameters["segments"] = kwargs["segments"]
 
-    quad_function = QUAD_FUNCTIONS[rule]
+    if rule in ("gaussian", "kronrod", "radau", "lobatto"):
+        parameters.update(
+            n_max=kwargs["n_max"],
+            tolerance=kwargs["tolerance"],
+            scaling=kwargs["scaling"],
+            recurrence_algorithm=kwargs["recurrence_algorithm"],
+        )
+
+    quad_function = chaospy.quadrature.INTEGRATION_COLLECTION[rule]
     abscissas, weights = quad_function(order, dist, **parameters)
     return abscissas, weights

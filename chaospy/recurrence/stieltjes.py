@@ -154,19 +154,21 @@ def discretized_stieltjes(
     return coeffs, orths, norms
 
 
-def analytical_stieltjes(order, dist):
+def analytical_stieltjes(order, dist, multiplier=1):
     """Analytical Stieltjes' method"""
     dimensions = len(dist)
     mom_order = numpy.arange(order+1).repeat(dimensions)
     mom_order = mom_order.reshape(order+1, dimensions).T
     coeffs = dist.ttr(mom_order)
     coeffs[1, :, 0] = 1.
+    orders = numpy.arange(order, dtype=int)
+    multiplier, orders = numpy.broadcast_arrays(multiplier, orders)
 
     var = numpoly.variable(dimensions)
     orth = [numpy.zeros(dimensions), numpy.ones(dimensions)]
-    for order_ in range(order):
+    for order_, multiplier_ in zip(orders, multiplier):
         orth.append(
-            (var-coeffs[0, :, order_])*orth[-1]-coeffs[1, :, order_]*orth[-2])
+            multiplier_*((var-coeffs[0, :, order_])*orth[-1]-coeffs[1, :, order_]*orth[-2]))
     orth = numpoly.polynomial(orth[1:]).T
     norms = numpy.cumprod(coeffs[1], 1)
 

@@ -42,12 +42,14 @@ Multivariate usage::
 
 """
 import numpy
+
 import chaospy
+from chaospy.quadrature import utils
 
 
 def create_chebyshev_samples(order, dim=1):
     """
-    Chebyshev sampling function.
+    Generate Chebyshev pseudo-random samples.
 
     Args:
         order (int):
@@ -58,9 +60,19 @@ def create_chebyshev_samples(order, dim=1):
     Returns:
         samples following Chebyshev sampling scheme mapped to the
         ``[0, 1]^dim`` hyper-cube and ``shape == (dim, order)``.
+
+    Examples:
+        >>> samples = chaospy.create_chebyshev_samples(6, 1)
+        >>> samples.round(4)
+        array([[0.0495, 0.1883, 0.3887, 0.6113, 0.8117, 0.9505]])
+        >>> samples = chaospy.create_chebyshev_samples(3, 2)
+        >>> samples.round(3)
+        array([[0.146, 0.146, 0.146, 0.5  , 0.5  , 0.5  , 0.854, 0.854, 0.854],
+               [0.146, 0.5  , 0.854, 0.146, 0.5  , 0.854, 0.146, 0.5  , 0.854]])
+
     """
     x_data = .5*numpy.cos(numpy.arange(order, 0, -1)*numpy.pi/(order+1)) + .5
-    x_data = chaospy.quadrature.combine([x_data]*dim)
+    x_data = utils.combine([x_data]*dim)
     return x_data.T
 
 

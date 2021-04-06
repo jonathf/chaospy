@@ -1,18 +1,17 @@
 """Frontend function for generating polynomial expansions."""
-from .three_terms_recurrence import orth_ttr
-from .cholesky import orth_chol
-from .gram_schmidt import orth_gs
-from .lagrange import lagrange_polynomial
+from .stieltjes import stieltjes
+from .cholesky import cholesky
+from .gram_schmidt import gram_schmidt
 
 EXPANSION_NAMES = {
-    "ttr": "three_terms_recurrence", "three_terms_recurrence": "three_terms_recurrence",
+    "ttr": "stieltjes", "three_terms_recurrence": "stieltjes", "stieltjes": "stieltjes",
     "chol": "cholesky", "cholesky": "cholesky",
     "gs": "gram_schmidt", "gram_schmidt": "gram_schmidt",
 }
 EXPANSION_FUNCTIONS = {
-    "three_terms_recurrence": orth_ttr,
-    "cholesky": orth_chol,
-    "gram_schmidt": orth_gs,
+    "stieltjes": stieltjes,
+    "cholesky": cholesky,
+    "gram_schmidt": gram_schmidt,
 }
 
 

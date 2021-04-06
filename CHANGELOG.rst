@@ -1,6 +1,44 @@
 Master Branch
 =============
 
+Version 4.3.1 (2021-03-18)
+==========================
+
+Refactoring `orthogonal -> expansion` module.
+
+ADDED:
+  * Dedicated classical orthogonal expansion schemes:
+    `chaospy.expansion.{chebyshev_1,chebyshev_2,gegenbauer,hermite,jacobi,laguerre,legendre}`
+CHANGED:
+  * Function renames:
+    `chaospy.{orth_ttr,orth_chol,orth_gs,lagrange_polynomial} ->
+    chaospy.expansion.{stieltjes,cholesky,gram_schmidt,lagrange}`
+  * Docs update.
+
+Version 4.3.0 (2021-01-20)
+==========================
+
+Refactoring `quadrature` module.
+
+ADDED:
+  * `chaospy.quadrature.fejer_1` is added.
+  * Dedicated classical quadrature schemes:
+    `chaospy.quadrature.{chebyshev,gegenbauer,hermite,jacobi,laguerre,legendre}`
+CHANGED:
+  * Bound checks for the triangle distribution. (Thanks to @yoelcortes.)
+  * Refactored hypercube quadrature to common backend. This gives lots of flags
+    like `seqments` and
+  * Function renames:
+    `chaospy.quad_{clenshaw_curtis,discrete,fejer,gaussian,grid,gauss_lengendre,gauss_kronrod,gauss_lobatto,gauss_patterson,gauss_radau} ->
+    chaospy.quadrature.{clenshaw_curtis,fejer_2,gaussian,grid,legendre_proxy,kronrod,lobatto,patterson,radau}`
+  * Patterson growth rule changed from `0, 3, 7, ...` to `0, 1, 2, ...` but
+    maps backwards. Defaults to not have growth parameter, as setting it false
+    makes no sense.
+  * Renamed: `chaospy.generate_sparse_grid -> chaospy.quadrature.sparse_grid`
+REMOVED:
+  * Genz-Keister quadrature `quad_genz_keister` is deprecated as it does not
+    fit the `chaospy` scheme very well.
+
 Version 4.2.4 (2021-02-23)
 ==========================
 
