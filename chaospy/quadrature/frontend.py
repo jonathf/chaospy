@@ -20,6 +20,10 @@ SHORT_NAME_TABLE = {
     "n": "newton_cotes", "newton_cotes": "newton_cotes",
     "d": "discrete", "discrete": "discrete",
     "i": "grid", "grid": "grid",
+    "z16": "genz_keister_16", "genz_keister_16": "genz_keister_16",
+    "z18": "genz_keister_18", "genz_keister_18": "genz_keister_18",
+    "z22": "genz_keister_22", "genz_keister_22": "genz_keister_22",
+    "z24": "genz_keister_24", "genz_keister_24": "genz_keister_24",
 }
 DEPRECATED_SHORT_NAMES = {
     "f": "f2",
@@ -29,6 +33,8 @@ DEPRECATED_SHORT_NAMES = {
     "gauss_patterson": "patterson",
     "gauss_radau": "radau",
     "gauss_legendre": "legendre",
+    "z": "genz_keister_24",
+    "genz_keister": "genz_keister_24",
 }
 
 
@@ -113,6 +119,10 @@ def generate_quadrature(
         :func:`chaospy.quadrature.newton_cotes`
         :func:`chaospy.quadrature.discrete`
         :func:`chaospy.quadrature.grid`
+        :func:`chaospy.quadrature.genz_keister_16`
+        :func:`chaospy.quadrature.genz_keister_18`
+        :func:`chaospy.quadrature.genz_keister_22`
+        :func:`chaospy.quadrature.genz_keister_24`
 
     """
     if not rule:

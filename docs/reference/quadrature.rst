@@ -34,6 +34,10 @@ Gaussian extensions
 .. autosummary::
    :toctree: api
 
+   genz_keister_16
+   genz_keister_18
+   genz_keister_22
+   genz_keister_24
    legendre
    kronrod
    lobatto

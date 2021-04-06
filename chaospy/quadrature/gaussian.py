@@ -25,10 +25,10 @@ def gaussian(
     algorithms exists.
 
     Args:
-        dist (chaospy.Distribution):
-            The distribution which density will be used as weight function.
         order (int):
             The order of the quadrature.
+        dist (chaospy.Distribution):
+            The distribution which density will be used as weight function.
         recurrence_algorithm (str):
             Name of the algorithm used to generate abscissas and weights.
         rule (str):
