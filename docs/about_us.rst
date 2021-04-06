@@ -114,23 +114,3 @@ Horizontal PNG:
 .. image:: ./_static/chaospy_logo2.png
   :width: 200px
   :target: ./_static/chaospy_logo2.png
-
-Code of conduct
----------------
-
-`Code of Conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
-
-Contribution
-------------
-
-`Contribution Guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
-
-Change log
-----------
-
-`Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOG.md>`_
-
-Software licence
-----------------
-
-`MIT license <https://github.com/jonathf/chaospy/blob/master/LICENCE.txt>`_

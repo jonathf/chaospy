@@ -19,6 +19,7 @@ possible to `run the tutorials using Binder
    pseudo_spectral_projection
    scikitlearn_regression
    intrusive_galerkin
+   generalized_polynomial_chaos
    stochastic_dependencies
    kernel_density_estimation
    gaussian_mixture_model
@@ -82,14 +83,23 @@ Collocation <./point_collocation.ipynb>`_ and `Pseudo-Spectral
 Projection <./pseudo_spectral_projection.ipynb>`_. It requires a bit
 more use of the mathematical hand holding to apply properly.
 
-`Stochastic Dependencies <./stochastic_dependencies.ipynb>`_
+`Generalized polynomial chaos <./generalized_polynomial_chaos.ipynb>`_
+----------------------------------------------------------------------
+
+Numerical instability and stochastically dependencies in the input variables
+requires a more advanced approach. This tutorial shows how to employ
+*generalized polynomial chaos expansion* in both the case of
+`Point Collocation <./point_collocation.ipynb>`_ and
+`Pseudo-Spectral Projection <./pseudo_spectral_projection.ipynb>`_.
+
+`Stochastic dependencies <./stochastic_dependencies.ipynb>`_
 ------------------------------------------------------------
 
-Stochastically dependencies in the input variables requires a more advanced
-approach than the stochastically independent counterparts.
-This tutorial shows how to employ *generalized polynomial chaos expansion*
-in both the case of `Point Collocation <./point_collocation.ipynb>`_ and
-`Pseudo-Spectral Projection <./pseudo_spectral_projection.ipynb>`_.
+While `generalized polynomial chaos <./generalized_polynomial_chaos.ipynb>`_
+allows for the modeling of stochastically dependent random variables, it does
+not describe how to create such dependencies beyond the very tiny set of
+built-in random variable provided in `chaospy`. This tutorial describes how to
+construct dependent distributions and how to use them in `chaospy`.
 
 `Kernel density estimation <./kernel_density_estimation.ipynb>`_
 ----------------------------------------------------------------

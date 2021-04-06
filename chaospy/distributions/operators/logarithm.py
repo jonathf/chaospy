@@ -33,6 +33,8 @@ class Logn(OperatorDistribution):
 
     """
 
+    _operator = lambda self, left, right: (numpy.log(left).T/numpy.log(right).T).T
+
     def __init__(self, dist, base=2):
         assert isinstance(dist, Distribution)
         assert numpy.all(dist.lower > 0)
@@ -44,10 +46,10 @@ class Logn(OperatorDistribution):
         )
 
     def _lower(self, idx, left, right, cache):
-        return numpy.log(left._get_lower(idx, cache))/numpy.log(right)
+        return self._operator(left._get_lower(idx, cache), right)
 
     def _upper(self, idx, left, right, cache):
-        return numpy.log(left._get_upper(idx, cache))/numpy.log(right)
+        return self._operator(left._get_upper(idx, cache), right)
 
     def _pdf(self, xloc, idx, left, right, cache):
         return left._get_pdf(right**xloc, idx, cache)*right**xloc*numpy.log(right)
@@ -56,7 +58,7 @@ class Logn(OperatorDistribution):
         return left._get_fwd(right.item(0)**xloc, idx, cache)
 
     def _ppf(self, uloc, idx, left, right, cache):
-        return numpy.log(left._get_inv(uloc, idx, cache))/numpy.log(right)
+        return self._operator(left._get_inv(uloc, idx, cache), right)
 
     def _mom(self, kloc, left, right, cache):
         raise chaospy.UnsupportedFeature("%s: Analytical moments for logarithm not supported", self)

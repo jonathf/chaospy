@@ -32,6 +32,7 @@ class LowerUpperDistribution(Distribution):
             repr_args=None,
     ):
         assert isinstance(dist, Distribution), "'dist' should be a distribution"
+        assert len(dist) == 1
         if repr_args is None:
             repr_args = dist._repr_args[:]
         repr_args += chaospy.format_repr_kwargs(lower=(lower, 0), upper=(upper, 1))
@@ -43,6 +44,9 @@ class LowerUpperDistribution(Distribution):
             rotation=rotation,
             extra_parameters=dict(dist=dist),
         )
+        assert len(dependencies) == 1
+        assert len(parameters["lower"]) == 1
+        assert len(parameters["upper"]) == 1
         super(LowerUpperDistribution, self).__init__(
             parameters=parameters,
             dependencies=dependencies,
@@ -57,16 +61,12 @@ class LowerUpperDistribution(Distribution):
         lower = parameters["lower"]
         if isinstance(lower, Distribution):
             lower = lower._get_cache(idx, cache, get=0)
-        if idx is not None and len(lower) > 1:
-            lower = lower[idx]
         upper = parameters["upper"]
         if isinstance(upper, Distribution):
             upper = upper._get_cache(idx, cache, get=0)
-        if idx is not None and len(upper) > 1:
-            upper = upper[idx]
         assert not assert_numerical or not (isinstance(lower, Distribution) or
                                             isinstance(upper, Distribution))
-        assert numpy.all(upper.ravel() > lower.ravel()), (
+        assert numpy.all(upper > lower), (
             "condition not satisfied: `upper > lower`")
         lower0 = self._dist._get_lower(idx, cache.copy())
         upper0 = self._dist._get_upper(idx, cache.copy())
