@@ -12,6 +12,8 @@ from .discrete import discrete
 from .fejer_1 import fejer_1
 from .fejer_2 import fejer_2
 from .gaussian import gaussian
+from .genz_keister import (
+    genz_keister_16, genz_keister_18, genz_keister_22, genz_keister_24)
 from .gegenbauer import gegenbauer
 from .grid import grid
 from .hermite import hermite
@@ -34,6 +36,10 @@ INTEGRATION_COLLECTION = {
     "fejer_1": fejer_1,
     "fejer_2": fejer_2,
     "gaussian": gaussian,
+    "genz_keister_16": genz_keister_16,
+    "genz_keister_18": genz_keister_18,
+    "genz_keister_22": genz_keister_22,
+    "genz_keister_24": genz_keister_24,
     "grid": grid,
     "kronrod": kronrod,
     "legendre": legendre_proxy,
@@ -73,3 +79,4 @@ quadrature_deprecation_warning("gauss_kronrod", kronrod)
 quadrature_deprecation_warning("gauss_lobatto", lobatto)
 quadrature_deprecation_warning("gauss_patterson", patterson)
 quadrature_deprecation_warning("gauss_radau", radau)
+quadrature_deprecation_warning("genz_keister", genz_keister_24)

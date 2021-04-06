@@ -156,7 +156,7 @@ MOMENTS_QUADS = {}
 def approximate_moment(
         distribution,
         k_loc,
-        order=None,
+        order=100000,
         rule="clenshaw_curtis",
         **kwargs
 ):
@@ -171,8 +171,7 @@ def approximate_moment(
         k_loc (Sequence[int, ...]):
             The exponents of the moments of interest with ``shape == (dim,)``.
         order (int):
-            The quadrature order used in approximation. If omitted, defaults to
-            ``1e5**(1./len(distribution))``.
+            The quadrature order used in approximation.
         rule (str):
             Quadrature rule for integrating moments.
         kwargs:
