@@ -71,6 +71,7 @@ def construct_sparse_grid(
         array([ 0.17,  0.25, -0.5 ,  0.25,  0.67,  0.25, -0.5 ,  0.25,  0.17])
     """
     orders = order*numpy.ones(len(dist), dtype=int)
+    growth = True if growth is None else growth
 
     assert isinstance(dist, chaospy.Distribution), "dist must be chaospy.Distribution"
     dist = dist if isinstance(dist, (chaospy.J, chaospy.Iid)) else chaospy.J(dist)
