@@ -87,13 +87,15 @@ to the :func:`chaospy.generate_quadrature` function. For example::
     >>> distribution = chaospy.J(
     ...     chaospy.Uniform(0, 4), chaospy.Uniform(0, 4))
     >>> abscissas, weights = chaospy.generate_quadrature(
-    ...     3, distribution, sparse=True)
+    ...     2, distribution, sparse=True)
     >>> abscissas.round(4)
-    array([[0., 0., 0., 1., 2., 2., 2., 2., 2., 3., 4., 4., 4.],
-           [0., 2., 4., 2., 0., 1., 2., 3., 4., 2., 0., 2., 4.]])
+    array([[0.    , 0.    , 0.    , 0.5858, 2.    , 2.    , 2.    , 2.    ,
+            2.    , 3.4142, 4.    , 4.    , 4.    ],
+           [0.    , 2.    , 4.    , 2.    , 0.    , 0.5858, 2.    , 3.4142,
+            4.    , 2.    , 0.    , 2.    , 4.    ]])
     >>> weights.round(4)
-    array([-0.0833,  0.2222, -0.0833,  0.4444,  0.2222,  0.4444, -1.3333,
-            0.4444,  0.2222,  0.4444, -0.0833,  0.2222, -0.0833])
+    array([ 0.0278, -0.0222,  0.0278,  0.2667, -0.0222,  0.2667, -0.0889,
+            0.2667, -0.0222,  0.2667,  0.0278, -0.0222,  0.0278])
 
 This compared to the full tensor-product grid::
 
