@@ -1,6 +1,15 @@
 Master Branch
 =============
 
+Version 4.2.5 (2021-04-16)
+==========================
+
+FIXED:
+  * Bugfix: `sparse=True growth=None` should se `growth=True`, but didn't this
+    means that rules that require growth rules to be nested, i.e.
+    `clenshaw_curtis, fejer, discrete, newton_cotes` were not benefiting
+    fully from sparse-grid.
+
 Version 4.2.4 (2021-02-23)
 ==========================
 
