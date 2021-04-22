@@ -22,18 +22,6 @@ check out the :ref:`tutorial` section as well.
 
 The user guide is split into the following topics:
 
-:ref:`chaos_expansion`
-----------------------
-
-+-----------------+-----------------------------------------------------------+
-| |chaos|         | Overview over the fundamentals of using `chaospy` to make |
-|                 | polynomial chaos expansions.                              |
-+-----------------+-----------------------------------------------------------+
-
-.. |chaos| image:: figures/recurrence.png
-    :target: ./chaos_expansion.html
-    :align: middle
-
 :ref:`distributions`
 --------------------
 
@@ -59,6 +47,17 @@ The user guide is split into the following topics:
     :target: ./sampling.html
     :align: middle
 
+:ref:`quadrature`
+-----------------
+
++-----------------+-----------------------------------------------------------+
+| |quadrature|    | Quadrature rules for numerical integration.               |
++-----------------+-----------------------------------------------------------+
+
+.. |quadrature| image:: figures/quadrature.png
+    :target: ./quadrature.html
+    :align: middle
+
 :ref:`polynomial`
 -----------------
 
@@ -71,15 +70,16 @@ The user guide is split into the following topics:
     :target: ./polynomial.html
     :align: middle
 
-:ref:`quadrature`
------------------
+:ref:`chaos_expansion`
+----------------------
 
 +-----------------+-----------------------------------------------------------+
-| |quadrature|    | Quadrature rules for numerical integration.               |
+| |chaos|         | Overview over the fundamentals of using `chaospy` to make |
+|                 | polynomial chaos expansions.                              |
 +-----------------+-----------------------------------------------------------+
 
-.. |quadrature| image:: figures/quadrature.png
-    :target: ./quadrature.html
+.. |chaos| image:: figures/recurrence.png
+    :target: ./chaos_expansion.html
     :align: middle
 
 :ref:`descriptives`

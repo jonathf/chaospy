@@ -26,7 +26,7 @@ SHORT_NAME_TABLE = {
     "z24": "genz_keister_24", "genz_keister_24": "genz_keister_24",
 }
 DEPRECATED_SHORT_NAMES = {
-    "f": "f2",
+    "f": "fejer_2",
     "fejer": "fejer_2",
     "gauss_kronrod": "kronrod",
     "gauss_lobatto": "lobatto",

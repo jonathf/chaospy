@@ -9,6 +9,7 @@ Recurrence algorithms
 .. autosummary::
    :toctree: api
 
+   construct_recurrence_coefficients
    modified_chebyshev
    lanczos
    stieltjes

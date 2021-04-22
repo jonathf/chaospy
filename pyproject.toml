@@ -20,11 +20,10 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^2.7||>=3.6"
+python = ">=3.6"
 numpoly = "*"
 numpy = "*"
 scipy = "*"
-functools32 = { version = "*", python = "^2.7" }
 
 [tool.poetry.dev-dependencies]
 pytest = "*"

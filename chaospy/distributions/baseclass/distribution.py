@@ -1,4 +1,5 @@
 """Abstract baseclass for all distributions."""
+import typing
 import logging
 import numpy
 
@@ -15,8 +16,9 @@ class Distribution(object):
 
     interpret_as_integer = False
     """
-    Flag indicating that return value from the methods sample, and inv
-    should be interpreted as integers instead of floating point.
+    Flag indicating that return value from the methods
+    :func:`Distribution.sample`, and :func:`Distribution.inv` should be
+    interpreted as integers instead of floating point.
     """
 
     @property
@@ -203,6 +205,10 @@ class Distribution(object):
 
         q_data = q_data.reshape(shape)
         return q_data
+
+    def _cdf(self, x_data, **parameters):
+        raise NotImplementedError(
+            "%s most define _cdf method." % self.__class__.__name__)
 
     def _get_fwd(self, x_data, idx, cache):
         """In-process function for getting cdf-values."""
@@ -691,9 +697,9 @@ class Distribution(object):
         """Backend function of retrieving cache values."""
         return self
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: typing.Union[int, numpy.ndarray, slice]):
         if isinstance(index, numpy.number):
-            assert index.dtype == int
+            assert numpy.asarray(index).dtype == int
             index = int(index)
         if isinstance(index, int):
             if not -len(self) < index < len(self):

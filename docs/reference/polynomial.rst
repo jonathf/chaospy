@@ -34,9 +34,19 @@ Orthogonal constructors
 .. autosummary::
    :toctree: api
 
+   generate_expansion
    expansion.stieltjes
    expansion.cholesky
    expansion.gram_schmidt
+
+Model builder
+~~~~~~~~~~~~~
+
+.. autosummary::
+   :toctree: api
+
+   fit_quadrature
+   fit_regression
 
 Pre-defined orthogonal
 ~~~~~~~~~~~~~~~~~~~~~~

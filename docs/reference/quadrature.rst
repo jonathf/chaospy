@@ -3,6 +3,11 @@
 Quadrature integration
 ======================
 
+.. autosummary::
+   :toctree: api
+
+   chaospy.generate_quadrature
+
 .. currentmodule:: chaospy.quadrature
 
 Standard library

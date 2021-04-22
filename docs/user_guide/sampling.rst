@@ -1,7 +1,7 @@
 .. _sampling:
 
-Sampling and low-discrepency sequences
-======================================
+Sampling and sequences
+======================
 
 Introduction
 ------------
@@ -135,7 +135,7 @@ advantage.
 
 .. _antithetic:
 
-Antithetic Variates
+Antithetic variates
 -------------------
 
 Create `antithetic variates`_ from variables on the unit hyper-cube.

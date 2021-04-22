@@ -1,7 +1,7 @@
 .. _sampling_collection:
 
-Random and low-discrepency samples
-==================================
+Sampling and sequences
+======================
 
 .. currentmodule:: chaospy
 
