@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.2.6 (2021-05-10)
+==========================
+
+FIXED:
+  * `TruncNormal` is a `ShiftScaleDistribution`, not a `J` operator.
+
 Version 4.2.5 (2021-04-16)
 ==========================
 

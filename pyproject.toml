@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "chaospy"
-version = "4.2.5"
+version = "4.2.6"
 description = "Numerical tool for perfroming uncertainty quantification"
 license = "MIT"
 authors = ["Jonathan Feinberg"]
