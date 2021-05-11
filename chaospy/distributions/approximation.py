@@ -187,11 +187,20 @@ def approximate_moment(
 
     """
     assert isinstance(distribution, chaospy.Distribution)
-    k_loc = tuple(numpy.asarray(k_loc).tolist())
-    assert len(k_loc) == len(distribution), "incorrect size of exponents"
+    k_loc = numpy.asarray(k_loc)
+    if len(distribution) > 1:
+        assert not distribution.stochastic_dependent, (
+            "Dependent distributions does not support moment approximation.")
+        assert len(k_loc) == len(distribution), "incorrect size of exponents"
+        return numpy.prod([
+            approximate_moment(distribution[idx], (k_loc[idx],),
+                               order=order, rule=rule, **kwargs)
+            for idx in range(len(distribution))
+        ], axis=0)
+
+    k_loc = tuple(k_loc.tolist())
     assert all([isinstance(k, int) for k in k_loc]), (
         "exponents must be integers: %s found" % type(k_loc[0]))
-    assert len(distribution) == 1, "only 1-D distributions support approximate moment."
 
     order = int(1e5 if order is None else order)
     if (distribution, order) not in MOMENTS_QUADS:
