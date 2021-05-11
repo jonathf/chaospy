@@ -3,7 +3,7 @@
    :width: 200 px
    :align: center
 
-|circleci| |codecov| |readthedocs| |downloads| |pypi| |binder|
+|circleci| |codecov| |readthedocs| |downloads| |pypi|
 
 .. |circleci| image:: https://img.shields.io/circleci/build/github/jonathf/chaospy/master
     :target: https://circleci.com/gh/jonathf/chaospy/tree/master
@@ -15,11 +15,9 @@
     :target: https://pypistats.org/packages/chaospy
 .. |pypi| image:: https://img.shields.io/pypi/v/chaospy
     :target: https://pypi.org/project/chaospy
-.. |binder| image:: https://mybinder.org/badge_logo.svg
-    :target: https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials
 
 * `Documentation <https://chaospy.readthedocs.io/en/master>`_
-* `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Ftutorials>`_
+* `Interactive tutorials with Binder <https://mybinder.org/v2/gh/jonathf/chaospy/master?filepath=docs%2Fuser_guide>`_
 * `Code of conduct <https://github.com/jonathf/chaospy/blob/master/CODE_OF_CONDUCT.md>`_
 * `Contribution guideline <https://github.com/jonathf/chaospy/blob/master/CONTRIBUTING.md>`_
 * `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOG.md>`_
@@ -65,8 +63,7 @@ Or if `Conda <https://conda.io/>`_ is more to your liking:
 
     conda install -c conda-forge chaospy
 
-Then go over to the
-`tutorial collection <https://chaospy.readthedocs.io/en/master/tutorials>`_
+Then go over to the `documentation <https://chaospy.readthedocs.io/en/master>`_
 to see how to use the toolbox.
 
 Development
@@ -74,16 +71,14 @@ Development
 
 Chaospy uses `poetry`_ to manage its development installation. Assuming
 `poetry`_ installed on your system, installing ``chaospy`` for development can
-be done from the repository root with the command::
+be done from the repository root with the command:
+
+.. code-block:: bash
 
     poetry install
 
 This will install all required dependencies and chaospy into a virtual
-environment. If you are not already managing your own virtual environment, you
-can use poetry to activate and deactivate with::
-
-    poetry shell
-    exit
+environment.
 
 .. _poetry: https://poetry.eustace.io/
 
@@ -94,8 +89,7 @@ To ensure that the code run on your local system, run the following:
 
 .. code-block:: bash
 
-    poetry run pytest --nbval-lax --doctest-modules \
-        chaospy/ tests/ docs/*/*.{rst,ipynb}
+    poetry run pytest --doctest-modules chaospy/ tests/
 
 Documentation
 -------------

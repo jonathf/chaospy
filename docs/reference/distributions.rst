@@ -5,6 +5,8 @@ Distributions
 
 .. currentmodule:: chaospy
 
+.. _baseclass:
+
 Baseclass
 ---------
 
@@ -19,6 +21,7 @@ Baseclass
 
    Distribution.pdf
    Distribution.cdf
+   Distribution.ppf
    Distribution.fwd
    Distribution.inv
    Distribution.sample
@@ -149,7 +152,7 @@ Copulas
    Nataf
    TCopula
 
-User defined distribution
+User-defined distribution
 -------------------------
 
 .. autosummary::

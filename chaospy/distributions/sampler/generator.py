@@ -44,8 +44,7 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
             object is provided, a hypercube it defines will be used. If
             distribution, the domain it spans will be used.
         rule (str):
-            rule for generating samples. The various rules are listed in
-            :ref:`generator`.
+            rule for generating samples.
         antithetic (tuple):
             Sequence of boolean values. Represents the axes to mirror using
             antithetic variable.

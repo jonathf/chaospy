@@ -19,8 +19,8 @@ def Acf(poly, dist, n_steps=None, **kws):
 
     Returns:
         (numpy.ndarray) :
-            Auto-correlation of ``poly`` with shape ``(n_steps,)``. Note that by
-            definition ``Q[0]=1``.
+            Auto-correlation of ``poly`` with shape ``(n_steps,)``. Note that
+            by definition ``Q[0]=1``.
 
     Examples:
         >>> poly = chaospy.monomial(1, 10)

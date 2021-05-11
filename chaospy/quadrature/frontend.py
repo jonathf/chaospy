@@ -143,7 +143,8 @@ def generate_quadrature(
             n_max=n_max,
         )
 
-    if len(dist) == 1 or dist.stochastic_dependent:
+    if (not isinstance(dist, chaospy.Distribution) or
+            (len(dist) == 1 or dist.stochastic_dependent)):
         if not isinstance(rule, str) and len(set(rule)) == 1:
             rule = rule[0]
         assert isinstance(rule, str), (
@@ -185,9 +186,12 @@ def generate_quadrature(
         abscissas = combine([abscissa.T for abscissa in abscissas]).T
         weights = numpy.prod(combine([weight.T for weight in weights]), -1)
 
-    assert abscissas.shape == (len(dist), len(weights))
-    if dist.interpret_as_integer:
-        abscissas = numpy.round(abscissas).astype(int)
+    if isinstance(dist, chaospy.Distribution):
+        assert abscissas.shape == (len(dist), len(weights))
+        if dist.interpret_as_integer:
+            abscissas = numpy.round(abscissas).astype(int)
+    else:
+        assert abscissas.shape[-1] == len(weights)
     return abscissas, weights
 
 
