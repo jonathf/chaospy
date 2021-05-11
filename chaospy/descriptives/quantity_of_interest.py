@@ -1,7 +1,5 @@
 """Constructs distributions for the quantity of interests."""
 from __future__ import division
-from functools import reduce
-from operator import mul
 import numpy
 import chaospy
 
@@ -40,11 +38,7 @@ def QoI_Dist(poly, dist, sample=10000, **kws):
         array([0.29143989, 0.39939823, 0.29531414])
 
     """
-    shape = poly.shape
-    poly = poly.flatten()
-    dim = len(dist)
-
-    #sample from the input dist
+    poly = chaospy.aspolynomial(poly).ravel()
     samples = numpy.atleast_2d(dist.sample(sample, **kws))
     qoi_dist = chaospy.GaussianKDE(poly(*samples))
     return qoi_dist

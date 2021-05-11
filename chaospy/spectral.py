@@ -3,7 +3,6 @@
 """
 import numpy
 import numpoly
-import chaospy
 
 
 def fit_quadrature(
@@ -17,7 +16,8 @@ def fit_quadrature(
     """
     Fit polynomial chaos expansion using spectral projection.
 
-    Create a polynomial approximation model from orthogonal expansion, quadrature nodes and weights.
+    Create a polynomial approximation model from orthogonal expansion,
+    quadrature nodes and weights.
 
     Args:
         orth (numpoly.ndpoly):
@@ -47,7 +47,6 @@ def fit_quadrature(
     Returns:
         (numpoly.ndpoly):
             Fitted model approximation in the form of an polynomial.
-
     """
     orth = numpoly.polynomial(orth)
     assert orth.ndim == 1

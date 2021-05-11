@@ -1,4 +1,4 @@
-Descriptive Statistics
+Descriptive statistics
 ======================
 
 .. currentmodule:: chaospy

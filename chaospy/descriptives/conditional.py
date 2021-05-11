@@ -1,6 +1,4 @@
 """Conditional expected value."""
-from itertools import product
-
 import numpy
 import chaospy
 import numpoly

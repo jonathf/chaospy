@@ -1,9 +1,6 @@
 """Fit a polynomial chaos expansion using linear regression."""
-import logging
 import numpy
-
 import numpoly
-import chaospy
 
 
 def fit_regression(
@@ -71,9 +68,12 @@ def fit_regression(
         try:
             from sklearn.base import BaseEstimator
         except ImportError:  # pragma: no cover
-            raise ValueError("arg model != None requires that scikit-learn is installed")
+            raise ValueError(
+                "arg model != None requires that scikit-learn is installed")
         assert isinstance(model, BaseEstimator), (
-            "model not recognized; Optional[sklearn.base.BaseEstimator] expected")
+            "model not recognized; "
+            "Optional[sklearn.base.BaseEstimator] expected"
+        )
         if hasattr(model, "fit_intercept"):
             assert not model.fit_intercept, (
                 "requires %s(fit_intercept=False)" % model.__class__.__name__)
