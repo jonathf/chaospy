@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.2.7 (2021-05-11)
+==========================
+
+ADDED:
+  * Support for approximate multivariate raw moments.
+
 Version 4.2.6 (2021-05-10)
 ==========================
 
