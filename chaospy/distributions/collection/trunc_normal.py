@@ -4,9 +4,7 @@ from scipy import special
 import chaospy
 
 from .normal import normal
-from ..baseclass import SimpleDistribution
-from ..operators import J
-
+from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class trunc_normal(SimpleDistribution):
@@ -47,7 +45,7 @@ class trunc_normal(SimpleDistribution):
         return numpy.where(b > upper, upper, b)
 
 
-class TruncNormal(J):
+class TruncNormal(ShiftScaleDistribution):
     """
     Truncated normal distribution
 
