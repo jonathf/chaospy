@@ -45,7 +45,7 @@ jobs:
   test:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.9.0
+      PYTHON_VERSION: 3.9.4
     steps:
       - checkout
       - restore_cache:
@@ -75,12 +75,12 @@ jobs:
           name: "Run pytest"
           command: |
             source /home/circleci/venv/bin/activate
-            coverage run --source=chaospy/ --module pytest --doctest-modules chaospy/ tests/
+            pytest --cov chaospy --doctest-modules chaospy/ tests/
             bash <(curl -s https://codecov.io/bash)
   deploy:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.9.0
+      PYTHON_VERSION: 3.9.4
     steps:
       - checkout
       - run:
