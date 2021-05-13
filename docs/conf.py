@@ -20,6 +20,9 @@ extensions = [
     'sphinxcontrib.bibtex',
 ]
 
+bibtex_bibfiles = ['bibliography.bib']
+bibtex_default_style = 'unsrt'
+
 templates_path = ['_templates']
 exclude_patterns = ['.build']
 
