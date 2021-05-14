@@ -4,7 +4,12 @@ import pytest
 
 QUADRATURE_RULES = {
     "gaussian": {"rule": "gaussian"},
-    "sparse": {"rule": ["genz_keister_24", "clenshaw_curtis"], "sparse": True},
+    "sparse1": {"rule": ["genz_keister_16", "clenshaw_curtis"], "sparse": True},
+    "sparse2": {"rule": ["genz_keister_18", "fejer_1"], "sparse": True},
+    "sparse3": {"rule": ["genz_keister_22", "newton_cotes"], "sparse": True},
+    "sparse4": {"rule": ["genz_keister_24", "legendre"], "sparse": True},
+    "lobatto": {"rule": "lobatto"},
+    "radau": {"rule": "radau"},
 }
 
 
