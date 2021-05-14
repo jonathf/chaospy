@@ -39,11 +39,9 @@ def create_hammersley_samples(order, dim=1, burnin=-1, primes=()):
                [0.2  , 0.4  , 0.6  , 0.8  ]])
 
     """
-    if dim == 1:
-        return create_halton_samples(
-            order=order, dim=1, burnin=burnin, primes=primes)
     out = numpy.empty((dim, order), dtype=float)
-    out[:dim-1] = create_halton_samples(
-        order=order, dim=dim-1, burnin=burnin, primes=primes)
-    out[dim-1] = numpy.linspace(0, 1, order+2)[1:-1]
+    out[:max(dim-1, 1)] = create_halton_samples(
+        order=order, dim=max(dim-1, 1), burnin=burnin, primes=primes)
+    if dim > 1:
+        out[dim-1] = numpy.linspace(0, 1, order+2)[1:-1]
     return out
