@@ -9,6 +9,7 @@ DISTRIBUTIONS = {
     "exponential": chaospy.Exponential(1),
     "gamma": chaospy.Gamma(1),
     "beta": chaospy.Beta(3, 3, lower=-1, upper=1),
+    "mvnormal": chaospy.MvNormal([0], [1])
 }
 BUILDERS = {
     "stieltjes": chaospy.expansion.stieltjes,

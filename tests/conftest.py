@@ -11,6 +11,7 @@ SAMPLING_RULES = {
     "latin_hypercube": {"rule": "latin_hypercube"},
     "korobov": {"rule": "korobov"},
     "sobol": {"rule": "sobol"},
+    "antithetic": {"rule": "sobol", "antithetic": True},
 }
 
 
