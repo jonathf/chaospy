@@ -1,6 +1,5 @@
 import pytest
 import numpy
-import chaospy
 
 
 SAMPLING_RULES = {
@@ -72,11 +71,13 @@ def coordinates():
 
 @pytest.fixture
 def joint():
+    import chaospy
     return chaospy.J(chaospy.Normal(1.5, 0.2), chaospy.Uniform(0.1, 0.2))
 
 
 @pytest.fixture
 def expansion_and_norms(joint):
+    import chaospy
     return chaospy.generate_expansion(6, joint, retall=True)
 
 
