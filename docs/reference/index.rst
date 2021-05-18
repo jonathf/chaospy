@@ -8,7 +8,6 @@ methods. All classes and functions exposed in ``chaospy.*`` namespace are
 public.
 
 .. toctree::
-    :maxdepth: 1
 
     high_level_interface
     descriptives
