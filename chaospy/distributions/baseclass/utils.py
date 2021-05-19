@@ -2,7 +2,7 @@
 import sys
 import os
 import logging
-from contextlib import wraps
+from functools import wraps
 from itertools import permutations
 
 import numpy

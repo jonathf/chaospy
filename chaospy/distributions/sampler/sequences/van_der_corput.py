@@ -1,5 +1,4 @@
 """Create Van Der Corput low discrepancy sequence samples."""
-from __future__ import division
 import numpy
 
 

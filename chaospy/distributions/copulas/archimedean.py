@@ -77,6 +77,15 @@ class Archimedean(Distribution):
             repr_args=[length, "theta=%s" % theta],
         )
 
+    def _phi(self, t_loc, theta):
+        raise NotImplementedError()
+
+    def _delta_phi(self, t_loc, theta):
+        raise NotImplementedError()
+
+    def _inverse_phi(self, u_loc, theta, order):
+        raise NotImplementedError()
+
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(Archimedean, self).get_parameters(
             idx, cache, assert_numerical=assert_numerical)

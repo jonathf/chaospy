@@ -228,22 +228,26 @@ def _generate_quadrature(order, dist, rule, **kwargs):
         rule = DEPRECATED_SHORT_NAMES[rule]
     rule = SHORT_NAME_TABLE[rule]
 
-    parameters = {}
+    quad_function = chaospy.quadrature.INTEGRATION_COLLECTION[rule]
 
     if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "discrete", "grid"):
-        parameters["growth"] = kwargs["growth"]
-
-    if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "grid", "legendre"):
-        parameters["segments"] = kwargs["segments"]
-
-    if rule in ("gaussian", "kronrod", "radau", "lobatto"):
-        parameters.update(
-            n_max=kwargs["n_max"],
-            tolerance=kwargs["tolerance"],
-            scaling=kwargs["scaling"],
-            recurrence_algorithm=kwargs["recurrence_algorithm"],
+        abscissas, weights = quad_function(
+            order,
+            dist,
+            growth=kwargs["growth"],
+            segments=kwargs["segments"],
         )
 
-    quad_function = chaospy.quadrature.INTEGRATION_COLLECTION[rule]
-    abscissas, weights = quad_function(order, dist, **parameters)
+    elif rule in ("gaussian", "kronrod", "radau", "lobatto"):
+        abscissas, weights = quad_function(
+            order,
+            dist,
+            tolerance=kwargs["tolerance"],
+            scaling=kwargs["scaling"],
+            n_max=kwargs["n_max"],
+            recurrence_algorithm=kwargs["recurrence_algorithm"],
+        )
+    else:
+        abscissas, weights = quad_function(order, dist)
+
     return abscissas, weights

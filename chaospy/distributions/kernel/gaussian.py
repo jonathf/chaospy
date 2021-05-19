@@ -3,7 +3,7 @@ import numpy
 from scipy import special
 
 from .baseclass import KernelDensityBaseclass
-from ..collection.mv_normal import MvNormal
+from ..collection.mv_normal import moment
 
 
 class GaussianKDE(KernelDensityBaseclass):
@@ -69,16 +69,8 @@ class GaussianKDE(KernelDensityBaseclass):
         length = self.samples.shape[-1]
         h_mat = numpy.broadcast_to(
             self.h_mat, (length,)+self.h_mat.shape[1:])
-        out = numpy.array([
-            MvNormal._mom(
-                self,
-                k_loc,
-                mean=self.samples[:, idx],
-                sigma=h_mat[idx],
-                cache={},
-            )
-            for idx in range(length)
-        ])
+        out = numpy.array([moment(k_loc, self.samples[:, idx], h_mat[idx])
+                           for idx in range(length)])
         return numpy.sum(out*self.weights)
 
     def _lower(self, idx, dim, cache):

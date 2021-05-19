@@ -204,6 +204,9 @@ class Distribution(object):
         q_data = q_data.reshape(shape)
         return q_data
 
+    def _cdf(self, x_data, **parameters):
+        raise NotImplementedError()
+
     def _get_fwd(self, x_data, idx, cache):
         """In-process function for getting cdf-values."""
         logger = logging.getLogger(__name__)
@@ -738,7 +741,7 @@ class Distribution(object):
 
     def __getitem__(self, index):
         if isinstance(index, numpy.number):
-            assert index.dtype == int
+            assert numpy.asarray(index).dtype == int
             index = int(index)
         if isinstance(index, int):
             if not -len(self) < index < len(self):

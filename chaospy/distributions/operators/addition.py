@@ -63,7 +63,6 @@ Inverse transformations::
            [5.11, 6.  , 6.89]])
 
 """
-from __future__ import division
 from scipy.special import comb
 import numpy
 import chaospy
