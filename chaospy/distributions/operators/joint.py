@@ -221,18 +221,3 @@ class J(Distribution):
         if isinstance(out, chaospy.Distribution):
             return self
         return out
-
-
-# def J(*args, **kwargs):
-#     """
-#     Joint random variable.
-
-#     Too be deprecated, use `chaospy.J` instead.
-
-#     Args:
-#         args (chaospy.Distribution):
-#             Distribution to join together.
-#     """
-#     logger = logging.getLogger(__name__)
-#     logger.warning("DepricationWarning: J to be replaced with Joint.")
-#     return Joint(*args, **kwargs)

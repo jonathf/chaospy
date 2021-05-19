@@ -9,7 +9,7 @@ import numpoly
 import chaospy
 
 
-def construct_sparse_grid(
+def sparse_grid(
         order,
         dist,
         growth=None,
@@ -55,15 +55,14 @@ def construct_sparse_grid(
             that ``abscissas.shape == (len(dist), len(weights))``.
 
     Example:
-        >>> distribution = chaospy.J(
-        ...     chaospy.Normal(0, 1), chaospy.Uniform(-1, 1))
-        >>> abscissas, weights = construct_sparse_grid(1, distribution)
+        >>> distribution = chaospy.J(chaospy.Normal(0, 1), chaospy.Uniform(-1, 1))
+        >>> abscissas, weights = chaospy.quadrature.sparse_grid(1, distribution)
         >>> abscissas.round(4)
         array([[-1.    ,  0.    ,  0.    ,  0.    ,  1.    ],
                [ 0.    , -0.5774,  0.    ,  0.5774,  0.    ]])
         >>> weights.round(4)
         array([ 0.5,  0.5, -1. ,  0.5,  0.5])
-        >>> abscissas, weights = construct_sparse_grid([2, 1], distribution)
+        >>> abscissas, weights = chaospy.quadrature.sparse_grid([2, 1], distribution)
         >>> abscissas.round(2)
         array([[-1.73, -1.  , -1.  , -1.  ,  0.  ,  1.  ,  1.  ,  1.  ,  1.73],
                [ 0.  , -0.58,  0.  ,  0.58,  0.  , -0.58,  0.  ,  0.58,  0.  ]])

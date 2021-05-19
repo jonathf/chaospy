@@ -83,6 +83,8 @@ def construct_recurrence_coefficients(
         array([[0.5   , 0.5   , 0.5   , 0.5   , 0.5   ],
                [1.    , 0.0833, 0.0667, 0.0643, 0.0635]])
     """
+    assert isinstance(dist, chaospy.Distribution), (
+        "%s is not a distribution" % str(dist))
     if len(dist) > 1:
         orders = (order*numpy.ones(len(dist), dtype=int)).tolist()
         return [construct_recurrence_coefficients(

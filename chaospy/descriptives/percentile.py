@@ -1,5 +1,6 @@
 """Percentile function."""
 import numpy
+import chaospy
 
 
 def Perc(poly, q, dist, sample=10000, **kws):
@@ -36,8 +37,9 @@ def Perc(poly, q, dist, sample=10000, **kws):
                [ 1.61,  3.29,  5.3 ]])
 
     """
+    poly = chaospy.aspolynomial(poly)
     shape = poly.shape
-    poly = poly.flatten()
+    poly = poly.ravel()
 
     q = numpy.asarray(q).ravel()/100.
     dim = len(dist)

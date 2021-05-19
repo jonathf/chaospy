@@ -341,6 +341,40 @@ class Distribution(object):
         raise chaospy.UnsupportedFeature(
             "%s: does not support analytical ppf." % self)
 
+    def ppf(self, q_data, max_iterations=100, tollerance=1e-5):
+        """
+        Point percentile function.
+
+        Also known as the inverse cumulative distribution function.
+
+        Note that chaospy only supports point percentiles for univariate
+        distributions.
+
+        Args:
+            q_data (numpy.ndarray):
+                Probabilities to be inverse. If any values are outside ``[0,
+                1]``, error will be raised.
+            max_iterations (int):
+                If approximation is used, this sets the maximum number of
+                allowed iterations in the Newton-Raphson algorithm.
+            tollerance (float):
+                If approximation is used, this set the error tolerance level
+                required to define a sample as converged.
+
+        Returns:
+            (numpy.ndarray):
+                Inverted probability values where
+                ``out.shape == q_data.shape``.
+        """
+        if len(self) > 1:
+            raise ValueError(
+                "only one-dimensional distribution supports percentiles.")
+        return self.inv(
+            q_data,
+            max_iterations=max_iterations,
+            tollerance=tollerance,
+        )
+
     def pdf(self, x_data, decompose=False, allow_approx=True, step_size=1e-7):
         """
         Probability density function.
@@ -459,7 +493,7 @@ class Distribution(object):
         raise chaospy.UnsupportedFeature(
             "%s: does not support analytical pdf." % self)
 
-    def sample(self, size=(), rule="random", antithetic=None, include_axis_dim=False):
+    def sample(self, size=(), rule="random", antithetic=None, include_axis_dim=False, seed=None):
         """
         Create pseudo-random generated samples.
 
@@ -500,6 +534,9 @@ class Distribution(object):
             include_axis_dim (bool):
                 By default an extra dimension even if the number of dimensions
                 is 1.
+            seed (Optional[int]):
+                If provided, fixes the random variable's seed, ensuring
+                reproducible results.
 
         Returns:
             (numpy.ndarray):
@@ -508,6 +545,14 @@ class Distribution(object):
                 ``include_axis_dim=True``.
 
         """
+        if seed is not None:
+            state = numpy.random.get_state()
+            numpy.random.seed(seed)
+            out = self.sample(size, rule=rule, antithetic=antithetic,
+                               include_axis_dim=include_axis_dim)
+            numpy.random.set_state(state)
+            return out
+
         check_dependencies(self)
         size_ = numpy.prod(size, dtype=int)
         dim = len(self)

@@ -14,7 +14,7 @@ import chaospy
 def test_1d_quadrature_creation(
         analytical_distribution, recurrence_algorithm):
     """Check 1-D quadrature rule."""
-    abscissas, weights = chaospy.quad_gaussian(
+    abscissas, weights = chaospy.quadrature.gaussian(
         order=8,
         dist=analytical_distribution,
         recurrence_algorithm=recurrence_algorithm,
@@ -35,7 +35,7 @@ def test_3d_quadrature_creation(
         analytical_distribution, recurrence_algorithm):
     """Check 3-D quadrature rule."""
     distribution = chaospy.Iid(analytical_distribution, 3)
-    abscissas, weights = chaospy.quad_gaussian(
+    abscissas, weights = chaospy.quadrature.gaussian(
         order=3,
         dist=distribution,
         recurrence_algorithm=recurrence_algorithm,

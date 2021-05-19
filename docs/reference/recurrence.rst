@@ -7,7 +7,7 @@ Recurrence algorithms
 ---------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../api
 
    modified_chebyshev
    lanczos
@@ -19,6 +19,6 @@ Utility functions
 -----------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../api
 
    coefficients_to_quadrature

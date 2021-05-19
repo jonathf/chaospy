@@ -45,7 +45,7 @@ jobs:
   test:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.9.0
+      PYTHON_VERSION: 3.9.4
     steps:
       - checkout
       - restore_cache:
@@ -58,7 +58,7 @@ jobs:
             sudo apt install pandoc
             if [[ ! -d /home/circleci/venv ]]; then
               python3 -m venv /home/circleci/venv
-              /home/circleci/venv/bin/pip install poetry==1.0.9 Cython
+              /home/circleci/venv/bin/pip install poetry==1.1.5 Cython
             fi
             source /home/circleci/venv/bin/activate
             poetry install
@@ -75,13 +75,12 @@ jobs:
           name: "Run pytest"
           command: |
             source /home/circleci/venv/bin/activate
-            coverage run --source=chaospy/ --module pytest --nbval-lax --doctest-modules \
-                chaospy/ tests/ docs/*/*.ipynb docs/index.rst docs/*/*.rst
+            pytest --cov chaospy --doctest-modules chaospy/ tests/
             bash <(curl -s https://codecov.io/bash)
   deploy:
     executor: python-container
     environment:
-      PYTHON_VERSION: 3.9.0
+      PYTHON_VERSION: 3.9.4
     steps:
       - checkout
       - run:

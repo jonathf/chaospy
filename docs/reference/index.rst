@@ -1,20 +1,14 @@
 .. _reference:
 
-API reference
-=============
-
-This page gives an overview of all public ``chaospy`` objects, functions and
-methods. All classes and functions exposed in ``chaospy.*`` namespace are
-public.
+Reference
+=========
 
 .. toctree::
-    :maxdepth: 1
 
     high_level_interface
-    descriptives
-    distributions
-    polynomial
-    orthogonal
+    descriptive/index.rst
+    distribution/index.rst
+    polynomial/index.rst
     sampling
-    quadrature
+    quadrature/index.rst
     recurrence

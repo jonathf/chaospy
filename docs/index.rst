@@ -4,7 +4,6 @@ Chaospy
 .. toctree::
     :hidden:
 
-    tutorials/index
     user_guide/index
     reference/index
     about_us
@@ -52,6 +51,6 @@ Or if `Conda <https://conda.io/>`_ is more to your liking:
     conda install -c conda-forge chaospy
 
 For developer installation, go to the `chaospy repository
-<https://github.com/jonathf/chaospy>`_. Otherwise, check out the `tutorial
-collection <https://chaospy.readthedocs.io/en/master/tutorials>`_ to see how to
+<https://github.com/jonathf/chaospy>`_. Otherwise, check out the `user
+guide <https://chaospy.readthedocs.io/en/master/user_guide>`_ to see how to
 use the toolbox.

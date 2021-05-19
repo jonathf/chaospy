@@ -9,7 +9,7 @@ Generator function
 ------------------
 
 .. autosummary::
-    :toctree: api
+    :toctree: ../api
 
     generate_samples
 
@@ -19,7 +19,7 @@ Low-discrepancy sequences
 -------------------------
 
 .. autosummary::
-    :toctree: api
+    :toctree: ../api
 
     create_halton_samples
     create_hammersley_samples
@@ -33,6 +33,6 @@ Antithetic Variates
 -------------------
 
 .. autosummary::
-    :toctree: api
+    :toctree: ../api
 
     create_antithetic_variates

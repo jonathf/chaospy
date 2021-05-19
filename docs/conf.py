@@ -20,6 +20,9 @@ extensions = [
     'sphinxcontrib.bibtex',
 ]
 
+bibtex_bibfiles = ['bibliography.bib']
+bibtex_default_style = 'unsrt'
+
 templates_path = ['_templates']
 exclude_patterns = ['.build']
 
@@ -41,9 +44,14 @@ autosummary_generate = True
 # a list of builtin themes.
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "external_links": [
-        {"name": "Github", "url": "https://github.com/jonathf/chaospy"},
-    ],
+    "collapse_navigation": True,
+    "external_links":
+        [{"name": "Github", "url": "https://github.com/jonathf/chaospy"}],
+    "footer_items": ["sphinx-version.html"],
+    "navbar_align": "left",
+    "navbar_end": ["search-field.html"],
+    "navigation_depth": 2,
+    "show_prev_next": False,
 }
 html_short_title = "chaospy"
 html_context = {
@@ -52,12 +60,7 @@ html_context = {
 html_logo = "_static/chaospy_logo2.svg"
 html_static_path = ['_static']
 html_sidebars = {
-    "index": ["sidebar-search-bs.html"],
-    "get_started": ["sidebar-search-bs.html"],
-    "tutorials/index": ["sidebar-search-bs.html"],
-    "user_guide/index": ["sidebar-search-bs.html"],
-    "reference/index": ["sidebar-search-bs.html"],
-    "about_us": ["sidebar-search-bs.html"],
+    "**": ["sidebar-nav-bs.html"],
 }
 
 htmlhelp_basename = 'chaospy'
