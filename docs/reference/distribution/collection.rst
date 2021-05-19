@@ -1,45 +1,16 @@
 .. _distribution_collection:
 
-Distributions
-=============
+Collection
+==========
 
 .. currentmodule:: chaospy
-
-.. _baseclass:
-
-Baseclass
----------
-
-.. autosummary::
-   :template: distribution.rst
-   :toctree: api
-
-   Distribution
-
-.. autosummary::
-   :toctree: api
-
-   Distribution.pdf
-   Distribution.cdf
-   Distribution.ppf
-   Distribution.fwd
-   Distribution.inv
-   Distribution.sample
-   Distribution.mom
-   Distribution.ttr
-
-   Distribution.interpret_as_integer
-   Distribution.stochastic_dependent
-   Distribution.lower
-   Distribution.upper
-
 
 Unbound distributions
 ---------------------
 
 .. autosummary::
    :template: distribution.rst
-   :toctree: api
+   :toctree: ../../api
 
    Cauchy
    DoubleGamma
@@ -58,7 +29,7 @@ Partially bound distributions
 
 .. autosummary::
    :template: distribution.rst
-   :toctree: api
+   :toctree: ../../api
 
    Alpha
    Burr
@@ -97,7 +68,7 @@ Bound distributions
 
 .. autosummary::
    :template: distribution.rst
-   :toctree: api
+   :toctree: ../../api
 
    Anglit
    ArcSinus
@@ -123,7 +94,7 @@ Multivariate distributions
 
 .. autosummary::
    :template: distribution.rst
-   :toctree: api
+   :toctree: ../../api
 
    MvLogNormal
    MvNormal
@@ -134,7 +105,7 @@ Discrete distributions
 
 .. autosummary::
    :template: distribution.rst
-   :toctree: api
+   :toctree: ../../api
 
    Binomial
    DiscreteUniform
@@ -144,65 +115,10 @@ Copulas
 
 .. autosummary::
    :template: distribution.rst
-   :toctree: api
+   :toctree: ../../api
 
    Clayton
    Gumbel
    Joe
    Nataf
    TCopula
-
-User-defined distribution
--------------------------
-
-.. autosummary::
-   :template: distribution.rst
-   :toctree: api
-
-   UserDistribution
-
-Operators
----------
-
-.. autosummary::
-   :template: distribution.rst
-   :toctree: api
-
-   J
-   Iid
-   Add
-   Multiply
-   Negative
-   Power
-   Trunc
-   Log
-   Log10
-   Logn
-
-Kernel Estimation
------------------
-
-.. autosummary::
-   :template: distribution.rst
-   :toctree: api
-
-   GaussianKDE
-
-Mixtures
---------
-
-.. autosummary::
-   :template: distribution.rst
-   :toctree: api
-
-   GaussianMixture
-
-Approximation functions
------------------------
-
-.. autosummary::
-   :toctree: api
-
-   approximate_density
-   approximate_inverse
-   approximate_moment

@@ -7,7 +7,7 @@ Orthogonal expansion
 --------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../api
 
    generate_expansion
 
@@ -15,7 +15,7 @@ Quadrature
 ----------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../api
 
    generate_quadrature
 
@@ -23,7 +23,7 @@ Fit chaos expansion
 -------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../api
 
    fit_regression
    fit_quadrature
@@ -32,6 +32,6 @@ Three terms recurrence coefficients
 -----------------------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../api
 
    construct_recurrence_coefficients

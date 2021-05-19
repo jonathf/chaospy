@@ -3,16 +3,12 @@
 Reference
 =========
 
-This page gives an overview of all public ``chaospy`` objects, functions and
-methods. All classes and functions exposed in ``chaospy.*`` namespace are
-public.
-
 .. toctree::
 
     high_level_interface
-    descriptives
-    distributions
-    polynomial
+    descriptive/index.rst
+    distribution/index.rst
+    polynomial/index.rst
     sampling
-    quadrature
+    quadrature/index.rst
     recurrence

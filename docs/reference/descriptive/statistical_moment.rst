@@ -1,5 +1,5 @@
-Descriptive statistics
-======================
+Statistical moment
+==================
 
 .. currentmodule:: chaospy
 
@@ -7,7 +7,7 @@ First Order Moments
 -------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    E
    E_cond
@@ -16,7 +16,7 @@ Second Order Moments
 --------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    Std
    Var
@@ -26,36 +26,17 @@ Higher Order Moments
 --------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    Skew
    Kurt
-
-Sensitivity Indices
--------------------
-
-.. autosummary::
-   :toctree: api
-
-   Sens_m
-   Sens_m2
-   Sens_t
 
 Correlation Functions
 ---------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    Corr
    Acf
    Spearman
-
-Miscellaneous
--------------
-
-.. autosummary::
-   :toctree: api
-
-   Perc
-   QoI_Dist

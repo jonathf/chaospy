@@ -1,86 +1,13 @@
-.. _polynomials:
-
-Polynomials
-===========
-
-.. currentmodule:: chaospy
-
-Variable constructors
----------------------
-
-.. autosummary::
-   :toctree: api
-
-   variable
-   polynomial
-   aspolynomial
-   symbols
-   polynomial_from_attributes
-   ndpoly.from_attributes
-   polynomial_from_roots
-
-Expansions
-----------
-
-.. autosummary::
-   :toctree: api
-
-   monomial
-   expansion.lagrange
-
-Orthogonal constructors
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autosummary::
-   :toctree: api
-
-   expansion.stieltjes
-   expansion.cholesky
-   expansion.gram_schmidt
-
-Pre-defined orthogonal
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. autosummary::
-   :toctree: api
-
-   expansion.chebyshev_1
-   expansion.chebyshev_2
-   expansion.gegenbauer
-   expansion.hermite
-   expansion.jacobi
-   expansion.laguerre
-   expansion.legendre
-
-Baseclass
----------
-
-.. autosummary::
-   :template: ndpoly.rst
-   :toctree: api
-
-   ndpoly
-
-.. autosummary::
-   :toctree: api
-
-   ndpoly.coefficients
-   ndpoly.dtype
-   ndpoly.exponents
-   ndpoly.indeterminants
-   ndpoly.keys
-   ndpoly.names
-   ndpoly.values
-   ndpoly.KEY_OFFSET
-
 Helper functions
 ----------------
+
+.. currentmodule:: chaospy
 
 Leading coefficient
 ~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    lead_coefficient
    lead_exponent
@@ -90,7 +17,7 @@ Polynomial specific
 ~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    call
    decompose
@@ -104,7 +31,7 @@ Array creation
 ~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    diag
    diagonal
@@ -119,7 +46,7 @@ Arithmetics
 ~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    add
    inner
@@ -136,7 +63,7 @@ Division
 ~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    divide
    divmod
@@ -152,7 +79,7 @@ Logic
 ~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    any
    all
@@ -172,7 +99,7 @@ Rounding
 ~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    around
    ceil
@@ -185,7 +112,7 @@ Sums/Products
 ~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    cumsum
    mean
@@ -196,7 +123,7 @@ Differentiation
 ~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    derivative
    diff
@@ -208,7 +135,7 @@ Min/Max
 ~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    amax
    amin
@@ -223,7 +150,7 @@ Conditionals
 ~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    choose
    count_nonzero
@@ -234,7 +161,7 @@ Save/Load
 ~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    load
    loadtxt
@@ -247,7 +174,7 @@ Stacking/Splitting
 ~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    array_split
    concatenate
@@ -264,7 +191,7 @@ Shape manipulation
 ~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    atleast_1d
    atleast_2d
@@ -281,7 +208,7 @@ Miscellaneous
 ~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    abs
    absolute
@@ -297,7 +224,7 @@ Global options
 ~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    global_options
    get_options
@@ -307,7 +234,7 @@ Utilities
 ~~~~~~~~~
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    cross_truncate
    FeatureNotSupported

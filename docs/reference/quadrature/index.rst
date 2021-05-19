@@ -9,7 +9,7 @@ Standard library
 ----------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    clenshaw_curtis
    fejer_1
@@ -24,7 +24,7 @@ Discrete densities
 ------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    discrete
 
@@ -32,7 +32,7 @@ Gaussian extensions
 -------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    genz_keister_16
    genz_keister_18
@@ -48,7 +48,7 @@ Predefined Gaussian
 -------------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    chebyshev_1
    chebyshev_2
@@ -62,7 +62,7 @@ Helper functions
 ----------------
 
 .. autosummary::
-   :toctree: api
+   :toctree: ../../api
 
    sparse_grid
    kronrod_jacobi
