@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.3.2 (2021-05-26)
+==========================
+
+FIXED:
+  * Compatibility with `numpoly`: Update string key access to `ndpoly` objects.
+
 Version 4.3.1 (2021-03-18)
 ==========================
 
