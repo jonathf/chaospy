@@ -8,6 +8,7 @@ User guide
     quick_tutorial
 
     fundamentals/index.rst
+    polynomial/index.rst
     main_usage/index.rst
     advanced_topics/index.rst
 
