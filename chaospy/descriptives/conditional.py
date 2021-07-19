@@ -71,6 +71,6 @@ def E_cond(poly, freeze, dist, **kws):
 
     # Remove frozen coefficients, such that poly == sum(frozen*unfrozen) holds
     for key in unfrozen.keys:
-        unfrozen[key] = unfrozen[key] != 0
+        unfrozen[key] = unfrozen.values[key] != 0
 
     return numpoly.sum(frozen*E(unfrozen, dist), 0)

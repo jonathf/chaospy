@@ -25,5 +25,10 @@ def prange(N=1, dim=1):
         polynomial([1, q2, q2**2, q2**3])
     """
     logger = logging.getLogger(__name__)
-    logger.warning("chaospy.prange is deprecated; use chaospy.monomial instead")
-    return numpoly.monomial(N, names=["q%d" % (dim-1)])
+    logger.warning(
+        "chaospy.prange is deprecated; use chaospy.monomial instead")
+    out = numpoly.monomial(N)
+    if dim > 1:
+        out = numpoly.call(
+            out, kwargs={out.names[0]: numpoly.variable(dim)[-1]})
+    return out

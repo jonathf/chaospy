@@ -59,15 +59,14 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
         raise numpy.linalg.LinAlgError(
             "Lagrange abscissas resulted in invertible matrix")
 
-    names = numpoly.variable(dim).names
     vec = numpoly.monomial(
-        0, order+1, names=names, graded=graded, reverse=reverse)[:size]
+        0, order+1, dimensions=dim, graded=graded, reverse=reverse)[:size]
 
     coeffs = numpy.zeros((size, size))
 
     if size == 1:
-        out = numpoly.monomial(
-            0, 1, names=names, graded=graded, reverse=reverse)*abscissas.item()
+        out = numpoly.monomial(0, 1, dimensions=dim, graded=graded,
+                               reverse=reverse)*abscissas.item()
 
     elif size == 2:
         coeffs = numpy.linalg.inv(matrix)
@@ -75,21 +74,21 @@ def lagrange_polynomial(abscissas, graded=True, reverse=True, sort=None):
 
     else:
         for i in range(size):
-            if i%2 != 0:
+            if i % 2 != 0:
                 k = 1
             else:
-                k=0
+                k = 0
             for j in range(size):
-                if k%2 == 0:
+                if k % 2 == 0:
                     coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
                 else:
-                    if size%2 == 0:
+                    if size % 2 == 0:
                         coeffs[i, j] += -numpy.linalg.det(matrix[1:, 1:])
                     else:
                         coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
-                matrix = numpy.roll(matrix, -1, axis=0) 
+                matrix = numpy.roll(matrix, -1, axis=0)
                 k += 1
-            matrix = numpy.roll(matrix, -1, axis=1) 
+            matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
         out = numpoly.sum(vec*(coeffs.T), 1)
 

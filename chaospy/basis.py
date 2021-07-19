@@ -46,10 +46,10 @@ def basis(start, stop=None, dim=1, cross_truncation=1., sort="G"):
     out = numpoly.monomial(
         start=start,
         stop=numpy.array(stop)+1,
+        dimensions=dim,
         reverse="R" not in sort.upper(),
         graded="G" in sort.upper(),
         cross_truncation=cross_truncation,
-        names=numpoly.symbols("q:%d" % dim, asarray=True),
     )
     if "I" in sort.upper():
         out = out[::-1]
