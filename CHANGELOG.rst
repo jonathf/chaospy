@@ -1,6 +1,13 @@
 Master Branch
 =============
 
+Version 4.3.3 (2021-05-26)
+==========================
+
+FIXED:
+  * Compatibility with `numpoly`: Bug workaround in polynomial division.
+    Only affects numpoly v1.2.3 and generating polynomials with `normed=True`.
+
 Version 4.3.2 (2021-05-26)
 ==========================
 
