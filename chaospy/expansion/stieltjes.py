@@ -110,7 +110,8 @@ def stieltjes(order, dist, normed=False, graded=True, reverse=True,
     """
     _, polynomials, norms, = chaospy.stieltjes(numpy.max(order), dist)
     if normed:
-        polynomials = numpoly.true_divide(polynomials, numpy.sqrt(norms))
+        polynomials = numpoly.true_divide(
+            numpoly.polynomial(polynomials), numpy.sqrt(norms))
         norms[:] = 1.
 
     polynomials = polynomials.reshape((len(dist), numpy.max(order)+1))
