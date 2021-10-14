@@ -55,7 +55,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     poly2 = numpy.array([_ for _ in poly2.T if not numpy.any(numpy.isnan(_))]).T
 
     # Finish
-    if poly2.shape:
+    if numpy.sum(poly2.shape) > 0:
         poly1 = numpy.concatenate([poly1, poly2], -1)
     samples = poly1.shape[-1]
     poly1.sort()
