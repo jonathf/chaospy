@@ -1,6 +1,13 @@
 Master Branch
 =============
 
+Version 4.3.4 (2021-11-14)
+==========================
+
+FIXED:
+  * Gamma pdf and moment breaks down for large values of alpha.
+    Switching to new scipy formula.
+
 Version 4.3.3 (2021-05-26)
 ==========================
 
