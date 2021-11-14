@@ -11,7 +11,8 @@ class gamma(SimpleDistribution):
         super(gamma, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
-        return x**(a-1)*numpy.e**(-x)/special.gamma(a)
+        # return x**(a-1)*numpy.e**(-x)/special.gamma(a)
+        return numpy.exp(special.xlogy(a-1.0, x) - x - special.gammaln(a))
 
     def _cdf(self, x, a):
         return special.gammainc(a, x)
@@ -20,7 +21,10 @@ class gamma(SimpleDistribution):
         return special.gammaincinv(a, q)
 
     def _mom(self, k, a):
-        return special.gamma(a+k)/special.gamma(a)
+        out = 1.
+        for k_ in range(k.item()):
+            out *= a+k_
+        return out
 
     def _ttr(self, n, a):
         return 2.*n+a, n*n+n*(a-1)
