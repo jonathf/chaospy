@@ -1,0 +1,27 @@
+@article{chaospy_2015,
+  title = {Chaospy: An open source tool for designing methods of uncertainty quantification},
+  journal = {Journal of Computational Science},
+  volume = {11},
+  pages = {46-57},
+  year = {2015},
+  issn = {1877-7503},
+  doi = {https://doi.org/10.1016/j.jocs.2015.08.008},
+  url = {https://www.sciencedirect.com/science/article/pii/S1877750315300119},
+  author = {Feinberg, Jonathan and Langtangen, Hans Petter},
+  keywords = {Uncertainty quantification, polynomial chaos expansions, Monte Carlo simulation, Rosenblatt transformations, Python package},
+  abstract = {The paper describes the philosophy, design, functionality, and usage of the Python software toolbox Chaospy for performing uncertainty quantification via polynomial chaos expansions and Monte Carlo simulation. The paper compares Chaospy to similar packages and demonstrates a stronger focus on defining reusable software building blocks that can easily be assembled to construct new, tailored algorithms for uncertainty quantification. For example, a Chaospy user can in a few lines of high-level computer code define custom distributions, polynomials, integration rules, sampling schemes, and statistical metrics for uncertainty analysis. In addition, the software introduces some novel methodological advances, like a framework for computing Rosenblatt transformations and a new approach for creating polynomial chaos expansions with dependent stochastic variables.}
+}
+
+@article{chaospy_2018,
+  author = {Feinberg, Jonathan and Eck, Vinzenz Gregor and Langtangen, Hans Petter},
+  title = {Multivariate Polynomial Chaos Expansions with Dependent Variables},
+  journal = {SIAM Journal on Scientific Computing},
+  volume = {40},
+  number = {1},
+  pages = {A199-A223},
+  year = {2018},
+  doi = {10.1137/15M1020447},
+  url = {https://doi.org/10.1137/15M1020447},
+  keywords = {uncertainty quantification, polynomial chaos expansions, dependent stochastic variables, variable transformations, blood flow simulation, wave propagation}
+  abstract = {This paper describes a new approach for handling dependent stochastic variables in polynomial chaos expansions for uncertainty quantification. The methodology is based on a decorrelation algorithm that only requires raw statistical moments of multivariate random variables. When the mapping from input in probability space to the response is not smooth, polynomial chaos expansions may converge slowly. The remedy proposed in this paper is to introduce a transformation of the input parameters to create a smoother mapping in an alternative probability space. However, such a transformation quickly leads to dependent stochastic variables and hence a need for handling dependency. We consider three cases to demonstrate how variable transformations and the new framework can significantly increase the convergence rate of polynomial chaos expansions. The first case involves an analytical, nonsmooth mapping to exemplify serious convergence problems and the power of transforming the variables. The second case concerns diffusion in multimaterial/multidomain models with uncertain internal boundaries and uncertain material properties. We investigate in detail a simplified version of this physical problem where the performance of the method can be understood. The third case is a blood flow simulation model for arterial systems, which involves a network of one-dimensional nonlinear partial differential equations. Here we investigate the pressure discontinuity over an arterial bifurcation. In all of the examples, the standard polynomial chaos expansions converge very slowly, but with variable transformations, leading to dependent variables, we are able to achieve significantly faster convergence compared with state-of-the-art methods.}
+}
