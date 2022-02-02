@@ -1,7 +1,7 @@
 coverage
 pytest
 pytest-cov
-sphinx
+Sphinx
 openturns
 scikit-learn
 gstools
