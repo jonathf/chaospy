@@ -6,20 +6,26 @@ version: 2.1
 
 jobs:
   pipeline:
+    environment:
+      PYTHON_VERSION: 3.7.10
     docker:
-      - image: circleci/python:$PYTHON_VERSION
+      - image: cimg/python:$PYTHON_VERSION
         auth:
           username: jonathf
           password: $DOCKERHUB_PASSWORD
     working_directory: /home/circleci/project
-    environment:
-      PYTHON_VERSION: 3.7.10
     steps:
       - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/{bin,lib}
+      - restore_cache:
+          keys:
+            - deps-py37-{{ checksum "setup.cfg" }}
+            - deps-py37-
       - run:
           name: "Installation"
           command: |
-            sudo apt install pandoc
+            wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
+            sudo dpkg -i pandoc*.deb
             python3 -m pip install -U pip
             python3 -m pip install -r requirements-dev.txt
             python3 -m pip install -e .
@@ -35,13 +41,17 @@ jobs:
       - run:
           name: "Publish to PyPI"
           command: |
+            python3 -m build
             if [ -n "$CIRCLE_TAG" ]; then
-              python3 -m pip install build twine
-              python3 -m build
               python3 -m twine upload -u jonathf -p $PYPI_PASSWORD --non-interactive dist/*
             else
               echo "nothing to do!"
             fi
+      - save_cache:
+          key: deps-py37-{{ checksum "setup.cfg" }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib"
 
 workflows:
   version: 2

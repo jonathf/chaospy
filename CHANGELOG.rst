@@ -9,7 +9,6 @@ CHANGED:
 
 REMOVED:
   * Python2 testing.
-  * Installation caching. (Simpler without.)
 
 Version 4.3.4 (2021-11-14)
 ==========================

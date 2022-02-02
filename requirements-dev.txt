@@ -11,3 +11,5 @@ nbsphinx
 sphinx_automodapi
 pydata_sphinx_theme
 sphinxcontrib-bibtex
+build
+twine
