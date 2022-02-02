@@ -88,5 +88,5 @@ class TruncNormal(ShiftScaleDistribution):
             trunc_normal(lower=lower, upper=upper, mu=mu, sigma=sigma))
         self._repr_args = chaospy.format_repr_kwargs(lower=(lower, -numpy.inf))
         self._repr_args += chaospy.format_repr_kwargs(upper=(upper, numpy.inf))
-        self._repr_args += chaospy.format_repr_kwargs(lower=(mu, 0))
-        self._repr_args += chaospy.format_repr_kwargs(lower=(sigma, 1))
+        self._repr_args += chaospy.format_repr_kwargs(mu=(mu, 0))
+        self._repr_args += chaospy.format_repr_kwargs(sigma=(sigma, 1))

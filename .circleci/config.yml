@@ -1,118 +1,52 @@
 version-tags: &version-tags
   tags:
-    only: /v\d+\.\d+(\.\d+|-(alpha|beta|rc|dev|post)\d+)/
+    only: /\d+\.\d+\.\d+(-\w+)?/
 
 version: 2.1
-executors:
-  python-container:
+
+jobs:
+  pipeline:
     docker:
       - image: circleci/python:$PYTHON_VERSION
         auth:
           username: jonathf
           password: $DOCKERHUB_PASSWORD
     working_directory: /home/circleci/project
-
-
-jobs:
-  test-py27:
-    executor: python-container
     environment:
-      PYTHON_VERSION: 2.7.18
+      PYTHON_VERSION: 3.7.10
     steps:
       - checkout
-      - restore_cache:
-          keys:
-              - deps-py27-{{ checksum "pyproject.toml" }}
-              - deps-py27-
-      - run:
-          name: "Installation"
-          command: |
-            if [[ ! -d /home/circleci/venv ]]; then
-              virtualenv /home/circleci/venv
-            fi
-            source /home/circleci/venv/bin/activate
-            pip install -U numpoly functools32 scipy pytest \
-                  openturns scikit-learn==0.20.1
-      - save_cache:
-          key: deps-py27-{{ checksum "pyproject.toml" }}
-          paths:
-              - /home/circleci/venv
-      - run:
-          name: "Run tests"
-          command: |
-              source /home/circleci/venv/bin/activate
-              pytest tests
-  test:
-    executor: python-container
-    environment:
-      PYTHON_VERSION: 3.9.4
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - deps-py39-{{ checksum "poetry.lock" }}
-            - deps-py39-
       - run:
           name: "Installation"
           command: |
             sudo apt install pandoc
-            if [[ ! -d /home/circleci/venv ]]; then
-              python3 -m venv /home/circleci/venv
-              /home/circleci/venv/bin/pip install poetry==1.1.5 Cython
-            fi
-            source /home/circleci/venv/bin/activate
-            poetry install
-      - save_cache:
-          key: deps-py39-{{ checksum "poetry.lock" }}
-          paths:
-            - /home/circleci/venv
+            python3 -m pip install -U pip
+            python3 -m pip install -r requirements-dev.txt
+            python3 -m pip install -e .
       - run:
-          name: "Ensure the documentation builds"
+          name: "Check documentation"
           command: |
-            source /home/circleci/venv/bin/activate
             sphinx-build docs/ docs/.build -b html -n -v --color -T -W
       - run:
-          name: "Run pytest"
+          name: "Run Tests"
           command: |
-            source /home/circleci/venv/bin/activate
-            pytest --cov chaospy --doctest-modules chaospy/ tests/
+            pytest --cov chaospy --doctest-modules chaospy/ tests/ README.rst
             bash <(curl -s https://codecov.io/bash)
-  deploy:
-    executor: python-container
-    environment:
-      PYTHON_VERSION: 3.9.4
-    steps:
-      - checkout
-      - run:
-          name: "Verify tag version"
-          command: |
-              PROJECT_TAG=$(cat pyproject.toml \
-                  | grep 'version\s*=' \
-                  | grep -o '[0-9]\+\.[0-9]\+\(\.[0-9]\+\|-[a-z0-9]\+\)')
-              echo "$CIRCLE_TAG == v$PROJECT_TAG"
-              test "$CIRCLE_TAG" = "v$PROJECT_TAG"
-      - restore_cache:
-          keys:
-            - deps-py39-{{ checksum "poetry.lock" }}
       - run:
           name: "Publish to PyPI"
           command: |
-              source /home/circleci/venv/bin/activate
-              poetry publish --build --username jonathf \
-                  --password $PYPI_PASSWORD --no-interaction
+            if [ -n "$CIRCLE_TAG" ]; then
+              python3 -m pip install build twine
+              python3 -m build
+              python3 -m twine upload -u jonathf -p $PYPI_PASSWORD --non-interactive dist/*
+            else
+              echo "nothing to do!"
+            fi
 
 workflows:
   version: 2
   workflow:
     jobs:
-      - test-py27:
+      - pipeline:
           filters:
             <<: *version-tags
-      - test:
-          filters:
-            <<: *version-tags
-      - deploy:
-          filters:
-            <<: *version-tags
-            branches:
-                ignore: /.*/

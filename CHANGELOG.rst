@@ -1,6 +1,16 @@
 Master Branch
 =============
 
+Version 4.3.5 (2022-02-02)
+==========================
+
+CHANGED:
+  * Replaced poetry with native pip.
+
+REMOVED:
+  * Python2 testing.
+  * Installation caching. (Simpler without.)
+
 Version 4.3.4 (2021-11-14)
 ==========================
 

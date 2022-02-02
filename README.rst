@@ -69,18 +69,13 @@ to see how to use the toolbox.
 Development
 ===========
 
-Chaospy uses `poetry`_ to manage its development installation. Assuming
-`poetry`_ installed on your system, installing ``chaospy`` for development can
-be done from the repository root with the command:
+Installing ``chaospy`` and its dependencies in developer mode is done as
+follows:
 
 .. code-block:: bash
 
-    poetry install
-
-This will install all required dependencies and chaospy into a virtual
-environment.
-
-.. _poetry: https://poetry.eustace.io/
+    pip install -r requirements-dev.txt
+    pip install -e .
 
 Testing
 -------
@@ -89,7 +84,7 @@ To ensure that the code run on your local system, run the following:
 
 .. code-block:: bash
 
-    poetry run pytest --doctest-modules chaospy/ tests/
+    pytest --doctest-modules chaospy/ tests/ README.rst
 
 Documentation
 -------------
