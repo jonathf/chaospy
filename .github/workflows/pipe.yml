@@ -1,0 +1,59 @@
+name: pipeline
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+
+jobs:
+  test:
+    name: pipe
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Install dependencies
+      run: |
+        sudo apt update -y && sudo apt install -y pandoc
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+        pip install -e .
+
+    - name: Check documentation
+      run: |
+        sphinx-build docs/ docs/.build -b html -v --color -T -W
+
+    - name: "Run Tests"
+      run: |
+        coverage run -m pytest --doctest-modules chaospy/ tests/ README.rst
+        coverage xml coverage.xml
+
+    - name: "Upload python coverage"
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.codecov_token }}
+        files: coverage.xml
+        flags: python
+        fail_ci_if_error: true
+
+    - name: "Build Wheels"
+      run: python -m build
+
+    - uses: pypa/gh-action-pypi-publish@v1.4.2
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        user: jonathf
+        password: ${{ secrets.pypi_password }}
+
+    - name: Verify clean directory
+      run: git diff --exit-code

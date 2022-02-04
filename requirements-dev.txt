@@ -1,6 +1,5 @@
 coverage
 pytest
-pytest-cov
 Sphinx
 openturns
 scikit-learn
