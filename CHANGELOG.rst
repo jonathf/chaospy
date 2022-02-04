@@ -1,6 +1,17 @@
 Master Branch
 =============
 
+Version 4.3.5 (2022-02-02)
+==========================
+
+CHANGED:
+  * Replaced poetry with native pip.
+  * Testing with CircleCI replaced with Github action.
+  * Remove assert check.
+
+REMOVED:
+  * Python2 testing.
+
 Version 4.3.4 (2021-11-14)
 ==========================
 

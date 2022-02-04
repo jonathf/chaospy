@@ -1,0 +1,14 @@
+coverage
+pytest
+Sphinx
+openturns
+scikit-learn
+gstools
+jupyter
+matplotlib
+nbsphinx
+sphinx_automodapi
+pydata_sphinx_theme
+sphinxcontrib-bibtex
+build
+twine
