@@ -104,6 +104,5 @@ def clenshaw_curtis_simple(order):
     assert max(weights.imag) < 1e-15
     weights = weights.real
     weights = numpy.hstack([weights, weights[len(weights)-2+(order%2)::-1]])/2
-    assert numpy.isclose(numpy.sum(weights), 1)
 
     return abscissas, weights
