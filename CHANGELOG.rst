@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.3.6 (2022-02-11)
+==========================
+
+CHANGED:
+  * Switch scipy backend of TruncNormal.
+
 Version 4.3.5 (2022-02-02)
 ==========================
 
