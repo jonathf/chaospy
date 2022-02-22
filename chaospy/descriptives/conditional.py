@@ -55,7 +55,8 @@ def E_cond(poly, freeze, dist, **kws):
     if not freeze.size:
         return numpoly.polynomial(chaospy.E(poly, dist))
     if not freeze.isconstant():
-        freeze = [name in freeze.names for name in poly.names]
+        freeze = [name in freeze.names for name in sorted(poly.names, key=lambda x: int(x[1:]))]
+
     else:
         freeze = freeze.tonumpy()
     freeze = numpy.asarray(freeze, dtype=bool)
@@ -74,4 +75,4 @@ def E_cond(poly, freeze, dist, **kws):
     # Remove frozen coefficients, such that poly == sum(frozen*unfrozen) holds
     for key in unfrozen.keys:
         unfrozen.values[key] = unfrozen.values[key] != 0
-    return numpoly.sum(frozen*expected.E(unfrozen, dist), 0)
+    return numpoly.sum(frozen * expected.E(unfrozen, dist), 0)

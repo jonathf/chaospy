@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.3.7 (2022-02-22)
+==========================
+
+FIXED:
+  * conditional variables `x` in `E[P | x]` now enforced to be ordered correctly.
+
 Version 4.3.6 (2022-02-11)
 ==========================
 
