@@ -17,7 +17,7 @@ class wald(SimpleDistribution):
         indices = x > 0
         out[indices] = 1.0 / numpy.sqrt(2 * numpy.pi * x[indices])
         out[indices] *= numpy.exp(
-            -((1 - mu * x[indices]) ** 2.0) / (2 * x[indices] * mu ** 2.0)
+            -((1 - mu * x[indices]) ** 2.0) / (2 * x[indices] * mu**2.0)
         )
         return out
 

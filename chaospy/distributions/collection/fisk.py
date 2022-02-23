@@ -9,10 +9,10 @@ class fisk(SimpleDistribution):
         super(fisk, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return c * x ** (c - 1.0) / (1 + x ** c) ** 2
+        return c * x ** (c - 1.0) / (1 + x**c) ** 2
 
     def _cdf(self, x, c):
-        return 1.0 / (1 + x ** -c)
+        return 1.0 / (1 + x**-c)
 
     def _ppf(self, q, c):
         return (q ** (-1.0) - 1) ** (-1.0 / c)

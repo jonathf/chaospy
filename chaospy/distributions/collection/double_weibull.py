@@ -13,7 +13,7 @@ class double_weibull(SimpleDistribution):
 
     def _pdf(self, x, c):
         ax = numpy.abs(x)
-        Px = c / 2.0 * ax ** (c - 1.0) * numpy.exp(-(ax ** c))
+        Px = c / 2.0 * ax ** (c - 1.0) * numpy.exp(-(ax**c))
         return Px
 
     def _cdf(self, x, c):

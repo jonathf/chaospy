@@ -57,7 +57,7 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None):
     vals1 = [(val * solves.T * weights).T for val in ovals]
 
     if norms is None:
-        norms = numpy.sum(ovals ** 2 * weights, -1)
+        norms = numpy.sum(ovals**2 * weights, -1)
     norms = numpy.asfarray(norms)
     assert norms.ndim == 1
 

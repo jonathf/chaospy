@@ -36,7 +36,7 @@ class tukey_lambda(SimpleDistribution):
         indices = lam != 0
         q_ = q[indices]
         lam_ = lam[indices]
-        output[indices] = (q_ ** lam_ - (1 - q_) ** lam_) / lam_
+        output[indices] = (q_**lam_ - (1 - q_) ** lam_) / lam_
         q_ = q[~indices]
         output[~indices] = numpy.log(q_ / (1 - q_))
         return output

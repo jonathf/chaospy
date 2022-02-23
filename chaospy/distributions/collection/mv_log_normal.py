@@ -115,7 +115,7 @@ class MvLogNormal(Distribution):
         indices = xloc > 0
         zloc = (numpy.log(xloc[indices]) - mu) / sigma
         out[indices] = (
-            1 / numpy.sqrt(2 * numpy.pi) * numpy.exp(-(zloc ** 2) / 2.0) / xloc[indices]
+            1 / numpy.sqrt(2 * numpy.pi) * numpy.exp(-(zloc**2) / 2.0) / xloc[indices]
         )
         return out
 
@@ -147,7 +147,7 @@ class MvLogNormal(Distribution):
         zloc = special.ndtri(uloc)
         loc = self._inv_transform[idx, : len(uloc)].dot(zloc)
         xloc = loc + mu[idx]
-        out = numpy.e ** xloc
+        out = numpy.e**xloc
         return out
 
     def _mom(self, kloc, mu, sigma, cache):

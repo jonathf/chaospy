@@ -201,7 +201,7 @@ class MeanCovarianceDistribution(Distribution):
         cholesky = numpy.linalg.cholesky(self._covariance)
         poly = numpoly.sum(cholesky * poly, axis=-1) + mean
 
-        poly = numpoly.set_dimensions(numpoly.prod(poly ** kloc), len(self))
+        poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
         out = sum(
             self._dist.mom(key) * coeff
             for key, coeff in zip(poly.exponents, poly.coefficients)

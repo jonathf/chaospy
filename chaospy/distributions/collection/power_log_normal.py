@@ -69,7 +69,7 @@ class PowerLogNormal(ShiftScaleDistribution):
 
     def __init__(self, shape=1, mu=0, sigma=1, scale=1, shift=0):
         dist = ShiftScaleDistribution(
-            dist=power_log_normal(shape, sigma), scale=numpy.e ** mu
+            dist=power_log_normal(shape, sigma), scale=numpy.e**mu
         )
         super(PowerLogNormal, self).__init__(
             dist=dist,

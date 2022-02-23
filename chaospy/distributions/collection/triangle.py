@@ -35,7 +35,7 @@ class triangle(SimpleDistribution):
     def _cdf(self, xloc, a):
         return numpy.where(
             xloc < a,
-            xloc ** 2 / (a + (a == 0)),
+            xloc**2 / (a + (a == 0)),
             (2 * xloc - xloc * xloc - a) / (1 - a + (a == 1)),
         )
 

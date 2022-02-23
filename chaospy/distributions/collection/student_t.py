@@ -34,7 +34,7 @@ class student_t(SimpleDistribution):
             * a ** (0.5 * k)
         )
         return numpy.where(
-            k % 2 == 0, out / (numpy.pi ** 0.5 * special.gamma(0.5 * a)), 0
+            k % 2 == 0, out / (numpy.pi**0.5 * special.gamma(0.5 * a)), 0
         )
 
     def _ttr(self, k, a):

@@ -99,7 +99,7 @@ def newton_cotes(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order, 2 ** order, 0), order)
+    order = numpy.where(growth, numpy.where(order, 2**order, 0), order)
     return hypercube_quadrature(
         _newton_cotes,
         order=order,

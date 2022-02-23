@@ -15,7 +15,7 @@ class pareto1(SimpleDistribution):
         return b * x ** (-b - 1)
 
     def _cdf(self, x, b):
-        return 1 - x ** -b
+        return 1 - x**-b
 
     def _ppf(self, q, b):
         return pow(1 - q, -1.0 / b)

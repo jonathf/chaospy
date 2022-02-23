@@ -13,10 +13,10 @@ class kumaraswamy(SimpleDistribution):
         super(kumaraswamy, self).__init__(dict(a=a, b=b))
 
     def _pdf(self, x, a, b):
-        return a * b * x ** (a - 1) * (1 - x ** a) ** (b - 1)
+        return a * b * x ** (a - 1) * (1 - x**a) ** (b - 1)
 
     def _cdf(self, x, a, b):
-        return 1 - (1 - x ** a) ** b
+        return 1 - (1 - x**a) ** b
 
     def _ppf(self, q, a, b):
         return (1 - (1 - q) ** (1.0 / b)) ** (1.0 / a)

@@ -24,7 +24,7 @@ class alpha(SimpleDistribution):
             x == 0,
             0,
             numpy.e ** (-0.5 * (a - 1.0 / x) ** 2)
-            / (numpy.sqrt(2 * numpy.pi) * x ** 2 * special.ndtr(a)),
+            / (numpy.sqrt(2 * numpy.pi) * x**2 * special.ndtr(a)),
         )
 
     def _lower(self, a):

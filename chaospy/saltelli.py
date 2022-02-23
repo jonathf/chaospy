@@ -188,13 +188,10 @@ def Sens_m2_sample(poly, dist, samples, rule="random"):
 
         index[dim1] = 1
         matrix = generator[index] - mean
-        vals = (
-            numpy.mean(
-                matrix_1 * (matrix - matrix_0),
-                -1,
-            )
-            / numpy.where(variance, variance, 1)
-        )
+        vals = numpy.mean(
+            matrix_1 * (matrix - matrix_0),
+            -1,
+        ) / numpy.where(variance, variance, 1)
         if not dim1:
             out = numpy.empty((dim, dim) + vals.shape)
         out[dim1, dim1] = vals
@@ -205,13 +202,10 @@ def Sens_m2_sample(poly, dist, samples, rule="random"):
 
             matrix = generator[index] - mean
 
-            out[dim1, dim2] = out[dim2, dim1] = (
-                numpy.mean(
-                    matrix_1 * (matrix - matrix_0),
-                    -1,
-                )
-                / numpy.where(variance, variance, 1)
-            )
+            out[dim1, dim2] = out[dim2, dim1] = numpy.mean(
+                matrix_1 * (matrix - matrix_0),
+                -1,
+            ) / numpy.where(variance, variance, 1)
 
             index[dim2] = 0
 

@@ -16,7 +16,7 @@ class exponential_power(SimpleDistribution):
         return numpy.exp(1) * b * xbm1 * numpy.exp(xb - numpy.exp(xb))
 
     def _cdf(self, x, b):
-        return -numpy.expm1(-numpy.expm1(x ** b))
+        return -numpy.expm1(-numpy.expm1(x**b))
 
     def _ppf(self, q, b):
         return pow(numpy.log1p(-numpy.log1p(-q)), 1.0 / b)

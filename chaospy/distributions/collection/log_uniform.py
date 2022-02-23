@@ -20,10 +20,10 @@ class log_uniform(SimpleDistribution):
         return numpy.e ** (q * (up - lo) + lo)
 
     def _lower(self, lo, up):
-        return numpy.e ** lo
+        return numpy.e**lo
 
     def _upper(self, lo, up):
-        return numpy.e ** up
+        return numpy.e**up
 
     def _mom(self, k, lo, up):
         return (

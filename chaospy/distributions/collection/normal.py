@@ -18,7 +18,7 @@ class normal(SimpleDistribution):
         return 8.22
 
     def _pdf(self, x):
-        return (2 * numpy.pi) ** (-0.5) * numpy.e ** (-(x ** 2) / 2.0)
+        return (2 * numpy.pi) ** (-0.5) * numpy.e ** (-(x**2) / 2.0)
 
     def _cdf(self, x):
         return special.ndtr(x)

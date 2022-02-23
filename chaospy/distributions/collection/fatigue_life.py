@@ -12,8 +12,8 @@ class fatigue_life(SimpleDistribution):
         super(fatigue_life, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        output = (x + 1) / (2 * c * numpy.sqrt(2 * numpy.pi * x ** 3))
-        output *= numpy.exp(-((x - 1) ** 2) / (2.0 * x * c ** 2))
+        output = (x + 1) / (2 * c * numpy.sqrt(2 * numpy.pi * x**3))
+        output *= numpy.exp(-((x - 1) ** 2) / (2.0 * x * c**2))
         output[(x == 0) & numpy.isnan(output)] = 0
         return output
 
@@ -25,15 +25,15 @@ class fatigue_life(SimpleDistribution):
     def _ppf(self, q, c):
         tmp = c * special.ndtri(q)
         out = numpy.where(
-            numpy.isfinite(tmp), 0.25 * (tmp + numpy.sqrt(tmp ** 2 + 4)) ** 2, tmp
+            numpy.isfinite(tmp), 0.25 * (tmp + numpy.sqrt(tmp**2 + 4)) ** 2, tmp
         )
         return out
 
     def _lower(self, c):
-        return (-4 * c + numpy.sqrt(16 * c ** 2 + 1)) ** 2
+        return (-4 * c + numpy.sqrt(16 * c**2 + 1)) ** 2
 
     def _upper(self, c):
-        return (4 * c + numpy.sqrt(16 * c ** 2 + 1)) ** 2
+        return (4 * c + numpy.sqrt(16 * c**2 + 1)) ** 2
 
 
 class FatigueLife(ShiftScaleDistribution):

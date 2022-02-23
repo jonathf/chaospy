@@ -44,4 +44,4 @@ def Skew(poly, dist=None, **kws):
 
     poly = poly - E(poly, dist, **kws)
     poly = numpoly.true_divide(poly, Std(poly, dist, **kws))
-    return E(poly ** 3, dist, **kws)
+    return E(poly**3, dist, **kws)

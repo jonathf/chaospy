@@ -78,4 +78,4 @@ def create_nested_grid_samples(order, dim=1):
     Returns (numpy.ndarray):
         Regular grid with ``shape == (dim, 2**order-1)``.
     """
-    return create_grid_samples(order=2 ** order - 1, dim=dim)
+    return create_grid_samples(order=2**order - 1, dim=dim)

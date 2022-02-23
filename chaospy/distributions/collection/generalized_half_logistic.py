@@ -31,7 +31,7 @@ class generalized_half_logistic(SimpleDistribution):
         return 0.0
 
     def _upper(self, c):
-        return 1 / numpy.where(c < 10 ** -10, 10 ** -10, c)
+        return 1 / numpy.where(c < 10**-10, 10**-10, c)
 
 
 class GeneralizedHalfLogistic(ShiftScaleDistribution):

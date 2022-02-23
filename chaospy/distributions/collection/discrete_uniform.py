@@ -62,7 +62,7 @@ class DiscreteUniform(SimpleDistribution):
 
     def _pdf(self, x_data, lower, upper):
         """Probability density function."""
-        return x_data ** 0 / (numpy.round(upper) - numpy.round(lower))
+        return x_data**0 / (numpy.round(upper) - numpy.round(lower))
 
     def _ppf(self, q_data, lower, upper):
         """Point percentile function."""

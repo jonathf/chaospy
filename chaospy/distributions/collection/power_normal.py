@@ -13,7 +13,7 @@ class power_normal(SimpleDistribution):
         super(power_normal, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        norm = (2 * numpy.pi) ** -0.5 * numpy.exp(-(x ** 2) / 2.0)
+        norm = (2 * numpy.pi) ** -0.5 * numpy.exp(-(x**2) / 2.0)
         return c * norm * special.ndtr(-x) ** (c - 1.0)
 
     def _cdf(self, x, c):

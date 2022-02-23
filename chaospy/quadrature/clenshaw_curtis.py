@@ -63,7 +63,7 @@ def clenshaw_curtis(order, domain=(0.0, 1.0), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 2 ** order, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
     return hypercube_quadrature(
         quad_func=clenshaw_curtis_simple,
         order=order,
@@ -100,7 +100,7 @@ def clenshaw_curtis_simple(order):
     gamma = -numpy.ones(order)
     gamma[length] += order
     gamma[remains] += order
-    gamma /= order ** 2 - 1 + (order % 2)
+    gamma /= order**2 - 1 + (order % 2)
 
     weights = numpy.fft.ihfft(beta + gamma)
     assert max(weights.imag) < 1e-15

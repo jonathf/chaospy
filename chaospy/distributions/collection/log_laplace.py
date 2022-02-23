@@ -17,7 +17,7 @@ class log_laplace(SimpleDistribution):
         return cd2 * x ** (c - 1)
 
     def _cdf(self, x, c):
-        return numpy.where(x < 1, 0.5 * x ** c, 1 - 0.5 * x ** (-c))
+        return numpy.where(x < 1, 0.5 * x**c, 1 - 0.5 * x ** (-c))
 
     def _ppf(self, q, c):
         return numpy.where(

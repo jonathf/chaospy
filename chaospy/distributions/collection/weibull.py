@@ -12,10 +12,10 @@ class weibull(SimpleDistribution):
         super(weibull, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
-        return a * x ** (a - 1) * numpy.e ** (-(x ** a))
+        return a * x ** (a - 1) * numpy.e ** (-(x**a))
 
     def _cdf(self, x, a):
-        return 1 - numpy.e ** (-(x ** a))
+        return 1 - numpy.e ** (-(x**a))
 
     def _ppf(self, q, a):
         return (-numpy.log(1 - q + 1 * (q == 1))) ** (1.0 / a) * (q != 1) + 30.0 ** (

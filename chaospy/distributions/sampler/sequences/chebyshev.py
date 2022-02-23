@@ -90,4 +90,4 @@ def create_nested_chebyshev_samples(order, dim=1):
         samples following Chebyshev sampling scheme mapped to the
         ``[0, 1]^dim`` hyper-cube and ``shape == (dim, 2**order-1)``.
     """
-    return create_chebyshev_samples(order=2 ** order - 1, dim=dim)
+    return create_chebyshev_samples(order=2**order - 1, dim=dim)

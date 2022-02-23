@@ -14,12 +14,12 @@ class generalized_gamma(SimpleDistribution):
     def _pdf(self, x, a, c):
         return abs(c) * numpy.exp(
             (c * a - 1) * numpy.log(numpy.clip(x, 1e-15, None))
-            - x ** c
+            - x**c
             - special.gammaln(a)
         )
 
     def _cdf(self, x, a, c):
-        val = special.gammainc(a, x ** c)
+        val = special.gammainc(a, x**c)
         cond = c + 0 * val
         return numpy.where(cond > 0, val, 1 - val)
 

@@ -45,7 +45,7 @@ def discrete(order, domain=(0, 1), growth=False):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 2 ** order, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
     return hypercube_quadrature(
         quad_func=discrete_simple,
         order=order,

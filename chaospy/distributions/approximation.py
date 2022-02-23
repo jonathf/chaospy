@@ -217,7 +217,7 @@ def approximate_moment(
     if k_loc in distribution._mom_cache:
         return distribution._mom_cache[k_loc]
 
-    out = float(numpy.sum(numpy.prod(X.T ** k_loc, 1) * W))
+    out = float(numpy.sum(numpy.prod(X.T**k_loc, 1) * W))
     distribution._mom_cache[k_loc] = out
     return out
 

@@ -8,7 +8,7 @@ from ..baseclass import Distribution, OperatorDistribution
 class Power(OperatorDistribution):
     """Power operator."""
 
-    _operator = lambda self, left, right: left ** right
+    _operator = lambda self, left, right: left**right
 
     def __init__(self, left, right):
         """
@@ -54,10 +54,10 @@ class Power(OperatorDistribution):
 
                 out = numpy.min(
                     numpy.broadcast_arrays(
-                        left_lower.T ** right_lower.T,
-                        left_lower.T ** right_upper.T,
-                        left_upper.T ** right_lower.T,
-                        left_upper.T ** right_upper.T,
+                        left_lower.T**right_lower.T,
+                        left_lower.T**right_upper.T,
+                        left_upper.T**right_lower.T,
+                        left_upper.T**right_upper.T,
                     ),
                     axis=0,
                 ).T
@@ -107,10 +107,10 @@ class Power(OperatorDistribution):
 
                 out = numpy.max(
                     numpy.broadcast_arrays(
-                        (left_lower.T ** right_lower.T).T,
-                        (left_lower.T ** right_upper.T).T,
-                        (left_upper.T ** right_lower.T).T,
-                        (left_upper.T ** right_upper.T).T,
+                        (left_lower.T**right_lower.T).T,
+                        (left_lower.T**right_upper.T).T,
+                        (left_upper.T**right_lower.T).T,
+                        (left_upper.T**right_upper.T).T,
                     ),
                     axis=0,
                 )
@@ -150,7 +150,7 @@ class Power(OperatorDistribution):
         if isinstance(left, Distribution):
             x_ = numpy.sign(xloc) * numpy.abs(xloc) ** (1.0 / right - 1)
             xloc = numpy.sign(xloc) * numpy.abs(xloc) ** (1.0 / right)
-            pairs = numpy.sign(xloc ** right) == 1
+            pairs = numpy.sign(xloc**right) == 1
             out = left._get_pdf(xloc, idx, cache=cache.copy())
             if numpy.any(pairs):
                 out = out + pairs * left._get_pdf(-xloc, idx, cache=cache)
@@ -190,7 +190,7 @@ class Power(OperatorDistribution):
         """
         if isinstance(left, Distribution):
             y = numpy.sign(xloc) * numpy.abs(xloc) ** (1.0 / right)
-            pairs = numpy.sign(xloc ** right) != -1
+            pairs = numpy.sign(xloc**right) != -1
             out2 = left._get_fwd(-y, idx, cache=cache.copy())
             out1 = left._get_fwd(y, idx, cache=cache)
             out = numpy.where(right < 0, 1 - out1, out1 - pairs * out2)
@@ -225,7 +225,7 @@ class Power(OperatorDistribution):
         else:
             out = right._get_inv(q, idx, cache=cache)
             out = numpy.where(left < 0, 1 - out, out)
-            out = (left.T ** out.T).T
+            out = (left.T**out.T).T
         return out
 
     def _mom(self, k, left, right, cache):

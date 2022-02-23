@@ -39,7 +39,7 @@ class binomial(SimpleDistribution):
     def _pdf(self, x_data, size, prob):
         x_data = numpy.round(x_data)
         return (
-            special.comb(size, x_data) * prob ** x_data * (1 - prob) ** (size - x_data)
+            special.comb(size, x_data) * prob**x_data * (1 - prob) ** (size - x_data)
         )
 
     def _lower(self, size, prob):
@@ -51,7 +51,7 @@ class binomial(SimpleDistribution):
     def _mom(self, k_data, size, prob):
         x_data = numpy.arange(int(size) + 1, dtype=int)
         return numpy.sum(
-            x_data ** k_data * self._pdf(x_data, size=numpy.floor(size), prob=prob)
+            x_data**k_data * self._pdf(x_data, size=numpy.floor(size), prob=prob)
         )
 
 

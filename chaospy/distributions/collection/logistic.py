@@ -12,10 +12,10 @@ class logistic(SimpleDistribution):
         super(logistic, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return numpy.e ** -x / (1 + numpy.e ** -x) ** (c + 1)
+        return numpy.e**-x / (1 + numpy.e**-x) ** (c + 1)
 
     def _cdf(self, x, c):
-        return (1 + numpy.e ** -x) ** -c
+        return (1 + numpy.e**-x) ** -c
 
     def _ppf(self, q, c):
         return -numpy.log(q ** (-1.0 / c) - 1)

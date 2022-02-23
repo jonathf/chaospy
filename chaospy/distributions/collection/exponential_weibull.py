@@ -11,11 +11,11 @@ class exponential_weibull(SimpleDistribution):
         super(exponential_weibull, self).__init__(dict(a=a, c=c))
 
     def _pdf(self, x, a, c):
-        exc = numpy.exp(-(x ** c))
+        exc = numpy.exp(-(x**c))
         return a * c * (1 - exc) ** (a - 1) * exc * x ** (c - 1)
 
     def _cdf(self, x, a, c):
-        exm1c = -numpy.expm1(-(x ** c))
+        exm1c = -numpy.expm1(-(x**c))
         return (exm1c) ** a
 
     def _ppf(self, q, a, c):

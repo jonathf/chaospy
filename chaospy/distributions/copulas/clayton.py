@@ -26,13 +26,13 @@ class clayton(Archimedean):
     """Clayton copula."""
 
     def _phi(self, t_loc, theta):
-        return (t_loc ** -theta - 1) / theta
+        return (t_loc**-theta - 1) / theta
 
     def _delta_phi(self, t_loc, theta):
         return -(t_loc ** (-theta - 1))
 
     def _inverse_phi(self, u_loc, theta, order):
-        return theta ** order * self._sigma(1 + theta * u_loc, theta, order)
+        return theta**order * self._sigma(1 + theta * u_loc, theta, order)
 
 
 class Clayton(CopulaDistribution):

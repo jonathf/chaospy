@@ -97,7 +97,7 @@ class LowerUpperDistribution(Distribution):
         del parameters
         poly = numpoly.variable(len(self))
         poly = numpoly.sum(scale * poly, axis=-1) + shift
-        poly = numpoly.set_dimensions(numpoly.prod(poly ** kloc), len(self))
+        poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
         out = sum(
             dist._get_mom(key) * coeff
             for key, coeff in zip(poly.exponents, poly.coefficients)

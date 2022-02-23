@@ -53,7 +53,7 @@ class Logn(OperatorDistribution):
 
     def _pdf(self, xloc, idx, left, right, cache):
         return (
-            left._get_pdf(right ** xloc, idx, cache) * right ** xloc * numpy.log(right)
+            left._get_pdf(right**xloc, idx, cache) * right**xloc * numpy.log(right)
         )
 
     def _cdf(self, xloc, idx, left, right, cache):

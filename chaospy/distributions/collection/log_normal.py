@@ -81,7 +81,7 @@ class LogNormal(ShiftScaleDistribution):
     """
 
     def __init__(self, mu=0, sigma=1, shift=0, scale=1):
-        dist = ShiftScaleDistribution(dist=log_normal(sigma), scale=numpy.e ** mu)
+        dist = ShiftScaleDistribution(dist=log_normal(sigma), scale=numpy.e**mu)
         super(LogNormal, self).__init__(
             dist=dist,
             scale=scale,

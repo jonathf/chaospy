@@ -56,7 +56,7 @@ def fejer_1(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, 2 * 3 ** order - 1, order)
+    order = numpy.where(growth, 2 * 3**order - 1, order)
     return hypercube_quadrature(
         quad_func=fejer_1_simple,
         order=order,
@@ -82,7 +82,7 @@ def fejer_1_simple(order):
     kappa = numpy.arange(remains)
     beta = numpy.hstack(
         [
-            2 * numpy.exp(1j * numpy.pi * kappa / order) / (1 - 4 * kappa ** 2),
+            2 * numpy.exp(1j * numpy.pi * kappa / order) / (1 - 4 * kappa**2),
             numpy.zeros(length + 1),
         ]
     )

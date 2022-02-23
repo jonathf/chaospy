@@ -104,7 +104,7 @@ class ShiftScaleDistribution(Distribution):
     def _mom(self, kloc, dist, shift, scale):
         poly = numpoly.variable(len(self))
         poly = numpoly.sum(scale * poly, axis=-1) + shift
-        poly = numpoly.set_dimensions(numpoly.prod(poly ** kloc), len(self))
+        poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
         out = sum(
             [
                 dist._get_mom(key) * coeff

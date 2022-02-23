@@ -101,7 +101,7 @@ def leja(
                 )
             # Hard coded solution to scipy/scipy#11207 for scipy < 1.5.0.
             except UnboundLocalError:  # pragma: no cover
-                xopt = abscissas[idx] + 0.5 * (3 - 5 ** 0.5) * (
+                xopt = abscissas[idx] + 0.5 * (3 - 5**0.5) * (
                     abscissas[idx + 1] - abscissas[idx]
                 )
                 fx = objective(xopt)

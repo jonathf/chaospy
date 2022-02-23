@@ -41,7 +41,7 @@ def grid(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 3 ** order - 1, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 3**order - 1, 0), order)
     return hypercube_quadrature(
         quad_func=grid_simple,
         order=order,

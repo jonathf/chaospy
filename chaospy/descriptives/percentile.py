@@ -49,7 +49,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     poly1 = poly(*Z)
 
     # Min/max
-    ext = numpy.mgrid[(slice(0, 2, 1),) * dim].reshape(dim, 2 ** dim).T
+    ext = numpy.mgrid[(slice(0, 2, 1),) * dim].reshape(dim, 2**dim).T
     ext = numpy.where(ext, dist.lower, dist.upper).T
     poly2 = poly(*ext)
     poly2 = numpy.array([_ for _ in poly2.T if not numpy.any(numpy.isnan(_))]).T

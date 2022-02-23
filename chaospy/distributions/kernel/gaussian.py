@@ -58,7 +58,7 @@ class GaussianKDE(KernelDensityBaseclass):
     def _kernel(z_loc):
         """The underlying density kernel."""
         return numpy.prod(
-            numpy.e ** (-(z_loc ** 2) / 2.0) / numpy.sqrt(2 * numpy.pi), axis=-1
+            numpy.e ** (-(z_loc**2) / 2.0) / numpy.sqrt(2 * numpy.pi), axis=-1
         )
 
     @staticmethod

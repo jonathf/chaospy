@@ -12,10 +12,10 @@ class mielke(SimpleDistribution):
         super(mielke, self).__init__(dict(k=k, s=s))
 
     def _pdf(self, x, k, s):
-        return k * x ** (k - 1.0) / (1.0 + x ** s) ** (1.0 + k * 1.0 / s)
+        return k * x ** (k - 1.0) / (1.0 + x**s) ** (1.0 + k * 1.0 / s)
 
     def _cdf(self, x, k, s):
-        return x ** k / (1.0 + x ** s) ** (k * 1.0 / s)
+        return x**k / (1.0 + x**s) ** (k * 1.0 / s)
 
     def _ppf(self, q, k, s):
         qsk = pow(q, s * 1.0 / k)

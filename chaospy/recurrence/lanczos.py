@@ -112,7 +112,7 @@ def lanczos(
                     alpha[idy] - abscissas[idx]
                 ) - gamma * increment
                 weights[idx] = numpy.where(
-                    gamma >= 1, sigma * beta[idy], increment_new ** 2 / (1 - gamma)
+                    gamma >= 1, sigma * beta[idy], increment_new**2 / (1 - gamma)
                 )
 
                 alpha[idy] -= increment_new - increment

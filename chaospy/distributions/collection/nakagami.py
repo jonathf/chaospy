@@ -14,7 +14,7 @@ class nakagami(SimpleDistribution):
     def _pdf(self, x, nu):
         return (
             2
-            * nu ** nu
+            * nu**nu
             / special.gamma(nu)
             * (x ** (2 * nu - 1.0))
             * numpy.exp(-nu * x * x)

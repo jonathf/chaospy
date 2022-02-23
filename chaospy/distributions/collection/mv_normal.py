@@ -84,7 +84,7 @@ class MvNormal(MeanCovarianceDistribution):
             pos = diff >= 0
             diff = diff * pos
             pos = numpy.all(pos)
-            location_ = numpy.prod(mean ** diff, -1)
+            location_ = numpy.prod(mean**diff, -1)
 
             out = out + pos * coef * location_ * isserlis_moment(tuple(kdx), sigma)
 
