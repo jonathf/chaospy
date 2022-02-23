@@ -8,7 +8,4 @@ from .operators import *
 from .approximation import *
 from .kernel import *
 
-from . import (
-    baseclass, sampler, approximation,
-    copulas, collection, operators
-)
+from . import baseclass, sampler, approximation, copulas, collection, operators

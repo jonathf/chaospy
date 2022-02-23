@@ -44,6 +44,6 @@ def Cov(poly, dist=None, **kws):
     poly = numpoly.set_dimensions(poly, len(dist))
     if poly.isconstant():
         return numpy.zeros((len(poly), len(poly)))
-    poly = poly-E(poly, dist)
+    poly = poly - E(poly, dist)
     poly = numpoly.outer(poly, poly)
     return E(poly, dist)

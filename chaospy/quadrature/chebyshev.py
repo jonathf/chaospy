@@ -50,11 +50,11 @@ def chebyshev_1(order, lower=-1, upper=1, physicist=False):
     """
     order = int(order)
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=order, dist=chaospy.Beta(0.5, 0.5, lower, upper))
+        order=order, dist=chaospy.Beta(0.5, 0.5, lower, upper)
+    )
     [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
     weights *= 0.5 if physicist else 1
     return abscissas[numpy.newaxis], weights
-
 
 
 def chebyshev_2(order, lower=-1, upper=1, physicist=False):
@@ -102,7 +102,8 @@ def chebyshev_2(order, lower=-1, upper=1, physicist=False):
     """
     order = int(order)
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=order, dist=chaospy.Beta(1.5, 1.5, lower, upper))
+        order=order, dist=chaospy.Beta(1.5, 1.5, lower, upper)
+    )
     [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
     weights *= 2 if physicist else 1
     return abscissas[numpy.newaxis], weights

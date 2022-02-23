@@ -11,12 +11,12 @@ class KernelDensityBaseclass(Distribution):
     """Kernel density estimation baseclass."""
 
     def __init__(
-            self,
-            samples,
-            h_mat=None,
-            estimator_rule="scott",
-            weights=None,
-            rotation=None,
+        self,
+        samples,
+        h_mat=None,
+        estimator_rule="scott",
+        weights=None,
+        rotation=None,
     ):
         """
         Args:
@@ -49,12 +49,12 @@ class KernelDensityBaseclass(Distribution):
 
             if estimator_rule in ("scott", "silverman"):
                 qrange = numpy.quantile(samples, [0.25, 0.75], axis=1).ptp(axis=0)
-                scale = numpy.min([numpy.std(samples, axis=1), qrange/1.34], axis=0)
+                scale = numpy.min([numpy.std(samples, axis=1), qrange / 1.34], axis=0)
                 factor = samples.shape[1]
                 if estimator_rule == "silverman":
-                    factor *= (len(samples)+2)/4.
-                factor **= -1./(len(samples)+4)
-                covariance = numpy.diag(scale*factor)**2
+                    factor *= (len(samples) + 2) / 4.0
+                factor **= -1.0 / (len(samples) + 4)
+                covariance = numpy.diag(scale * factor) ** 2
 
             else:
                 raise ValueError("unknown estimator rule: %s" % estimator_rule)
@@ -62,7 +62,7 @@ class KernelDensityBaseclass(Distribution):
         else:
             covariance = numpy.asfarray(h_mat)
             if covariance.ndim in (0, 1):
-                covariance = covariance*numpy.eye(len(samples))
+                covariance = covariance * numpy.eye(len(samples))
         if covariance.ndim == 2:
             covariance = covariance[numpy.newaxis]
         else:
@@ -70,19 +70,23 @@ class KernelDensityBaseclass(Distribution):
         assert covariance.shape[1:] == (len(samples), len(samples))
 
         if weights is None:
-            weights = 1./samples.shape[1]
+            weights = 1.0 / samples.shape[1]
         self.weights = weights
 
         dependencies, _, rotation = chaospy.declare_dependencies(
-            self, dict(), rotation=rotation,
-            dependency_type="accumulate", length=len(samples),
+            self,
+            dict(),
+            rotation=rotation,
+            dependency_type="accumulate",
+            length=len(samples),
         )
 
         self._samples = samples
         self._covariance = covariance
         self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
-        self._pcovariance = numpy.matmul(numpy.matmul(
-            self._permute, covariance), self._permute.T)
+        self._pcovariance = numpy.matmul(
+            numpy.matmul(self._permute, covariance), self._permute.T
+        )
         cholesky = numpy.linalg.cholesky(self._pcovariance)
         self._fwd_transform = numpy.linalg.inv(cholesky)
         self._inv_transform = cholesky
@@ -98,7 +102,8 @@ class KernelDensityBaseclass(Distribution):
 
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(KernelDensityBaseclass, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+            idx, cache, assert_numerical=assert_numerical
+        )
         if idx is None:
             del parameters["idx"]
         else:
@@ -107,61 +112,75 @@ class KernelDensityBaseclass(Distribution):
 
     def _pdf(self, x_loc, idx, dim, cache):
         """Kernel density function."""
-        s, t = numpy.mgrid[:x_loc.shape[-1], :self._samples.shape[-1]]
+        s, t = numpy.mgrid[: x_loc.shape[-1], : self._samples.shape[-1]]
         if not dim:
             samples = self._samples[idx, t]
-            z_loc = ((x_loc[s]-samples)*self._fwd_transform[:, 0, 0])
+            z_loc = (x_loc[s] - samples) * self._fwd_transform[:, 0, 0]
             self._zloc = z_loc[:, :, numpy.newaxis]
-            kernel = self._kernel(self._zloc)/self._inv_transform[:, 0, 0]
+            kernel = self._kernel(self._zloc) / self._inv_transform[:, 0, 0]
             self._kernel0 = self._kernel1 = kernel
-            out = numpy.sum(kernel*self.weights, axis=-1)
+            out = numpy.sum(kernel * self.weights, axis=-1)
 
         else:
-            if self._zloc.shape[2] == dim+1:
+            if self._zloc.shape[2] == dim + 1:
                 self._kernel0 = self._kernel1
-            x_loc = [self._get_cache(dim_, cache, get=0)
-                     for dim_ in self._rotation[:dim]] + [x_loc]
+            x_loc = [
+                self._get_cache(dim_, cache, get=0) for dim_ in self._rotation[:dim]
+            ] + [x_loc]
             x_loc = numpy.dstack([x[s] for x in x_loc])
-            samples = numpy.dstack([self._samples[dim_, t]
-                                    for dim_ in self._rotation[:dim+1]])
-            zloc = numpy.sum((x_loc-samples)*self._fwd_transform[:, dim, :dim+1], -1)
+            samples = numpy.dstack(
+                [self._samples[dim_, t] for dim_ in self._rotation[: dim + 1]]
+            )
+            zloc = numpy.sum(
+                (x_loc - samples) * self._fwd_transform[:, dim, : dim + 1], -1
+            )
             self._zloc = numpy.dstack([self._zloc[:, :, :dim], zloc])
 
             kernel = self._kernel(self._zloc)
-            kernel *= (numpy.linalg.det(self._inv_transform[:, :dim, :dim])/
-                       numpy.linalg.det(self._inv_transform[:, :dim+1, :dim+1]))
-            out = (numpy.sum(kernel*self.weights, axis=-1)/
-                   numpy.sum(self._kernel0*self.weights, axis=-1))
+            kernel *= numpy.linalg.det(
+                self._inv_transform[:, :dim, :dim]
+            ) / numpy.linalg.det(self._inv_transform[:, : dim + 1, : dim + 1])
+            out = numpy.sum(kernel * self.weights, axis=-1) / numpy.sum(
+                self._kernel0 * self.weights, axis=-1
+            )
             self._kernel1, self._kernel0 = self._kernel0, kernel
 
         return out
 
     def _cdf(self, x_loc, idx, dim, cache):
         """Forward mapping."""
-        s, t = numpy.mgrid[:x_loc.shape[-1], :self._samples.shape[-1]]
+        s, t = numpy.mgrid[: x_loc.shape[-1], : self._samples.shape[-1]]
         if not dim:
-            z_loc = (x_loc[s]-self._samples[idx, t])*self._fwd_transform[:, 0, 0]
+            z_loc = (x_loc[s] - self._samples[idx, t]) * self._fwd_transform[:, 0, 0]
             self._zloc = z_loc[:, :, numpy.newaxis]
-            out = numpy.sum(self._ikernel(z_loc)*self.weights, axis=-1)
+            out = numpy.sum(self._ikernel(z_loc) * self.weights, axis=-1)
             assert out.shape == x_loc.shape, (out.shape, x_loc.shape)
 
         else:
-            x_loc = [self._get_cache(dim_, cache, get=0)
-                     for dim_ in self._rotation[:dim]] + [x_loc]
+            x_loc = [
+                self._get_cache(dim_, cache, get=0) for dim_ in self._rotation[:dim]
+            ] + [x_loc]
             x_loc = numpy.dstack([x[s] for x in x_loc])
 
-            samples = numpy.dstack([self._samples[dim_, t]
-                                    for dim_ in self._rotation[:dim+1]])
-            zloc = numpy.sum((x_loc-samples)*self._fwd_transform[:, dim, :dim+1], -1)
+            samples = numpy.dstack(
+                [self._samples[dim_, t] for dim_ in self._rotation[: dim + 1]]
+            )
+            zloc = numpy.sum(
+                (x_loc - samples) * self._fwd_transform[:, dim, : dim + 1], -1
+            )
             self._zloc = numpy.dstack([self._zloc[:, :, :dim], zloc])
-            ikernel = self._kernel(self._zloc[:, :, :-1])*self._ikernel(self._zloc[:, :, -1])
-            out = (numpy.sum(ikernel*self.weights, axis=-1)/
-                   numpy.sum(self._kernel(self._zloc[:, :, :-1])*self.weights, axis=-1))
+            ikernel = self._kernel(self._zloc[:, :, :-1]) * self._ikernel(
+                self._zloc[:, :, -1]
+            )
+            out = numpy.sum(ikernel * self.weights, axis=-1) / numpy.sum(
+                self._kernel(self._zloc[:, :, :-1]) * self.weights, axis=-1
+            )
         return out
 
     def _ppf(self, u_loc, idx, dim, cache):
         """Inverse mapping."""
         xloc0 = numpy.quantile(self._samples[idx], u_loc)
         out = chaospy.approximate_inverse(
-            self, idx, u_loc, xloc0=xloc0, cache=cache, iterations=1000)
+            self, idx, u_loc, xloc0=xloc0, cache=cache, iterations=1000
+        )
         return out

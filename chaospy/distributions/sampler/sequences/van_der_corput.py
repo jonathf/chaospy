@@ -42,7 +42,7 @@ def create_van_der_corput_samples(idx, number_base=2):
     base = float(number_base)
     active = numpy.ones(len(idx), dtype=bool)
     while numpy.any(active):
-        out[active] += (idx[active] % number_base)/base
+        out[active] += (idx[active] % number_base) / base
         idx //= number_base
         base *= number_base
         active = idx > 0

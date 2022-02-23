@@ -8,7 +8,7 @@ from ..baseclass import Distribution, OperatorDistribution
 class Power(OperatorDistribution):
     """Power operator."""
 
-    _operator = lambda self, left, right: left**right
+    _operator = lambda self, left, right: left ** right
 
     def __init__(self, left, right):
         """
@@ -52,24 +52,29 @@ class Power(OperatorDistribution):
                 right_upper = right._get_upper(idx, cache=self._upper_cache)
                 right_lower = right._get_lower(idx, cache=self._lower_cache)
 
-                out = numpy.min(numpy.broadcast_arrays(
-                    left_lower.T**right_lower.T,
-                    left_lower.T**right_upper.T,
-                    left_upper.T**right_lower.T,
-                    left_upper.T**right_upper.T,
-                ), axis=0).T
+                out = numpy.min(
+                    numpy.broadcast_arrays(
+                        left_lower.T ** right_lower.T,
+                        left_lower.T ** right_upper.T,
+                        left_upper.T ** right_lower.T,
+                        left_upper.T ** right_upper.T,
+                    ),
+                    axis=0,
+                ).T
 
             else:
                 # assert 0, (idx, left_lower, left_upper, right)
-                out = numpy.min([left_lower**right[idx],
-                                 left_upper**right[idx]], axis=0).T
+                out = numpy.min(
+                    [left_lower ** right[idx], left_upper ** right[idx]], axis=0
+                ).T
 
         else:
             assert isinstance(right, Distribution)
             right_upper = right._get_upper(idx, cache=self._upper_cache)
             right_lower = right._get_lower(idx, cache=self._lower_cache)
-            out = numpy.min([left[idx]**right_lower,
-                             left[idx]**right_upper], axis=0).T
+            out = numpy.min(
+                [left[idx] ** right_lower, left[idx] ** right_upper], axis=0
+            ).T
 
         return out
 
@@ -100,23 +105,28 @@ class Power(OperatorDistribution):
                 right_lower = right._get_lower(idx, cache=self._lower_cache)
                 right_upper = right._get_upper(idx, cache=self._upper_cache)
 
-                out = numpy.max(numpy.broadcast_arrays(
-                    (left_lower.T**right_lower.T).T,
-                    (left_lower.T**right_upper.T).T,
-                    (left_upper.T**right_lower.T).T,
-                    (left_upper.T**right_upper.T).T,
-                ), axis=0)
+                out = numpy.max(
+                    numpy.broadcast_arrays(
+                        (left_lower.T ** right_lower.T).T,
+                        (left_lower.T ** right_upper.T).T,
+                        (left_upper.T ** right_lower.T).T,
+                        (left_upper.T ** right_upper.T).T,
+                    ),
+                    axis=0,
+                )
 
             else:
-                out = numpy.max([left_lower**right[idx],
-                                 left_upper**right[idx]], axis=0)
+                out = numpy.max(
+                    [left_lower ** right[idx], left_upper ** right[idx]], axis=0
+                )
 
         else:
             assert isinstance(right, Distribution)
             right_lower = right._get_lower(idx, cache=self._lower_cache)
             right_upper = right._get_upper(idx, cache=self._upper_cache)
-            out = numpy.max([left[idx]**right_lower,
-                             left[idx]**right_upper], axis=0)
+            out = numpy.max(
+                [left[idx] ** right_lower, left[idx] ** right_upper], axis=0
+            )
 
         return out
 
@@ -138,22 +148,26 @@ class Power(OperatorDistribution):
 
         """
         if isinstance(left, Distribution):
-            x_ = numpy.sign(xloc)*numpy.abs(xloc)**(1./right-1)
-            xloc = numpy.sign(xloc)*numpy.abs(xloc)**(1./right)
-            pairs = numpy.sign(xloc**right) == 1
+            x_ = numpy.sign(xloc) * numpy.abs(xloc) ** (1.0 / right - 1)
+            xloc = numpy.sign(xloc) * numpy.abs(xloc) ** (1.0 / right)
+            pairs = numpy.sign(xloc ** right) == 1
             out = left._get_pdf(xloc, idx, cache=cache.copy())
             if numpy.any(pairs):
-                out = out+pairs*left._get_pdf(-xloc, idx, cache=cache)
-            out = numpy.sign(right)*out*x_/right
+                out = out + pairs * left._get_pdf(-xloc, idx, cache=cache)
+            out = numpy.sign(right) * out * x_ / right
             out[numpy.isnan(out)] = numpy.inf
 
         else:
             assert numpy.all(left > 0), "imaginary result"
-            x_ = numpy.where(xloc <= 0, -numpy.inf,
-                             numpy.log(xloc + 1.*(xloc<=0))/numpy.log(left+1.*(left == 1)))
-            num_ = numpy.log(left+1.*(left == 1))*xloc
-            num_ = num_ + 1.*(num_==0)
-            out = right._get_pdf(x_, idx, cache=cache)/num_
+            x_ = numpy.where(
+                xloc <= 0,
+                -numpy.inf,
+                numpy.log(xloc + 1.0 * (xloc <= 0))
+                / numpy.log(left + 1.0 * (left == 1)),
+            )
+            num_ = numpy.log(left + 1.0 * (left == 1)) * xloc
+            num_ = num_ + 1.0 * (num_ == 0)
+            out = right._get_pdf(x_, idx, cache=cache) / num_
 
         return out
 
@@ -175,16 +189,17 @@ class Power(OperatorDistribution):
 
         """
         if isinstance(left, Distribution):
-            y = numpy.sign(xloc)*numpy.abs(xloc)**(1./right)
-            pairs = numpy.sign(xloc**right) != -1
+            y = numpy.sign(xloc) * numpy.abs(xloc) ** (1.0 / right)
+            pairs = numpy.sign(xloc ** right) != -1
             out2 = left._get_fwd(-y, idx, cache=cache.copy())
             out1 = left._get_fwd(y, idx, cache=cache)
-            out = numpy.where(right < 0, 1-out1, out1-pairs*out2)
+            out = numpy.where(right < 0, 1 - out1, out1 - pairs * out2)
         else:
-            y = (numpy.log(numpy.abs(xloc)+1.*(xloc <= 0))/
-                 numpy.log(numpy.abs(left)+1.*(left == 1)))
+            y = numpy.log(numpy.abs(xloc) + 1.0 * (xloc <= 0)) / numpy.log(
+                numpy.abs(left) + 1.0 * (left == 1)
+            )
             out = right._get_fwd(y, idx, cache=cache)
-            out = numpy.where(xloc <= 0, 0., out)
+            out = numpy.where(xloc <= 0, 0.0, out)
         return out
 
     def _ppf(self, q, idx, left, right, cache):
@@ -205,12 +220,12 @@ class Power(OperatorDistribution):
 
         """
         if isinstance(left, Distribution):
-            q = numpy.where(right.T < 0, 1-q.T, q.T).T
-            out = (left._get_inv(q, idx, cache=cache).T**right.T).T
+            q = numpy.where(right.T < 0, 1 - q.T, q.T).T
+            out = (left._get_inv(q, idx, cache=cache).T ** right.T).T
         else:
             out = right._get_inv(q, idx, cache=cache)
-            out = numpy.where(left < 0, 1-out, out)
-            out = (left.T**out.T).T
+            out = numpy.where(left < 0, 1 - out, out)
+            out = (left.T ** out.T).T
         return out
 
     def _mom(self, k, left, right, cache):
@@ -232,12 +247,13 @@ class Power(OperatorDistribution):
         """
         del cache
         if isinstance(right, Distribution):
-            raise chaospy.UnsupportedFeature(
-                "distribution as exponent not supported.")
+            raise chaospy.UnsupportedFeature("distribution as exponent not supported.")
         if numpy.any(right < 0):
             raise chaospy.UnsupportedFeature(
-                "distribution to negative power not supported.")
+                "distribution to negative power not supported."
+            )
         if not numpy.allclose(right, numpy.array(right, dtype=int)):
             raise chaospy.UnsupportedFeature(
-                "distribution to fractional power not supported.")
-        return left._get_mom(k*right)
+                "distribution to fractional power not supported."
+            )
+        return left._get_mom(k * right)

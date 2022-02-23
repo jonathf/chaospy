@@ -12,7 +12,7 @@ class log_weibull(SimpleDistribution):
 
     def _pdf(self, x):
         ex = numpy.exp(-x)
-        return ex*numpy.exp(-ex)
+        return ex * numpy.exp(-ex)
 
     def _cdf(self, x):
         return numpy.exp(-numpy.exp(-x))
@@ -55,6 +55,7 @@ class LogWeibull(ShiftScaleDistribution):
         array([ 0.855, -0.771,  2.976,  0.316])
 
     """
+
     def __init__(self, scale=1, shift=0):
         super(LogWeibull, self).__init__(
             dist=log_weibull(),

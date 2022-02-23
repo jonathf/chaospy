@@ -5,12 +5,12 @@ import chaospy
 
 
 def stieltjes(
-        order,
-        dist,
-        rule=None,
-        tolerance=1e-16,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    rule=None,
+    tolerance=1e-16,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Stieltjes' method.
@@ -78,12 +78,12 @@ def stieltjes(
 
 
 def discretized_stieltjes(
-        order,
-        dist,
-        rule=None,
-        tolerance=1e-16,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    rule=None,
+    tolerance=1e-16,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Discretized Stieltjes' method.
@@ -106,61 +106,64 @@ def discretized_stieltjes(
     """
     if len(dist) > 1:
         assert not dist.stochastic_dependent
-        coeffs, orths, norms = zip(*[discretized_stieltjes(
-                order,
-                dist_,
-                rule=rule,
-                tolerance=tolerance,
-                scaling=scaling)
-        for dist_ in dist])
-        coeffs = numpy.dstack(coeffs).reshape(2, len(dist), order+1)
+        coeffs, orths, norms = zip(
+            *[
+                discretized_stieltjes(
+                    order, dist_, rule=rule, tolerance=tolerance, scaling=scaling
+                )
+                for dist_ in dist
+            ]
+        )
+        coeffs = numpy.dstack(coeffs).reshape(2, len(dist), order + 1)
         variables = list(numpoly.variable(len(dist)))
         orths = [orths[idx](q0=variables[idx]) for idx in range(len(dist))]
-        orths = numpoly.polynomial(orths).reshape(len(dist), order+1)
-        norms = numpy.asfarray(norms).reshape(len(dist), order+1)
+        orths = numpoly.polynomial(orths).reshape(len(dist), order + 1)
+        norms = numpy.asfarray(norms).reshape(len(dist), order + 1)
         return coeffs, orths, norms
 
     if rule is None:
         rule = "discrete" if dist.interpret_as_integer else "clenshaw_curtis"
-    order_ = (2*order-1.)/scaling
+    order_ = (2 * order - 1.0) / scaling
     beta = beta_old = numpy.nan
     var = numpoly.variable()
-    orths = [numpoly.polynomial(0.), numpoly.polynomial(1.)]+[None]*order
-    norms = numpy.ones(order+2)
-    coeffs = numpy.ones((2, order+1))
+    orths = [numpoly.polynomial(0.0), numpoly.polynomial(1.0)] + [None] * order
+    norms = numpy.ones(order + 2)
+    coeffs = numpy.ones((2, order + 1))
 
-    while not numpy.all(numpy.abs(coeffs[1]-beta_old) < tolerance):
+    while not numpy.all(numpy.abs(coeffs[1] - beta_old) < tolerance):
 
         beta_old = coeffs[1].copy()
-        order_ = max(order_*scaling, order_+1)
+        order_ = max(order_ * scaling, order_ + 1)
         if order_ > n_max:
             break
 
         [abscissas], weights = chaospy.generate_quadrature(
-            int(order_), dist, rule=rule, segments=0)
-        inner = numpy.sum(abscissas*weights)
+            int(order_), dist, rule=rule, segments=0
+        )
+        inner = numpy.sum(abscissas * weights)
         for idx in range(order):
-            coeffs[0, idx] = inner/norms[idx+1]
-            coeffs[1, idx] = norms[idx+1]/norms[idx]
-            orths[idx+2] = ((var-coeffs[0, idx])*orths[idx+1]-
-                            orths[idx]*coeffs[1, idx])
-            norms[idx+2] = numpy.sum(orths[idx+2](abscissas)**2*weights)
-            inner = numpy.sum(abscissas*orths[idx+2](abscissas)**2*weights)
-        coeffs[:, order] = (inner/norms[-1], norms[-1]/norms[-2])
+            coeffs[0, idx] = inner / norms[idx + 1]
+            coeffs[1, idx] = norms[idx + 1] / norms[idx]
+            orths[idx + 2] = (var - coeffs[0, idx]) * orths[idx + 1] - orths[
+                idx
+            ] * coeffs[1, idx]
+            norms[idx + 2] = numpy.sum(orths[idx + 2](abscissas) ** 2 * weights)
+            inner = numpy.sum(abscissas * orths[idx + 2](abscissas) ** 2 * weights)
+        coeffs[:, order] = (inner / norms[-1], norms[-1] / norms[-2])
 
-    coeffs = coeffs.reshape(2, 1, order+1)
-    orths = numpoly.polynomial(orths[1:]).reshape(1, order+1)
-    norms = numpy.array(norms[1:]).reshape(1, order+1)
+    coeffs = coeffs.reshape(2, 1, order + 1)
+    orths = numpoly.polynomial(orths[1:]).reshape(1, order + 1)
+    norms = numpy.array(norms[1:]).reshape(1, order + 1)
     return coeffs, orths, norms
 
 
 def analytical_stieltjes(order, dist, multiplier=1):
     """Analytical Stieltjes' method"""
     dimensions = len(dist)
-    mom_order = numpy.arange(order+1).repeat(dimensions)
-    mom_order = mom_order.reshape(order+1, dimensions).T
+    mom_order = numpy.arange(order + 1).repeat(dimensions)
+    mom_order = mom_order.reshape(order + 1, dimensions).T
     coeffs = dist.ttr(mom_order)
-    coeffs[1, :, 0] = 1.
+    coeffs[1, :, 0] = 1.0
     orders = numpy.arange(order, dtype=int)
     multiplier, orders = numpy.broadcast_arrays(multiplier, orders)
 
@@ -168,11 +171,16 @@ def analytical_stieltjes(order, dist, multiplier=1):
     orth = [numpy.zeros(dimensions), numpy.ones(dimensions)]
     for order_, multiplier_ in zip(orders, multiplier):
         orth.append(
-            multiplier_*((var-coeffs[0, :, order_])*orth[-1]-coeffs[1, :, order_]*orth[-2]))
+            multiplier_
+            * (
+                (var - coeffs[0, :, order_]) * orth[-1]
+                - coeffs[1, :, order_] * orth[-2]
+            )
+        )
     orth = numpoly.polynomial(orth[1:]).T
     norms = numpy.cumprod(coeffs[1], 1)
 
-    assert coeffs.shape == (2, dimensions, order+1)
-    assert orth.shape == (len(dist), order+1)
-    assert norms.shape == (len(dist), order+1)
+    assert coeffs.shape == (2, dimensions, order + 1)
+    assert orth.shape == (len(dist), order + 1)
+    assert norms.shape == (len(dist), order + 1)
     return coeffs, orth, norms

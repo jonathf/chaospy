@@ -6,13 +6,12 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class gamma(SimpleDistribution):
-
     def __init__(self, a=1):
         super(gamma, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
         # return x**(a-1)*numpy.e**(-x)/special.gamma(a)
-        return numpy.exp(special.xlogy(a-1.0, x) - x - special.gammaln(a))
+        return numpy.exp(special.xlogy(a - 1.0, x) - x - special.gammaln(a))
 
     def _cdf(self, x, a):
         return special.gammainc(a, x)
@@ -21,19 +20,19 @@ class gamma(SimpleDistribution):
         return special.gammaincinv(a, q)
 
     def _mom(self, k, a):
-        out = 1.
+        out = 1.0
         for k_ in range(k.item()):
-            out *= a+k_
+            out *= a + k_
         return out
 
     def _ttr(self, n, a):
-        return 2.*n+a, n*n+n*(a-1)
+        return 2.0 * n + a, n * n + n * (a - 1)
 
     def _lower(self, a):
-        return 0.
+        return 0.0
 
     def _upper(self, a):
-        return special.gammaincinv(a, 1-1e-14)
+        return special.gammaincinv(a, 1 - 1e-14)
 
 
 class Gamma(ShiftScaleDistribution):

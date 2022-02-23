@@ -13,22 +13,22 @@ class laplace(SimpleDistribution):
         super(laplace, self).__init__()
 
     def _pdf(self, x):
-        return numpy.e**-numpy.abs(x)/2
+        return numpy.e ** -numpy.abs(x) / 2
 
     def _cdf(self, x):
-        return (1+numpy.sign(x)*(1-numpy.e**-abs(x)))/2
+        return (1 + numpy.sign(x) * (1 - numpy.e ** -abs(x))) / 2
 
     def _mom(self, k):
-        return special.factorial(k)*((k+1)%2)
+        return special.factorial(k) * ((k + 1) % 2)
 
     def _ppf(self, x):
-        return numpy.where(x > .5, -numpy.log(2*(1-x)), numpy.log(2*x))
+        return numpy.where(x > 0.5, -numpy.log(2 * (1 - x)), numpy.log(2 * x))
 
     def _lower(self):
-        return -20.
+        return -20.0
 
     def _upper(self):
-        return 20.
+        return 20.0
 
 
 class Laplace(ShiftScaleDistribution):
@@ -61,11 +61,13 @@ class Laplace(ShiftScaleDistribution):
         0.0
 
     """
+
     def __init__(self, mu=0, sigma=1):
         super(Laplace, self).__init__(
             dist=laplace(),
             scale=sigma,
             shift=mu,
         )
-        self._repr_args = (chaospy.format_repr_kwargs(mu=(mu, 0))+
-                           chaospy.format_repr_kwargs(sigma=(sigma, 1)))
+        self._repr_args = chaospy.format_repr_kwargs(
+            mu=(mu, 0)
+        ) + chaospy.format_repr_kwargs(sigma=(sigma, 1))

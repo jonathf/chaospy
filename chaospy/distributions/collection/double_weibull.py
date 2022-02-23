@@ -13,25 +13,24 @@ class double_weibull(SimpleDistribution):
 
     def _pdf(self, x, c):
         ax = numpy.abs(x)
-        Px = c/2.0*ax**(c-1.0)*numpy.exp(-ax**c)
+        Px = c / 2.0 * ax ** (c - 1.0) * numpy.exp(-(ax ** c))
         return Px
 
     def _cdf(self, x, c):
-        Cx1 = 0.5*numpy.exp(-abs(x)**c)
-        return numpy.where(x > 0, 1-Cx1, Cx1)
+        Cx1 = 0.5 * numpy.exp(-abs(x) ** c)
+        return numpy.where(x > 0, 1 - Cx1, Cx1)
 
     def _ppf(self, q, c):
-        q_ = numpy.where(q > .5, 1-q, q)
+        q_ = numpy.where(q > 0.5, 1 - q, q)
         Cq1 = numpy.where(q_ == 0, self._upper(c), 1)
-        Cq1 = numpy.where((q != 0) & (c != 0),
-                          (-numpy.log(2*q_))**(1./c), Cq1)
-        return numpy.where(q > .5, Cq1, -Cq1)
+        Cq1 = numpy.where((q != 0) & (c != 0), (-numpy.log(2 * q_)) ** (1.0 / c), Cq1)
+        return numpy.where(q > 0.5, Cq1, -Cq1)
 
     def _lower(self, c):
-        return -(-numpy.log(2e-10))**(1./c)
+        return -((-numpy.log(2e-10)) ** (1.0 / c))
 
     def _upper(self, c):
-        return (-numpy.log(2e-10))**(1./c)
+        return (-numpy.log(2e-10)) ** (1.0 / c)
 
 
 class DoubleWeibull(ShiftScaleDistribution):

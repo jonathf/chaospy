@@ -60,8 +60,8 @@ def create_grid_samples(order, dim=1):
     Returns (numpy.ndarray):
         Regular grid with ``shape == (dim, order)``.
     """
-    x_data = numpy.arange(1, order+1)/(order+1.)
-    x_data = utils.combine([x_data]*dim)
+    x_data = numpy.arange(1, order + 1) / (order + 1.0)
+    x_data = utils.combine([x_data] * dim)
     return x_data.T
 
 
@@ -78,4 +78,4 @@ def create_nested_grid_samples(order, dim=1):
     Returns (numpy.ndarray):
         Regular grid with ``shape == (dim, 2**order-1)``.
     """
-    return create_grid_samples(order=2**order-1, dim=dim)
+    return create_grid_samples(order=2 ** order - 1, dim=dim)

@@ -3,12 +3,12 @@ import chaospy
 
 
 def legendre(
-        order,
-        lower=-1,
-        upper=1,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    lower=-1,
+    upper=1,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Examples:
@@ -24,13 +24,14 @@ def legendre(
                     52.915*q0**3-79.373*q0**2+31.749*q0-2.646])
 
     """
-    multiplier = 1.
+    multiplier = 1.0
     if physicist:
-        multiplier = numpy.arange(1, order+1)
-        multiplier = (2*multiplier+1)/(multiplier+1)
+        multiplier = numpy.arange(1, order + 1)
+        multiplier = (2 * multiplier + 1) / (multiplier + 1)
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Uniform(lower, upper), multiplier=multiplier)
+        order, chaospy.Uniform(lower, upper), multiplier=multiplier
+    )
     if normed:
         polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials

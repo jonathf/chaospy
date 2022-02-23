@@ -23,7 +23,8 @@ class ItemDistribution(Distribution):
             idx = int(self._parameters["index"])
         parent = self._parameters["parent"]
         parameters = parent.get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+            idx, cache, assert_numerical=assert_numerical
+        )
         return dict(parent=parent, parameters=parameters)
 
     def __repr__(self):
@@ -46,7 +47,7 @@ class ItemDistribution(Distribution):
 
     def _mom(self, kloc, parent, parameters):
         idx = int(self._parameters["index"])
-        kloc = kloc*numpy.eye(len(parent), dtype=int)[idx]
+        kloc = kloc * numpy.eye(len(parent), dtype=int)[idx]
         return parent._mom(kloc, **parameters)
 
     def _ttr(self, kloc, parent, parameters):

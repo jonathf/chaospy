@@ -12,22 +12,22 @@ class frechet(SimpleDistribution):
         super(frechet, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return c*pow(x,c-1)*numpy.exp(-pow(x,c))
+        return c * pow(x, c - 1) * numpy.exp(-pow(x, c))
 
     def _cdf(self, x, c):
-        return -numpy.expm1(-pow(x,c))
+        return -numpy.expm1(-pow(x, c))
 
     def _ppf(self, q, c):
-        return pow(-numpy.log1p(-q), 1./c)
+        return pow(-numpy.log1p(-q), 1.0 / c)
 
     def _mom(self, k, c):
-        return special.gamma(1-k*1./c)
+        return special.gamma(1 - k * 1.0 / c)
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return pow(35, (1./c))
+        return pow(35, (1.0 / c))
 
 
 class Frechet(ShiftScaleDistribution):

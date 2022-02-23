@@ -50,7 +50,7 @@ class UserDistribution(SimpleDistribution):
         ppf=None,
         mom=None,
         ttr=None,
-        parameters=None
+        parameters=None,
     ):
         """
         Args:
@@ -75,7 +75,9 @@ class UserDistribution(SimpleDistribution):
         self._cdf = cdf
         repr_args = [str(cdf)]
         if ppf is None and (lower is None or upper is None):
-            raise chaospy.UnsupportedFeature("either ppf or lower+upper should be provided.")
+            raise chaospy.UnsupportedFeature(
+                "either ppf or lower+upper should be provided."
+            )
         if pdf is not None:
             repr_args.append("pdf=%s" % pdf)
             self._pdf = pdf
@@ -97,21 +99,21 @@ class UserDistribution(SimpleDistribution):
 
         parameters = parameters if parameters else {}
         if parameters:
-            params = [("%s=%s" % (key, parameters[key]))
-                        for key in sorted(parameters)]
+            params = [("%s=%s" % (key, parameters[key])) for key in sorted(parameters)]
             repr_args.append("parameters=dict(%s)" % ", ".join(params))
 
         super(UserDistribution, self).__init__(
-            repr_args=repr_args, parameters=parameters)
+            repr_args=repr_args, parameters=parameters
+        )
 
     def _lower(self, **parameters):
-        x_loc = 0.
+        x_loc = 0.0
         for param in parameters.values():
             x_loc, _ = numpy.broadcast_arrays(x_loc, param)
         return self._ppf(x_loc, **parameters)
 
     def _upper(self, **parameters):
-        x_loc = 1.
+        x_loc = 1.0
         for param in parameters.values():
             x_loc, _ = numpy.broadcast_arrays(x_loc, param)
         return self._ppf(x_loc, **parameters)

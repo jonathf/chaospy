@@ -12,31 +12,33 @@ class generalized_extreme(SimpleDistribution):
         super(generalized_extreme, self).__init__(dict(c=c))
 
     def _lower(self, c):
-        out = numpy.where(c == 0, -3.5, -numpy.expm1(c*3.5)/c)
-        out = numpy.where(c < 0, 1./c, out)
+        out = numpy.where(c == 0, -3.5, -numpy.expm1(c * 3.5) / c)
+        out = numpy.where(c < 0, 1.0 / c, out)
         return out
 
     def _upper(self, c):
-        out = numpy.where(c == 0, 25, -numpy.expm1(-c*25)/c)
-        out = numpy.where(c > 0, 1./c, out)
+        out = numpy.where(c == 0, 25, -numpy.expm1(-c * 25) / c)
+        out = numpy.where(c > 0, 1.0 / c, out)
         return out
 
     def _pdf(self, x, c):
-        cx = c*x
-        logex2 = numpy.where(c == 0, 0., numpy.log1p(-cx))
-        logpex2 = numpy.where(c == 0, -x, logex2/c)
+        cx = c * x
+        logex2 = numpy.where(c == 0, 0.0, numpy.log1p(-cx))
+        logpex2 = numpy.where(c == 0, -x, logex2 / c)
         pex2 = numpy.exp(logpex2)
-        logpdf = numpy.where((cx==1) | (cx==-numpy.inf), -numpy.inf, -pex2+logpex2-logex2)
-        numpy.putmask(logpdf,(c==1) & (x==1),0.0)
+        logpdf = numpy.where(
+            (cx == 1) | (cx == -numpy.inf), -numpy.inf, -pex2 + logpex2 - logex2
+        )
+        numpy.putmask(logpdf, (c == 1) & (x == 1), 0.0)
         return numpy.exp(logpdf)
 
     def _cdf(self, x, c):
-        loglogcdf = numpy.where(c == 0, -x, numpy.log1p(-c*x)/c)
+        loglogcdf = numpy.where(c == 0, -x, numpy.log1p(-c * x) / c)
         return numpy.exp(-numpy.exp(loglogcdf))
 
     def _ppf(self, q, c):
         x = -numpy.log(-numpy.log(q))
-        return numpy.where(c == 0, x, -numpy.expm1(-c*x)/c)
+        return numpy.where(c == 0, x, -numpy.expm1(-c * x) / c)
 
 
 class GeneralizedExtreme(ShiftScaleDistribution):

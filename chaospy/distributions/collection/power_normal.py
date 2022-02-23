@@ -13,20 +13,20 @@ class power_normal(SimpleDistribution):
         super(power_normal, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        norm = (2*numpy.pi)**-.5*numpy.exp(-x**2/2.)
-        return c*norm*special.ndtr(-x)**(c-1.)
+        norm = (2 * numpy.pi) ** -0.5 * numpy.exp(-(x ** 2) / 2.0)
+        return c * norm * special.ndtr(-x) ** (c - 1.0)
 
     def _cdf(self, x, c):
-        return 1.-special.ndtr(-x)**c
+        return 1.0 - special.ndtr(-x) ** c
 
     def _ppf(self, q, c):
-        return -special.ndtri(pow(1-q, 1./c))
+        return -special.ndtri(pow(1 - q, 1.0 / c))
 
     def _lower(self, c):
-        return -special.ndtri(pow(1-1e-15, 1./c))
+        return -special.ndtri(pow(1 - 1e-15, 1.0 / c))
 
     def _upper(self, c):
-        return -special.ndtri(pow(1e-15, 1./c))
+        return -special.ndtri(pow(1e-15, 1.0 / c))
 
 
 class PowerNormal(ShiftScaleDistribution):

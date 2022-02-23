@@ -35,7 +35,7 @@ def Sens_t(poly, dist, **kws):
     dim = len(dist)
     poly = numpoly.set_dimensions(poly, dim)
 
-    out = numpy.zeros((dim,)+poly.shape, dtype=float)
+    out = numpy.zeros((dim,) + poly.shape, dtype=float)
     variance = Var(poly, dist, **kws)
 
     valids = variance != 0
@@ -45,7 +45,7 @@ def Sens_t(poly, dist, **kws):
 
     out[:] = variance
     for idx, unit_vec in enumerate(numpy.eye(dim, dtype=int)):
-        conditional = E_cond(poly, 1-unit_vec, dist, **kws)
+        conditional = E_cond(poly, 1 - unit_vec, dist, **kws)
         out[idx] -= Var(conditional, dist, **kws)
         out[idx] /= variance
 

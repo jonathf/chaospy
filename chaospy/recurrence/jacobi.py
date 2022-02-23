@@ -32,7 +32,8 @@ def coefficients_to_quadrature(coeffs):
         if numpy.any(coeff[1] < 0) or numpy.any(numpy.isnan(coeff)):
             raise numpy.linalg.LinAlgError(
                 "Invalid recurrence coefficients can not be used for "
-                "constructing Gaussian quadrature rule")
+                "constructing Gaussian quadrature rule"
+            )
 
         order = len(coeff[0])
         bands = numpy.zeros((2, order))
@@ -40,7 +41,7 @@ def coefficients_to_quadrature(coeffs):
         bands[1, :-1] = numpy.sqrt(coeff[1, 1:order])
         vals, vecs = scipy.linalg.eig_banded(bands, lower=True)
 
-        abscissa, weight = vals.real, vecs[0, :]**2
+        abscissa, weight = vals.real, vecs[0, :] ** 2
         indices = numpy.argsort(abscissa)
         abscissa, weight = abscissa[indices], weight[indices]
 

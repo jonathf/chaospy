@@ -45,7 +45,7 @@ def discrete(order, domain=(0, 1), growth=False):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 2 ** order, 0), order)
     return hypercube_quadrature(
         quad_func=discrete_simple,
         order=order,
@@ -60,7 +60,7 @@ def discrete_simple(order, lower=-2, upper=2):
 
     Use :func:`chaospy.quadrature.discrete` instead.
     """
-    order = int(min(order, round(upper-lower)-1))
-    abscissas = numpy.linspace(lower, upper, 2*order+3)[1::2].round()
-    weights = numpy.full(order+1, (upper-lower)/(order+1.))
+    order = int(min(order, round(upper - lower) - 1))
+    abscissas = numpy.linspace(lower, upper, 2 * order + 3)[1::2].round()
+    weights = numpy.full(order + 1, (upper - lower) / (order + 1.0))
     return abscissas, weights

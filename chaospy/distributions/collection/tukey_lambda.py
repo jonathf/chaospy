@@ -12,18 +12,18 @@ class tukey_lambda(SimpleDistribution):
         super(tukey_lambda, self).__init__(dict(lam=lam))
 
     def _upper(self, lam):
-        return 1./numpy.clip(lam, a_min=0.03, a_max=None)
+        return 1.0 / numpy.clip(lam, a_min=0.03, a_max=None)
 
     def _lower(self, lam):
-        return -1./numpy.clip(lam, a_min=0.03, a_max=None)
+        return -1.0 / numpy.clip(lam, a_min=0.03, a_max=None)
 
     def _pdf(self, x, lam):
         lam = numpy.zeros(x.shape) + lam
         output = numpy.zeros(x.shape)
-        indices = (lam <= 0) | (numpy.abs(x)*lam < 1)
+        indices = (lam <= 0) | (numpy.abs(x) * lam < 1)
         lam = lam[indices]
         Fx = special.tklmbda(x[indices], lam)
-        Px = 1/(Fx**(lam-1.0) + ((1-Fx))**(lam-1.0))
+        Px = 1 / (Fx ** (lam - 1.0) + ((1 - Fx)) ** (lam - 1.0))
         output[indices] = Px
         return output
 
@@ -36,9 +36,9 @@ class tukey_lambda(SimpleDistribution):
         indices = lam != 0
         q_ = q[indices]
         lam_ = lam[indices]
-        output[indices] = (q_**lam_ - (1-q_)**lam_)/lam_
+        output[indices] = (q_ ** lam_ - (1 - q_) ** lam_) / lam_
         q_ = q[~indices]
-        output[~indices] = numpy.log(q_/(1-q_))
+        output[~indices] = numpy.log(q_ / (1 - q_))
         return output
 
 

@@ -25,8 +25,8 @@ def create_latin_hypercube_samples(order, dim=1):
     Returns (numpy.ndarray):
         Latin hyper-cube with ``shape == (dim, order)``.
     """
-    randoms = numpy.random.random(order*dim).reshape((dim, order))
+    randoms = numpy.random.random(order * dim).reshape((dim, order))
     for dim_ in range(dim):
         perm = numpy.random.permutation(order)  # pylint: disable=no-member
-        randoms[dim_] = (perm + randoms[dim_])/order
+        randoms[dim_] = (perm + randoms[dim_]) / order
     return randoms

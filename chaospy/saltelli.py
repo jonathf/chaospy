@@ -46,8 +46,7 @@ class Saltelli(object):
             Scheme for generating random samples.
         """
         self.dist = dist
-        samples_ = chaospy.generate_samples(
-            2*samples, domain=len(dist), rule=rule)
+        samples_ = chaospy.generate_samples(2 * samples, domain=len(dist), rule=rule)
         self.samples1 = samples_.T[:samples].T
         self.samples2 = samples_.T[samples:].T
         self.poly = poly
@@ -115,21 +114,21 @@ def Sens_m_sample(poly, dist, samples, rule="random"):
 
     generator = Saltelli(dist, samples, poly, rule=rule)
 
-    zeros = [0]*dim
-    ones = [1]*dim
-    index = [0]*dim
+    zeros = [0] * dim
+    ones = [1] * dim
+    index = [0] * dim
 
     variance = numpy.var(generator[zeros], -1)
 
     matrix_0 = generator[zeros]
     matrix_1 = generator[ones]
-    mean = .5*(numpy.mean(matrix_1) + numpy.mean(matrix_0))
+    mean = 0.5 * (numpy.mean(matrix_1) + numpy.mean(matrix_0))
     matrix_0 -= mean
     matrix_1 -= mean
 
     out = [
-        numpy.mean(matrix_1*((generator[index]-mean)-matrix_0), -1) /
-        numpy.where(variance, variance, 1)
+        numpy.mean(matrix_1 * ((generator[index] - mean) - matrix_0), -1)
+        / numpy.where(variance, variance, 1)
         for index in numpy.eye(dim, dtype=bool)
     ]
 
@@ -172,15 +171,15 @@ def Sens_m2_sample(poly, dist, samples, rule="random"):
 
     generator = Saltelli(dist, samples, poly, rule=rule)
 
-    zeros = [0]*dim
-    ones = [1]*dim
-    index = [0]*dim
+    zeros = [0] * dim
+    ones = [1] * dim
+    index = [0] * dim
 
     variance = numpy.var(generator[zeros], -1)
 
     matrix_0 = generator[zeros]
     matrix_1 = generator[ones]
-    mean = .5*(numpy.mean(matrix_1) + numpy.mean(matrix_0))
+    mean = 0.5 * (numpy.mean(matrix_1) + numpy.mean(matrix_0))
 
     matrix_0 -= mean
     matrix_1 -= mean
@@ -188,25 +187,31 @@ def Sens_m2_sample(poly, dist, samples, rule="random"):
     for dim1 in range(dim):
 
         index[dim1] = 1
-        matrix = generator[index]-mean
-        vals = numpy.mean(
-            matrix_1*(matrix-matrix_0),
-            -1,
-        ) / numpy.where(variance, variance, 1)
+        matrix = generator[index] - mean
+        vals = (
+            numpy.mean(
+                matrix_1 * (matrix - matrix_0),
+                -1,
+            )
+            / numpy.where(variance, variance, 1)
+        )
         if not dim1:
-            out = numpy.empty((dim, dim)+vals.shape)
+            out = numpy.empty((dim, dim) + vals.shape)
         out[dim1, dim1] = vals
 
-        for dim2 in range(dim1+1, dim):
+        for dim2 in range(dim1 + 1, dim):
 
             index[dim2] = 1
 
-            matrix = generator[index]-mean
+            matrix = generator[index] - mean
 
-            out[dim1, dim2] = out[dim2, dim1] = numpy.mean(
-                matrix_1*(matrix-matrix_0),
-                -1,
-            ) / numpy.where(variance, variance, 1)
+            out[dim1, dim2] = out[dim2, dim1] = (
+                numpy.mean(
+                    matrix_1 * (matrix - matrix_0),
+                    -1,
+                )
+                / numpy.where(variance, variance, 1)
+            )
 
             index[dim2] = 0
 
@@ -247,10 +252,16 @@ def Sens_t_sample(poly, dist, samples, rule="random"):
     generator = Saltelli(dist, samples, poly, rule=rule)
 
     dim = len(dist)
-    zeros = [0]*dim
+    zeros = [0] * dim
     variance = numpy.var(generator[zeros], -1)
-    return numpy.array([
-        1-numpy.mean((generator[~index]-generator[zeros])**2, -1,) /
-        (2*numpy.where(variance, variance, 1))
-        for index in numpy.eye(dim, dtype=bool)
-    ])
+    return numpy.array(
+        [
+            1
+            - numpy.mean(
+                (generator[~index] - generator[zeros]) ** 2,
+                -1,
+            )
+            / (2 * numpy.where(variance, variance, 1))
+            for index in numpy.eye(dim, dtype=bool)
+        ]
+    )

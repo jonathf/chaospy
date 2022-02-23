@@ -12,19 +12,25 @@ class nakagami(SimpleDistribution):
         super(nakagami, self).__init__(dict(nu=nu))
 
     def _pdf(self, x, nu):
-        return 2*nu**nu/special.gamma(nu)*(x**(2*nu-1.0))*numpy.exp(-nu*x*x)
+        return (
+            2
+            * nu ** nu
+            / special.gamma(nu)
+            * (x ** (2 * nu - 1.0))
+            * numpy.exp(-nu * x * x)
+        )
 
     def _cdf(self, x, nu):
-        return special.gammainc(nu,nu*x*x)
+        return special.gammainc(nu, nu * x * x)
 
     def _ppf(self, q, nu):
-        return numpy.sqrt(1.0/nu*special.gammaincinv(nu, q))
+        return numpy.sqrt(1.0 / nu * special.gammaincinv(nu, q))
 
     def _lower(self, nu):
-        return 0.
+        return 0.0
 
     def _upper(self, nu):
-        return numpy.sqrt(1.0/nu*special.gammaincinv(nu, 1-1e-16))
+        return numpy.sqrt(1.0 / nu * special.gammaincinv(nu, 1 - 1e-16))
 
 
 class Nakagami(ShiftScaleDistribution):

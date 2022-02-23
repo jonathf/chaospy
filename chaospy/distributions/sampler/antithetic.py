@@ -20,18 +20,19 @@ def create_antithetic_variates(samples, axes=()):
         equivalent to ``numpy.vstack([samples, 1-samples])`` in one dimensions.
     """
     samples = numpy.asfarray(samples)
-    assert numpy.all(samples <= 1) and numpy.all(samples >= 0), (
-        "all samples assumed on interval [0, 1].")
+    assert numpy.all(samples <= 1) and numpy.all(
+        samples >= 0
+    ), "all samples assumed on interval [0, 1]."
     if len(samples.shape) == 1:
         samples = samples.reshape(1, -1)
-    inverse_samples = 1-samples
+    inverse_samples = 1 - samples
     dims = len(samples)
 
     if not len(axes):
         axes = (True,)
     axes = numpy.asarray(axes, dtype=bool).flatten()
 
-    indices = {tuple(axes*idx) for idx in numpy.ndindex((2,)*dims)}
+    indices = {tuple(axes * idx) for idx in numpy.ndindex((2,) * dims)}
     indices = sorted(indices, reverse=True)
     indices = sorted(indices, key=lambda idx: sum(idx))
     out = [numpy.where(idx, inverse_samples.T, samples.T).T for idx in indices]

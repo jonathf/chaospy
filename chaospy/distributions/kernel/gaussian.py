@@ -57,7 +57,9 @@ class GaussianKDE(KernelDensityBaseclass):
     @staticmethod
     def _kernel(z_loc):
         """The underlying density kernel."""
-        return numpy.prod(numpy.e**(-z_loc**2/2.)/numpy.sqrt(2*numpy.pi), axis=-1)
+        return numpy.prod(
+            numpy.e ** (-(z_loc ** 2) / 2.0) / numpy.sqrt(2 * numpy.pi), axis=-1
+        )
 
     @staticmethod
     def _ikernel(z_loc):
@@ -67,28 +69,29 @@ class GaussianKDE(KernelDensityBaseclass):
     def _mom(self, k_loc, cache):
         """Raw statistical moments."""
         length = self.samples.shape[-1]
-        h_mat = numpy.broadcast_to(
-            self.h_mat, (length,)+self.h_mat.shape[1:])
-        out = numpy.array([
-            MvNormal._mom(
-                self,
-                k_loc,
-                mean=self.samples[:, idx],
-                sigma=h_mat[idx],
-                cache={},
-            )
-            for idx in range(length)
-        ])
-        return numpy.sum(out*self.weights)
+        h_mat = numpy.broadcast_to(self.h_mat, (length,) + self.h_mat.shape[1:])
+        out = numpy.array(
+            [
+                MvNormal._mom(
+                    self,
+                    k_loc,
+                    mean=self.samples[:, idx],
+                    sigma=h_mat[idx],
+                    cache={},
+                )
+                for idx in range(length)
+            ]
+        )
+        return numpy.sum(out * self.weights)
 
     def _lower(self, idx, dim, cache):
         """Lower bounds."""
         del dim
         del cache
-        return (self.samples[idx]-10*numpy.sqrt(self.h_mat[:, idx, idx]).T).min(-1)
+        return (self.samples[idx] - 10 * numpy.sqrt(self.h_mat[:, idx, idx]).T).min(-1)
 
     def _upper(self, idx, dim, cache):
         """Upper bounds."""
         del dim
         del cache
-        return (self.samples[idx]+10*numpy.sqrt(self.h_mat[:, idx, idx]).T).max(-1)
+        return (self.samples[idx] + 10 * numpy.sqrt(self.h_mat[:, idx, idx]).T).max(-1)

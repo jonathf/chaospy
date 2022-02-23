@@ -11,21 +11,21 @@ class exponential_weibull(SimpleDistribution):
         super(exponential_weibull, self).__init__(dict(a=a, c=c))
 
     def _pdf(self, x, a, c):
-        exc = numpy.exp(-x**c)
-        return a*c*(1-exc)**(a-1)*exc*x**(c-1)
+        exc = numpy.exp(-(x ** c))
+        return a * c * (1 - exc) ** (a - 1) * exc * x ** (c - 1)
 
     def _cdf(self, x, a, c):
-        exm1c = -numpy.expm1(-x**c)
-        return (exm1c)**a
+        exm1c = -numpy.expm1(-(x ** c))
+        return (exm1c) ** a
 
     def _ppf(self, q, a, c):
-        return (-numpy.log1p(-q**(1./a)))**(1./c)
+        return (-numpy.log1p(-(q ** (1.0 / a)))) ** (1.0 / c)
 
     def _lower(self, a, c):
-        return 0.
+        return 0.0
 
     def _upper(self, a, c):
-        return (-numpy.log1p(-(1-1e-15)**(1./a)))**(1./c)
+        return (-numpy.log1p(-((1 - 1e-15) ** (1.0 / a)))) ** (1.0 / c)
 
 
 class ExponentialWeibull(ShiftScaleDistribution):
@@ -60,6 +60,7 @@ class ExponentialWeibull(ShiftScaleDistribution):
         array([1.182, 0.745, 1.544, 1.058])
 
     """
+
     def __init__(self, alpha=1, kappa=1, scale=1, shift=0):
         super(ExponentialWeibull, self).__init__(
             dist=exponential_weibull(alpha, kappa),

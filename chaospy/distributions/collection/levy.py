@@ -12,22 +12,22 @@ class levy(SimpleDistribution):
         super(levy, self).__init__()
 
     def _pdf(self, x):
-        out = 1/numpy.sqrt(2*numpy.pi*x)/x*numpy.exp(-1/(2*x))
+        out = 1 / numpy.sqrt(2 * numpy.pi * x) / x * numpy.exp(-1 / (2 * x))
         out[x == 0] = 0
         return out
 
     def _cdf(self, x):
-        return 2*(1-special.ndtr(1/numpy.sqrt(x)))
+        return 2 * (1 - special.ndtr(1 / numpy.sqrt(x)))
 
     def _ppf(self, q):
-        val = special.ndtri(1-q/2.0)
-        return 1.0/(val*val)
+        val = special.ndtri(1 - q / 2.0)
+        return 1.0 / (val * val)
 
     def _upper(self):
         return 1e12
 
     def _lower(self):
-        return 0.
+        return 0.0
 
 
 class Levy(ShiftScaleDistribution):

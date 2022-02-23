@@ -12,22 +12,27 @@ class chi(SimpleDistribution):
         super(chi, self).__init__(dict(df=df))
 
     def _pdf(self, x, df):
-        return x**(df-1)*numpy.exp(-x*x*.5)/2**(df*.5-1)/special.gamma(df*.5)
+        return (
+            x ** (df - 1)
+            * numpy.exp(-x * x * 0.5)
+            / 2 ** (df * 0.5 - 1)
+            / special.gamma(df * 0.5)
+        )
 
     def _cdf(self, x, df):
-        return special.gammainc(df*0.5,0.5*x*x)
+        return special.gammainc(df * 0.5, 0.5 * x * x)
 
     def _ppf(self, q, df):
-        return numpy.sqrt(2*special.gammaincinv(df*0.5, q))
+        return numpy.sqrt(2 * special.gammaincinv(df * 0.5, q))
 
     def _lower(self, df):
-        return numpy.sqrt(2*special.gammaincinv(df*0.5, 1e-12))
+        return numpy.sqrt(2 * special.gammaincinv(df * 0.5, 1e-12))
 
     def _upper(self, df):
-        return numpy.sqrt(2*special.gammaincinv(df*0.5, 1-1e-12))
+        return numpy.sqrt(2 * special.gammaincinv(df * 0.5, 1 - 1e-12))
 
     def _mom(self, k, df):
-        return 2**(.5*k)*special.gamma(.5*(df+k))/special.gamma(.5*df)
+        return 2 ** (0.5 * k) * special.gamma(0.5 * (df + k)) / special.gamma(0.5 * df)
 
 
 class Chi(ShiftScaleDistribution):
@@ -143,6 +148,7 @@ class Rayleigh(ShiftScaleDistribution):
         1.253
 
     """
+
     def __init__(self, scale=1, shift=0):
         super(Rayleigh, self).__init__(
             dist=chi(2),

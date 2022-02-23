@@ -33,7 +33,8 @@ class CopulaDistribution(Distribution):
 
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(CopulaDistribution, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+            idx, cache, assert_numerical=assert_numerical
+        )
         if idx is None:
             del parameters["idx"]
         return parameters
@@ -56,5 +57,7 @@ class CopulaDistribution(Distribution):
 
     def _pdf(self, xloc, idx, dist, trans, cache):
         density = dist._get_pdf(xloc, idx, cache=cache.copy())
-        return trans._get_pdf(
-            dist._get_fwd(xloc, idx, cache=cache), idx, cache=cache)*density
+        return (
+            trans._get_pdf(dist._get_fwd(xloc, idx, cache=cache), idx, cache=cache)
+            * density
+        )

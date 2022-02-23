@@ -12,16 +12,16 @@ class truncexpon(SimpleDistribution):
         super(truncexpon, self).__init__(dict(b=b))
 
     def _pdf(self, x, b):
-        return numpy.exp(-x)/(1-numpy.exp(-b))
+        return numpy.exp(-x) / (1 - numpy.exp(-b))
 
     def _cdf(self, x, b):
-        return (1.0-numpy.exp(-x))/(1-numpy.exp(-b))
+        return (1.0 - numpy.exp(-x)) / (1 - numpy.exp(-b))
 
     def _ppf(self, q, b):
-        return -numpy.log(1-q+q*numpy.exp(-b))
+        return -numpy.log(1 - q + q * numpy.exp(-b))
 
     def _lower(self, b):
-        return 0.
+        return 0.0
 
     def _upper(self, b):
         return b
@@ -60,7 +60,7 @@ class TruncExponential(ShiftScaleDistribution):
 
     def __init__(self, upper=1, scale=1, shift=0):
         super(TruncExponential, self).__init__(
-            dist=truncexpon((upper-shift)*1./scale),
+            dist=truncexpon((upper - shift) * 1.0 / scale),
             scale=scale,
             shift=shift,
             repr_args=[upper],

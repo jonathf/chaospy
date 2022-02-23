@@ -21,7 +21,7 @@ class binomial(SimpleDistribution):
 
     def _cdf(self, x_data, size, prob):
         size = numpy.round(size)
-        x_data = x_data-0.5
+        x_data = x_data - 0.5
 
         floor = numpy.zeros(x_data.shape)
         indices = x_data >= 0
@@ -32,24 +32,27 @@ class binomial(SimpleDistribution):
         ceil[indices] = special.bdtr(numpy.ceil(x_data[indices]), size, prob)
         ceil[numpy.isnan(ceil)] = 0  # left edge case
 
-        offset = x_data-numpy.floor(x_data)
-        out = floor*(1-offset) + ceil*offset
+        offset = x_data - numpy.floor(x_data)
+        out = floor * (1 - offset) + ceil * offset
         return out
 
     def _pdf(self, x_data, size, prob):
         x_data = numpy.round(x_data)
-        return special.comb(size, x_data)*prob**x_data*(1-prob)**(size-x_data)
+        return (
+            special.comb(size, x_data) * prob ** x_data * (1 - prob) ** (size - x_data)
+        )
 
     def _lower(self, size, prob):
-        return -0.5+1e-10
+        return -0.5 + 1e-10
 
     def _upper(self, size, prob):
-        return numpy.round(size)+0.5-1e-10
+        return numpy.round(size) + 0.5 - 1e-10
 
     def _mom(self, k_data, size, prob):
-        x_data = numpy.arange(int(size)+1, dtype=int)
-        return numpy.sum(x_data**k_data*self._pdf(
-            x_data, size=numpy.floor(size), prob=prob))
+        x_data = numpy.arange(int(size) + 1, dtype=int)
+        return numpy.sum(
+            x_data ** k_data * self._pdf(x_data, size=numpy.floor(size), prob=prob)
+        )
 
 
 class Binomial(J):

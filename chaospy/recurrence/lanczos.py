@@ -5,12 +5,12 @@ import chaospy
 
 
 def lanczos(
-        order,
-        dist,
-        rule="clenshaw_curtis",
-        tolerance=1e-12,
-        scaling=3,
-        n_max=1e4,
+    order,
+    dist,
+    rule="clenshaw_curtis",
+    tolerance=1e-12,
+    scaling=3,
+    n_max=1e4,
 ):
     """
     Discretized Lanczos' method.
@@ -59,53 +59,63 @@ def lanczos(
     logger = logging.getLogger(__name__)
     if len(dist) > 1:
         assert not dist.stochastic_dependent
-        coeffs = zip(*[lanczos(
-                order,
-                dist_,
-                rule=rule,
-                tolerance=tolerance,
-                scaling=scaling)
-        for dist_ in dist])
-        coeffs = numpy.vstack(list(coeffs)).reshape((2, len(dist), order+1))
+        coeffs = zip(
+            *[
+                lanczos(order, dist_, rule=rule, tolerance=tolerance, scaling=scaling)
+                for dist_ in dist
+            ]
+        )
+        coeffs = numpy.vstack(list(coeffs)).reshape((2, len(dist), order + 1))
         return coeffs
 
-    order_ = (2*order-1.)/scaling
+    order_ = (2 * order - 1.0) / scaling
     beta = beta_old = numpy.nan
-    coeffs = numpy.ones((2, order+1))
+    coeffs = numpy.ones((2, order + 1))
 
-    while not numpy.all(numpy.abs(beta-beta_old) < tolerance):
+    while not numpy.all(numpy.abs(beta - beta_old) < tolerance):
 
-        order_ = max(order_*scaling, order_+1)
+        order_ = max(order_ * scaling, order_ + 1)
         if order_ > n_max:
-            logger.warning("number of nodes exceeded; stopping with errors:\n%s",
-                           ", ".join([numpy.format_float_scientific(val, 1)
-                                      for val in numpy.abs(beta-beta_old)/beta]))
+            logger.warning(
+                "number of nodes exceeded; stopping with errors:\n%s",
+                ", ".join(
+                    [
+                        numpy.format_float_scientific(val, 1)
+                        for val in numpy.abs(beta - beta_old) / beta
+                    ]
+                ),
+            )
             break
 
         [abscissas], weights = chaospy.generate_quadrature(
-            int(order_), dist, rule=rule, segments=0)
-        alpha = abscissas[:order+1].copy()
-        beta, beta_old = numpy.eye(order+1)[0]*weights[0], beta
+            int(order_), dist, rule=rule, segments=0
+        )
+        alpha = abscissas[: order + 1].copy()
+        beta, beta_old = numpy.eye(order + 1)[0] * weights[0], beta
 
         for idx in range(1, len(weights)):
 
             gamma = 1
             increment_new = 0
 
-            for idy in range(min(idx, order+1)):
+            for idy in range(min(idx, order + 1)):
 
                 increment = increment_new
-                beta_new = gamma*(beta[idy]+weights[idx])
-                sigma = 1-gamma
+                beta_new = gamma * (beta[idy] + weights[idx])
+                sigma = 1 - gamma
                 gamma = numpy.where(
-                    beta[idy] <= -weights[idx], 1,
-                    beta[idy]/(beta[idy]+weights[idx]))
-                increment_new = (
-                    (1-gamma)*(alpha[idy]-abscissas[idx])-gamma*increment)
+                    beta[idy] <= -weights[idx],
+                    1,
+                    beta[idy] / (beta[idy] + weights[idx]),
+                )
+                increment_new = (1 - gamma) * (
+                    alpha[idy] - abscissas[idx]
+                ) - gamma * increment
                 weights[idx] = numpy.where(
-                    gamma >= 1, sigma*beta[idy], increment_new**2/(1-gamma))
+                    gamma >= 1, sigma * beta[idy], increment_new ** 2 / (1 - gamma)
+                )
 
-                alpha[idy] -= increment_new-increment
+                alpha[idy] -= increment_new - increment
                 beta[idy] = beta_new
 
     return numpy.asfarray([alpha.ravel(), beta.ravel()])

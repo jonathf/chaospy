@@ -9,5 +9,15 @@ from .logarithm import Log, Log10, Logn
 from .joint import J
 from .iid import Iid
 
-__all__ = ("Add", "Multiply", "Negative", "Power", "Trunc",
-           "Log", "Log10", "Logn", "J", "Iid")
+__all__ = (
+    "Add",
+    "Multiply",
+    "Negative",
+    "Power",
+    "Trunc",
+    "Log",
+    "Log10",
+    "Logn",
+    "J",
+    "Iid",
+)

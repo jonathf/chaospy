@@ -18,14 +18,15 @@ __all__ = ["generate_expansion"]
 
 
 def expansion_deprecation_warning(name, func):
-
     @wraps(func)
     def wrapped(*args, **kwargs):
         """Function wrapper adds warnings."""
         logger = logging.getLogger(__name__)
-        logger.warning("chaospy.%s name is to be deprecated; "
-                       "Use chaospy.expansion.%s instead",
-                       name, func.__name__)
+        logger.warning(
+            "chaospy.%s name is to be deprecated; " "Use chaospy.expansion.%s instead",
+            name,
+            func.__name__,
+        )
         return func(*args, **kwargs)
 
     globals()[name] = wrapped

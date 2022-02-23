@@ -41,7 +41,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     shape = poly.shape
     poly = poly.ravel()
 
-    q = numpy.asarray(q).ravel()/100.
+    q = numpy.asarray(q).ravel() / 100.0
     dim = len(dist)
 
     # Interior
@@ -49,7 +49,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
     poly1 = poly(*Z)
 
     # Min/max
-    ext = numpy.mgrid[(slice(0, 2, 1), )*dim].reshape(dim, 2**dim).T
+    ext = numpy.mgrid[(slice(0, 2, 1),) * dim].reshape(dim, 2 ** dim).T
     ext = numpy.where(ext, dist.lower, dist.upper).T
     poly2 = poly(*ext)
     poly2 = numpy.array([_ for _ in poly2.T if not numpy.any(numpy.isnan(_))]).T
@@ -59,7 +59,7 @@ def Perc(poly, q, dist, sample=10000, **kws):
         poly1 = numpy.concatenate([poly1, poly2], -1)
     samples = poly1.shape[-1]
     poly1.sort()
-    out = poly1.T[numpy.asarray(q*(samples-1), dtype=int)]
+    out = poly1.T[numpy.asarray(q * (samples - 1), dtype=int)]
     out = out.reshape(q.shape + shape)
 
     return out

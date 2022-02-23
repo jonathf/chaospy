@@ -12,19 +12,19 @@ class pareto1(SimpleDistribution):
         super(pareto1, self).__init__(dict(b=b))
 
     def _pdf(self, x, b):
-        return b*x**(-b-1)
+        return b * x ** (-b - 1)
 
     def _cdf(self, x, b):
-        return 1-x**-b
+        return 1 - x ** -b
 
     def _ppf(self, q, b):
-        return pow(1-q, -1./b)
+        return pow(1 - q, -1.0 / b)
 
     def _lower(self, b):
-        return 1.
+        return 1.0
 
     def _upper(self, b):
-        return pow(1e12, 1./b)
+        return pow(1e12, 1.0 / b)
 
 
 class Pareto1(ShiftScaleDistribution):

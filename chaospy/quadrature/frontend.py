@@ -7,23 +7,40 @@ from .utils import combine
 from .sparse_grid import sparse_grid
 
 SHORT_NAME_TABLE = {
-    "c": "clenshaw_curtis", "clenshaw_curtis": "clenshaw_curtis",
-    "f1": "fejer_1", "fejer_1": "fejer_1",
-    "f2": "fejer_2", "fejer_2": "fejer_2",
-    "g": "gaussian", "gaussian": "gaussian",
-    "e": "legendre", "legendre": "legendre",
-    "l": "lobatto", "lobatto": "lobatto",
-    "k": "kronrod", "kronrod": "kronrod",
-    "p": "patterson", "patterson": "patterson",
-    "r": "radau", "radau": "radau",
-    "j": "leja", "leja": "leja",
-    "n": "newton_cotes", "newton_cotes": "newton_cotes",
-    "d": "discrete", "discrete": "discrete",
-    "i": "grid", "grid": "grid",
-    "z16": "genz_keister_16", "genz_keister_16": "genz_keister_16",
-    "z18": "genz_keister_18", "genz_keister_18": "genz_keister_18",
-    "z22": "genz_keister_22", "genz_keister_22": "genz_keister_22",
-    "z24": "genz_keister_24", "genz_keister_24": "genz_keister_24",
+    "c": "clenshaw_curtis",
+    "clenshaw_curtis": "clenshaw_curtis",
+    "f1": "fejer_1",
+    "fejer_1": "fejer_1",
+    "f2": "fejer_2",
+    "fejer_2": "fejer_2",
+    "g": "gaussian",
+    "gaussian": "gaussian",
+    "e": "legendre",
+    "legendre": "legendre",
+    "l": "lobatto",
+    "lobatto": "lobatto",
+    "k": "kronrod",
+    "kronrod": "kronrod",
+    "p": "patterson",
+    "patterson": "patterson",
+    "r": "radau",
+    "radau": "radau",
+    "j": "leja",
+    "leja": "leja",
+    "n": "newton_cotes",
+    "newton_cotes": "newton_cotes",
+    "d": "discrete",
+    "discrete": "discrete",
+    "i": "grid",
+    "grid": "grid",
+    "z16": "genz_keister_16",
+    "genz_keister_16": "genz_keister_16",
+    "z18": "genz_keister_18",
+    "genz_keister_18": "genz_keister_18",
+    "z22": "genz_keister_22",
+    "genz_keister_22": "genz_keister_22",
+    "z24": "genz_keister_24",
+    "genz_keister_24": "genz_keister_24",
 }
 DEPRECATED_SHORT_NAMES = {
     "f": "f2",
@@ -39,16 +56,16 @@ DEPRECATED_SHORT_NAMES = {
 
 
 def generate_quadrature(
-        order,
-        dist,
-        rule=None,
-        sparse=False,
-        growth=None,
-        segments=1,
-        recurrence_algorithm="stieltjes",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    rule=None,
+    sparse=False,
+    growth=None,
+    segments=1,
+    recurrence_algorithm="stieltjes",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Numerical quadrature node and weight generator.
@@ -143,12 +160,14 @@ def generate_quadrature(
             n_max=n_max,
         )
 
-    if (not isinstance(dist, chaospy.Distribution) or
-            (len(dist) == 1 or dist.stochastic_dependent)):
+    if not isinstance(dist, chaospy.Distribution) or (
+        len(dist) == 1 or dist.stochastic_dependent
+    ):
         if not isinstance(rule, str) and len(set(rule)) == 1:
             rule = rule[0]
         assert isinstance(rule, str), (
-            "dependencies require rule consistency; %s provided" % rule)
+            "dependencies require rule consistency; %s provided" % rule
+        )
         abscissas, weights = _generate_quadrature(
             order=order,
             dist=dist,
@@ -163,26 +182,27 @@ def generate_quadrature(
 
     else:
         if isinstance(rule, str):
-            rule = [rule]*len(dist)
-        assert len(rule) == len(dist), (
-            "rules and distribution length does not match.")
+            rule = [rule] * len(dist)
+        assert len(rule) == len(dist), "rules and distribution length does not match."
         assert all(isinstance(rule_, str) for rule_ in rule)
 
-        order = numpy.ones(len(dist), dtype=int)*order
-        abscissas, weights = zip(*[
-            _generate_quadrature(
-                order=order_,
-                dist=dist_,
-                rule=rule_,
-                growth=growth,
-                segments=segments,
-                recurrence_algorithm=recurrence_algorithm,
-                tolerance=tolerance,
-                scaling=scaling,
-                n_max=n_max,
-            )
-            for order_, dist_, rule_ in zip(order, dist, rule)
-        ])
+        order = numpy.ones(len(dist), dtype=int) * order
+        abscissas, weights = zip(
+            *[
+                _generate_quadrature(
+                    order=order_,
+                    dist=dist_,
+                    rule=rule_,
+                    growth=growth,
+                    segments=segments,
+                    recurrence_algorithm=recurrence_algorithm,
+                    tolerance=tolerance,
+                    scaling=scaling,
+                    n_max=n_max,
+                )
+                for order_, dist_, rule_ in zip(order, dist, rule)
+            ]
+        )
         abscissas = combine([abscissa.T for abscissa in abscissas]).T
         weights = numpy.prod(combine([weight.T for weight in weights]), -1)
 
@@ -209,31 +229,50 @@ def _generate_quadrature(order, dist, rule, **kwargs):
         if isinstance(dist, chaospy.Add):
             dist = dist._parameters[args[1]]
             abscissas, weights = _generate_quadrature(
-                order=order, dist=dist, rule=rule, **kwargs)
-            abscissas = (abscissas.T+const.T).T
+                order=order, dist=dist, rule=rule, **kwargs
+            )
+            abscissas = (abscissas.T + const.T).T
             return abscissas, weights
 
         elif isinstance(dist, chaospy.Multiply):
             dist = dist._parameters[args[1]]
             abscissas, weights = _generate_quadrature(
-                order=order, dist=dist, rule=rule, **kwargs)
-            abscissas = (abscissas.T*const.T).T
+                order=order, dist=dist, rule=rule, **kwargs
+            )
+            abscissas = (abscissas.T * const.T).T
             return abscissas, weights
 
     rule = rule.lower()
     if rule in DEPRECATED_SHORT_NAMES:
-        logger.warning("quadrature rule '%s' is renamed to '%s'; "
-                       "error will be raised in the future",
-                       rule, DEPRECATED_SHORT_NAMES[rule])
+        logger.warning(
+            "quadrature rule '%s' is renamed to '%s'; "
+            "error will be raised in the future",
+            rule,
+            DEPRECATED_SHORT_NAMES[rule],
+        )
         rule = DEPRECATED_SHORT_NAMES[rule]
     rule = SHORT_NAME_TABLE[rule]
 
     parameters = {}
 
-    if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "discrete", "grid"):
+    if rule in (
+        "clenshaw_curtis",
+        "fejer_1",
+        "fejer_2",
+        "newton_cotes",
+        "discrete",
+        "grid",
+    ):
         parameters["growth"] = kwargs["growth"]
 
-    if rule in ("clenshaw_curtis", "fejer_1", "fejer_2", "newton_cotes", "grid", "legendre"):
+    if rule in (
+        "clenshaw_curtis",
+        "fejer_1",
+        "fejer_2",
+        "newton_cotes",
+        "grid",
+        "legendre",
+    ):
         parameters["segments"] = kwargs["segments"]
 
     if rule in ("gaussian", "kronrod", "radau", "lobatto"):

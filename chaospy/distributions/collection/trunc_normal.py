@@ -9,12 +9,15 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class trunc_normal(SimpleDistribution):
-
     def __init__(self, lower=-1, upper=1, mu=0, sigma=1):
         super(trunc_normal, self).__init__(
             parameters=dict(a=lower, b=upper, mu=mu, sigma=sigma),
-            repr_args=["lower=%s" % lower, "upper=%s" % upper,
-                       "mu=%s" % mu, "sigma=%s" % sigma],
+            repr_args=[
+                "lower=%s" % lower,
+                "upper=%s" % upper,
+                "mu=%s" % mu,
+                "sigma=%s" % sigma,
+            ],
         )
 
     def _pdf(self, x, a, b, mu, sigma):
@@ -28,12 +31,12 @@ class trunc_normal(SimpleDistribution):
 
     def _lower(self, a, b, mu, sigma):
         del b
-        lower = normal()._lower()*sigma+mu
+        lower = normal()._lower() * sigma + mu
         return numpy.where(a < lower, lower, a)
 
     def _upper(self, a, b, mu, sigma):
         del a
-        upper = normal()._upper()*sigma+mu
+        upper = normal()._upper() * sigma + mu
         return numpy.where(b > upper, upper, b)
 
     def _mom(self, n, a, b, mu, sigma):
@@ -84,7 +87,8 @@ class TruncNormal(ShiftScaleDistribution):
 
     def __init__(self, lower=-numpy.inf, upper=numpy.inf, mu=0, sigma=1):
         super(TruncNormal, self).__init__(
-            trunc_normal(lower=lower, upper=upper, mu=mu, sigma=sigma))
+            trunc_normal(lower=lower, upper=upper, mu=mu, sigma=sigma)
+        )
         self._repr_args = chaospy.format_repr_kwargs(lower=(lower, -numpy.inf))
         self._repr_args += chaospy.format_repr_kwargs(upper=(upper, numpy.inf))
         self._repr_args += chaospy.format_repr_kwargs(mu=(mu, 0))

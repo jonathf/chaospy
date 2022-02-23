@@ -6,8 +6,16 @@ import numpoly
 import chaospy
 
 
-def gram_schmidt(order, dist, normed=False, graded=True, reverse=True,
-            retall=False, cross_truncation=1., **kws):
+def gram_schmidt(
+    order,
+    dist,
+    normed=False,
+    graded=True,
+    reverse=True,
+    retall=False,
+    cross_truncation=1.0,
+    **kws
+):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
 
@@ -57,7 +65,7 @@ def gram_schmidt(order, dist, normed=False, graded=True, reverse=True,
     if isinstance(order, int):
         order = numpoly.monomial(
             0,
-            order+1,
+            order + 1,
             dimensions=numpoly.variable(2).names,
             graded=graded,
             reverse=reverse,
@@ -66,21 +74,21 @@ def gram_schmidt(order, dist, normed=False, graded=True, reverse=True,
     basis = list(order)
     polynomials = [basis[0]]
 
-    norms = [1.]
+    norms = [1.0]
     for idx in range(1, len(basis)):
 
         # orthogonalize polynomial:
         for idy in range(idx):
-            orth = chaospy.E(basis[idx]*polynomials[idy], dist, **kws)
-            basis[idx] = basis[idx]-polynomials[idy]*orth/norms[idy]
+            orth = chaospy.E(basis[idx] * polynomials[idy], dist, **kws)
+            basis[idx] = basis[idx] - polynomials[idy] * orth / norms[idy]
 
-        norms_ = chaospy.E(basis[idx]**2, dist, **kws)
+        norms_ = chaospy.E(basis[idx] ** 2, dist, **kws)
         if norms_ <= 0:  # pragma: no cover
             logger.warning("Warning: Polynomial cutoff at term %d", idx)
             break
 
-        norms.append(1. if normed else norms_)
-        basis[idx] = basis[idx]/numpy.sqrt(norms_) if normed else basis[idx]
+        norms.append(1.0 if normed else norms_)
+        basis[idx] = basis[idx] / numpy.sqrt(norms_) if normed else basis[idx]
         polynomials.append(basis[idx])
 
     polynomials = chaospy.polynomial(polynomials).flatten()

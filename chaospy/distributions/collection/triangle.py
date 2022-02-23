@@ -5,48 +5,55 @@ from scipy import special, misc
 from ..baseclass import SimpleDistribution, LowerUpperDistribution
 from .beta import beta_
 
+
 def _get_triang_param_lb_and_ub(name, value):
     try:
         lb = ub = float(value)
     except:
-        if hasattr(value, 'lower') and hasattr(value, 'upper'):
+        if hasattr(value, "lower") and hasattr(value, "upper"):
             lb = value.lower.min()
             ub = value.upper.max()
         else:
             raise ValueError(
                 "%s must be either a number or a distribution " % name
-              + "with lower and upper bounds; not a '%s' " % type(value).__name__
-              + "object"
+                + "with lower and upper bounds; not a '%s' " % type(value).__name__
+                + "object"
             )
     return lb, ub
+
 
 class triangle(SimpleDistribution):
     """Triangle probability distribution."""
 
-    def __init__(self, a=.5):
+    def __init__(self, a=0.5):
         # assert numpy.all(a>=0) and numpy.all(a<=1)
         super(triangle, self).__init__(dict(a=a))
 
     def _pdf(self, xloc, a):
-        return numpy.where(xloc < a, 2*xloc/a, 2*(1-xloc)/(1-a))
+        return numpy.where(xloc < a, 2 * xloc / a, 2 * (1 - xloc) / (1 - a))
 
     def _cdf(self, xloc, a):
-        return numpy.where(xloc < a, xloc**2/(a+(a == 0)),
-                (2*xloc-xloc*xloc-a)/(1-a+(a == 1)))
+        return numpy.where(
+            xloc < a,
+            xloc ** 2 / (a + (a == 0)),
+            (2 * xloc - xloc * xloc - a) / (1 - a + (a == 1)),
+        )
 
     def _ppf(self, qloc, a):
-        return numpy.where(qloc<a, numpy.sqrt(qloc*a), 1-numpy.sqrt(1-a-qloc*(1-a)))
+        return numpy.where(
+            qloc < a, numpy.sqrt(qloc * a), 1 - numpy.sqrt(1 - a - qloc * (1 - a))
+        )
 
     def _mom(self, k, a):
-        a_ = a*(a!=1)
-        out = 2*(1.-a_**(k+1))/((k+1)*(k+2)*(1-a_))
-        return numpy.where(a==1, 2./(k+2), out)
+        a_ = a * (a != 1)
+        out = 2 * (1.0 - a_ ** (k + 1)) / ((k + 1) * (k + 2) * (1 - a_))
+        return numpy.where(a == 1, 2.0 / (k + 2), out)
 
     def _lower(self, a):
-        return 0.
+        return 0.0
 
     def _upper(self, a):
-        return 1.
+        return 1.0
 
 
 class Triangle(LowerUpperDistribution):
@@ -89,14 +96,12 @@ class Triangle(LowerUpperDistribution):
 
     def __init__(self, lower=-1, midpoint=0, upper=1):
         repr_args = [lower, midpoint, upper]
-        _, lower_ub = _get_triang_param_lb_and_ub('lower', lower)
-        mid_lb, mid_ub = _get_triang_param_lb_and_ub('midpoint', midpoint)
-        upper_lb, _ = _get_triang_param_lb_and_ub('upper', upper)
-        if not (lower_ub <= mid_lb  and mid_ub <= upper_lb):
-            raise ValueError(
-                "condition not satisfied: `lower <= midpoint <= upper`"
-            )
-        midpoint = (midpoint-lower)*1./(upper-lower)
+        _, lower_ub = _get_triang_param_lb_and_ub("lower", lower)
+        mid_lb, mid_ub = _get_triang_param_lb_and_ub("midpoint", midpoint)
+        upper_lb, _ = _get_triang_param_lb_and_ub("upper", upper)
+        if not (lower_ub <= mid_lb and mid_ub <= upper_lb):
+            raise ValueError("condition not satisfied: `lower <= midpoint <= upper`")
+        midpoint = (midpoint - lower) * 1.0 / (upper - lower)
         super(Triangle, self).__init__(
             dist=triangle(midpoint),
             lower=lower,

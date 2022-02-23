@@ -77,10 +77,12 @@ def hypercube_quadrature(
     quad_func = partial(univariate_to_multivariate, quad_func=quad_func)
     if isinstance(domain, chaospy.Distribution):
         quad_func = partial(
-            distribution_to_domain, quad_func=quad_func, distribution=domain)
+            distribution_to_domain, quad_func=quad_func, distribution=domain
+        )
     else:
         quad_func = partial(
-            quad_func, lower=numpy.asarray(domain[0]), upper=numpy.asarray(domain[1]))
+            quad_func, lower=numpy.asarray(domain[0]), upper=numpy.asarray(domain[1])
+        )
 
     return quad_func(**kwargs)
 
@@ -166,8 +168,10 @@ def ensure_output(quad_func, **kwargs):
         (array([[0. , 0.5, 1. ]]), array([0.25, 0.25, 0.25]))
 
     """
-    kwargs = {key: (value.item() if isinstance(value, numpy.ndarray) else value)
-              for key, value in kwargs.items()}
+    kwargs = {
+        key: (value.item() if isinstance(value, numpy.ndarray) else value)
+        for key, value in kwargs.items()
+    }
     abscissas, weights = quad_func(**kwargs)
     abscissas = numpy.atleast_2d(abscissas)
     assert abscissas.ndim == 2
@@ -218,11 +222,17 @@ def univariate_to_multivariate(quad_func, **kwargs):
         (array([[0., 1.]]), array([0.33333333, 0.33333333]))
 
     """
-    sizables = {key: value for key, value in kwargs.items()
-                if isinstance(value, (int, float, numpy.ndarray))}
+    sizables = {
+        key: value
+        for key, value in kwargs.items()
+        if isinstance(value, (int, float, numpy.ndarray))
+    }
     sizables["_"] = numpy.zeros(len(kwargs.get("domain", [0])))
-    nonsizables = {key: value for key, value in kwargs.items()
-                   if not isinstance(value, (int, float, numpy.ndarray))}
+    nonsizables = {
+        key: value
+        for key, value in kwargs.items()
+        if not isinstance(value, (int, float, numpy.ndarray))
+    }
     keys = list(sizables)
     args = numpy.broadcast_arrays(*[sizables[key] for key in keys])
     assert args[0].ndim == 1
@@ -232,8 +242,7 @@ def univariate_to_multivariate(quad_func, **kwargs):
     results = []
     for idx in range(args[0].size):
         sizable = kwargs.copy()
-        sizable.update({key: value[idx].item()
-                        for key, value in sizables.items()})
+        sizable.update({key: value[idx].item() for key, value in sizables.items()})
         abscissas, weights = quad_func(**sizable)
         results.append((abscissas.ravel(), weights))
 
@@ -287,10 +296,16 @@ def distribution_to_domain(quad_func, distribution, **kwargs):
 
     # Sometimes edge samples (inside the distribution domain) falls out again from simple
     # rounding errors. Edge samples needs to be adjusted.
-    eps = 1e-14*(distribution.upper-distribution.lower)
-    abscissas_ = numpy.clip(abscissas.T, distribution.lower+eps, distribution.upper-eps).T
-    weights_ = weights*distribution.pdf(abscissas_).ravel()
-    weights = weights_*numpy.sum(weights)/(numpy.sum(weights_)*numpy.prod(upper-lower))
+    eps = 1e-14 * (distribution.upper - distribution.lower)
+    abscissas_ = numpy.clip(
+        abscissas.T, distribution.lower + eps, distribution.upper - eps
+    ).T
+    weights_ = weights * distribution.pdf(abscissas_).ravel()
+    weights = (
+        weights_
+        * numpy.sum(weights)
+        / (numpy.sum(weights_) * numpy.prod(upper - lower))
+    )
     return abscissas, weights
 
 
@@ -343,7 +358,7 @@ def split_into_segments(quad_func, order, segments, **kwargs):
         if not segments:
             segments = int(numpy.sqrt(order))
         assert segments < order, "few samples to distribute than intervals"
-        nodes = numpy.linspace(0, 1, segments+1)
+        nodes = numpy.linspace(0, 1, segments + 1)
     else:
         nodes, segments = numpy.hstack([[0], segments, [1]]), len(segments)
 
@@ -352,10 +367,10 @@ def split_into_segments(quad_func, order, segments, **kwargs):
     for idx, (lower, upper) in enumerate(zip(nodes[:-1], nodes[1:])):
 
         assert lower < upper
-        order_ = order//segments + (idx < (order%segments))
+        order_ = order // segments + (idx < (order % segments))
         abscissa, weight = quad_func(order=order_, **kwargs)
-        weight = weight*(upper-lower)
-        abscissa = (abscissa.T*(upper-lower)+lower).T
+        weight = weight * (upper - lower)
+        abscissa = (abscissa.T * (upper - lower) + lower).T
         if abscissas and numpy.allclose(abscissas[-1][:, -1], lower):
             weights[-1][-1] += weight[0]
             abscissa = abscissa[:, 1:]
@@ -404,8 +419,8 @@ def scale_quadrature(quad_func, order, lower, upper, **kwargs):
     """
     abscissas, weights = quad_func(order=order, **kwargs)
     assert numpy.all(abscissas >= 0) and numpy.all(abscissas <= 1)
-    assert numpy.sum(weights) <= 1+1e-10
+    assert numpy.sum(weights) <= 1 + 1e-10
     assert numpy.sum(weights > 0)
-    weights = weights*(upper-lower)
-    abscissas = (abscissas.T*(upper-lower)+lower).T
+    weights = weights * (upper - lower)
+    abscissas = (abscissas.T * (upper - lower) + lower).T
     return abscissas, weights

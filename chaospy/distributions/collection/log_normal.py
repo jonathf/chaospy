@@ -6,35 +6,38 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class log_normal(SimpleDistribution):
-
     def __init__(self, a=1):
         super(log_normal, self).__init__(dict(a=a))
 
     def _lower(self, a):
-        return 0.
+        return 0.0
 
     def _upper(self, a):
-        return numpy.e**(a*6.37)
+        return numpy.e ** (a * 6.37)
 
     def _pdf(self, x, a):
-        out = (numpy.e**(-numpy.log(x+(1-x)*(x<=0))**2/(2*a*a))/
-               ((x+(1-x)*(x<=0))*a*numpy.sqrt(2*numpy.pi))*(x>0))
+        out = (
+            numpy.e ** (-numpy.log(x + (1 - x) * (x <= 0)) ** 2 / (2 * a * a))
+            / ((x + (1 - x) * (x <= 0)) * a * numpy.sqrt(2 * numpy.pi))
+            * (x > 0)
+        )
         return out
 
     def _cdf(self, x, a):
-        return special.ndtr(numpy.log(x+(1-x)*(x<=0))/a)*(x>0)
+        return special.ndtr(numpy.log(x + (1 - x) * (x <= 0)) / a) * (x > 0)
 
     def _ppf(self, x, a):
-        return numpy.e**(a*special.ndtri(x))
+        return numpy.e ** (a * special.ndtri(x))
 
     def _mom(self, k, a):
-        return numpy.e**(.5*a*a*k*k)
+        return numpy.e ** (0.5 * a * a * k * k)
 
     def _ttr(self, n, a):
         """Stieltjes-Wigert."""
         return (
-            (numpy.e**(n*a*a)*(numpy.e**(a*a)+1)-1)*numpy.e**(.5*(2*n-1)*a*a),
-            (numpy.e**(n*a*a)-1)*numpy.e**((3*n-2)*a*a)
+            (numpy.e ** (n * a * a) * (numpy.e ** (a * a) + 1) - 1)
+            * numpy.e ** (0.5 * (2 * n - 1) * a * a),
+            (numpy.e ** (n * a * a) - 1) * numpy.e ** ((3 * n - 2) * a * a),
         )
 
 
@@ -78,7 +81,7 @@ class LogNormal(ShiftScaleDistribution):
     """
 
     def __init__(self, mu=0, sigma=1, shift=0, scale=1):
-        dist = ShiftScaleDistribution(dist=log_normal(sigma), scale=numpy.e**mu)
+        dist = ShiftScaleDistribution(dist=log_normal(sigma), scale=numpy.e ** mu)
         super(LogNormal, self).__init__(
             dist=dist,
             scale=scale,

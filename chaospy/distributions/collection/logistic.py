@@ -4,6 +4,7 @@ from scipy import special, misc
 
 from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
+
 class logistic(SimpleDistribution):
     """Generalized logistic type 1 distribution."""
 
@@ -11,19 +12,19 @@ class logistic(SimpleDistribution):
         super(logistic, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return numpy.e**-x/(1+numpy.e**-x)**(c+1)
+        return numpy.e ** -x / (1 + numpy.e ** -x) ** (c + 1)
 
     def _cdf(self, x, c):
-        return (1+numpy.e**-x)**-c
+        return (1 + numpy.e ** -x) ** -c
 
     def _ppf(self, q, c):
-        return -numpy.log(q**(-1./c)-1)
+        return -numpy.log(q ** (-1.0 / c) - 1)
 
     def _lower(self, c):
-        return -numpy.log(1e-12**(-1./c)-1)
+        return -numpy.log(1e-12 ** (-1.0 / c) - 1)
 
     def _upper(self, c):
-        return -numpy.log((1-1e-12)**(-1./c)-1)
+        return -numpy.log((1 - 1e-12) ** (-1.0 / c) - 1)
 
 
 class Logistic(ShiftScaleDistribution):
@@ -57,6 +58,7 @@ class Logistic(ShiftScaleDistribution):
         array([3.549, 1.864, 5.682, 2.999])
 
     """
+
     def __init__(self, skew=1, shift=0, scale=1):
         super(Logistic, self).__init__(
             dist=logistic(skew),

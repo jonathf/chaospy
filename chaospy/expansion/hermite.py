@@ -4,12 +4,12 @@ import chaospy
 
 
 def hermite(
-        order,
-        mu=0.,
-        sigma=1.,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    mu=0.0,
+    sigma=1.0,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Hermite orthogonal polynomial expansion.
@@ -48,8 +48,9 @@ def hermite(
     """
     multiplier = 2 if physicist else 1
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Normal(mu, sigma), multiplier=multiplier)
+        order, chaospy.Normal(mu, sigma), multiplier=multiplier
+    )
     if normed:
         polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials

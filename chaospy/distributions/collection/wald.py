@@ -15,33 +15,35 @@ class wald(SimpleDistribution):
     def _pdf(self, x, mu):
         out = numpy.zeros(x.shape)
         indices = x > 0
-        out[indices] = 1.0/numpy.sqrt(2*numpy.pi*x[indices])
-        out[indices] *= numpy.exp(-(1-mu*x[indices])**2.0 / (2*x[indices]*mu**2.0))
+        out[indices] = 1.0 / numpy.sqrt(2 * numpy.pi * x[indices])
+        out[indices] *= numpy.exp(
+            -((1 - mu * x[indices]) ** 2.0) / (2 * x[indices] * mu ** 2.0)
+        )
         return out
 
     def _cdf(self, x, mu):
-        trm1 = 1./mu-x
-        trm2 = 1./mu+x
+        trm1 = 1.0 / mu - x
+        trm2 = 1.0 / mu + x
         isqx = numpy.full_like(x, numpy.inf)
         indices = x > 0
-        isqx[indices] = 1./numpy.sqrt(x[indices])
-        out = 1.-special.ndtr(isqx*trm1)
-        out -= numpy.exp(2.0/mu)*special.ndtr(-isqx*trm2)
+        isqx[indices] = 1.0 / numpy.sqrt(x[indices])
+        out = 1.0 - special.ndtr(isqx * trm1)
+        out -= numpy.exp(2.0 / mu) * special.ndtr(-isqx * trm2)
         out = numpy.where(x == numpy.inf, 1, out)
         out = numpy.where(x == -numpy.inf, 0, out)
         return out
 
     def _lower(self, mu):
-        return 0.
+        return 0.0
 
     def _upper(self, mu):
-        qloc = numpy.repeat(1-1e-12, mu.size)
+        qloc = numpy.repeat(1 - 1e-12, mu.size)
         out = chaospy.approximate_inverse(
             distribution=self,
             idx=0,
             qloc=qloc,
             parameters=dict(mu=mu),
-            bounds=(0., 60+numpy.e**(1./(mu+0.1))),
+            bounds=(0.0, 60 + numpy.e ** (1.0 / (mu + 0.1))),
             tolerance=1e-15,
         )
         return out

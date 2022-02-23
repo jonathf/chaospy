@@ -4,12 +4,12 @@ import chaospy
 
 
 def chebyshev_1(
-        order,
-        lower=-1,
-        upper=1,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    lower=-1,
+    upper=1,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Chebyshev polynomials of the first kind.
@@ -42,22 +42,23 @@ def chebyshev_1(
                     45.255*q0**3-135.765*q0**2+127.279*q0-36.77])
 
     """
-    multiplier = 1+numpy.arange(order).astype(bool) if physicist else 1
+    multiplier = 1 + numpy.arange(order).astype(bool) if physicist else 1
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Beta(0.5, 0.5, lower, upper), multiplier=multiplier)
+        order, chaospy.Beta(0.5, 0.5, lower, upper), multiplier=multiplier
+    )
     if normed:
         polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials
 
 
 def chebyshev_2(
-        order,
-        lower=-1,
-        upper=1,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    lower=-1,
+    upper=1,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Chebyshev polynomials of the second kind.
@@ -92,8 +93,9 @@ def chebyshev_2(
     """
     multiplier = 2 if physicist else 1
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Beta(1.5, 1.5, lower, upper), multiplier=multiplier)
+        order, chaospy.Beta(1.5, 1.5, lower, upper), multiplier=multiplier
+    )
     if normed:
-        polynomials= chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials

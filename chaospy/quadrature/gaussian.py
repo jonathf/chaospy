@@ -5,13 +5,13 @@ from .utils import combine_quadrature
 
 
 def gaussian(
-        order,
-        dist,
-        recurrence_algorithm="stieltjes",
-        rule="clenshaw_curtis",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    recurrence_algorithm="stieltjes",
+    rule="clenshaw_curtis",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Create Gaussian quadrature nodes and weights.

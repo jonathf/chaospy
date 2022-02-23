@@ -48,50 +48,55 @@ def lagrange(abscissas, graded=True, reverse=True, sort=None):
     dim, size = abscissas.shape
 
     order = 1
-    while comb(order+dim, dim) < size:
+    while comb(order + dim, dim) < size:
         order += 1
 
-    indices = numpoly.glexindex(0, order+1, dimensions=dim,
-                                graded=graded, reverse=reverse)[:size]
+    indices = numpoly.glexindex(
+        0, order + 1, dimensions=dim, graded=graded, reverse=reverse
+    )[:size]
     idx, idy = numpy.mgrid[:size, :size]
 
-    matrix = numpy.prod(abscissas.T[idx]**indices[idy], -1)
+    matrix = numpy.prod(abscissas.T[idx] ** indices[idy], -1)
     det = numpy.linalg.det(matrix)
     if det == 0:
         raise numpy.linalg.LinAlgError(
-            "Lagrange abscissas resulted in invertible matrix")
+            "Lagrange abscissas resulted in invertible matrix"
+        )
 
     vec = numpoly.monomial(
-        0, order+1, dimensions=dim, graded=graded, reverse=reverse)[:size]
+        0, order + 1, dimensions=dim, graded=graded, reverse=reverse
+    )[:size]
 
     coeffs = numpy.zeros((size, size))
 
     if size == 1:
-        out = numpoly.monomial(
-            0, 1, dimensions=dim, graded=graded, reverse=reverse)*abscissas.item()
+        out = (
+            numpoly.monomial(0, 1, dimensions=dim, graded=graded, reverse=reverse)
+            * abscissas.item()
+        )
 
     elif size == 2:
         coeffs = numpy.linalg.inv(matrix)
-        out = numpoly.sum(vec*(coeffs.T), 1)
+        out = numpoly.sum(vec * (coeffs.T), 1)
 
     else:
         for i in range(size):
-            if i%2 != 0:
+            if i % 2 != 0:
                 k = 1
             else:
-                k=0
+                k = 0
             for j in range(size):
-                if k%2 == 0:
+                if k % 2 == 0:
                     coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
                 else:
-                    if size%2 == 0:
+                    if size % 2 == 0:
                         coeffs[i, j] += -numpy.linalg.det(matrix[1:, 1:])
                     else:
                         coeffs[i, j] += numpy.linalg.det(matrix[1:, 1:])
-                matrix = numpy.roll(matrix, -1, axis=0) 
+                matrix = numpy.roll(matrix, -1, axis=0)
                 k += 1
-            matrix = numpy.roll(matrix, -1, axis=1) 
+            matrix = numpy.roll(matrix, -1, axis=1)
         coeffs /= det
-        out = numpoly.sum(vec*(coeffs.T), 1)
+        out = numpoly.sum(vec * (coeffs.T), 1)
 
     return out

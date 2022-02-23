@@ -3,13 +3,13 @@ import chaospy
 
 
 def gegenbauer(
-        order,
-        alpha,
-        lower=-1,
-        upper=1,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    alpha,
+    lower=-1,
+    upper=1,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Gegenbauer polynomials.
@@ -41,11 +41,14 @@ def gegenbauer(
     """
     multiplier = 1
     if physicist:
-        multiplier = numpy.arange(1, order+1)
-        multiplier = 2*(multiplier+alpha-1)/multiplier
+        multiplier = numpy.arange(1, order + 1)
+        multiplier = 2 * (multiplier + alpha - 1) / multiplier
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Beta(alpha+0.5, alpha+0.5, lower, upper), multiplier=multiplier)
+        order,
+        chaospy.Beta(alpha + 0.5, alpha + 0.5, lower, upper),
+        multiplier=multiplier,
+    )
     if normed:
         polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials

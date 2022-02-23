@@ -3,11 +3,11 @@ import chaospy
 
 
 def laguerre(
-        order,
-        alpha=0.,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    alpha=0.0,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Examples:
@@ -24,10 +24,11 @@ def laguerre(
                     0.053*q0**3-0.791*q0**2+3.162*q0-3.162])
 
     """
-    multiplier = -1./numpy.arange(1, order+1) if physicist else 1.
+    multiplier = -1.0 / numpy.arange(1, order + 1) if physicist else 1.0
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Gamma(alpha+1), multiplier=multiplier)
+        order, chaospy.Gamma(alpha + 1), multiplier=multiplier
+    )
     if normed:
         polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials

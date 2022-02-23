@@ -51,7 +51,7 @@ def Spearman(poly, dist=None, sample=10000, retall=False, **kws):
     evals = poly.ravel()(*samples)
     assert len(poly) == len(evals)
     for idx in range(len(poly)):
-        for idy in range(idx+1, len(poly)):
+        for idy in range(idx + 1, len(poly)):
             if idx == idy:
                 pass
             spear = spearmanr(evals[idx], evals[idy])

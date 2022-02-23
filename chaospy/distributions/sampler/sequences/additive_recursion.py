@@ -23,9 +23,9 @@ def generalized_golden_ratio(dim):
         1.0069208854344955
     """
     out = 1.7
-    out_ = 1.
+    out_ = 1.0
     while out != out_:
-        out, out_ = out_, (1+out)**(1./(dim+1))
+        out, out_ = out_, (1 + out) ** (1.0 / (dim + 1))
     return out_
 
 
@@ -65,7 +65,7 @@ def create_additive_recursion_samples(order, dim=1, seed=0.5, alpha=None):
     assert 0 <= seed < 1
     if alpha is None:
         phi = generalized_golden_ratio(dim)
-        alpha = (1./phi)**numpy.arange(1, dim+1) % 1
+        alpha = (1.0 / phi) ** numpy.arange(1, dim + 1) % 1
     assert isinstance(alpha, numpy.ndarray)
     assert alpha.shape == (dim,)
-    return (seed+numpy.outer(alpha, numpy.arange(1, order+1))) % 1
+    return (seed + numpy.outer(alpha, numpy.arange(1, order + 1))) % 1

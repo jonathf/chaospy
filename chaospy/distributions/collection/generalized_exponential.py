@@ -13,24 +13,26 @@ class generalized_exponential(SimpleDistribution):
         super(generalized_exponential, self).__init__(dict(a=a, b=b, c=c))
 
     def _pdf(self, x, a, b, c):
-        return (a+b*(-numpy.expm1(-c*x)))*numpy.exp((-a-b)*x+b*(-numpy.expm1(-c*x))/c)
+        return (a + b * (-numpy.expm1(-c * x))) * numpy.exp(
+            (-a - b) * x + b * (-numpy.expm1(-c * x)) / c
+        )
 
     def _cdf(self, x, a, b, c):
-        output = -numpy.expm1((-a-b)*x + b*(-numpy.expm1(-c*x))/c)
+        output = -numpy.expm1((-a - b) * x + b * (-numpy.expm1(-c * x)) / c)
         output = numpy.where(x > 0, output, 0)
         return output
 
     def _lower(self, a, b, c):
-        return 0.
+        return 0.0
 
     def _upper(self, a, b, c):
-        qloc, a, b, c = numpy.broadcast_arrays(1-1e-12, a, b, c)
+        qloc, a, b, c = numpy.broadcast_arrays(1 - 1e-12, a, b, c)
         return chaospy.approximate_inverse(
             distribution=self,
             idx=0,
             qloc=qloc,
             parameters=dict(a=a, b=b, c=c),
-            bounds=(0., 500./a/b/c),
+            bounds=(0.0, 500.0 / a / b / c),
             tolerance=1e-15,
         )
 

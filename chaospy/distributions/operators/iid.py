@@ -53,7 +53,8 @@ class Iid(J):
         dists = [deepcopy(dist) for _ in range(length)]
         for dist in dists:
             dist._dependencies = chaospy.init_dependencies(
-                dist, rotation=[0], dependency_type="iid")
+                dist, rotation=[0], dependency_type="iid"
+            )
         super(Iid, self).__init__(*dists, rotation=rotation)
         self._exclusion.update(exclusion)
         self._repr_args = [dist, length]

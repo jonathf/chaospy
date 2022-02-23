@@ -61,17 +61,17 @@ class Negative(OperatorDistribution):
 
     def _cdf(self, xloc, idx, left, right, cache):
         del right
-        return 1-left._get_fwd(-xloc, idx, cache)
+        return 1 - left._get_fwd(-xloc, idx, cache)
 
     def _ppf(self, uloc, idx, left, right, cache):
         del right
-        return -left._get_inv(1-uloc, idx, cache)
+        return -left._get_inv(1 - uloc, idx, cache)
 
     def _mom(self, kloc, left, right, cache):
         """Statistical moments."""
         del right
         del cache
-        return (-1)**numpy.sum(kloc)*left._get_mom(kloc)
+        return (-1) ** numpy.sum(kloc) * left._get_mom(kloc)
 
     def _ttr(self, kloc, idx, left, right, cache):
         """Three terms recurrence coefficients."""

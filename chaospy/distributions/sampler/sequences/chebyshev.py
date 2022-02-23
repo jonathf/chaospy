@@ -71,8 +71,8 @@ def create_chebyshev_samples(order, dim=1):
                [0.146, 0.5  , 0.854, 0.146, 0.5  , 0.854, 0.146, 0.5  , 0.854]])
 
     """
-    x_data = .5*numpy.cos(numpy.arange(order, 0, -1)*numpy.pi/(order+1)) + .5
-    x_data = utils.combine([x_data]*dim)
+    x_data = 0.5 * numpy.cos(numpy.arange(order, 0, -1) * numpy.pi / (order + 1)) + 0.5
+    x_data = utils.combine([x_data] * dim)
     return x_data.T
 
 
@@ -90,4 +90,4 @@ def create_nested_chebyshev_samples(order, dim=1):
         samples following Chebyshev sampling scheme mapped to the
         ``[0, 1]^dim`` hyper-cube and ``shape == (dim, 2**order-1)``.
     """
-    return create_chebyshev_samples(order=2**order-1, dim=dim)
+    return create_chebyshev_samples(order=2 ** order - 1, dim=dim)

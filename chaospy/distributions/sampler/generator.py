@@ -4,17 +4,28 @@ import numpy
 from . import sequences, latin_hypercube
 
 SAMPLER_NAMES = {
-    "a": "additive_recursion", "additive_recursion": "additive_recursion",
-    "c": "chebyshev", "chebyshev": "chebyshev",
-    "nc": "nested_chebyshev", "nested_chebyshev": "nested_chebyshev",
-    "k": "korobov", "korobov": "korobov",
-    "g": "grid", "grid": "grid",
-    "ng": "nested_grid", "nested_grid": "nested_grid",
-    "s": "sobol", "sobol": "sobol",
-    "h": "halton", "halton": "halton",
-    "m": "hammersley", "hammersley": "hammersley",
-    "l": "latin_hypercube", "latin_hypercube": "latin_hypercube",
-    "r": "random", "random": "random",
+    "a": "additive_recursion",
+    "additive_recursion": "additive_recursion",
+    "c": "chebyshev",
+    "chebyshev": "chebyshev",
+    "nc": "nested_chebyshev",
+    "nested_chebyshev": "nested_chebyshev",
+    "k": "korobov",
+    "korobov": "korobov",
+    "g": "grid",
+    "grid": "grid",
+    "ng": "nested_grid",
+    "nested_grid": "nested_grid",
+    "s": "sobol",
+    "sobol": "sobol",
+    "h": "halton",
+    "halton": "halton",
+    "m": "hammersley",
+    "hammersley": "hammersley",
+    "l": "latin_hypercube",
+    "latin_hypercube": "latin_hypercube",
+    "r": "random",
+    "random": "random",
 }
 SAMPLER_FUNCTIONS = {
     "additive_recursion": sequences.create_additive_recursion_samples,
@@ -61,7 +72,7 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
             dim = 1
         else:
             dim = len(domain[0])
-        trans = lambda x_data: ((domain[1]-domain[0])*x_data.T + domain[0]).T
+        trans = lambda x_data: ((domain[1] - domain[0]) * x_data.T + domain[0]).T
 
     else:
         dist = domain
@@ -71,19 +82,21 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
     if antithetic is not None:
 
         from .antithetic import create_antithetic_variates
+
         antithetic = numpy.array(antithetic, dtype=bool).flatten()
         if antithetic.size == 1 and dim > 1:
             antithetic = numpy.repeat(antithetic, dim)
 
-        size = numpy.sum(1*numpy.array(antithetic))
+        size = numpy.sum(1 * numpy.array(antithetic))
         order_saved = order
-        order = int(numpy.log(order-dim))
+        order = int(numpy.log(order - dim))
         order = order if order > 1 else 1
-        while (order-1)*2**dim < order_saved:
+        while (order - 1) * 2 ** dim < order_saved:
             order += 1
         trans_ = trans
         trans = lambda x_data: trans_(
-            create_antithetic_variates(x_data, antithetic)[:, :order_saved])
+            create_antithetic_variates(x_data, antithetic)[:, :order_saved]
+        )
 
     rule = SAMPLER_NAMES[rule.lower()]
     logger.debug("generating random samples using %s rule", rule)

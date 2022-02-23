@@ -45,5 +45,5 @@ def E(poly, dist=None, **kws):
 
     out = numpy.zeros(poly.shape)
     for idx, key in enumerate(poly.keys):
-        out += poly.values[key]*moments[idx]
+        out += poly.values[key] * moments[idx]
     return out

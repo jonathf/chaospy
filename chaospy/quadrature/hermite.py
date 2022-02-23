@@ -5,7 +5,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def hermite(order, mu=0., sigma=1., physicist=False):
+def hermite(order, mu=0.0, sigma=1.0, physicist=False):
     r"""
     Gauss-Hermite quadrature rule.
 
@@ -48,12 +48,13 @@ def hermite(order, mu=0., sigma=1., physicist=False):
 
     """
     order = int(order)
-    sigma = float(sigma*2**-0.5 if physicist else sigma)
+    sigma = float(sigma * 2 ** -0.5 if physicist else sigma)
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=order, dist=chaospy.Normal(0, sigma))
+        order=order, dist=chaospy.Normal(0, sigma)
+    )
     [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
-    weights = weights*numpy.pi**0.5 if physicist else weights
-    if order%2 == 0:
-        abscissas[len(abscissas)//2] = 0
+    weights = weights * numpy.pi ** 0.5 if physicist else weights
+    if order % 2 == 0:
+        abscissas[len(abscissas) // 2] = 0
     abscissas += mu
     return abscissas[numpy.newaxis], weights

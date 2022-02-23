@@ -12,7 +12,7 @@ class log_gamma(SimpleDistribution):
         super(log_gamma, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return numpy.exp(c*x-numpy.exp(x)-special.gammaln(c))
+        return numpy.exp(c * x - numpy.exp(x) - special.gammaln(c))
 
     def _cdf(self, x, c):
         return special.gammainc(c, numpy.exp(x))
@@ -24,7 +24,7 @@ class log_gamma(SimpleDistribution):
         return numpy.log(special.gammaincinv(c, 1e-15))
 
     def _upper(self, c):
-        return numpy.log(special.gammaincinv(c, 1-1e-15))
+        return numpy.log(special.gammaincinv(c, 1 - 1e-15))
 
 
 class LogGamma(ShiftScaleDistribution):

@@ -74,7 +74,7 @@ from ..baseclass import Distribution, OperatorDistribution
 class Add(OperatorDistribution):
     """Addition operator."""
 
-    _operator = lambda self, left, right: (left.T+right.T).T
+    _operator = lambda self, left, right: (left.T + right.T).T
 
     def __init__(self, left, right):
         super(Add, self).__init__(
@@ -123,7 +123,7 @@ class Add(OperatorDistribution):
     def _cdf(self, xloc, idx, left, right, cache):
         if isinstance(right, Distribution):
             left, right = right, left
-        xloc = (xloc.T-numpy.asfarray(right).T).T
+        xloc = (xloc.T - numpy.asfarray(right).T).T
         uloc = left._get_fwd(xloc, idx, cache=cache)
         return uloc
 
@@ -142,7 +142,7 @@ class Add(OperatorDistribution):
         """
         if isinstance(right, Distribution):
             left, right = right, left
-        xloc = (xloc.T-numpy.asfarray(right).T).T
+        xloc = (xloc.T - numpy.asfarray(right).T).T
         return left._get_pdf(xloc, idx, cache=cache)
 
     def _ppf(self, uloc, idx, left, right, cache):
@@ -178,27 +178,28 @@ class Add(OperatorDistribution):
 
         """
         del cache
-        keys_ = numpy.mgrid[tuple(slice(0, key+1, 1) for key in keys)]
+        keys_ = numpy.mgrid[tuple(slice(0, key + 1, 1) for key in keys)]
         keys_ = keys_.reshape(len(self), -1)
 
         if isinstance(left, Distribution):
             if chaospy.shares_dependencies(left, right):
                 raise chaospy.StochasticallyDependentError(
-                    "%s: left and right side of sum stochastically dependent." % self)
+                    "%s: left and right side of sum stochastically dependent." % self
+                )
             left = [left._get_mom(key) for key in keys_.T]
         else:
-            left = list(reversed(numpy.array(left).T**keys_.T))
+            left = list(reversed(numpy.array(left).T ** keys_.T))
 
         if isinstance(right, Distribution):
             right = [right._get_mom(key) for key in keys_.T]
         else:
-            right = list(reversed(numpy.prod(numpy.array(right).T**keys_.T, -1)))
+            right = list(reversed(numpy.prod(numpy.array(right).T ** keys_.T, -1)))
 
-        out = 0.
+        out = 0.0
         for idx in range(keys_.shape[1]):
             key = keys_.T[idx]
             coef = numpy.prod(comb(keys, key))
-            out += coef*left[idx]*right[idx]*numpy.all(key <= keys)
+            out += coef * left[idx] * right[idx] * numpy.all(key <= keys)
         return out
 
     def _ttr(self, kloc, idx, left, right, cache):
@@ -221,7 +222,7 @@ class Add(OperatorDistribution):
         if isinstance(right, Distribution):
             left, right = right, left
         coeff0, coeff1 = left._get_ttr(kloc, idx)
-        return coeff0+numpy.asarray(right), coeff1
+        return coeff0 + numpy.asarray(right), coeff1
 
 
 def add(left, right):

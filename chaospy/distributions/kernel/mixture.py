@@ -75,4 +75,5 @@ class GaussianMixture(GaussianKDE):
             covariances = numpy.swapaxes(covariances, 0, 2)
         assert covariances.shape == (n, n, m)
         super(GaussianMixture, self).__init__(
-            samples=means, h_mat=covariances, weights=weights, rotation=rotation)
+            samples=means, h_mat=covariances, weights=weights, rotation=rotation
+        )

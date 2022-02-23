@@ -57,7 +57,7 @@ def fejer_2(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 2**(order+1)-2, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 2 ** (order + 1) - 2, 0), order)
     return hypercube_quadrature(
         quad_func=fejer_2_simple,
         order=order,
@@ -72,5 +72,5 @@ def fejer_2_simple(order):
 
     Same as Clenshaw-Curtis, but with the end nodes removed.
     """
-    abscissas, weights = clenshaw_curtis_simple(order+2)
+    abscissas, weights = clenshaw_curtis_simple(order + 2)
     return abscissas[1:-1], weights[1:-1]

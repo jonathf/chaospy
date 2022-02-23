@@ -12,13 +12,13 @@ class hyperbolic_secant(SimpleDistribution):
         super(hyperbolic_secant, self).__init__()
 
     def _pdf(self, x):
-        return .5*numpy.cosh(numpy.pi*x/2.)**-1
+        return 0.5 * numpy.cosh(numpy.pi * x / 2.0) ** -1
 
     def _cdf(self, x):
-        return 2/numpy.pi*numpy.arctan(numpy.e**(numpy.pi*x/2.))
+        return 2 / numpy.pi * numpy.arctan(numpy.e ** (numpy.pi * x / 2.0))
 
     def _ppf(self, q):
-        return 2/numpy.pi*numpy.log(numpy.tan(numpy.pi*q/2.))
+        return 2 / numpy.pi * numpy.log(numpy.tan(numpy.pi * q / 2.0))
 
     def _lower(self):
         return -21.7

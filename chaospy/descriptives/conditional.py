@@ -55,7 +55,10 @@ def E_cond(poly, freeze, dist, **kws):
     if not freeze.size:
         return numpoly.polynomial(chaospy.E(poly, dist))
     if not freeze.isconstant():
-        freeze = [name in freeze.names for name in sorted(poly.names, key=lambda x: int(x[1:]))]
+        freeze = [
+            name in freeze.names
+            for name in sorted(poly.names, key=lambda x: int(x[1:]))
+        ]
 
     else:
         freeze = freeze.tonumpy()
@@ -63,10 +66,8 @@ def E_cond(poly, freeze, dist, **kws):
 
     # decompose into frozen and unfrozen part
     poly = numpoly.decompose(poly)
-    unfrozen = poly(**{
-        ("q%d" % idx): 1 for idx, keep in enumerate(freeze) if keep})
-    frozen = poly(**{
-        ("q%d" % idx): 1 for idx, keep in enumerate(freeze) if not keep})
+    unfrozen = poly(**{("q%d" % idx): 1 for idx, keep in enumerate(freeze) if keep})
+    frozen = poly(**{("q%d" % idx): 1 for idx, keep in enumerate(freeze) if not keep})
 
     # if no unfrozen, poly will return numpy.ndarray instead of numpoly.ndpoly
     if not isinstance(unfrozen, numpoly.ndpoly):

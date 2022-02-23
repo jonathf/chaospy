@@ -55,7 +55,8 @@ def jacobi(order, alpha, beta, lower=-1, upper=1, physicist=False):
     """
     order = int(order)
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=order, dist=chaospy.Beta(alpha+1, beta+1, lower, upper))
+        order=order, dist=chaospy.Beta(alpha + 1, beta + 1, lower, upper)
+    )
     [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
-    weights *= 2**(alpha+beta) if physicist else 1
+    weights *= 2 ** (alpha + beta) if physicist else 1
     return abscissas[numpy.newaxis], weights

@@ -13,23 +13,25 @@ class alpha(SimpleDistribution):
         super(alpha, self).__init__(dict(a=a))
 
     def _cdf(self, x, a):
-        return special.ndtr(a-1./x)/special.ndtr(a)
+        return special.ndtr(a - 1.0 / x) / special.ndtr(a)
 
     def _ppf(self, q, a):
-        out = 1.0/(a-special.ndtri(q*special.ndtr(a)))
+        out = 1.0 / (a - special.ndtri(q * special.ndtr(a)))
         return numpy.where(q == 1, self._upper(a), out)
 
     def _pdf(self, x, a):
         return numpy.where(
-            x == 0, 0, numpy.e**(-.5*(a-1./x)**2)/
-                (numpy.sqrt(2*numpy.pi)*x**2*special.ndtr(a))
+            x == 0,
+            0,
+            numpy.e ** (-0.5 * (a - 1.0 / x) ** 2)
+            / (numpy.sqrt(2 * numpy.pi) * x ** 2 * special.ndtr(a)),
         )
 
     def _lower(self, a):
-        return 0.
+        return 0.0
 
     def _upper(self, a):
-        return 1./(a-special.ndtri((1-1e-10)*special.ndtr(a)))
+        return 1.0 / (a - special.ndtri((1 - 1e-10) * special.ndtr(a)))
 
 
 class Alpha(ShiftScaleDistribution):
