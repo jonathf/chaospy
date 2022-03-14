@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """Generate the quadrature abscissas and weights in Fejér type I quadrature."""
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no cover
-    from functools32 import lru_cache
+from functools import lru_cache
+
 import numpy
 
 from .hypercube import hypercube_quadrature

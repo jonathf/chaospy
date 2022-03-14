@@ -43,11 +43,8 @@ Applying Smolyak sparse grid on Newton-Cotes::
     array([ 0.028,  0.022,  0.028,  0.356,  0.022,  0.356, -0.622,  0.356,
             0.022,  0.356,  0.028,  0.022,  0.028])
 """
-from __future__ import division
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no cover
-    from functools32 import lru_cache
+from functools import lru_cache
+
 import numpy
 from scipy import integrate
 

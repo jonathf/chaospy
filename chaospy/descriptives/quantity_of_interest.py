@@ -1,5 +1,4 @@
 """Constructs distributions for the quantity of interests."""
-from __future__ import division
 import numpy
 import chaospy
 

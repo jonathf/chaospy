@@ -1,6 +1,4 @@
 """Kernel density estimation baseclass."""
-from __future__ import division
-
 import numpy
 import chaospy
 
@@ -135,6 +133,12 @@ class KernelDensityBaseclass(Distribution):
             self._kernel1, self._kernel0 = self._kernel0, kernel
 
         return out
+
+    def _kernel(self, zloc):
+        raise NotImplementedError()
+
+    def _ikernel(self, zloc):
+        raise NotImplementedError()
 
     def _cdf(self, x_loc, idx, dim, cache):
         """Forward mapping."""

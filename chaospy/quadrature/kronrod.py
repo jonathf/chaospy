@@ -75,7 +75,6 @@ Multivariate support::
            0.011, 0.02 , 0.085, 0.11 , 0.083, 0.014, 0.016, 0.067, 0.086,
            0.065, 0.011, 0.006, 0.027, 0.035, 0.026, 0.004])
 """
-from __future__ import division
 import math
 
 import numpy

@@ -1,8 +1,5 @@
 """Gauss-Legendre quadrature rule."""
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no cover
-    from functools32 import lru_cache
+from functools import lru_cache
 
 import numpy
 import chaospy

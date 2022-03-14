@@ -35,6 +35,9 @@ class OperatorDistribution(Distribution):
         self._lower_cache = {}
         self._upper_cache = {}
 
+    def _operator(self, left, right):
+        raise NotImplementedError()
+
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(OperatorDistribution, self).get_parameters(
             idx, cache, assert_numerical=assert_numerical)

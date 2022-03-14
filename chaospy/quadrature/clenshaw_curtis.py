@@ -1,8 +1,5 @@
 """Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature."""
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no coverage
-    from functools32 import lru_cache
+from functools import lru_cache
 
 import numpy
 import chaospy

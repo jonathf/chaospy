@@ -15,10 +15,7 @@ With increasing order::
     [[-0.77  0.    0.77]] [0.17 0.67 0.17]
     [[-0.96 -0.77 -0.43  0.    0.43  0.77  0.96]] [0.01 0.08 0.24 0.34 0.24 0.08 0.01]
 """
-try:
-    from functools import lru_cache
-except ImportError:  # pragma: no cover
-    from functools32 import lru_cache
+from functools import lru_cache
 
 import numpy
 import chaospy
@@ -80,7 +77,7 @@ def patterson(order, domain):
 def patterson_simple(order):
     assert order < 9
     abscissas, weights = PATTERSON_VALUES[int(order)]
-    return numpy.array(abscissas)*0.5+0.5, numpy.array(weights)/2.
+    return 0.5*numpy.array(abscissas)+0.5, numpy.array(weights)/2.
 
 
 PATTERSON_VALUES = {

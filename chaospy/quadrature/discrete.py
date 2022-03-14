@@ -5,7 +5,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def discrete(order, domain=(0, 1), growth=False):
+def discrete(order, domain=(0, 1), growth=False, segments=None):
     """
     Generate quadrature abscissas and weights for discrete distributions.
 
@@ -44,6 +44,7 @@ def discrete(order, domain=(0, 1), growth=False):
         array([0.0467, 0.1866, 0.311 , 0.2765, 0.1382, 0.0369, 0.0041])
 
     """
+    del segments
     order = numpy.asarray(order)
     order = numpy.where(growth, numpy.where(order > 0, 2**order, 0), order)
     return hypercube_quadrature(
