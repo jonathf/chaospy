@@ -47,7 +47,7 @@ def create_halton_samples(order, dim=1, burnin=-1, primes=()):
     """
     primes = list(primes)
     if not primes:
-        prime_order = 10*dim
+        prime_order = 10 * dim
         while len(primes) < dim:
             primes = create_primes(prime_order)
             prime_order *= 2
@@ -58,8 +58,7 @@ def create_halton_samples(order, dim=1, burnin=-1, primes=()):
         burnin = max(primes)
 
     out = numpy.empty((dim, order))
-    indices = [idx+burnin for idx in range(order)]
+    indices = [idx + burnin for idx in range(order)]
     for dim_ in range(dim):
-        out[dim_] = create_van_der_corput_samples(
-            indices, number_base=primes[dim_])
+        out[dim_] = create_van_der_corput_samples(indices, number_base=primes[dim_])
     return out

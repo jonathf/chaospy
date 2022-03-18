@@ -27,15 +27,22 @@ class J(Distribution):
             assert isinstance(arg, Distribution)
             if isinstance(arg, J):
                 repr_args.extend(arg._repr_args)
-                owners.update({idx+idx_: value
-                               for idx_, value in arg._owners.items()})
-                index += list(range(idx, idx+len(args)))
+                owners.update(
+                    {idx + idx_: value for idx_, value in arg._owners.items()}
+                )
+                index += list(range(idx, idx + len(args)))
                 idx += len(arg)
             elif len(arg) > 1:
                 repr_args.append(arg)
-                owners.update({idx2: (idx1, arg) for idx1, idx2 in enumerate(
-                    range(len(index), len(index)+len(arg)))})
-                index += [idx]*len(arg)
+                owners.update(
+                    {
+                        idx2: (idx1, arg)
+                        for idx1, idx2 in enumerate(
+                            range(len(index), len(index) + len(arg))
+                        )
+                    }
+                )
+                index += [idx] * len(arg)
                 idx += 1
             else:
                 repr_args.append(arg)
@@ -44,8 +51,9 @@ class J(Distribution):
                 idx += 1
             dependencies += [dep.copy() for dep in arg._dependencies]
 
-        self.interpret_as_integer = all([dist.interpret_as_integer
-                                         for (_, dist) in owners.values()])
+        self.interpret_as_integer = all(
+            [dist.interpret_as_integer for (_, dist) in owners.values()]
+        )
         rotation = kwargs.pop("rotation", None)
         assert not kwargs, "'rotation' is the only allowed keyword."
         parameters = {"_%03d" % idx: dist for idx, dist in enumerate(repr_args)}
@@ -62,7 +70,8 @@ class J(Distribution):
     def get_parameters(self, idx, cache, assert_numerical=True):
         del assert_numerical  # joint is never numerical on its own.
         parameters = super(J, self).get_parameters(
-            idx=idx, cache=cache, assert_numerical=False)
+            idx=idx, cache=cache, assert_numerical=False
+        )
         if idx is None:
             return dict(index=parameters["index"])
         idx, dist = self._owners[idx]
@@ -147,14 +156,13 @@ class J(Distribution):
             >>> dist.mom([[0, 0, 1], [0, 1, 1]]).round(4)
             array([1., 0., 0.])
         """
-        output = 1.
+        output = 1.0
         for idx1 in range(len(self._owners)):
             _, dist1 = self._owners[idx1]
-            for idx2 in range(idx1+1, len(self._owners)):
+            for idx2 in range(idx1 + 1, len(self._owners)):
                 _, dist2 = self._owners[idx2]
                 if chaospy.shares_dependencies(dist1, dist2):
-                    raise chaospy.UnsupportedFeature(
-                        "Shared dependencies across joint")
+                    raise chaospy.UnsupportedFeature("Shared dependencies across joint")
 
         kloc = kloc[self._rotation]
         for unique_idx in numpy.unique(index[self._rotation]):
@@ -182,7 +190,8 @@ class J(Distribution):
         """
         if self.stochastic_dependent:
             raise chaospy.UnsupportedFeature(
-                "Joint distribution with dependencies not supported.")
+                "Joint distribution with dependencies not supported."
+            )
         return dist._get_ttr(kloc, idx)
 
     def __getitem__(self, index):

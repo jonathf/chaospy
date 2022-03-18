@@ -38,6 +38,6 @@ def Var(poly, dist=None, **kws):
     poly = numpoly.set_dimensions(poly, len(dist))
     if poly.isconstant():
         return numpy.zeros(poly.shape)
-    poly = poly-E(poly, dist, **kws)
+    poly = poly - E(poly, dist, **kws)
     poly = numpoly.square(poly)
     return E(poly, dist, **kws)

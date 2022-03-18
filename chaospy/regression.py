@@ -4,11 +4,11 @@ import numpoly
 
 
 def fit_regression(
-        polynomials,
-        abscissas,
-        evals,
-        model=None,
-        retall=0,
+    polynomials,
+    abscissas,
+    evals,
+    model=None,
+    retall=0,
 ):
     """
     Fit a polynomial chaos expansion using linear regression.
@@ -69,18 +69,21 @@ def fit_regression(
             from sklearn.base import BaseEstimator
         except ImportError:  # pragma: no cover
             raise ValueError(
-                "arg model != None requires that scikit-learn is installed")
+                "arg model != None requires that scikit-learn is installed"
+            )
         assert isinstance(model, BaseEstimator), (
-            "model not recognized; "
-            "Optional[sklearn.base.BaseEstimator] expected"
+            "model not recognized; " "Optional[sklearn.base.BaseEstimator] expected"
         )
         if hasattr(model, "fit_intercept"):
             assert not model.fit_intercept, (
-                "requires %s(fit_intercept=False)" % model.__class__.__name__)
+                "requires %s(fit_intercept=False)" % model.__class__.__name__
+            )
         uhat = numpy.transpose(model.fit(poly_evals, evals).coef_)
 
-    approx_model = numpoly.sum((polynomials*uhat.T), -1).reshape(shape)
-    choices = {0: approx_model,
-               1: (approx_model, uhat),
-               2: (approx_model, uhat, poly_evals)}
+    approx_model = numpoly.sum((polynomials * uhat.T), -1).reshape(shape)
+    choices = {
+        0: approx_model,
+        1: (approx_model, uhat),
+        2: (approx_model, uhat, poly_evals),
+    }
     return choices[retall]

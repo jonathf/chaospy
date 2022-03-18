@@ -6,7 +6,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def laguerre(order, alpha=0., physicist=False):
+def laguerre(order, alpha=0.0, physicist=False):
     r"""
     Generalized Gauss-Laguerre quadrature rule.
 
@@ -48,7 +48,8 @@ def laguerre(order, alpha=0., physicist=False):
     """
     order = int(order)
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=order, dist=chaospy.Gamma(alpha+1))
+        order=order, dist=chaospy.Gamma(alpha + 1)
+    )
     [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
-    weights *= gamma(alpha+1) if physicist else 1
+    weights *= gamma(alpha + 1) if physicist else 1
     return abscissas[numpy.newaxis], weights

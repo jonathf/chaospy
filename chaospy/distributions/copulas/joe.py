@@ -62,19 +62,23 @@ class joe(Archimedean):
     """Joe copula."""
 
     def _phi(self, t_loc, theta):
-        return -numpy.log(1-(1-t_loc)**theta)
+        return -numpy.log(1 - (1 - t_loc) ** theta)
 
     def _delta_phi(self, t_loc, theta):
-        return theta*(1-t_loc)**(theta-1)/(1-(1-t_loc)**theta)
+        return theta * (1 - t_loc) ** (theta - 1) / (1 - (1 - t_loc) ** theta)
 
     def _inverse_phi(self, u_loc, theta, order):
         if not order:
-            return 1-(1-numpy.e**-u_loc)**(1/theta)
+            return 1 - (1 - numpy.e**-u_loc) ** (1 / theta)
+
         @lru_cache(None)
         def rho(n, m=1):
             if n == m:
-                return self._sigma(1-numpy.e**-u_loc, theta, n)*numpy.e**(-n*theta)
-            return rho(n, m+1)-m*rho(n-1, m)
+                return self._sigma(1 - numpy.e**-u_loc, theta, n) * numpy.e ** (
+                    -n * theta
+                )
+            return rho(n, m + 1) - m * rho(n - 1, m)
+
         return rho(order)
 
 
@@ -108,7 +112,7 @@ class Joe(CopulaDistribution):
 
     """
 
-    def __init__(self, dist, theta=2.):
+    def __init__(self, dist, theta=2.0):
         """
         Args:
             dist (Distribution):

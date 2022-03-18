@@ -10,7 +10,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def clenshaw_curtis(order, domain=(0., 1.), growth=False, segments=1):
+def clenshaw_curtis(order, domain=(0.0, 1.0), growth=False, segments=1):
     """
     Generate the quadrature nodes and weights in Clenshaw-Curtis quadrature.
 
@@ -81,28 +81,30 @@ def clenshaw_curtis_simple(order):
     """
     order = int(order)
     if order == 0:
-        return numpy.array([.5]), numpy.array([1.])
+        return numpy.array([0.5]), numpy.array([1.0])
     elif order == 1:
-        return numpy.array([0., 1.]), numpy.array([0.5, 0.5])
+        return numpy.array([0.0, 1.0]), numpy.array([0.5, 0.5])
 
-    theta = (order-numpy.arange(order+1))*numpy.pi/order
-    abscissas = 0.5*numpy.cos(theta)+0.5
+    theta = (order - numpy.arange(order + 1)) * numpy.pi / order
+    abscissas = 0.5 * numpy.cos(theta) + 0.5
 
     steps = numpy.arange(1, order, 2)
     length = len(steps)
-    remains = order-length
+    remains = order - length
 
-    beta = numpy.hstack([2./(steps*(steps-2)), [1./steps[-1]], numpy.zeros(remains)])
-    beta = -beta[:-1]-beta[:0:-1]
+    beta = numpy.hstack(
+        [2.0 / (steps * (steps - 2)), [1.0 / steps[-1]], numpy.zeros(remains)]
+    )
+    beta = -beta[:-1] - beta[:0:-1]
 
     gamma = -numpy.ones(order)
     gamma[length] += order
     gamma[remains] += order
-    gamma /= (order**2-1+(order%2))
+    gamma /= order**2 - 1 + (order % 2)
 
-    weights = numpy.fft.ihfft(beta+gamma)
+    weights = numpy.fft.ihfft(beta + gamma)
     assert max(weights.imag) < 1e-15
     weights = weights.real
-    weights = numpy.hstack([weights, weights[len(weights)-2+(order%2)::-1]])/2
+    weights = numpy.hstack([weights, weights[len(weights) - 2 + (order % 2) :: -1]]) / 2
 
     return abscissas, weights

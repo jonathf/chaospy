@@ -11,16 +11,18 @@ class folded_cauchy(SimpleDistribution):
         super(folded_cauchy, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return 1./(numpy.pi*(1+(x-c)**2))+1/(numpy.pi*(1+(x+c)**2))
+        return 1.0 / (numpy.pi * (1 + (x - c) ** 2)) + 1 / (
+            numpy.pi * (1 + (x + c) ** 2)
+        )
 
     def _cdf(self, x, c):
-        return (numpy.arctan(x-c)+numpy.arctan(x+c))/numpy.pi
+        return (numpy.arctan(x - c) + numpy.arctan(x + c)) / numpy.pi
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return 1e+16  # actually infinity
+        return 1e16  # actually infinity
 
 
 class FoldedCauchy(ShiftScaleDistribution):

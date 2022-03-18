@@ -43,4 +43,4 @@ def Corr(poly, dist=None, **kws):
     cov = chaospy.Cov(poly, dist, **kws)
     var = numpy.diag(cov)
     vvar = numpy.sqrt(numpy.outer(var, var))
-    return numpy.where(vvar > 0, cov/vvar, 0)
+    return numpy.where(vvar > 0, cov / vvar, 0)

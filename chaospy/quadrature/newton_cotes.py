@@ -44,6 +44,7 @@ Applying Smolyak sparse grid on Newton-Cotes::
             0.022,  0.356,  0.028,  0.022,  0.028])
 """
 from __future__ import division
+
 try:
     from functools import lru_cache
 except ImportError:  # pragma: no cover
@@ -112,4 +113,4 @@ def _newton_cotes(order):
     """Backend for Newton-Cotes quadrature rule."""
     if order == 0:
         return numpy.full((1, 1), 0.5), numpy.ones(1)
-    return numpy.linspace(0, 1, order+1), integrate.newton_cotes(order)[0]/order
+    return numpy.linspace(0, 1, order + 1), integrate.newton_cotes(order)[0] / order

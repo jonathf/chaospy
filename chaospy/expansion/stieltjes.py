@@ -59,8 +59,15 @@ import numpoly
 import chaospy
 
 
-def stieltjes(order, dist, normed=False, graded=True, reverse=True,
-             retall=False, cross_truncation=1.):
+def stieltjes(
+    order,
+    dist,
+    normed=False,
+    graded=True,
+    reverse=True,
+    retall=False,
+    cross_truncation=1.0,
+):
     """
     Create orthogonal polynomial expansion from three terms recurrence formula.
 
@@ -108,23 +115,36 @@ def stieltjes(order, dist, normed=False, graded=True, reverse=True,
         polynomial([1.0, q1, q0, 0.707*q1**2-0.707, q0*q1, 0.707*q0**2-0.707])
 
     """
-    _, polynomials, norms, = chaospy.stieltjes(numpy.max(order), dist)
+    (
+        _,
+        polynomials,
+        norms,
+    ) = chaospy.stieltjes(numpy.max(order), dist)
     if normed:
         polynomials = numpoly.true_divide(
-            numpoly.polynomial(polynomials), numpy.sqrt(norms))
-        norms[:] = 1.
+            numpoly.polynomial(polynomials), numpy.sqrt(norms)
+        )
+        norms[:] = 1.0
 
-    polynomials = polynomials.reshape((len(dist), numpy.max(order)+1))
+    polynomials = polynomials.reshape((len(dist), numpy.max(order) + 1))
 
     order = numpy.array(order)
-    indices = numpoly.glexindex(start=0, stop=order+1, dimensions=len(dist),
-                                graded=graded, reverse=reverse,
-                                cross_truncation=cross_truncation)
+    indices = numpoly.glexindex(
+        start=0,
+        stop=order + 1,
+        dimensions=len(dist),
+        graded=graded,
+        reverse=reverse,
+        cross_truncation=cross_truncation,
+    )
     if len(dist) > 1:
-        polynomials = numpoly.prod(chaospy.polynomial([
-            poly[idx] for poly, idx in zip(polynomials, indices.T)]), 0)
-        norms = numpy.prod([
-            norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)
+        polynomials = numpoly.prod(
+            chaospy.polynomial(
+                [poly[idx] for poly, idx in zip(polynomials, indices.T)]
+            ),
+            0,
+        )
+        norms = numpy.prod([norms_[idx] for norms_, idx in zip(norms, indices.T)], 0)
     else:
         polynomials = polynomials.flatten()
         norms = norms.flatten()

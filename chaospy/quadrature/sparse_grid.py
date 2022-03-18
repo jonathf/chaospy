@@ -10,14 +10,14 @@ import chaospy
 
 
 def sparse_grid(
-        order,
-        dist,
-        growth=None,
-        recurrence_algorithm="stieltjes",
-        rule="gaussian",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    growth=None,
+    recurrence_algorithm="stieltjes",
+    rule="gaussian",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Smolyak sparse grid constructor.
@@ -69,14 +69,14 @@ def sparse_grid(
         >>> weights.round(2)
         array([ 0.17,  0.25, -0.5 ,  0.25,  0.67,  0.25, -0.5 ,  0.25,  0.17])
     """
-    orders = order*numpy.ones(len(dist), dtype=int)
+    orders = order * numpy.ones(len(dist), dtype=int)
     growth = True if growth is None else growth
 
     assert isinstance(dist, chaospy.Distribution), "dist must be chaospy.Distribution"
     dist = dist if isinstance(dist, (chaospy.J, chaospy.Iid)) else chaospy.J(dist)
 
     if isinstance(rule, str):
-        rule = (rule,)*len(dist)
+        rule = (rule,) * len(dist)
 
     x_lookup, w_lookup = _construct_lookup(
         orders=orders,
@@ -88,8 +88,7 @@ def sparse_grid(
         scaling=scaling,
         n_max=n_max,
     )
-    collection = _construct_collection(
-        order, dist, x_lookup, w_lookup)
+    collection = _construct_collection(order, dist, x_lookup, w_lookup)
 
     abscissas = sorted(collection)
     weights = numpy.array([collection[key] for key in abscissas])
@@ -98,40 +97,39 @@ def sparse_grid(
 
 
 def _construct_collection(
-        orders,
-        dist,
-        x_lookup,
-        w_lookup,
+    orders,
+    dist,
+    x_lookup,
+    w_lookup,
 ):
     """Create a collection of {abscissa: weight} key-value pairs."""
     order = numpy.min(orders)
-    skew = orders-order
+    skew = orders - order
 
     # Indices and coefficients used in the calculations
-    indices = numpoly.glexindex(
-        order-len(dist)+1, order+1, dimensions=len(dist))
+    indices = numpoly.glexindex(order - len(dist) + 1, order + 1, dimensions=len(dist))
     coeffs = numpy.sum(indices, -1)
-    coeffs = (2*((order-coeffs+1) % 2)-1)*comb(len(dist)-1, order-coeffs)
+    coeffs = (2 * ((order - coeffs + 1) % 2) - 1) * comb(len(dist) - 1, order - coeffs)
 
     collection = defaultdict(float)
-    for bidx, coeff in zip(indices+skew, coeffs.tolist()):
+    for bidx, coeff in zip(indices + skew, coeffs.tolist()):
         abscissas = [value[idx] for idx, value in zip(bidx, x_lookup)]
         weights = [value[idx] for idx, value in zip(bidx, w_lookup)]
         for abscissa, weight in zip(product(*abscissas), product(*weights)):
-            collection[abscissa] += numpy.prod(weight)*coeff
+            collection[abscissa] += numpy.prod(weight) * coeff
 
     return collection
 
 
 def _construct_lookup(
-        orders,
-        dists,
-        growth,
-        recurrence_algorithm,
-        rules,
-        tolerance,
-        scaling,
-        n_max,
+    orders,
+    dists,
+    growth,
+    recurrence_algorithm,
+    rules,
+    tolerance,
+    scaling,
+    n_max,
 ):
     """
     Create abscissas and weights look-up table so values do not need to be
@@ -142,7 +140,7 @@ def _construct_lookup(
     for max_order, dist, rule in zip(orders, dists, rules):
         x_lookup.append([])
         w_lookup.append([])
-        for order in range(max_order+1):
+        for order in range(max_order + 1):
             (abscissas,), weights = chaospy.generate_quadrature(
                 order=order,
                 dist=dist,

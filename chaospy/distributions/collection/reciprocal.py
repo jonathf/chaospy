@@ -5,18 +5,17 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class reciprocal(SimpleDistribution):
-
     def __init__(self, lower=1, upper=2):
         super(reciprocal, self).__init__(dict(lower=lower, upper=upper))
 
     def _pdf(self, x, lower, upper):
-        return 1./(x*numpy.log(upper/lower))
+        return 1.0 / (x * numpy.log(upper / lower))
 
     def _cdf(self, x, lower, upper):
-        return numpy.log(x/lower)/numpy.log(upper/lower)
+        return numpy.log(x / lower) / numpy.log(upper / lower)
 
     def _ppf(self, q, lower, upper):
-        return numpy.e**(q*numpy.log(upper/lower)+numpy.log(lower))
+        return numpy.e ** (q * numpy.log(upper / lower) + numpy.log(lower))
 
     def _lower(self, lower, upper):
         return lower
@@ -25,7 +24,7 @@ class reciprocal(SimpleDistribution):
         return upper
 
     def _mom(self, kloc, lower, upper):
-        return (upper**kloc-lower**kloc)/(kloc*numpy.log(upper/lower))
+        return (upper**kloc - lower**kloc) / (kloc * numpy.log(upper / lower))
 
 
 class Reciprocal(ShiftScaleDistribution):
@@ -67,6 +66,7 @@ class Reciprocal(ShiftScaleDistribution):
     def __init__(self, lower, upper, shift=0, scale=1):
         super(Reciprocal, self).__init__(
             dist=reciprocal(lower, upper),
-            shift=shift, scale=scale,
+            shift=shift,
+            scale=scale,
             repr_args=[lower, upper],
         )

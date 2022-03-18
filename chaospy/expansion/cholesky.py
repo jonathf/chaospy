@@ -28,14 +28,13 @@ import chaospy
 import numpoly
 
 
-
 def cholesky(
     order,
     dist,
     normed=False,
     graded=True,
     reverse=True,
-    cross_truncation=1.,
+    cross_truncation=1.0,
     retall=False,
 ):
     """
@@ -76,7 +75,7 @@ def cholesky(
     dim = len(dist)
     basis = numpoly.monomial(
         start=1,
-        stop=order+1,
+        stop=order + 1,
         dimensions=dim,
         graded=graded,
         reverse=reverse,
@@ -91,18 +90,17 @@ def cholesky(
     if not normed:
         diag_mesh = numpy.repeat(numpy.diag(cholmat_inv), len(cholmat_inv))
         cholmat_inv /= diag_mesh.reshape(cholmat_inv.shape)
-        norms = numpy.hstack([1, numpy.diag(cholmat)**2])
+        norms = numpy.hstack([1, numpy.diag(cholmat) ** 2])
     else:
-        norms = numpy.ones(length+1, dtype=float)
+        norms = numpy.ones(length + 1, dtype=float)
 
-    expected = -numpy.sum(cholmat_inv*chaospy.E(basis, dist), -1)
-    coeffs = numpy.block([[1.,                       expected],
-                          [numpy.zeros((length, 1)), cholmat_inv.T]])
+    expected = -numpy.sum(cholmat_inv * chaospy.E(basis, dist), -1)
+    coeffs = numpy.block([[1.0, expected], [numpy.zeros((length, 1)), cholmat_inv.T]])
 
     out = {}
-    out[(0,)*dim] = coeffs[0]
+    out[(0,) * dim] = coeffs[0]
     for idx, key in enumerate(basis.exponents):
-        out[tuple(key)] = coeffs[idx+1]
+        out[tuple(key)] = coeffs[idx + 1]
 
     names = numpoly.symbols("q:%d" % dim)
     polynomials = numpoly.polynomial(out, names=names)
@@ -148,8 +146,8 @@ def gill_king(mat, tolerance=1e-16):
     gamma = abs(mat_diag).max()
     off_diag = abs(mat - numpy.diag(mat_diag)).max()
 
-    delta = tolerance*max(gamma+off_diag, 1)
-    beta = numpy.sqrt(max(gamma, off_diag/size, tolerance))
+    delta = tolerance * max(gamma + off_diag, 1)
+    beta = numpy.sqrt(max(gamma, off_diag / size, tolerance))
 
     # initialize d_vec and lowtri
     lowtri = numpy.eye(size)
@@ -162,20 +160,22 @@ def gill_king(mat, tolerance=1e-16):
         # d_vec(idz) doesn't work in case idz is empty
         idz = numpy.s_[:idx] if idx else []
 
-        djtemp = mat[idx, idx]-numpy.dot(
-            lowtri[idx, idz], d_vec[idz]*lowtri[idx, idz].T)
+        djtemp = mat[idx, idx] - numpy.dot(
+            lowtri[idx, idz], d_vec[idz] * lowtri[idx, idz].T
+        )
 
-        if idx < size-1:
-            idy = numpy.s_[idx+1:size]
+        if idx < size - 1:
+            idy = numpy.s_[idx + 1 : size]
             # row index: all rows below diagonal
-            ccol = mat[idy, idx]-numpy.dot(
-                lowtri[idy, idz], d_vec[idz]*lowtri[idx, idz].T)
+            ccol = mat[idy, idx] - numpy.dot(
+                lowtri[idy, idz], d_vec[idz] * lowtri[idx, idz].T
+            )
             # C(idy, idx) in book
             theta = abs(ccol).max()
             # guarantees d_vec(idx) not too small and lowtri(idy, idx) not too
             # big in sufficiently positive definite case, d_vec(idx) = djtemp
-            d_vec[idx] = max(abs(djtemp), (theta/beta)**2, delta)
-            lowtri[idy, idx] = ccol/d_vec[idx]
+            d_vec[idx] = max(abs(djtemp), (theta / beta) ** 2, delta)
+            lowtri[idy, idx] = ccol / d_vec[idx]
 
         else:
             d_vec[idx] = max(abs(djtemp), delta)

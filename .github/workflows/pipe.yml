@@ -38,6 +38,10 @@ jobs:
         coverage run -m pytest --doctest-modules chaospy/ tests/ README.rst
         coverage xml coverage.xml
 
+    - name: "Check formatting"
+      run: |
+        black --check chaospy/
+
     - name: "Upload python coverage"
       uses: codecov/codecov-action@v2
       with:

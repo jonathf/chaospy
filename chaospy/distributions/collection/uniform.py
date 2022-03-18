@@ -12,22 +12,22 @@ class uniform(SimpleDistribution):
         return 0.5
 
     def _cdf(self, x):
-        return .5*x+.5
+        return 0.5 * x + 0.5
 
     def _ppf(self, q):
-        return 2*q-1
+        return 2 * q - 1
 
     def _lower(self):
-        return -1.
+        return -1.0
 
     def _upper(self):
-        return 1.
+        return 1.0
 
     def _mom(self, k):
-        return 1./(k+1)*(k%2 == 0)
+        return 1.0 / (k + 1) * (k % 2 == 0)
 
     def _ttr(self, n):
-        return 0., n*n/(4.*n*n-1)
+        return 0.0, n * n / (4.0 * n * n - 1)
 
 
 class Uniform(LowerUpperDistribution):
@@ -64,7 +64,7 @@ class Uniform(LowerUpperDistribution):
 
     """
 
-    def __init__(self, lower=0., upper=1.):
+    def __init__(self, lower=0.0, upper=1.0):
         super(Uniform, self).__init__(
             dist=uniform(),
             lower=lower,

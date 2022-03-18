@@ -13,14 +13,14 @@ class double_gamma(SimpleDistribution):
 
     def _pdf(self, x, a):
         ax = abs(x)
-        return 1.0/(2*special.gamma(a))*ax**(a-1.0) * numpy.exp(-ax)
+        return 1.0 / (2 * special.gamma(a)) * ax ** (a - 1.0) * numpy.exp(-ax)
 
     def _cdf(self, x, a):
-        fac = 0.5*special.gammainc(a,abs(x))
-        return numpy.where(x>0,0.5+fac,0.5-fac)
+        fac = 0.5 * special.gammainc(a, abs(x))
+        return numpy.where(x > 0, 0.5 + fac, 0.5 - fac)
 
     def _ppf(self, q, a):
-        fac = special.gammainccinv(a, 1-abs(2*q-1))
+        fac = special.gammainccinv(a, 1 - abs(2 * q - 1))
         out = numpy.where(q > 0.5, fac, -fac)
         return out
 

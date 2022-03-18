@@ -13,7 +13,11 @@ from .fejer_1 import fejer_1
 from .fejer_2 import fejer_2
 from .gaussian import gaussian
 from .genz_keister import (
-    genz_keister_16, genz_keister_18, genz_keister_22, genz_keister_24)
+    genz_keister_16,
+    genz_keister_18,
+    genz_keister_22,
+    genz_keister_24,
+)
 from .gegenbauer import gegenbauer
 from .grid import grid
 from .hermite import hermite
@@ -59,13 +63,16 @@ def quadrature_deprecation_warning(name, func):
     def wrapped(*args, **kwargs):
         """Function wrapper adds warnings."""
         logger = logging.getLogger(__name__)
-        logger.warning("chaospy.%s name is to be deprecated; "
-                       "Use chaospy.quadrature.%s instead",
-                       quad_name, func.__name__)
+        logger.warning(
+            "chaospy.%s name is to be deprecated; " "Use chaospy.quadrature.%s instead",
+            quad_name,
+            func.__name__,
+        )
         return func(*args, **kwargs)
 
     globals()[quad_name] = wrapped
     __all__.append(quad_name)
+
 
 quadrature_deprecation_warning("clenshaw_curtis", clenshaw_curtis)
 quadrature_deprecation_warning("discrete", discrete)

@@ -96,24 +96,24 @@ def create_sobol_samples(order, dim, seed=1):
         # Expand this bit pattern to separate components:
         includ = numpy.array([val == "1" for val in bin(POLY[idx])[-degree:]])
 
-        #Calculate the remaining elements of row I as explained
-        #in Bratley and Fox, section 2.
-        for idy in range(degree+1, LOG_MAX+1):
-            newv = samples[idx, idy-degree-1].item()
+        # Calculate the remaining elements of row I as explained
+        # in Bratley and Fox, section 2.
+        for idy in range(degree + 1, LOG_MAX + 1):
+            newv = samples[idx, idy - degree - 1].item()
             base = 1
-            for idz in range(1, degree+1):
+            for idz in range(1, degree + 1):
                 base *= 2
-                if includ[idz-1]:
-                    newv = newv ^ base * samples[idx, idy-idz-1].item()
-            samples[idx, idy-1] = newv
+                if includ[idz - 1]:
+                    newv = newv ^ base * samples[idx, idy - idz - 1].item()
+            samples[idx, idy - 1] = newv
 
     samples = samples[:dim]
 
     # Multiply columns of V by appropriate power of 2.
-    samples *= 2**(numpy.arange(LOG_MAX, 0, -1, dtype=int))
+    samples *= 2 ** (numpy.arange(LOG_MAX, 0, -1, dtype=int))
 
-    #RECIPD is 1/(common denominator of the elements in V).
-    recipd = 0.5**(LOG_MAX+1)
+    # RECIPD is 1/(common denominator of the elements in V).
+    recipd = 0.5 ** (LOG_MAX + 1)
     lastq = numpy.zeros(dim, dtype=int)
 
     seed = int(seed) if seed > 1 else 1
@@ -122,10 +122,10 @@ def create_sobol_samples(order, dim, seed=1):
         lowbit = len(bin(seed_)[2:].split("0")[-1])
         lastq[:] = lastq ^ samples[:, lowbit]
 
-    #Calculate the new components of QUASI.
+    # Calculate the new components of QUASI.
     quasi = numpy.empty((dim, order))
     for idx in range(order):
-        lowbit = len(bin(seed+idx)[2:].split("0")[-1])
+        lowbit = len(bin(seed + idx)[2:].split("0")[-1])
         quasi[:, idx] = lastq * recipd
         lastq[:] = lastq ^ samples[:, lowbit]
 

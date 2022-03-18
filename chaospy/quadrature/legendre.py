@@ -10,7 +10,7 @@ import chaospy
 from .hypercube import hypercube_quadrature
 
 
-def legendre(order, lower=-1., upper=1., physicist=False):
+def legendre(order, lower=-1.0, upper=1.0, physicist=False):
     """
     Gauss-Legendre quadrature rule.
 
@@ -58,14 +58,14 @@ def legendre(order, lower=-1., upper=1., physicist=False):
         order=int(order),
         domain=(float(lower), float(upper)),
     )
-    weights = weights if physicist else weights/(upper-lower)
+    weights = weights if physicist else weights / (upper - lower)
     return abscissas, weights
 
 
 def legendre_proxy(
-        order,
-        domain=(0, 1),
-        segments=1,
+    order,
+    domain=(0, 1),
+    segments=1,
 ):
     r"""
     Generate proxy abscissas and weights from Legendre quadrature.
@@ -158,6 +158,7 @@ def legendre_simple(order):
     Use :func:`chaospy.quadrature.legendre` instead.
     """
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=int(order), dist=chaospy.Uniform(-1, 1))
+        order=int(order), dist=chaospy.Uniform(-1, 1)
+    )
     [abscissas], [weights] = chaospy.coefficients_to_quadrature(coefficients)
-    return abscissas*0.5+0.5, weights
+    return abscissas * 0.5 + 0.5, weights

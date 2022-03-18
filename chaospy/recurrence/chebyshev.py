@@ -26,23 +26,27 @@ def modified_chebyshev(moments):
     """
     moments = numpy.asfarray(moments).flatten()
     order = len(moments)
-    assert order%2 == 0
+    assert order % 2 == 0
 
     sigma = numpy.zeros((3, order))
     sigma[0] = moments
-    coeffs = [(sigma[0, 1]/sigma[0, 0], sigma[0, 0])]
+    coeffs = [(sigma[0, 1] / sigma[0, 0], sigma[0, 0])]
 
-    for idx in range(1, order//2):
-        sigma[idx%3, idx:order-idx] = (
-            sigma[(idx-1)%3, idx+1:order-idx+1]-
-            coeffs[idx-1][0]*sigma[(idx-1)%3, idx:order-idx]-
-            coeffs[idx-1][1]*sigma[(idx-2)%3, idx:order-idx]
+    for idx in range(1, order // 2):
+        sigma[idx % 3, idx : order - idx] = (
+            sigma[(idx - 1) % 3, idx + 1 : order - idx + 1]
+            - coeffs[idx - 1][0] * sigma[(idx - 1) % 3, idx : order - idx]
+            - coeffs[idx - 1][1] * sigma[(idx - 2) % 3, idx : order - idx]
         )
-        coeffs.append((
-            (sigma[idx%3, idx+1]/sigma[idx%3, idx]
-             -sigma[(idx-1)%3, idx]/sigma[(idx-1)%3, idx-1]),
-            sigma[idx%3, idx]/sigma[(idx-1)%3, idx-1],
-        ))
+        coeffs.append(
+            (
+                (
+                    sigma[idx % 3, idx + 1] / sigma[idx % 3, idx]
+                    - sigma[(idx - 1) % 3, idx] / sigma[(idx - 1) % 3, idx - 1]
+                ),
+                sigma[idx % 3, idx] / sigma[(idx - 1) % 3, idx - 1],
+            )
+        )
 
-    coeffs = numpy.array(coeffs[:order//2]).reshape(-1, 2).T
+    coeffs = numpy.array(coeffs[: order // 2]).reshape(-1, 2).T
     return coeffs

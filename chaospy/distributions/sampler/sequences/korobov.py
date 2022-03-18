@@ -39,8 +39,8 @@ def create_korobov_samples(order, dim, base=17797):
     values = numpy.empty(dim)
     values[0] = 1
     for idx in range(1, dim):
-        values[idx] = base*values[idx-1] % (order+1)
+        values[idx] = base * values[idx - 1] % (order + 1)
 
-    grid = numpy.mgrid[:dim, :order+1]
-    out = values[grid[0]] * (grid[1]+1) / (order+1.) % 1.
+    grid = numpy.mgrid[:dim, : order + 1]
+    out = values[grid[0]] * (grid[1] + 1) / (order + 1.0) % 1.0
     return out[:, :order]

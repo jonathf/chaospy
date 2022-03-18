@@ -40,13 +40,16 @@ def configure_logging():
     logpath = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
     logging.basicConfig(level=logging.DEBUG, filename=logpath, filemode="w")
     streamer = logging.StreamHandler()
-    loglevel = logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") == "1" else logging.WARNING
+    loglevel = (
+        logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") == "1" else logging.WARNING
+    )
     streamer.setLevel(loglevel)
 
     logger = logging.getLogger("chaospy")
     logger.addHandler(streamer)
     logger = logging.getLogger("numpoly")
     logger.addHandler(streamer)
+
 
 configure_logging()
 

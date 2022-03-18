@@ -4,9 +4,13 @@ from .cholesky import cholesky
 from .gram_schmidt import gram_schmidt
 
 EXPANSION_NAMES = {
-    "ttr": "stieltjes", "three_terms_recurrence": "stieltjes", "stieltjes": "stieltjes",
-    "chol": "cholesky", "cholesky": "cholesky",
-    "gs": "gram_schmidt", "gram_schmidt": "gram_schmidt",
+    "ttr": "stieltjes",
+    "three_terms_recurrence": "stieltjes",
+    "stieltjes": "stieltjes",
+    "chol": "cholesky",
+    "cholesky": "cholesky",
+    "gs": "gram_schmidt",
+    "gram_schmidt": "gram_schmidt",
 }
 EXPANSION_FUNCTIONS = {
     "stieltjes": stieltjes,
@@ -16,14 +20,14 @@ EXPANSION_FUNCTIONS = {
 
 
 def generate_expansion(
-        order,
-        dist,
-        rule="three_terms_recurrence",
-        normed=False,
-        graded=True,
-        reverse=True,
-        cross_truncation=1.,
-        **kws
+    order,
+    dist,
+    rule="three_terms_recurrence",
+    normed=False,
+    graded=True,
+    reverse=True,
+    cross_truncation=1.0,
+    **kws
 ):
     """
     Create orthogonal polynomial expansion.
@@ -97,6 +101,11 @@ def generate_expansion(
     name = EXPANSION_NAMES[rule.lower()]
     expansion_function = EXPANSION_FUNCTIONS[name]
     return expansion_function(
-        order, dist=dist, normed=normed, graded=graded, reverse=reverse,
-        cross_truncation=cross_truncation, **kws
+        order,
+        dist=dist,
+        normed=normed,
+        graded=graded,
+        reverse=reverse,
+        cross_truncation=cross_truncation,
+        **kws
     )

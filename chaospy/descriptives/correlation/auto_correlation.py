@@ -29,7 +29,8 @@ def Acf(poly, dist, n_steps=None, **kws):
         array([1.    , 0.9915, 0.9722, 0.9457, 0.9127])
 
     """
-    n_steps = int(len(poly)/2+1) if n_steps is None else n_steps
+    n_steps = int(len(poly) / 2 + 1) if n_steps is None else n_steps
     correlation = Corr(poly, dist, **kws)
-    return numpy.array([numpy.mean(correlation.diagonal(idx), axis=0)
-                        for idx in range(n_steps)])
+    return numpy.array(
+        [numpy.mean(correlation.diagonal(idx), axis=0) for idx in range(n_steps)]
+    )

@@ -13,30 +13,38 @@ class student_t(SimpleDistribution):
         super(student_t, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
-        return special.gamma(.5*a+.5)*(1+x*x/a)**(-.5*a-.5) /\
-                (numpy.sqrt(a*numpy.pi)*special.gamma(.5*a))
+        return (
+            special.gamma(0.5 * a + 0.5)
+            * (1 + x * x / a) ** (-0.5 * a - 0.5)
+            / (numpy.sqrt(a * numpy.pi) * special.gamma(0.5 * a))
+        )
 
     def _cdf(self, x, a):
         return special.stdtr(a, x)
 
     def _ppf(self, q, a):
-        return special.stdtrit(a, numpy.clip(q, 1e-16, 1-1e-16))
+        return special.stdtrit(a, numpy.clip(q, 1e-16, 1 - 1e-16))
 
     def _mom(self, k, a):
         if numpy.any(a < k):
             raise ValueError("too high mom for student-t")
-        out = special.gamma(.5*k+.5)* \
-                special.gamma(.5*a-.5*k)*a**(.5*k)
-        return numpy.where(k%2==0, out/(numpy.pi**.5*special.gamma(.5*a)), 0)
+        out = (
+            special.gamma(0.5 * k + 0.5)
+            * special.gamma(0.5 * a - 0.5 * k)
+            * a ** (0.5 * k)
+        )
+        return numpy.where(
+            k % 2 == 0, out / (numpy.pi**0.5 * special.gamma(0.5 * a)), 0
+        )
 
     def _ttr(self, k, a):
-        return 0., k*a*(a-k+1.)/ ((a-2*k)*(a-2*k+2))
+        return 0.0, k * a * (a - k + 1.0) / ((a - 2 * k) * (a - 2 * k + 2))
 
     def _lower(self, a):
-        return special.stdtrit(a, 1e-16)*10
+        return special.stdtrit(a, 1e-16) * 10
 
     def _upper(self, a):
-        return special.stdtrit(a, 1-1e-16)*10
+        return special.stdtrit(a, 1 - 1e-16) * 10
 
 
 class StudentT(ShiftScaleDistribution):

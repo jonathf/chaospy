@@ -29,9 +29,9 @@ from .utils import combine
 
 
 def leja(
-        order,
-        dist,
-        rule="fejer_2",
+    order,
+    dist,
+    rule="fejer_2",
 ):
     """
     Generate Leja quadrature node.
@@ -71,7 +71,8 @@ def leja(
     if len(dist) > 1:
         if dist.stochastic_dependent:
             raise chaospy.StochasticallyDependentError(
-                "Leja quadrature do not supper distribution with dependencies.")
+                "Leja quadrature do not supper distribution with dependencies."
+            )
         order = numpy.broadcast_to(order, len(dist))
         out = [leja(order[_], dist[_]) for _ in range(len(dist))]
         abscissas = [_[0][0] for _ in out]
@@ -87,25 +88,28 @@ def leja(
 
         def objective(abscissas_):
             """Local objective function."""
-            out = -numpy.sqrt(dist.pdf(abscissas_))*numpy.prod(
-                numpy.abs(abscissas[1:-1]-abscissas_))
+            out = -numpy.sqrt(dist.pdf(abscissas_)) * numpy.prod(
+                numpy.abs(abscissas[1:-1] - abscissas_)
+            )
             return out
 
         def fmin(idx):
             """Bound minimization."""
             try:
-                xopt, fval, _, _ = fminbound(objective, abscissas[idx],
-                                             abscissas[idx+1], full_output=True)
+                xopt, fval, _, _ = fminbound(
+                    objective, abscissas[idx], abscissas[idx + 1], full_output=True
+                )
             # Hard coded solution to scipy/scipy#11207 for scipy < 1.5.0.
             except UnboundLocalError:  # pragma: no cover
-                xopt = abscissas[idx]+0.5*(3-5**0.5)*(
-                    abscissas[idx+1]-abscissas[idx])
+                xopt = abscissas[idx] + 0.5 * (3 - 5**0.5) * (
+                    abscissas[idx + 1] - abscissas[idx]
+                )
                 fx = objective(xopt)
             return xopt, fval
 
-        opts, vals = zip(*[fmin(idx) for idx in range(len(abscissas)-1)])
+        opts, vals = zip(*[fmin(idx) for idx in range(len(abscissas) - 1)])
         index = numpy.argmin(vals)
-        abscissas.insert(index+1, opts[index])
+        abscissas.insert(index + 1, opts[index])
 
     abscissas = numpy.asfarray(abscissas).flatten()[1:-1]
     weights = create_weights(abscissas, dist, rule)
@@ -115,12 +119,12 @@ def leja(
 
 
 def create_weights(
-        nodes,
-        dist,
-        rule="clenshaw_curtis",
+    nodes,
+    dist,
+    rule="clenshaw_curtis",
 ):
     """Create weights for the Laja method."""
-    _, poly, _ = chaospy.stieltjes(len(nodes)-1, dist, rule=rule)
+    _, poly, _ = chaospy.stieltjes(len(nodes) - 1, dist, rule=rule)
     poly = poly.ravel()
     weights = numpy.linalg.inv(poly(nodes))
     return weights[:, 0]

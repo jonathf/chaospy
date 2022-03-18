@@ -31,12 +31,12 @@ class ShiftScaleDistribution(Distribution):
     """
 
     def __init__(
-            self,
-            dist,
-            shift=0,
-            scale=1,
-            rotation=None,
-            repr_args=None,
+        self,
+        dist,
+        shift=0,
+        scale=1,
+        rotation=None,
+        repr_args=None,
     ):
         assert isinstance(dist, Distribution), "'dist' should be a distribution"
         if repr_args is None:
@@ -80,49 +80,52 @@ class ShiftScaleDistribution(Distribution):
         assert not isinstance(scale, Distribution), scale
         assert numpy.all([scale]) > 0, "condition not satisfied: `scale > 0`"
 
-        assert not assert_numerical or not (isinstance(shift, Distribution) or
-                                            isinstance(scale, Distribution))
+        assert not assert_numerical or not (
+            isinstance(shift, Distribution) or isinstance(scale, Distribution)
+        )
 
         return dict(idx=idx, dist=self._dist, shift=shift, scale=scale, cache=cache)
 
     def _ppf(self, qloc, idx, dist, shift, scale, cache):
-        return dist._get_inv(qloc, idx, cache=cache)*scale+shift
+        return dist._get_inv(qloc, idx, cache=cache) * scale + shift
 
     def _cdf(self, xloc, idx, dist, shift, scale, cache):
-        return dist._get_fwd((xloc-shift)/scale, idx, cache=cache)
+        return dist._get_fwd((xloc - shift) / scale, idx, cache=cache)
 
     def _pdf(self, xloc, idx, dist, shift, scale, cache):
-        return dist._get_pdf((xloc-shift)/scale, idx, cache=cache)/scale
+        return dist._get_pdf((xloc - shift) / scale, idx, cache=cache) / scale
 
     def get_mom_parameters(self):
-        parameters = self.get_parameters(
-            idx=None, cache={}, assert_numerical=False)
+        parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
         del parameters["idx"]
         del parameters["cache"]
         return parameters
 
     def _mom(self, kloc, dist, shift, scale):
         poly = numpoly.variable(len(self))
-        poly = numpoly.sum(scale*poly, axis=-1)+shift
+        poly = numpoly.sum(scale * poly, axis=-1) + shift
         poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
-        out = sum([dist._get_mom(key)*coeff
-                   for key, coeff in zip(poly.exponents, poly.coefficients)])
+        out = sum(
+            [
+                dist._get_mom(key) * coeff
+                for key, coeff in zip(poly.exponents, poly.coefficients)
+            ]
+        )
         return out
 
     def get_ttr_parameters(self, idx):
-        parameters = self.get_parameters(
-            idx=idx, cache={}, assert_numerical=False)
+        parameters = self.get_parameters(idx=idx, cache={}, assert_numerical=False)
         del parameters["cache"]
         return parameters
 
     def _ttr(self, kloc, idx, dist, shift, scale):
         coeff0, coeff1 = dist._get_ttr(kloc, idx)
-        coeff0 = coeff0*scale+shift
-        coeff1 = coeff1*scale*scale
+        coeff0 = coeff0 * scale + shift
+        coeff1 = coeff1 * scale * scale
         return coeff0, coeff1
 
     def _lower(self, idx, dist, shift, scale, cache):
-        return dist._get_lower(idx, cache=cache)*scale+shift
+        return dist._get_lower(idx, cache=cache) * scale + shift
 
     def _upper(self, idx, dist, shift, scale, cache):
-        return dist._get_upper(idx, cache=cache)*scale+shift
+        return dist._get_upper(idx, cache=cache) * scale + shift

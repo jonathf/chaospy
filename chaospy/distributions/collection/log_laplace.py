@@ -12,21 +12,23 @@ class log_laplace(SimpleDistribution):
         super(log_laplace, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        cd2 = c/2.0
+        cd2 = c / 2.0
         c = numpy.where(x < 1, c, -c)
-        return cd2*x**(c-1)
+        return cd2 * x ** (c - 1)
 
     def _cdf(self, x, c):
-        return numpy.where(x < 1, 0.5*x**c, 1-0.5*x**(-c))
+        return numpy.where(x < 1, 0.5 * x**c, 1 - 0.5 * x ** (-c))
 
     def _ppf(self, q, c):
-        return numpy.where(q < 0.5, (2.*q)**(1./c), (2*(1.-q))**(-1./c))
+        return numpy.where(
+            q < 0.5, (2.0 * q) ** (1.0 / c), (2 * (1.0 - q)) ** (-1.0 / c)
+        )
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return 2e12**(1./c)
+        return 2e12 ** (1.0 / c)
 
 
 class LogLaplace(ShiftScaleDistribution):

@@ -11,13 +11,13 @@ RECURRENCE_ALGORITHMS = ("chebyshev", "lanczos", "stieltjes")
 
 
 def construct_recurrence_coefficients(
-        order,
-        dist,
-        recurrence_algorithm="stieltjes",
-        rule="clenshaw_curtis",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    recurrence_algorithm="stieltjes",
+    rule="clenshaw_curtis",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Frontend wrapper for constructing *three terms recurrence* coefficients.
@@ -83,27 +83,31 @@ def construct_recurrence_coefficients(
         array([[0.5   , 0.5   , 0.5   , 0.5   , 0.5   ],
                [1.    , 0.0833, 0.0667, 0.0643, 0.0635]])
     """
-    assert isinstance(dist, chaospy.Distribution), (
-        "%s is not a distribution" % str(dist))
+    assert isinstance(dist, chaospy.Distribution), "%s is not a distribution" % str(
+        dist
+    )
     if len(dist) > 1:
-        orders = (order*numpy.ones(len(dist), dtype=int)).tolist()
-        return [construct_recurrence_coefficients(
-            order=int(order_),
-            dist=dist_,
-            recurrence_algorithm=recurrence_algorithm,
-            rule=rule,
-            tolerance=tolerance,
-            scaling=scaling,
-            n_max=n_max,
-        )[0] for dist_, order_ in zip(dist, orders)]
+        orders = (order * numpy.ones(len(dist), dtype=int)).tolist()
+        return [
+            construct_recurrence_coefficients(
+                order=int(order_),
+                dist=dist_,
+                recurrence_algorithm=recurrence_algorithm,
+                rule=rule,
+                tolerance=tolerance,
+                scaling=scaling,
+                n_max=n_max,
+            )[0]
+            for dist_, order_ in zip(dist, orders)
+        ]
 
     assert recurrence_algorithm in RECURRENCE_ALGORITHMS, (
-        "recurrence algorithm '%s' not recognized" % recurrence_algorithm)
-    assert not rule.startswith("gauss"), (
-        "recursive Gaussian quadrature construct")
+        "recurrence algorithm '%s' not recognized" % recurrence_algorithm
+    )
+    assert not rule.startswith("gauss"), "recursive Gaussian quadrature construct"
 
     if recurrence_algorithm == "chebyshev":
-        moments = dist.mom(numpy.arange(2*(order+1), dtype=int))
+        moments = dist.mom(numpy.arange(2 * (order + 1), dtype=int))
         coeffs = modified_chebyshev(moments)
 
     elif recurrence_algorithm == "lanczos":
@@ -112,4 +116,4 @@ def construct_recurrence_coefficients(
     elif recurrence_algorithm == "stieltjes":
         coeffs, _, _ = stieltjes(order, dist, rule=rule, tolerance=tolerance)
 
-    return [coeffs.reshape(2, int(order)+1)]
+    return [coeffs.reshape(2, int(order) + 1)]

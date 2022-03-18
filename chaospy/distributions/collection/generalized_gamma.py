@@ -12,28 +12,31 @@ class generalized_gamma(SimpleDistribution):
         super(generalized_gamma, self).__init__(dict(a=a, c=c))
 
     def _pdf(self, x, a, c):
-        return abs(c)*numpy.exp(
-            (c*a-1)*numpy.log(numpy.clip(x, 1e-15, None))-x**c-special.gammaln(a))
+        return abs(c) * numpy.exp(
+            (c * a - 1) * numpy.log(numpy.clip(x, 1e-15, None))
+            - x**c
+            - special.gammaln(a)
+        )
 
     def _cdf(self, x, a, c):
         val = special.gammainc(a, x**c)
-        cond = c+0*val
-        return numpy.where(cond > 0, val, 1-val)
+        cond = c + 0 * val
+        return numpy.where(cond > 0, val, 1 - val)
 
     def _ppf(self, q, a, c):
-        val = numpy.where(c > 0, q, 1-q)
-        return special.gammaincinv(a, val)**(1./c)
+        val = numpy.where(c > 0, q, 1 - q)
+        return special.gammaincinv(a, val) ** (1.0 / c)
 
     def _lower(self, a, c):
-        return 0.
+        return 0.0
 
     def _upper(self, a, c):
         cond = c > 0
-        val = numpy.where(cond, 1-1e-15, 1e-15)
-        return special.gammaincinv(a, val)**(1./c)
+        val = numpy.where(cond, 1 - 1e-15, 1e-15)
+        return special.gammaincinv(a, val) ** (1.0 / c)
 
     def _mom(self, k, a, c):
-        return special.gamma((c+k)*1./a)/special.gamma(c*1./a)
+        return special.gamma((c + k) * 1.0 / a) / special.gamma(c * 1.0 / a)
 
 
 class GeneralizedGamma(ShiftScaleDistribution):

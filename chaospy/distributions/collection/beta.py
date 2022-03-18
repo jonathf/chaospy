@@ -3,16 +3,19 @@ import numpy
 from scipy import special
 import chaospy
 
-from ..baseclass import SimpleDistribution, LowerUpperDistribution, ShiftScaleDistribution
+from ..baseclass import (
+    SimpleDistribution,
+    LowerUpperDistribution,
+    ShiftScaleDistribution,
+)
 
 
 class beta_(SimpleDistribution):
-
     def __init__(self, a=1, b=1):
         super(beta_, self).__init__(dict(a=a, b=b))
 
     def _pdf(self, x, a, b):
-        out = x**(a-1)*(1-x)**(b-1)/special.beta(a, b)
+        out = x ** (a - 1) * (1 - x) ** (b - 1) / special.beta(a, b)
         out = numpy.where(numpy.isfinite(out), out, 0)
         return out
 
@@ -23,23 +26,29 @@ class beta_(SimpleDistribution):
         return special.btdtri(a, b, qloc)
 
     def _mom(self, k, a, b):
-        return special.beta(a+k,b)/special.beta(a,b)
+        return special.beta(a + k, b) / special.beta(a, b)
 
     def _ttr(self, n, a, b):
-        nab = 2*n+a+b
-        A = ((a-1)**2-(b-1)**2)*.5/\
-                (nab*(nab-2) + (nab==0) + (nab==2)) + .5
-        B1 = a*b*1./((a+b+1)*(a+b)**2)
-        B2 = (n+a-1)*(n+b-1)*n*(n+a+b-2.)/\
-            ((nab-1)*(nab-3)*(nab-2)**2+2.*((n==0)+(n==1)))
-        B = numpy.where((n==0)+(n==1), B1, B2)
+        nab = 2 * n + a + b
+        A = ((a - 1) ** 2 - (b - 1) ** 2) * 0.5 / (
+            nab * (nab - 2) + (nab == 0) + (nab == 2)
+        ) + 0.5
+        B1 = a * b * 1.0 / ((a + b + 1) * (a + b) ** 2)
+        B2 = (
+            (n + a - 1)
+            * (n + b - 1)
+            * n
+            * (n + a + b - 2.0)
+            / ((nab - 1) * (nab - 3) * (nab - 2) ** 2 + 2.0 * ((n == 0) + (n == 1)))
+        )
+        B = numpy.where((n == 0) + (n == 1), B1, B2)
         return A, B
 
     def _lower(self, a, b):
-        return 0.
+        return 0.0
 
     def _upper(self, a, b):
-        return 1.
+        return 1.0
 
 
 class Beta(LowerUpperDistribution):
@@ -128,7 +137,7 @@ class ArcSinus(LowerUpperDistribution):
 
     def __init__(self, shape=0.5, lower=0, upper=1):
         super(ArcSinus, self).__init__(
-            dist=beta_(shape, 1-shape),
+            dist=beta_(shape, 1 - shape),
             lower=lower,
             upper=upper,
             repr_args=[shape],
@@ -216,9 +225,9 @@ class Wigner(ShiftScaleDistribution):
 
     def __init__(self, radius=1, shift=0):
         super(Wigner, self).__init__(
-            dist=beta_(1.5, 1.5),
-            scale=2*radius, shift=shift-radius)
-        self._repr_args = [radius]+chaospy.format_repr_kwargs(shift=(shift, 0))
+            dist=beta_(1.5, 1.5), scale=2 * radius, shift=shift - radius
+        )
+        self._repr_args = [radius] + chaospy.format_repr_kwargs(shift=(shift, 0))
 
 
 class PERT(Beta):
@@ -268,9 +277,9 @@ class PERT(Beta):
     """
 
     def __init__(self, lower, mode, upper, gamma=4):
-        mu = (lower+4*mode+upper)/6.
-        alpha = 1+gamma*(mu-lower)/(upper-lower)
-        beta = 1+gamma*(upper-mu)/(upper-lower)
+        mu = (lower + 4 * mode + upper) / 6.0
+        alpha = 1 + gamma * (mu - lower) / (upper - lower)
+        beta = 1 + gamma * (upper - mu) / (upper - lower)
         LowerUpperDistribution.__init__(
             self,
             dist=beta_(alpha, beta),

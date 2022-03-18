@@ -84,22 +84,24 @@ class openturns_dist(SimpleDistribution):
             distribution (openturns.Distribution):
                 Distribution created in OpenTURNS.
         """
-        assert distribution.isContinuous(), (
-            "Only continuous distributions are supported")
+        assert (
+            distribution.isContinuous()
+        ), "Only continuous distributions are supported"
         super(openturns_dist, self).__init__()
         self.distribution = distribution
 
     def _pdf(self, x_loc):
-        return numpy.array(self.distribution.computePDF(
-            numpy.atleast_2d(x_loc).T).asPoint())
+        return numpy.array(
+            self.distribution.computePDF(numpy.atleast_2d(x_loc).T).asPoint()
+        )
 
     def _cdf(self, x_loc):
-        return numpy.array(self.distribution.computeCDF(
-            numpy.atleast_2d(x_loc).T).asPoint())
+        return numpy.array(
+            self.distribution.computeCDF(numpy.atleast_2d(x_loc).T).asPoint()
+        )
 
     def _ppf(self, q_loc):
-        return numpy.array(
-            self.distribution.computeQuantile(q_loc).asPoint())
+        return numpy.array(self.distribution.computeQuantile(q_loc).asPoint())
 
     def _lower(self):
         return self.distribution.getRange().getLowerBound()[0]
@@ -111,7 +113,7 @@ class openturns_dist(SimpleDistribution):
         return self.distribution.getMoment(int(k_loc))[0]
 
     def __str__(self):
-        return "openturns."+str(self.distribution)
+        return "openturns." + str(self.distribution)
 
     def __repr__(self):
         return str(self)
@@ -137,11 +139,12 @@ class OpenTURNSDist(J):
 
     def __init__(self, distribution):
         from openturns import ComposedDistribution, ContinuousDistribution
+
         if isinstance(distribution, ComposedDistribution):
             if not distribution.hasIndependentCopula():
                 raise chaospy.StochasticallyDependentError(
-                    "Stochastically dependent "
-                    "OpenTURNS distribution unsupported")
+                    "Stochastically dependent " "OpenTURNS distribution unsupported"
+                )
             distributions = [
                 openturns_dist(dist)
                 for dist in distribution.getDistributionCollection()
@@ -149,10 +152,9 @@ class OpenTURNSDist(J):
         elif isinstance(distribution, ContinuousDistribution):
             distributions = [openturns_dist(distribution)]
         else:
-            assert isinstance(distribution, Iterable) and all([
-                isinstance(dist, ContinuousDistribution)
-                for dist in distribution
-            ]), "Only (iterable of) continuous OpenTURNS distributions supported"
+            assert isinstance(distribution, Iterable) and all(
+                [isinstance(dist, ContinuousDistribution) for dist in distribution]
+            ), "Only (iterable of) continuous OpenTURNS distributions supported"
             distributions = [openturns_dist(dist) for dist in distribution]
         super(OpenTURNSDist, self).__init__(*distributions)
         self._repr_args = [distributions]

@@ -13,22 +13,22 @@ class power_log_normal(SimpleDistribution):
         super(power_log_normal, self).__init__(dict(c=c, s=s))
 
     def _pdf(self, x, c, s):
-        norm = (2*numpy.pi)**-.5*numpy.exp(-(numpy.log(x)/s)**2/2.)
-        out = c/(x*s)*norm*pow(special.ndtr(-numpy.log(x)/s), c*1.-1.)
+        norm = (2 * numpy.pi) ** -0.5 * numpy.exp(-((numpy.log(x) / s) ** 2) / 2.0)
+        out = c / (x * s) * norm * pow(special.ndtr(-numpy.log(x) / s), c * 1.0 - 1.0)
         out = numpy.where(x == 0, 0, out)
         return out
 
     def _cdf(self, x, c, s):
-        return 1.-pow(special.ndtr(-numpy.log(x)/s), c*1.)
+        return 1.0 - pow(special.ndtr(-numpy.log(x) / s), c * 1.0)
 
     def _ppf(self, q, c, s):
-        return numpy.exp(-s*special.ndtri(pow(1.-q, 1./c)))
+        return numpy.exp(-s * special.ndtri(pow(1.0 - q, 1.0 / c)))
 
     def _lower(self, c, s):
-        return 0.
+        return 0.0
 
     def _upper(self, c, s):
-        return numpy.exp(-s*special.ndtri(pow(1e-12, 1./c)))
+        return numpy.exp(-s * special.ndtri(pow(1e-12, 1.0 / c)))
 
 
 class PowerLogNormal(ShiftScaleDistribution):
@@ -66,13 +66,16 @@ class PowerLogNormal(ShiftScaleDistribution):
         array([1.017, 0.242, 3.01 , 0.69 ])
 
     """
+
     def __init__(self, shape=1, mu=0, sigma=1, scale=1, shift=0):
         dist = ShiftScaleDistribution(
-            dist=power_log_normal(shape, sigma), scale=numpy.e**mu)
+            dist=power_log_normal(shape, sigma), scale=numpy.e**mu
+        )
         super(PowerLogNormal, self).__init__(
             dist=dist,
             scale=scale,
             shift=shift,
-            repr_args=[shape]+chaospy.format_repr_kwargs(mu=(mu, 0))+
-                              chaospy.format_repr_kwargs(sigma=(sigma, 1)),
+            repr_args=[shape]
+            + chaospy.format_repr_kwargs(mu=(mu, 0))
+            + chaospy.format_repr_kwargs(sigma=(sigma, 1)),
         )

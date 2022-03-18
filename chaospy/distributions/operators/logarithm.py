@@ -33,7 +33,7 @@ class Logn(OperatorDistribution):
 
     """
 
-    _operator = lambda self, left, right: (numpy.log(left).T/numpy.log(right).T).T
+    _operator = lambda self, left, right: (numpy.log(left).T / numpy.log(right).T).T
 
     def __init__(self, dist, base=2):
         assert isinstance(dist, Distribution)
@@ -52,19 +52,25 @@ class Logn(OperatorDistribution):
         return self._operator(left._get_upper(idx, cache), right)
 
     def _pdf(self, xloc, idx, left, right, cache):
-        return left._get_pdf(right**xloc, idx, cache)*right**xloc*numpy.log(right)
+        return (
+            left._get_pdf(right**xloc, idx, cache) * right**xloc * numpy.log(right)
+        )
 
     def _cdf(self, xloc, idx, left, right, cache):
-        return left._get_fwd(right.item(0)**xloc, idx, cache)
+        return left._get_fwd(right.item(0) ** xloc, idx, cache)
 
     def _ppf(self, uloc, idx, left, right, cache):
         return self._operator(left._get_inv(uloc, idx, cache), right)
 
     def _mom(self, kloc, left, right, cache):
-        raise chaospy.UnsupportedFeature("%s: Analytical moments for logarithm not supported", self)
+        raise chaospy.UnsupportedFeature(
+            "%s: Analytical moments for logarithm not supported", self
+        )
 
     def _ttr(self, kloc, idx, left, right, cache):
-        raise chaospy.UnsupportedFeature("%s: Analytical TTR for logarithm not supported", self)
+        raise chaospy.UnsupportedFeature(
+            "%s: Analytical TTR for logarithm not supported", self
+        )
 
 
 class Log(Logn):

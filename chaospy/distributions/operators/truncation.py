@@ -58,7 +58,8 @@ class Trunc(Distribution):
         if isinstance(lower, Distribution):
             if lower.stochastic_dependent:
                 raise chaospy.StochasticallyDependentError(
-                    "Joint distribution with dependencies not supported.")
+                    "Joint distribution with dependencies not supported."
+                )
             assert len(dist) == len(lower)
             lower_ = lower.lower
         elif lower is None:
@@ -68,15 +69,17 @@ class Trunc(Distribution):
         if isinstance(upper, Distribution):
             if upper.stochastic_dependent:
                 raise chaospy.StochasticallyDependentError(
-                    "Joint distribution with dependencies not supported.")
+                    "Joint distribution with dependencies not supported."
+                )
             assert len(dist) == len(upper)
             upper_ = upper.upper
         elif upper is None:
             upper = upper_ = dist.upper
         else:
             upper = upper_ = numpy.atleast_1d(upper)
-        assert numpy.all(upper_ > lower_), (
-            "condition `upper > lower` not satisfied: %s <= %s" % (upper_, lower_))
+        assert numpy.all(
+            upper_ > lower_
+        ), "condition `upper > lower` not satisfied: %s <= %s" % (upper_, lower_)
 
         dependencies, parameters, rotation = chaospy.declare_dependencies(
             distribution=self,
@@ -93,20 +96,26 @@ class Trunc(Distribution):
 
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(Trunc, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+            idx, cache, assert_numerical=assert_numerical
+        )
         assert set(parameters) == {"cache", "lower", "upper", "idx"}
 
         if isinstance(parameters["lower"], Distribution):
-            parameters["lower"] = parameters["lower"]._get_cache(idx, cache=parameters["cache"], get=0)
+            parameters["lower"] = parameters["lower"]._get_cache(
+                idx, cache=parameters["cache"], get=0
+            )
         elif len(parameters["lower"]) > 1 and idx is not None:
             parameters["lower"] = parameters["lower"][idx]
         if isinstance(parameters["upper"], Distribution):
-            parameters["upper"] = parameters["upper"]._get_cache(idx, cache=parameters["cache"], get=0)
+            parameters["upper"] = parameters["upper"]._get_cache(
+                idx, cache=parameters["cache"], get=0
+            )
         elif len(parameters["upper"]) > 1 and idx is not None:
             parameters["upper"] = parameters["upper"][idx]
         if assert_numerical:
-            assert (not isinstance(parameters["lower"], Distribution) or
-                    not isinstance(parameters["upper"], Distribution))
+            assert not isinstance(parameters["lower"], Distribution) or not isinstance(
+                parameters["upper"], Distribution
+            )
         if idx is None:
             del parameters["idx"]
         return parameters
@@ -160,7 +169,7 @@ class Trunc(Distribution):
         lower = self._dist._get_fwd(lower, idx, cache=cache.copy())
         upper = self._dist._get_fwd(upper, idx, cache=cache.copy())
         uloc = self._dist._get_fwd(xloc, idx, cache)
-        return (uloc-lower)/(1-lower)/upper
+        return (uloc - lower) / (1 - lower) / upper
 
     def _pdf(self, xloc, idx, lower, upper, cache):
         """
@@ -187,7 +196,7 @@ class Trunc(Distribution):
         lower = self._dist._get_fwd(lower, idx, cache=cache.copy())
         upper = self._dist._get_fwd(upper, idx, cache=cache.copy())
         uloc = self._dist._get_pdf(xloc, idx, cache=cache)
-        return uloc/(1-lower)/upper
+        return uloc / (1 - lower) / upper
 
     def _ppf(self, qloc, idx, lower, upper, cache):
         """
@@ -207,4 +216,4 @@ class Trunc(Distribution):
         upper = numpy.broadcast_to(upper, qloc.shape)
         lower = self._dist._get_fwd(lower, idx, cache=cache.copy())
         upper = self._dist._get_fwd(upper, idx, cache=cache.copy())
-        return self._dist._get_inv(qloc*upper*(1-lower)+lower, idx, cache=cache)
+        return self._dist._get_inv(qloc * upper * (1 - lower) + lower, idx, cache=cache)

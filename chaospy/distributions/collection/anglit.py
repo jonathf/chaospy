@@ -11,19 +11,19 @@ class anglit(SimpleDistribution):
         super(anglit, self).__init__()
 
     def _pdf(self, x):
-        return numpy.cos(2*x)
+        return numpy.cos(2 * x)
 
     def _cdf(self, x):
-        return numpy.sin(x+numpy.pi/4)**2.0
+        return numpy.sin(x + numpy.pi / 4) ** 2.0
 
     def _ppf(self, q):
-        return (numpy.arcsin(numpy.sqrt(q))-numpy.pi/4)
+        return numpy.arcsin(numpy.sqrt(q)) - numpy.pi / 4
 
     def _lower(self):
-        return -numpy.pi/4
+        return -numpy.pi / 4
 
     def _upper(self):
-        return numpy.pi/4
+        return numpy.pi / 4
 
 
 class Anglit(ShiftScaleDistribution):

@@ -50,6 +50,6 @@ def Kurt(poly, dist=None, fisher=True, **kws):
     if poly.isconstant():
         return numpy.full(poly.shape, numpy.nan)
 
-    poly = poly-E(poly, dist, **kws)
+    poly = poly - E(poly, dist, **kws)
     poly = numpoly.true_divide(poly, Std(poly, dist, **kws))
-    return numpy.asarray(E(poly**4, dist, **kws)-adjust)
+    return numpy.asarray(E(poly**4, dist, **kws) - adjust)

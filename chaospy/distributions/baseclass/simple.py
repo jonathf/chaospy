@@ -10,11 +10,11 @@ class SimpleDistribution(Distribution):
     """Distribution for the core probability distribution."""
 
     def __init__(
-            self,
-            parameters=None,
-            rotation=None,
-            exclusion=None,
-            repr_args=None,
+        self,
+        parameters=None,
+        rotation=None,
+        exclusion=None,
+        repr_args=None,
     ):
         """
         Args:
@@ -46,7 +46,6 @@ class SimpleDistribution(Distribution):
             repr_args=repr_args,
         )
 
-
     def get_parameters(self, idx, cache, assert_numerical=True):
         """
         Get distribution parameters.
@@ -70,7 +69,8 @@ class SimpleDistribution(Distribution):
 
         """
         parameters = super(SimpleDistribution, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+            idx, cache, assert_numerical=assert_numerical
+        )
         del parameters["cache"]
         del parameters["idx"]
         for key, value in parameters.items():
@@ -78,7 +78,8 @@ class SimpleDistribution(Distribution):
                 value = value._get_cache(idx, cache, get=0)
                 if isinstance(value, Distribution) and assert_numerical:
                     raise chaospy.UnsupportedFeature(
-                        "operation not supported for %s with dependencies" % self)
+                        "operation not supported for %s with dependencies" % self
+                    )
                 parameters[key] = value
         return parameters
 
@@ -97,19 +98,21 @@ class SimpleDistribution(Distribution):
         return parameters
 
     def get_mom_parameters(self):
-        parameters = self.get_parameters(
-            idx=None, cache={}, assert_numerical=False)
+        parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
         if any([isinstance(value, Distribution) for value in parameters.values()]):
             raise chaospy.UnsupportedFeature(
-                "operation not supported for %s with dependencies" % self)
+                "operation not supported for %s with dependencies" % self
+            )
         return parameters
 
     def _mom(self, kloc, **kwargs):
         """Default moment generator, throws error."""
         raise chaospy.UnsupportedFeature(
-            "%s: does not support analytical raw moments." % self)
+            "%s: does not support analytical raw moments." % self
+        )
 
     def _ttr(self, kloc, **kwargs):
         """Default TTR generator, throws error."""
         raise chaospy.UnsupportedFeature(
-            "%s: does not support analytical recurrence coefficients." % self)
+            "%s: does not support analytical recurrence coefficients." % self
+        )

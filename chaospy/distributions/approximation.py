@@ -6,15 +6,15 @@ import chaospy
 
 
 def approximate_inverse(
-        distribution,
-        idx,
-        qloc,
-        bounds=None,
-        cache=None,
-        parameters=None,
-        xloc0=None,
-        iterations=300,
-        tolerance=1e-12,
+    distribution,
+    idx,
+    qloc,
+    bounds=None,
+    cache=None,
+    parameters=None,
+    xloc0=None,
+    iterations=300,
+    tolerance=1e-12,
 ):
     """
     Calculate the approximation of the inverse Rosenblatt transformation.
@@ -78,27 +78,29 @@ def approximate_inverse(
         _lower, distribution._lower = distribution._lower, lambda **kws: xlower
         _upper, distribution._upper = distribution._upper, lambda **kws: xupper
 
-    xloc = xlower+qloc*(xlower+xupper) if xloc0 is None else xloc0
+    xloc = xlower + qloc * (xlower + xupper) if xloc0 is None else xloc0
     uloc = numpy.zeros(qloc.shape)
     ulower = -qloc
-    uupper = 1-qloc
+    uupper = 1 - qloc
     indices = numpy.ones(qloc.shape[-1], dtype=bool)
 
     cache_copy = cache.copy()
     parameters_copy = distribution._parameters.copy()
     if parameters is not None:
 
-        assert not any([isinstance(value, chaospy.Distribution)
-                        for value in parameters.values()])
+        assert not any(
+            [isinstance(value, chaospy.Distribution) for value in parameters.values()]
+        )
         distribution._parameters.update(parameters)
 
-    for idx_ in range(2*iterations):
+    for idx_ in range(2 * iterations):
 
         cache.clear()
         cache.update(cache_copy)
         # evaluate function:
         uloc = numpy.where(
-            indices, distribution._get_fwd(xloc, idx, cache)-qloc, uloc)
+            indices, distribution._get_fwd(xloc, idx, cache) - qloc, uloc
+        )
 
         # convergence criteria:
         indices &= numpy.abs(uloc) > tolerance
@@ -123,19 +125,20 @@ def approximate_inverse(
                 cache.update(cache_copy)
                 derivative = approximate_density(distribution, idx, xloc, cache)
             derivative = numpy.where(derivative, derivative, 1)
-            xloc_ = xloc-uloc/derivative
+            xloc_ = xloc - uloc / derivative
 
         # use binary search if Newton increment is outside bounds:
         weight = numpy.random.random()
-        xloc_ = numpy.where((xloc_ < xupper) & (xloc_ > xlower),
-                            xloc_, weight*xupper+(1-weight)*xlower)
+        xloc_ = numpy.where(
+            (xloc_ < xupper) & (xloc_ > xlower),
+            xloc_,
+            weight * xupper + (1 - weight) * xlower,
+        )
         xloc = numpy.where(indices, xloc_, xloc)
 
     else:
-        logger.warning(
-            "Too many iterations required to estimate inverse.")
-        logger.info("%d out of %d did not converge.",
-            numpy.sum(indices), len(indices))
+        logger.warning("Too many iterations required to estimate inverse.")
+        logger.info("%d out of %d did not converge.", numpy.sum(indices), len(indices))
         # print("Too many iterations required to estimate inverse.")
         # print("%d out of %d did not converge." % (numpy.sum(indices), len(indices)))
 
@@ -146,19 +149,16 @@ def approximate_inverse(
     if bounds is not None:
         distribution._lower = _lower
         distribution._upper = _upper
-    logger.debug("%s: ppf approx used %d steps", distribution, idx_/2)
+    logger.debug("%s: ppf approx used %d steps", distribution, idx_ / 2)
     # print("%s: ppf approx used %d steps" % (distribution, idx_/2))
     return xloc
+
 
 MOMENTS_QUADS = {}
 
 
 def approximate_moment(
-        distribution,
-        k_loc,
-        order=100000,
-        rule="clenshaw_curtis",
-        **kwargs
+    distribution, k_loc, order=100000, rule="clenshaw_curtis", **kwargs
 ):
     """
     Approximation method for estimation of raw statistical moments.
@@ -188,40 +188,41 @@ def approximate_moment(
     assert isinstance(distribution, chaospy.Distribution)
     k_loc = numpy.asarray(k_loc)
     if len(distribution) > 1:
-        assert not distribution.stochastic_dependent, (
-            "Dependent distributions does not support moment approximation.")
+        assert (
+            not distribution.stochastic_dependent
+        ), "Dependent distributions does not support moment approximation."
         assert len(k_loc) == len(distribution), "incorrect size of exponents"
-        return numpy.prod([
-            approximate_moment(distribution[idx], (k_loc[idx],),
-                               order=order, rule=rule, **kwargs)
-            for idx in range(len(distribution))
-        ], axis=0)
+        return numpy.prod(
+            [
+                approximate_moment(
+                    distribution[idx], (k_loc[idx],), order=order, rule=rule, **kwargs
+                )
+                for idx in range(len(distribution))
+            ],
+            axis=0,
+        )
 
     k_loc = tuple(k_loc.tolist())
-    assert all([isinstance(k, int) for k in k_loc]), (
-        "exponents must be integers: %s found" % type(k_loc[0]))
+    assert all(
+        [isinstance(k, int) for k in k_loc]
+    ), "exponents must be integers: %s found" % type(k_loc[0])
 
     order = int(1e5 if order is None else order)
     if (distribution, order) not in MOMENTS_QUADS:
         MOMENTS_QUADS[distribution, order] = chaospy.generate_quadrature(
-            order, distribution, rule=rule, **kwargs)
+            order, distribution, rule=rule, **kwargs
+        )
     X, W = MOMENTS_QUADS[distribution, order]
 
     if k_loc in distribution._mom_cache:
         return distribution._mom_cache[k_loc]
 
-    out = float(numpy.sum(numpy.prod(X.T**k_loc, 1)*W))
+    out = float(numpy.sum(numpy.prod(X.T**k_loc, 1) * W))
     distribution._mom_cache[k_loc] = out
     return out
 
 
-def approximate_density(
-        distribution,
-        idx,
-        xloc,
-        cache=None,
-        step_size=1e-7
-):
+def approximate_density(distribution, idx, xloc, cache=None, step_size=1e-7):
     """
     Approximate the probability density function.
 
@@ -258,21 +259,22 @@ def approximate_density(
     xloc = numpy.asfarray(xloc)
     assert xloc.ndim == 1
     lower, upper = numpy.min(xloc), numpy.max(xloc)
-    middle = .5*(lower+upper)
-    step_size = (numpy.where(xloc < middle, step_size, -step_size)*
-                 numpy.clip(numpy.abs(xloc), 1, None))
+    middle = 0.5 * (lower + upper)
+    step_size = numpy.where(xloc < middle, step_size, -step_size) * numpy.clip(
+        numpy.abs(xloc), 1, None
+    )
 
     cache1 = cache.copy()
     floc1 = distribution._get_fwd(xloc, idx, cache=cache1)
     cache2 = cache.copy()
-    floc2 = distribution._get_fwd(xloc+step_size, idx, cache=cache2)
-    floc = numpy.abs((floc2-floc1)/step_size)
+    floc2 = distribution._get_fwd(xloc + step_size, idx, cache=cache2)
+    floc = numpy.abs((floc2 - floc1) / step_size)
 
     # weave a history of pdf from two cdf streams
     for key in set(cache1).difference(cache):
-        cache[key] = cache1[key][0], ((cache2[key][1]-cache1[key][1])/
-                                      (cache2[key][0]-cache1[key][0]))
-
+        cache[key] = cache1[key][0], (
+            (cache2[key][1] - cache1[key][1]) / (cache2[key][0] - cache1[key][0])
+        )
 
     assert floc.shape == xloc.shape
     return floc

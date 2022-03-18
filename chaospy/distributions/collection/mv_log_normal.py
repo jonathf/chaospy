@@ -49,10 +49,10 @@ class MvLogNormal(Distribution):
     """
 
     def __init__(
-            self,
-            mu,
-            sigma,
-            rotation=None,
+        self,
+        mu,
+        sigma,
+        rotation=None,
     ):
         repr_args = [mu, sigma]
         dependencies, parameters, rotation = chaospy.declare_dependencies(
@@ -63,8 +63,7 @@ class MvLogNormal(Distribution):
         )
 
         sigma = parameters["sigma"]
-        assert sigma.ndim == 2, (
-            "Covariance must either be scalar, vector or matrix")
+        assert sigma.ndim == 2, "Covariance must either be scalar, vector or matrix"
 
         self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
         self._psigma = self._permute.dot(sigma).dot(self._permute.T)
@@ -81,7 +80,8 @@ class MvLogNormal(Distribution):
 
     def get_parameters(self, idx, cache, assert_numerical=True):
         parameters = super(MvLogNormal, self).get_parameters(
-            idx, cache, assert_numerical=assert_numerical)
+            idx, cache, assert_numerical=assert_numerical
+        )
         if idx is None:
             parameters.pop("idx")
         return parameters
@@ -92,15 +92,20 @@ class MvLogNormal(Distribution):
             covinv = numpy.linalg.inv(self._psigma[:dim, :dim])
             mu_transform = self._psigma[dim, :dim].dot(covinv)
             assert numpy.isfinite(sigma).all(), (dim, self._psigma)
-            conditions = [self._get_cache(dim_, cache, get=0)
-                          for dim_ in self._rotation[:dim]]
-            assert not any([isinstance(condition, chaospy.Distribution)
-                            for condition in conditions])
-            mu = mu[numpy.asarray(self._rotation[:dim+1])]
-            mu = mu[dim]+mu_transform.dot((numpy.vstack(conditions).T-mu[:dim]).T)
+            conditions = [
+                self._get_cache(dim_, cache, get=0) for dim_ in self._rotation[:dim]
+            ]
+            assert not any(
+                [
+                    isinstance(condition, chaospy.Distribution)
+                    for condition in conditions
+                ]
+            )
+            mu = mu[numpy.asarray(self._rotation[: dim + 1])]
+            mu = mu[dim] + mu_transform.dot((numpy.vstack(conditions).T - mu[:dim]).T)
             sigma = numpy.sqrt(
-                self._psigma[dim, dim]-
-                self._psigma[dim, :dim].dot(covinv).dot(self._psigma[:dim, dim])
+                self._psigma[dim, dim]
+                - self._psigma[dim, :dim].dot(covinv).dot(self._psigma[:dim, dim])
             )
         else:
             mu = mu[dim]
@@ -108,45 +113,51 @@ class MvLogNormal(Distribution):
 
         out = numpy.zeros(xloc.shape)
         indices = xloc > 0
-        zloc = (numpy.log(xloc[indices])-mu)/sigma
-        out[indices] = 1/numpy.sqrt(2*numpy.pi)*numpy.exp(-zloc**2/2.)/xloc[indices]
+        zloc = (numpy.log(xloc[indices]) - mu) / sigma
+        out[indices] = (
+            1 / numpy.sqrt(2 * numpy.pi) * numpy.exp(-(zloc**2) / 2.0) / xloc[indices]
+        )
         return out
 
     def _cdf(self, xloc, idx, mu, sigma, cache):
         dim = self._rotation.index(idx)
-        conditions = [self._get_cache(dim_, cache, get=0)
-                      for dim_ in self._rotation[:dim]]
-        assert not any([isinstance(condition, chaospy.Distribution)
-                        for condition in conditions])
-        yloc = numpy.vstack(conditions+[xloc])
-        yloc = numpy.log(numpy.abs(yloc) + numpy.where(yloc <= 0, 1., 0.))
-        mu = mu[numpy.asarray(self._rotation[:len(yloc)])]
-        loc = (yloc.T-mu).T
-        zloc = self._fwd_transform[idx, :len(yloc)].dot(loc)
+        conditions = [
+            self._get_cache(dim_, cache, get=0) for dim_ in self._rotation[:dim]
+        ]
+        assert not any(
+            [isinstance(condition, chaospy.Distribution) for condition in conditions]
+        )
+        yloc = numpy.vstack(conditions + [xloc])
+        yloc = numpy.log(numpy.abs(yloc) + numpy.where(yloc <= 0, 1.0, 0.0))
+        mu = mu[numpy.asarray(self._rotation[: len(yloc)])]
+        loc = (yloc.T - mu).T
+        zloc = self._fwd_transform[idx, : len(yloc)].dot(loc)
         out = special.ndtr(zloc)
-        return numpy.where(xloc <= 0, 0., out)
+        return numpy.where(xloc <= 0, 0.0, out)
 
     def _ppf(self, uloc, idx, mu, sigma, cache):
         dim = self._rotation.index(idx)
-        conditions = [self._get_cache(dim_, cache, get=1)
-                      for dim_ in self._rotation[:dim]]
-        assert not any([isinstance(condition, chaospy.Distribution)
-                        for condition in conditions])
-        uloc = numpy.vstack(conditions+[uloc])
+        conditions = [
+            self._get_cache(dim_, cache, get=1) for dim_ in self._rotation[:dim]
+        ]
+        assert not any(
+            [isinstance(condition, chaospy.Distribution) for condition in conditions]
+        )
+        uloc = numpy.vstack(conditions + [uloc])
         zloc = special.ndtri(uloc)
-        loc = self._inv_transform[idx, :len(uloc)].dot(zloc)
-        xloc = loc+mu[idx]
+        loc = self._inv_transform[idx, : len(uloc)].dot(zloc)
+        xloc = loc + mu[idx]
         out = numpy.e**xloc
         return out
 
     def _mom(self, kloc, mu, sigma, cache):
-        output =  numpy.dot(kloc, mu)
-        output += .5*numpy.dot(numpy.dot(kloc, sigma), kloc)
-        output =  numpy.e**(output)
+        output = numpy.dot(kloc, mu)
+        output += 0.5 * numpy.dot(numpy.dot(kloc, sigma), kloc)
+        output = numpy.e ** (output)
         return output
 
     def _lower(self, idx, mu, sigma, cache):
-        return 0.
+        return 0.0
 
     def _upper(self, idx, mu, sigma, cache):
-        return numpy.exp(7.1*numpy.sqrt(sigma[idx, idx])) + mu[idx]
+        return numpy.exp(7.1 * numpy.sqrt(sigma[idx, idx])) + mu[idx]

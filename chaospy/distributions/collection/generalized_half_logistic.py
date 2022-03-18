@@ -12,26 +12,26 @@ class generalized_half_logistic(SimpleDistribution):
         super(generalized_half_logistic, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        limit = 1.0/c
-        tmp = (1-c*x)
-        tmp0 = tmp**(limit-1)
-        tmp2 = tmp0*tmp
-        return 2*tmp0/(1+tmp2)**2
+        limit = 1.0 / c
+        tmp = 1 - c * x
+        tmp0 = tmp ** (limit - 1)
+        tmp2 = tmp0 * tmp
+        return 2 * tmp0 / (1 + tmp2) ** 2
 
     def _cdf(self, x, c):
-        limit = 1.0/c
-        tmp = (1-c*x)
-        tmp2 = tmp**(limit)
-        return (1.0-tmp2)/(1+tmp2)
+        limit = 1.0 / c
+        tmp = 1 - c * x
+        tmp2 = tmp ** (limit)
+        return (1.0 - tmp2) / (1 + tmp2)
 
     def _ppf(self, q, c):
-        return 1.0/c*(1-((1.0-q)/(1.0+q))**c)
+        return 1.0 / c * (1 - ((1.0 - q) / (1.0 + q)) ** c)
 
     def _lower(self, c):
         return 0.0
 
     def _upper(self, c):
-        return 1/numpy.where(c < 10**-10, 10**-10, c)
+        return 1 / numpy.where(c < 10**-10, 10**-10, c)
 
 
 class GeneralizedHalfLogistic(ShiftScaleDistribution):

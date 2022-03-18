@@ -16,26 +16,35 @@ class f(SimpleDistribution):
 
     def _pdf(self, x, dfn, dfd, nc):
         n1, n2 = dfn, dfd
-        term = -nc/2.+nc*n1*x/(2*(n2+n1*x)) + special.gammaln(n1/2.)+special.gammaln(1+n2/2.)
-        term -= special.gammaln((n1+n2)/2.)
+        term = (
+            -nc / 2.0
+            + nc * n1 * x / (2 * (n2 + n1 * x))
+            + special.gammaln(n1 / 2.0)
+            + special.gammaln(1 + n2 / 2.0)
+        )
+        term -= special.gammaln((n1 + n2) / 2.0)
         Px = numpy.exp(term)
-        Px *= n1**(n1/2.) * n2**(n2/2.) * x**(n1/2.-1)
-        Px *= (n2+n1*x)**(-(n1+n2)/2.)
-        Px *= special.assoc_laguerre(-nc*n1*x/(2.*(n2+n1*x)), n2/2., n1/2.-1)
-        Px /= special.beta(n1/2., n2/2.)
+        Px *= n1 ** (n1 / 2.0) * n2 ** (n2 / 2.0) * x ** (n1 / 2.0 - 1)
+        Px *= (n2 + n1 * x) ** (-(n1 + n2) / 2.0)
+        Px *= special.assoc_laguerre(
+            -nc * n1 * x / (2.0 * (n2 + n1 * x)), n2 / 2.0, n1 / 2.0 - 1
+        )
+        Px /= special.beta(n1 / 2.0, n2 / 2.0)
         return Px
 
     def _cdf(self, x, dfn, dfd, nc):
         return special.ncfdtr(dfn, dfd, nc, x)
 
     def _ppf(self, q, dfn, dfd, nc):
-        return numpy.where(q == 1, self._upper(dfn, dfd, nc), special.ncfdtri(dfn, dfd, nc, q))
+        return numpy.where(
+            q == 1, self._upper(dfn, dfd, nc), special.ncfdtri(dfn, dfd, nc, q)
+        )
 
     def _lower(self, dfn, dfd, nc):
-        return 0.
+        return 0.0
 
     def _upper(self, dfn, dfd, nc):
-        return special.ncfdtri(dfn, dfd, nc, 1-1e-10)
+        return special.ncfdtri(dfn, dfd, nc, 1 - 1e-10)
 
 
 class F(ShiftScaleDistribution):

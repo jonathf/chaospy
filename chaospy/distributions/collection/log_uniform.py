@@ -11,13 +11,13 @@ class log_uniform(SimpleDistribution):
         super(log_uniform, self).__init__(dict(lo=lo, up=up))
 
     def _pdf(self, x, lo, up):
-        return 1./(x*(up-lo))
+        return 1.0 / (x * (up - lo))
 
     def _cdf(self, x, lo, up):
-        return (numpy.log(x)-lo)/(up-lo)
+        return (numpy.log(x) - lo) / (up - lo)
 
     def _ppf(self, q, lo, up):
-        return numpy.e**(q*(up-lo) + lo)
+        return numpy.e ** (q * (up - lo) + lo)
 
     def _lower(self, lo, up):
         return numpy.e**lo
@@ -26,7 +26,9 @@ class log_uniform(SimpleDistribution):
         return numpy.e**up
 
     def _mom(self, k, lo, up):
-        return ((numpy.e**(up*k)-numpy.e**(lo*k))/((up-lo)*(k+(k==0))))**(k!=0)
+        return (
+            (numpy.e ** (up * k) - numpy.e ** (lo * k)) / ((up - lo) * (k + (k == 0)))
+        ) ** (k != 0)
 
 
 class LogUniform(ShiftScaleDistribution):

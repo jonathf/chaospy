@@ -41,7 +41,7 @@ def grid(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, numpy.where(order > 0, 3**order-1, 0), order)
+    order = numpy.where(growth, numpy.where(order > 0, 3**order - 1, 0), order)
     return hypercube_quadrature(
         quad_func=grid_simple,
         order=order,
@@ -57,6 +57,6 @@ def grid_simple(order):
     Use :func:`chaospy.quadrature.grid` instead.
     """
     order = int(order)
-    abscissas = numpy.linspace(0, 1, 2*order+3)[1::2]
-    weights = numpy.full(order+1, 1./(order+1))
+    abscissas = numpy.linspace(0, 1, 2 * order + 3)[1::2]
+    weights = numpy.full(order + 1, 1.0 / (order + 1))
     return abscissas, weights

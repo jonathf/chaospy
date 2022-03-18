@@ -12,8 +12,9 @@ class nataf(Distribution):
     def __init__(self, covariance, rotation=None):
         covariance = numpy.asarray(covariance)
         assert covariance.ndim == 2, "Covariance must be a matrix"
-        assert covariance.shape[0] == covariance.shape[1], (
-            "Parameters 'covariance' not a square matrix.")
+        assert (
+            covariance.shape[0] == covariance.shape[1]
+        ), "Parameters 'covariance' not a square matrix."
 
         dependencies, _, rotation = chaospy.declare_dependencies(
             self,
@@ -21,7 +22,9 @@ class nataf(Distribution):
             rotation=rotation,
             dependency_type="accumulate",
         )
-        correlation = covariance/numpy.sqrt(numpy.outer(numpy.diag(covariance), numpy.diag(covariance)))
+        correlation = covariance / numpy.sqrt(
+            numpy.outer(numpy.diag(covariance), numpy.diag(covariance))
+        )
         self._permute = numpy.eye(len(rotation), dtype=int)[rotation]
         self._correlation = self._permute.dot(correlation).dot(self._permute.T)
         cholesky = numpy.linalg.cholesky(self._correlation)
@@ -37,34 +40,38 @@ class nataf(Distribution):
 
     def _cdf(self, xloc, idx, cache):
         dim = self._rotation.index(idx)
-        conditions = [self._get_cache(dim_, cache, get=0)
-                      for dim_ in self._rotation[:dim]]
-        assert not any([isinstance(condition, chaospy.Distribution)
-                        for condition in conditions])
-        xloc = numpy.vstack(conditions+[xloc])
-        zloc = self._fwd_transform[idx, :len(xloc)].dot(special.ndtri(xloc))
+        conditions = [
+            self._get_cache(dim_, cache, get=0) for dim_ in self._rotation[:dim]
+        ]
+        assert not any(
+            [isinstance(condition, chaospy.Distribution) for condition in conditions]
+        )
+        xloc = numpy.vstack(conditions + [xloc])
+        zloc = self._fwd_transform[idx, : len(xloc)].dot(special.ndtri(xloc))
         out = special.ndtr(zloc)
         return out
 
     def _ppf(self, qloc, idx, cache):
         dim = self._rotation.index(idx)
-        conditions = [self._get_cache(dim_, cache, get=1)
-                      for dim_ in self._rotation[:dim]]
-        assert not any([isinstance(condition, chaospy.Distribution)
-                        for condition in conditions])
-        qloc = numpy.vstack(conditions+[qloc])
+        conditions = [
+            self._get_cache(dim_, cache, get=1) for dim_ in self._rotation[:dim]
+        ]
+        assert not any(
+            [isinstance(condition, chaospy.Distribution) for condition in conditions]
+        )
+        qloc = numpy.vstack(conditions + [qloc])
         zloc = special.ndtri(qloc)
-        out = special.ndtr(self._inv_transform[idx, :len(qloc)].dot(zloc))
+        out = special.ndtr(self._inv_transform[idx, : len(qloc)].dot(zloc))
         return out
 
     def _pdf(self, xloc, idx, cache):
         raise chaospy.UnsupportedFeature("Copula not supported.")
 
     def _lower(self, idx, cache):
-        return 0.
+        return 0.0
 
     def _upper(self, idx, cache):
-        return 1.
+        return 1.0
 
 
 class Nataf(CopulaDistribution):

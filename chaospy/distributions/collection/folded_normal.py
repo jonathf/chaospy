@@ -12,16 +12,20 @@ class folded_normal(SimpleDistribution):
         super(folded_normal, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return numpy.sqrt(2.0/numpy.pi)*numpy.cosh(c*x)*numpy.exp(-(x*x+c*c)/2.0)
+        return (
+            numpy.sqrt(2.0 / numpy.pi)
+            * numpy.cosh(c * x)
+            * numpy.exp(-(x * x + c * c) / 2.0)
+        )
 
     def _cdf(self, x, c):
-        return special.ndtr(x-c)+special.ndtr(x+c)-1.0
+        return special.ndtr(x - c) + special.ndtr(x + c) - 1.0
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return 8+c
+        return 8 + c
 
 
 class FoldedNormal(ShiftScaleDistribution):
@@ -57,7 +61,7 @@ class FoldedNormal(ShiftScaleDistribution):
 
     def __init__(self, mu=0, scale=1, shift=0):
         super(FoldedNormal, self).__init__(
-            dist=folded_normal(mu-shift),
+            dist=folded_normal(mu - shift),
             scale=scale,
             shift=shift,
             repr_args=[mu],

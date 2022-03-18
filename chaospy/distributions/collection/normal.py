@@ -18,7 +18,7 @@ class normal(SimpleDistribution):
         return 8.22
 
     def _pdf(self, x):
-        return (2*numpy.pi)**(-.5)*numpy.e**(-x**2/2.)
+        return (2 * numpy.pi) ** (-0.5) * numpy.e ** (-(x**2) / 2.0)
 
     def _cdf(self, x):
         return special.ndtr(x)
@@ -27,10 +27,10 @@ class normal(SimpleDistribution):
         return special.ndtri(x)
 
     def _mom(self, k):
-        return .5*special.factorial2(k-1)*(1+(-1)**k)
+        return 0.5 * special.factorial2(k - 1) * (1 + (-1) ** k)
 
     def _ttr(self, n):
-        return 0., 1.*n
+        return 0.0, 1.0 * n
 
 
 class Normal(ShiftScaleDistribution):

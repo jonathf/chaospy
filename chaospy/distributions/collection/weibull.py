@@ -12,22 +12,24 @@ class weibull(SimpleDistribution):
         super(weibull, self).__init__(dict(a=a))
 
     def _pdf(self, x, a):
-        return a*x**(a-1)*numpy.e**(-x**a)
+        return a * x ** (a - 1) * numpy.e ** (-(x**a))
 
     def _cdf(self, x, a):
-        return (1-numpy.e**(-x**a))
+        return 1 - numpy.e ** (-(x**a))
 
     def _ppf(self, q, a):
-        return (-numpy.log(1-q+1*(q==1)))**(1./a)*(q!=1)+30.**(1./a)*(q==1)
+        return (-numpy.log(1 - q + 1 * (q == 1))) ** (1.0 / a) * (q != 1) + 30.0 ** (
+            1.0 / a
+        ) * (q == 1)
 
     def _mom(self, k, a):
-        return special.gamma(1.+k*1./a)
+        return special.gamma(1.0 + k * 1.0 / a)
 
     def _lower(self, a):
-        return 0.
+        return 0.0
 
     def _upper(self, a):
-        return 30.**(1./a)
+        return 30.0 ** (1.0 / a)
 
 
 class Weibull(ShiftScaleDistribution):

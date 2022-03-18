@@ -13,19 +13,19 @@ class gompertz(SimpleDistribution):
 
     def _pdf(self, x, c):
         ex = numpy.exp(x)
-        return c*ex*numpy.exp(-c*(ex-1))
+        return c * ex * numpy.exp(-c * (ex - 1))
 
     def _cdf(self, x, c):
-        return 1.0-numpy.exp(-c*(numpy.exp(x)-1))
+        return 1.0 - numpy.exp(-c * (numpy.exp(x) - 1))
 
     def _ppf(self, q, c):
-        return numpy.log(1-1.0/c*numpy.log(1-q))
+        return numpy.log(1 - 1.0 / c * numpy.log(1 - q))
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return numpy.log(1+27.7/c)
+        return numpy.log(1 + 27.7 / c)
 
 
 class Gompertz(ShiftScaleDistribution):

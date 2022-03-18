@@ -45,18 +45,18 @@ class MvStudentT(MeanCovarianceDistribution):
     """
 
     def __init__(
-            self,
-            df,
-            mu,
-            sigma=None,
-            rotation=None,
+        self,
+        df,
+        mu,
+        sigma=None,
+        rotation=None,
     ):
         super(MvStudentT, self).__init__(
             dist=student_t(df),
             mean=mu,
             covariance=sigma,
             rotation=rotation,
-            repr_args=chaospy.format_repr_kwargs(df=(df, None))+
-                      chaospy.format_repr_kwargs(mu=(mu, None))+
-                      chaospy.format_repr_kwargs(sigma=(sigma, None)),
+            repr_args=chaospy.format_repr_kwargs(df=(df, None))
+            + chaospy.format_repr_kwargs(mu=(mu, None))
+            + chaospy.format_repr_kwargs(sigma=(sigma, None)),
         )

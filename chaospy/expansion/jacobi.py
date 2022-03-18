@@ -3,14 +3,14 @@ import chaospy
 
 
 def jacobi(
-        order,
-        alpha,
-        beta,
-        lower=-1,
-        upper=1,
-        physicist=False,
-        normed=False,
-        retall=False,
+    order,
+    alpha,
+    beta,
+    lower=-1,
+    upper=1,
+    physicist=False,
+    normed=False,
+    retall=False,
 ):
     """
     Jacobi polynomial expansion.
@@ -29,12 +29,18 @@ def jacobi(
     """
     multiplier = 1
     if physicist:
-        multiplier = numpy.arange(1, order+1)
-        multiplier = ((2*multiplier+alpha+beta-1)*(2*multiplier+alpha+beta)/
-                      (2*multiplier*(multiplier+alpha+beta)))
+        multiplier = numpy.arange(1, order + 1)
+        multiplier = (
+            (2 * multiplier + alpha + beta - 1)
+            * (2 * multiplier + alpha + beta)
+            / (2 * multiplier * (multiplier + alpha + beta))
+        )
     _, [polynomials], [norms] = chaospy.recurrence.analytical_stieltjes(
-        order, chaospy.Beta(alpha, beta, lower=lower, upper=upper), multiplier=multiplier)
+        order,
+        chaospy.Beta(alpha, beta, lower=lower, upper=upper),
+        multiplier=multiplier,
+    )
     if normed:
         polynomials = chaospy.true_divide(polynomials, numpy.sqrt(norms))
-        norms[:] = 1.
+        norms[:] = 1.0
     return (polynomials, norms) if retall else polynomials

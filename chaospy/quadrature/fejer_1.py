@@ -56,7 +56,7 @@ def fejer_1(order, domain=(0, 1), growth=False, segments=1):
 
     """
     order = numpy.asarray(order)
-    order = numpy.where(growth, 2*3**order-1, order)
+    order = numpy.where(growth, 2 * 3**order - 1, order)
     return hypercube_quadrature(
         quad_func=fejer_1_simple,
         order=order,
@@ -70,22 +70,26 @@ def fejer_1_simple(order):
     """Backend for Fejer type I quadrature."""
     order = int(order)
     if order == 0:
-        return numpy.array([.5]), numpy.array([1.])
+        return numpy.array([0.5]), numpy.array([1.0])
     order += 1
 
-    abscissas = -0.5*numpy.cos(numpy.pi*(numpy.arange(order)+0.5)/order)+0.5
+    abscissas = -0.5 * numpy.cos(numpy.pi * (numpy.arange(order) + 0.5) / order) + 0.5
 
     steps = numpy.arange(1, order, 2)
     length = len(steps)
-    remains = order-length
+    remains = order - length
 
     kappa = numpy.arange(remains)
-    beta = numpy.hstack([2*numpy.exp(1j*numpy.pi*kappa/order)/(1-4*kappa**2),
-                         numpy.zeros(length+1)])
-    beta = beta[:-1]+numpy.conjugate(beta[:0:-1])
+    beta = numpy.hstack(
+        [
+            2 * numpy.exp(1j * numpy.pi * kappa / order) / (1 - 4 * kappa**2),
+            numpy.zeros(length + 1),
+        ]
+    )
+    beta = beta[:-1] + numpy.conjugate(beta[:0:-1])
 
     weights = numpy.fft.ifft(beta)
     assert max(weights.imag) < 1e-15
-    weights = weights.real/2.
+    weights = weights.real / 2.0
 
     return abscissas, weights

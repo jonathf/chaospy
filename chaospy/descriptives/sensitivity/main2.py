@@ -46,15 +46,15 @@ def Sens_m2(poly, dist, **kws):
         out[:, :, valids] = Sens_m2(poly[valids], dist, **kws)
         return out
 
-    conditional_v = numpy.zeros((dim,)+poly.shape)
+    conditional_v = numpy.zeros((dim,) + poly.shape)
     for idx, unit_vec in enumerate(numpy.eye(dim, dtype=int)):
         conditional_e = E_cond(poly, unit_vec, dist, **kws)
         conditional_v[idx] = Var(conditional_e, dist, **kws)
 
     for idx, unit_vec1 in enumerate(numpy.eye(dim, dtype=int)):
-        for idy, unit_vec2 in enumerate(numpy.eye(dim, dtype=int)[idx+1:], idx+1):
+        for idy, unit_vec2 in enumerate(numpy.eye(dim, dtype=int)[idx + 1 :], idx + 1):
 
-            conditional_e = E_cond(poly, unit_vec1+unit_vec2, dist, **kws)
+            conditional_e = E_cond(poly, unit_vec1 + unit_vec2, dist, **kws)
             out[idx, idy] = Var(conditional_e, dist, **kws)
             out[idx, idy] -= conditional_v[idx]
             out[idx, idy] -= conditional_v[idy]

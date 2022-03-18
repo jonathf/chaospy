@@ -85,13 +85,13 @@ from .utils import combine_quadrature
 
 
 def kronrod(
-        order,
-        dist,
-        recurrence_algorithm="stieltjes",
-        rule="clenshaw_curtis",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    recurrence_algorithm="stieltjes",
+    rule="clenshaw_curtis",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Generate Gauss-Kronrod quadrature abscissas and weights.
@@ -166,7 +166,7 @@ def kronrod(
         array([0.031, 0.085, 0.133, 0.163, 0.173, 0.163, 0.133, 0.085, 0.031])
 
     """
-    length = int(numpy.ceil(3*(order+1) / 2.0))
+    length = int(numpy.ceil(3 * (order + 1) / 2.0))
     coefficients = chaospy.construct_recurrence_coefficients(
         order=length,
         dist=dist,
@@ -205,47 +205,48 @@ def kronrod_jacobi(order, coeffs):
     if not order:
         return kronrod_jacobi(1, coeffs)[:, :1]
 
-    bound = int(math.floor(3*order/2.0))+1
-    coeffs_a = numpy.zeros(2*order+1)
+    bound = int(math.floor(3 * order / 2.0)) + 1
+    coeffs_a = numpy.zeros(2 * order + 1)
     coeffs_a[:bound] = coeffs[0][:bound]
 
-    bound = int(math.ceil(3*order/2.0))+1
-    coeffs_b = numpy.zeros(2*order+1)
+    bound = int(math.ceil(3 * order / 2.0)) + 1
+    coeffs_b = numpy.zeros(2 * order + 1)
     coeffs_b[:bound] = coeffs[1][:bound]
 
-    sigma = numpy.zeros((2, order//2+2))
-    sigma[1, 1] = coeffs_b[order+1]
+    sigma = numpy.zeros((2, order // 2 + 2))
+    sigma[1, 1] = coeffs_b[order + 1]
 
-    for idx in range(order-1):
-        idy = numpy.arange((idx+1)//2, -1, -1)
-        sigma[0, idy+1] = numpy.cumsum(
-            (coeffs_a[idy+order+1]-coeffs_a[idx-idy])*sigma[1, idy+1]+
-            coeffs_b[idy+order+1]*sigma[0, idy]-
-            coeffs_b[idx-idy]*sigma[0, idy+1]
+    for idx in range(order - 1):
+        idy = numpy.arange((idx + 1) // 2, -1, -1)
+        sigma[0, idy + 1] = numpy.cumsum(
+            (coeffs_a[idy + order + 1] - coeffs_a[idx - idy]) * sigma[1, idy + 1]
+            + coeffs_b[idy + order + 1] * sigma[0, idy]
+            - coeffs_b[idx - idy] * sigma[0, idy + 1]
         )
         sigma = numpy.roll(sigma, 1, axis=0)
 
-    sigma[0, 1:order//2+2] = sigma[0, :order//2+1]
-    for idx in range(order-1, 2*order-2):
-        idy = numpy.arange(idx-order+1, (idx-1)//2+1)
-        j = order-1-idx+idy
-        sigma[0, j+1] = numpy.cumsum(
-            -(coeffs_a[idy+order+1]-coeffs_a[idx-idy])*sigma[1, j+1]-
-            coeffs_b[idy+order+1]*sigma[0, j+1]+
-            coeffs_b[idx-idy]*sigma[0, j+2]
+    sigma[0, 1 : order // 2 + 2] = sigma[0, : order // 2 + 1]
+    for idx in range(order - 1, 2 * order - 2):
+        idy = numpy.arange(idx - order + 1, (idx - 1) // 2 + 1)
+        j = order - 1 - idx + idy
+        sigma[0, j + 1] = numpy.cumsum(
+            -(coeffs_a[idy + order + 1] - coeffs_a[idx - idy]) * sigma[1, j + 1]
+            - coeffs_b[idy + order + 1] * sigma[0, j + 1]
+            + coeffs_b[idx - idy] * sigma[0, j + 2]
         )
         j = j[-1]
-        idy = (idx+1)//2
-        if idx%2 == 0:
-            coeffs_a[idy+order+1] = (
-                coeffs_a[idy]+
-                (sigma[0, j+1]-coeffs_b[idy+order+1]*sigma[0, j+2])/
-                sigma[1, j+2]
+        idy = (idx + 1) // 2
+        if idx % 2 == 0:
+            coeffs_a[idy + order + 1] = (
+                coeffs_a[idy]
+                + (sigma[0, j + 1] - coeffs_b[idy + order + 1] * sigma[0, j + 2])
+                / sigma[1, j + 2]
             )
         else:
-            coeffs_b[idy+order+1] = sigma[0, j+1]/sigma[0, j+2]
+            coeffs_b[idy + order + 1] = sigma[0, j + 1] / sigma[0, j + 2]
         sigma = numpy.roll(sigma, 1, axis=0)
 
-    coeffs_a[2*order] = (coeffs_a[order-1]-
-                         coeffs_b[2*order]*sigma[0, 1]/sigma[1, 1])
+    coeffs_a[2 * order] = (
+        coeffs_a[order - 1] - coeffs_b[2 * order] * sigma[0, 1] / sigma[1, 1]
+    )
     return numpy.asfarray([coeffs_a, coeffs_b])

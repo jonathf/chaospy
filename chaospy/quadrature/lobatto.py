@@ -40,13 +40,13 @@ from .utils import combine_quadrature
 
 
 def lobatto(
-        order,
-        dist,
-        recurrence_algorithm="stieltjes",
-        rule="fejer_2",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    recurrence_algorithm="stieltjes",
+    rule="fejer_2",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Generate the abscissas and weights in Gauss-Loboto quadrature.
@@ -101,10 +101,10 @@ def lobatto(
     """
     assert not rule.startswith("gauss"), "recursive Gaussian quadrature call"
     if order == 0:
-        return dist.lower.reshape(1, -1), numpy.array([1.])
+        return dist.lower.reshape(1, -1), numpy.array([1.0])
 
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=2*order-1,
+        order=2 * order - 1,
         dist=dist,
         recurrence_algorithm=recurrence_algorithm,
         rule=rule,
@@ -112,8 +112,10 @@ def lobatto(
         scaling=scaling,
         n_max=n_max,
     )
-    coefficients = [_lobatto(coeffs, (lo, up))
-                    for coeffs, lo, up in zip(coefficients, dist.lower, dist.upper)]
+    coefficients = [
+        _lobatto(coeffs, (lo, up))
+        for coeffs, lo, up in zip(coefficients, dist.lower, dist.upper)
+    ]
     abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
 
     return combine_quadrature(abscissas, weights)
@@ -140,9 +142,9 @@ def _lobatto(coefficients, preassigned):
     """
     alpha = numpy.array(coefficients[0])
     beta = numpy.array(coefficients[1])
-    vec_en = numpy.zeros(len(alpha)-1)
+    vec_en = numpy.zeros(len(alpha) - 1)
     vec_en[-1] = 1
-    mat_a1 = numpy.vstack((numpy.sqrt(beta), alpha-preassigned[0]))
+    mat_a1 = numpy.vstack((numpy.sqrt(beta), alpha - preassigned[0]))
     mat_j1 = numpy.vstack((mat_a1[:, 0:-1], mat_a1[0, 1:]))
     mat_a2 = numpy.vstack((numpy.sqrt(beta), alpha - preassigned[1]))
     mat_j2 = numpy.vstack((mat_a2[:, 0:-1], mat_a2[0, 1:]))

@@ -11,13 +11,13 @@ class cauchy(SimpleDistribution):
         super(cauchy, self).__init__()
 
     def _pdf(self, x):
-        return 1.0/numpy.pi/(1.0+x*x)
+        return 1.0 / numpy.pi / (1.0 + x * x)
 
     def _cdf(self, x):
-        return 0.5 + 1.0/numpy.pi*numpy.arctan(x)
+        return 0.5 + 1.0 / numpy.pi * numpy.arctan(x)
 
     def _ppf(self, q):
-        return numpy.tan(numpy.pi*q-numpy.pi/2.0)
+        return numpy.tan(numpy.pi * q - numpy.pi / 2.0)
 
     def _lower(self):
         return -3e13

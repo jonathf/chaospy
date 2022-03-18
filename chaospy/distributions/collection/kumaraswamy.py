@@ -13,23 +13,27 @@ class kumaraswamy(SimpleDistribution):
         super(kumaraswamy, self).__init__(dict(a=a, b=b))
 
     def _pdf(self, x, a, b):
-        return a*b*x**(a-1)*(1-x**a)**(b-1)
+        return a * b * x ** (a - 1) * (1 - x**a) ** (b - 1)
 
     def _cdf(self, x, a, b):
-        return 1-(1-x**a)**b
+        return 1 - (1 - x**a) ** b
 
     def _ppf(self, q, a, b):
-        return (1-(1-q)**(1./b))**(1./a)
+        return (1 - (1 - q) ** (1.0 / b)) ** (1.0 / a)
 
     def _mom(self, k, a, b):
-        return (b*special.gamma(1+k*1./a)*special.gamma(b)/
-                special.gamma(1+b+k*1./a))
+        return (
+            b
+            * special.gamma(1 + k * 1.0 / a)
+            * special.gamma(b)
+            / special.gamma(1 + b + k * 1.0 / a)
+        )
 
     def _lower(self, a, b):
-        return 0.
+        return 0.0
 
     def _upper(self, a, b):
-        return 1.
+        return 1.0
 
 
 class Kumaraswamy(LowerUpperDistribution):

@@ -5,14 +5,7 @@ import numpy
 import numpoly
 
 
-def fit_quadrature(
-        orth,
-        nodes,
-        weights,
-        solves,
-        retall=False,
-        norms=None
-):
+def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None):
     """
     Fit polynomial chaos expansion using spectral projection.
 
@@ -61,18 +54,20 @@ def fit_quadrature(
     solves = solves.reshape(len(solves), -1)
 
     ovals = orth(*nodes)
-    vals1 = [(val*solves.T*weights).T for val in ovals]
+    vals1 = [(val * solves.T * weights).T for val in ovals]
 
     if norms is None:
-        norms = numpy.sum(ovals**2*weights, -1)
+        norms = numpy.sum(ovals**2 * weights, -1)
     norms = numpy.asfarray(norms)
     assert norms.ndim == 1
 
-    coeffs = (numpy.sum(vals1, 1).T/norms).T
+    coeffs = (numpy.sum(vals1, 1).T / norms).T
     coeffs = coeffs.reshape(len(coeffs), *shape)
-    approx_model = numpoly.sum(orth*coeffs.T, -1).T
+    approx_model = numpoly.sum(orth * coeffs.T, -1).T
 
-    choices = {0: approx_model,
-               1: (approx_model, coeffs),
-               2: (approx_model, coeffs, ovals)}
+    choices = {
+        0: approx_model,
+        1: (approx_model, coeffs),
+        2: (approx_model, coeffs, ovals),
+    }
     return choices[retall]

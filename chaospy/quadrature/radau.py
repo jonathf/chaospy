@@ -59,14 +59,14 @@ from .utils import combine_quadrature
 
 
 def radau(
-        order,
-        dist,
-        fixed_point=None,
-        recurrence_algorithm="stieltjes",
-        rule="clenshaw_curtis",
-        tolerance=1e-10,
-        scaling=3,
-        n_max=5000,
+    order,
+    dist,
+    fixed_point=None,
+    recurrence_algorithm="stieltjes",
+    rule="clenshaw_curtis",
+    tolerance=1e-10,
+    scaling=3,
+    n_max=5000,
 ):
     """
     Generate the quadrature nodes and weights in Gauss-Radau quadrature.
@@ -122,13 +122,13 @@ def radau(
     if fixed_point is None:
         fixed_point = dist.lower
     else:
-        fixed_point = numpy.ones(len(dist))*fixed_point
+        fixed_point = numpy.ones(len(dist)) * fixed_point
 
     if order == 0:
         return fixed_point.reshape(-1, 1), numpy.ones(1)
 
     coefficients = chaospy.construct_recurrence_coefficients(
-        order=2*order-1,
+        order=2 * order - 1,
         dist=dist,
         recurrence_algorithm=recurrence_algorithm,
         rule=rule,
@@ -136,8 +136,9 @@ def radau(
         scaling=scaling,
         n_max=n_max,
     )
-    coefficients = [radau_jakobi(coeffs, point)
-                    for point, coeffs in zip(fixed_point, coefficients)]
+    coefficients = [
+        radau_jakobi(coeffs, point) for point, coeffs in zip(fixed_point, coefficients)
+    ]
 
     abscissas, weights = chaospy.coefficients_to_quadrature(coefficients)
 
@@ -168,15 +169,16 @@ def radau_jakobi(coeffs, fixed_point):
         numpy.linalg.LinAlgError:
             Error raised if fixed point causes the algorithm to break down.
     """
-    right_hand_side = numpy.zeros(len(coeffs[0])-1)
+    right_hand_side = numpy.zeros(len(coeffs[0]) - 1)
     right_hand_side[-1] = coeffs[1][-1]
-    bands_a = numpy.vstack([numpy.sqrt(coeffs[1]), coeffs[0]-fixed_point])
+    bands_a = numpy.vstack([numpy.sqrt(coeffs[1]), coeffs[0] - fixed_point])
     bands_j = numpy.vstack((bands_a[:, 0:-1], bands_a[0, 1:]))
     try:
         delta = scipy.linalg.solve_banded((1, 1), bands_j, right_hand_side)
     except numpy.linalg.LinAlgError:
         raise numpy.linalg.LinAlgError(
-            "Illegal Radau fixed point: %s" % fixed_point.item())
+            "Illegal Radau fixed point: %s" % fixed_point.item()
+        )
     coeffs = coeffs.copy()
-    coeffs[0, -1] = fixed_point+delta[-1]
+    coeffs[0, -1] = fixed_point + delta[-1]
     return coeffs

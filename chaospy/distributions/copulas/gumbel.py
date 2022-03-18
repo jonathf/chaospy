@@ -79,21 +79,25 @@ class gumbel(Archimedean):
     """Gumbel backend."""
 
     def _phi(self, t_loc, theta):
-        return (-numpy.log(t_loc))**theta
+        return (-numpy.log(t_loc)) ** theta
 
     def _delta_phi(self, t_loc, theta):
-        return -theta*(-numpy.log(t_loc))**(theta-1)/t_loc
+        return -theta * (-numpy.log(t_loc)) ** (theta - 1) / t_loc
 
     def _inverse_phi(self, u_loc, theta, order):
         @lru_cache(None)
         def iphi(n):
             if n:
-                return sum(special.comb(n, i-1)*iphi(n-i)*sigma(i)
-                           for i in range(1, n+1))
-            return numpy.e**(-u_loc**(1/theta))
+                return sum(
+                    special.comb(n, i - 1) * iphi(n - i) * sigma(i)
+                    for i in range(1, n + 1)
+                )
+            return numpy.e ** (-(u_loc ** (1 / theta)))
+
         @lru_cache(None)
         def sigma(n):
             return self._sigma(u_loc, theta, n)
+
         return iphi(order)
 
 

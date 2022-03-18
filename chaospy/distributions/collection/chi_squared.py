@@ -13,23 +13,23 @@ class chi_squared(SimpleDistribution):
         super(chi_squared, self).__init__(dict(df=df, nc=nc))
 
     def _pdf(self, x, df, nc):
-        output = 0.5*numpy.e**(-0.5*(x+nc))
-        output *= (x/nc)**(0.25*df-0.5)
-        output *= special.iv(0.5*df-1, (nc*x)**0.5)
+        output = 0.5 * numpy.e ** (-0.5 * (x + nc))
+        output *= (x / nc) ** (0.25 * df - 0.5)
+        output *= special.iv(0.5 * df - 1, (nc * x) ** 0.5)
         return output
 
     def _cdf(self, x, df, nc):
         return special.chndtr(x, df, nc)
 
     def _ppf(self, qloc, df, nc):
-        qloc = numpy.clip(qloc, None, 1-1e-12)
+        qloc = numpy.clip(qloc, None, 1 - 1e-12)
         return special.chndtrix(qloc, df, nc)
 
     def _lower(self, df, nc):
-        return 0.
+        return 0.0
 
     def _upper(self, df, nc):
-        return special.chndtrix(1-1e-12, df, nc)
+        return special.chndtrix(1 - 1e-12, df, nc)
 
 
 class ChiSquared(ShiftScaleDistribution):
@@ -70,5 +70,5 @@ class ChiSquared(ShiftScaleDistribution):
             dist=chi_squared(df, nc),
             scale=scale,
             shift=shift,
-            repr_args=[df]+chaospy.format_repr_kwargs(nc=(nc, 1)),
+            repr_args=[df] + chaospy.format_repr_kwargs(nc=(nc, 1)),
         )

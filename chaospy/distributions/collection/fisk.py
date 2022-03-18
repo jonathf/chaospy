@@ -9,19 +9,19 @@ class fisk(SimpleDistribution):
         super(fisk, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return c*x**(c-1.)/(1+x**c)**2
+        return c * x ** (c - 1.0) / (1 + x**c) ** 2
 
     def _cdf(self, x, c):
-        return 1./(1+x**-c)
+        return 1.0 / (1 + x**-c)
 
     def _ppf(self, q, c):
-        return (q**(-1.0)-1)**(-1.0/c)
+        return (q ** (-1.0) - 1) ** (-1.0 / c)
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return 1e12**(1./c)
+        return 1e12 ** (1.0 / c)
 
 
 class Fisk(ShiftScaleDistribution):
@@ -54,6 +54,7 @@ class Fisk(ShiftScaleDistribution):
         array([1.135, 0.665, 1.804, 0.986])
 
     """
+
     def __init__(self, shape=1, scale=1, shift=0):
         super(Fisk, self).__init__(
             dist=fisk(shape),

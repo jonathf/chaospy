@@ -8,35 +8,35 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 class burr(SimpleDistribution):
     """Stadard Burr distribution."""
 
-    def __init__(self, alpha=1., kappa=1.):
+    def __init__(self, alpha=1.0, kappa=1.0):
         super(burr, self).__init__(dict(alpha=alpha, kappa=kappa))
 
     def _pdf(self, x, alpha, kappa):
         output = numpy.zeros(x.shape)
         indices = x > 0
-        output[indices] = alpha*kappa*x[indices]**(-alpha-1.0)
-        output[indices] /= (1+x[indices]**alpha)**(kappa+1)
+        output[indices] = alpha * kappa * x[indices] ** (-alpha - 1.0)
+        output[indices] /= (1 + x[indices] ** alpha) ** (kappa + 1)
         return output
 
     def _cdf(self, x, alpha, kappa):
         output = numpy.zeros(x.shape)
         indices = x > 0
-        output[indices] = 1-(1+x[indices]**alpha)**-kappa
+        output[indices] = 1 - (1 + x[indices] ** alpha) ** -kappa
         return output
 
     def _ppf(self, q, alpha, kappa):
-        return ((1-q)**(-1./kappa) -1)**(1./alpha)
+        return ((1 - q) ** (-1.0 / kappa) - 1) ** (1.0 / alpha)
 
     def _mom(self, k, alpha, kappa):
-        return kappa*special.beta(1-k*1./alpha, kappa+k*1./alpha)
+        return kappa * special.beta(1 - k * 1.0 / alpha, kappa + k * 1.0 / alpha)
 
     def _lower(self, alpha, kappa):
         del alpha
         del kappa
-        return 0.
+        return 0.0
 
     def _upper(self, alpha, kappa):
-        return (1e12**(1./kappa)-1)**(1./alpha)
+        return (1e12 ** (1.0 / kappa) - 1) ** (1.0 / alpha)
 
 
 class Burr(ShiftScaleDistribution):

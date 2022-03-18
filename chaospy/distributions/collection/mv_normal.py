@@ -56,18 +56,18 @@ class MvNormal(MeanCovarianceDistribution):
     """
 
     def __init__(
-            self,
-            mu,
-            sigma=None,
-            rotation=None,
+        self,
+        mu,
+        sigma=None,
+        rotation=None,
     ):
         super(MvNormal, self).__init__(
             dist=normal(),
             mean=mu,
             covariance=sigma,
             rotation=rotation,
-            repr_args=chaospy.format_repr_kwargs(mu=(mu, None))+
-                      chaospy.format_repr_kwargs(sigma=(sigma, None)),
+            repr_args=chaospy.format_repr_kwargs(mu=(mu, None))
+            + chaospy.format_repr_kwargs(sigma=(sigma, None)),
         )
 
     def _mom(self, k, mean, sigma, cache):
@@ -75,17 +75,18 @@ class MvNormal(MeanCovarianceDistribution):
             mean = mean._get_cache(None, cache=cache, get=0)
             if isinstance(mean, chaospy.Distribution):
                 raise chaospy.UnsupportedFeature(
-                    "Analytical moment of a conditional not supported")
-        out = 0.
-        for idx, kdx in enumerate(numpy.ndindex(*[_+1 for _ in k])):
+                    "Analytical moment of a conditional not supported"
+                )
+        out = 0.0
+        for idx, kdx in enumerate(numpy.ndindex(*[_ + 1 for _ in k])):
             coef = numpy.prod(special.comb(k.T, kdx).T, 0)
-            diff = k.T-kdx
+            diff = k.T - kdx
             pos = diff >= 0
-            diff = diff*pos
+            diff = diff * pos
             pos = numpy.all(pos)
             location_ = numpy.prod(mean**diff, -1)
 
-            out = out+pos*coef*location_*isserlis_moment(tuple(kdx), sigma)
+            out = out + pos * coef * location_ * isserlis_moment(tuple(kdx), sigma)
 
         return out
 
@@ -136,7 +137,11 @@ def isserlis_moment(k, scale):
     idx = idx[0]
 
     eye = numpy.eye(len(k), dtype=int)
-    out = (k[idx]-1)*scale[:, idx, idx]*isserlis_moment(k-2*eye[idx], scale)
-    for idj in range(idx+1, len(k)):
-        out += k[idj]*scale[:, idx, idj]*isserlis_moment(k-eye[idx]-eye[idj], scale)
+    out = (k[idx] - 1) * scale[:, idx, idx] * isserlis_moment(k - 2 * eye[idx], scale)
+    for idj in range(idx + 1, len(k)):
+        out += (
+            k[idj]
+            * scale[:, idx, idj]
+            * isserlis_moment(k - eye[idx] - eye[idj], scale)
+        )
     return out

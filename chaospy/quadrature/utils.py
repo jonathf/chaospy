@@ -31,21 +31,23 @@ def combine(args):
     args = [numpy.asarray(arg).reshape(len(arg), -1) for arg in args]
     shapes = [arg.shape for arg in args]
 
-    size = numpy.prod(shapes, 0)[0]*numpy.sum(shapes, 0)[1]
+    size = numpy.prod(shapes, 0)[0] * numpy.sum(shapes, 0)[1]
 
     out = args[0]
     for arg in args[1:]:
-        out = numpy.hstack([
-            numpy.tile(out, len(arg)).reshape(-1, out.shape[1]),
-            numpy.tile(arg.T, len(out)).reshape(arg.shape[1], -1).T,
-        ])
+        out = numpy.hstack(
+            [
+                numpy.tile(out, len(arg)).reshape(-1, out.shape[1]),
+                numpy.tile(arg.T, len(out)).reshape(arg.shape[1], -1).T,
+            ]
+        )
     return out
 
 
 def combine_quadrature(
-        abscissas,
-        weights,
-        domain=(),
+    abscissas,
+    weights,
+    domain=(),
 ):
     """
     Create all linear combinations of all abscissas and weights. If ``domain``
@@ -69,8 +71,8 @@ def combine_quadrature(
     weights = combine(weights)
 
     if domain:
-        abscissas = (domain[1]-domain[0])*abscissas + domain[0]
-        weights = weights*(domain[1]-domain[0])
+        abscissas = (domain[1] - domain[0]) * abscissas + domain[0]
+        weights = weights * (domain[1] - domain[0])
 
     abscissas = abscissas.T.reshape(dim, -1)
     weights = numpy.prod(weights, -1)

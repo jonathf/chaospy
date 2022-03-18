@@ -43,9 +43,10 @@ Normal(mu=Uniform(), sigma=1) has dangling dependencies
     for idx in distribution._rotation:
         length = len(current)
         current.update(distribution._dependencies[idx])
-        if len(current) != length+1:
+        if len(current) != length + 1:
             raise chaospy.StochasticallyDependentError(
-                "%s has dangling dependencies" % distribution)
+                "%s has dangling dependencies" % distribution
+            )
 
 
 def shares_dependencies(*distributions):
@@ -72,12 +73,14 @@ def shares_dependencies(*distributions):
         True
 
     """
-    distributions = [dist for dist in distributions
-                     if isinstance(dist, chaospy.Distribution)]
+    distributions = [
+        dist for dist in distributions if isinstance(dist, chaospy.Distribution)
+    ]
     if len(distributions) == 1:
         return False
-    dependencies = [{dep for deps in dist._dependencies for dep in deps}
-                    for dist in distributions]
+    dependencies = [
+        {dep for deps in dist._dependencies for dep in deps} for dist in distributions
+    ]
     for deps1, deps2 in permutations(dependencies, 2):
         if deps1.intersection(deps2):
             return True
@@ -85,13 +88,13 @@ def shares_dependencies(*distributions):
 
 
 def declare_dependencies(
-        distribution,
-        parameters,
-        rotation=None,
-        is_operator=False,
-        dependency_type="iid",
-        length=None,
-        extra_parameters=None,
+    distribution,
+    parameters,
+    rotation=None,
+    is_operator=False,
+    dependency_type="iid",
+    length=None,
+    extra_parameters=None,
 ):
     """
     Convenience function for declaring distribution dependencies.
@@ -137,8 +140,11 @@ def declare_dependencies(
             parameters[name] = numpy.atleast_1d(parameter)
     if length is None:
         if rotation is None:
-            length = max([len(parameter) for parameter in extra_parameters.values()]+
-                         [len(parameter) for parameter in parameters.values()]+[1])
+            length = max(
+                [len(parameter) for parameter in extra_parameters.values()]
+                + [len(parameter) for parameter in parameters.values()]
+                + [1]
+            )
         else:
             length = len(rotation)
     if rotation is None:
@@ -149,16 +155,19 @@ def declare_dependencies(
     if is_operator:
         dependencies = [set() for _ in range(length)]
     else:
-        dependencies = init_dependencies(distribution, rotation, dependency_type=dependency_type)
+        dependencies = init_dependencies(
+            distribution, rotation, dependency_type=dependency_type
+        )
 
     for name, parameter in list(parameters.items()):
         if isinstance(parameter, chaospy.Distribution):
             if len(parameter) != length:
                 raise chaospy.StochasticallyDependentError(
-                    "dependencies must be same length as parent")
+                    "dependencies must be same length as parent"
+                )
         else:
-            parameters[name] = parameter*numpy.ones(length, dtype=int)
-    for name, parameter in list(parameters.items())+list(extra_parameters.items()):
+            parameters[name] = parameter * numpy.ones(length, dtype=int)
+    for name, parameter in list(parameters.items()) + list(extra_parameters.items()):
         if isinstance(parameter, chaospy.Distribution):
             for dep1, dep2 in zip(dependencies, parameter._dependencies):
                 dep1.update(dep2)
@@ -168,10 +177,11 @@ def declare_dependencies(
 
 DISTRIBUTION_IDENTIFIERS = {}
 
+
 def init_dependencies(
-        distribution,
-        rotation,
-        dependency_type="iid",
+    distribution,
+    rotation,
+    dependency_type="iid",
 ):
     """
     Declare stochastic dependency to an underlying random variable.
@@ -217,7 +227,7 @@ def init_dependencies(
     assert rotation.dtype == int and rotation.ndim == 1
     length = len(rotation)
     next_new_id = len(DISTRIBUTION_IDENTIFIERS)
-    new_identifiers = numpy.arange(next_new_id, next_new_id+length, dtype=int)
+    new_identifiers = numpy.arange(next_new_id, next_new_id + length, dtype=int)
     for idx in new_identifiers:
         DISTRIBUTION_IDENTIFIERS[idx] = distribution
 
@@ -226,7 +236,7 @@ def init_dependencies(
 
     elif dependency_type == "accumulate":
         accumulant = set()
-        dependencies = [None]*length
+        dependencies = [None] * length
         for idx in rotation:
             accumulant.add(new_identifiers[idx])
             dependencies[idx] = accumulant.copy()
@@ -264,9 +274,8 @@ def format_repr_kwargs(**parameters):
 
     defaults_only = True
     for name, (param, default) in list(parameters.items()):
-        defaults_only &= (
-            (isinstance(param, (int, float)) and param == default) or
-            (param is default is None)
+        defaults_only &= (isinstance(param, (int, float)) and param == default) or (
+            param is default is None
         )
         if isinstance(param, numpy.ndarray):
             parameters[name] = (param.tolist(), default)

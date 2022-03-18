@@ -11,19 +11,19 @@ class bradford(SimpleDistribution):
         super(bradford, self).__init__(dict(c=c))
 
     def _pdf(self, x, c):
-        return  c/(c*x+1.)/numpy.log(1.+c)
+        return c / (c * x + 1.0) / numpy.log(1.0 + c)
 
     def _cdf(self, x, c):
-        return numpy.log(1.+c*x)/numpy.log(c+1.)
+        return numpy.log(1.0 + c * x) / numpy.log(c + 1.0)
 
     def _ppf(self, q, c):
-        return ((1.+c)**q-1)/c
+        return ((1.0 + c) ** q - 1) / c
 
     def _lower(self, c):
-        return 0.
+        return 0.0
 
     def _upper(self, c):
-        return 1.
+        return 1.0
 
 
 class Bradford(LowerUpperDistribution):
@@ -56,6 +56,7 @@ class Bradford(LowerUpperDistribution):
         array([5.171, 4.175, 5.87 , 4.819])
 
     """
+
     def __init__(self, shape=1, lower=0, upper=1):
         super(Bradford, self).__init__(
             dist=bradford(shape),

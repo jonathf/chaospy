@@ -11,22 +11,22 @@ class exponential_power(SimpleDistribution):
         super(exponential_power, self).__init__(dict(b=b))
 
     def _pdf(self, x, b):
-        xbm1 = x**(b-1.0)
-        xb = xbm1*x
-        return numpy.exp(1)*b*xbm1*numpy.exp(xb-numpy.exp(xb))
+        xbm1 = x ** (b - 1.0)
+        xb = xbm1 * x
+        return numpy.exp(1) * b * xbm1 * numpy.exp(xb - numpy.exp(xb))
 
     def _cdf(self, x, b):
         return -numpy.expm1(-numpy.expm1(x**b))
 
     def _ppf(self, q, b):
-        return pow(numpy.log1p(-numpy.log1p(-q)), 1./b)
+        return pow(numpy.log1p(-numpy.log1p(-q)), 1.0 / b)
 
     def _lower(self, b):
         del b
-        return 0.
+        return 0.0
 
     def _upper(self, b):
-        return 3.6**(1./b)
+        return 3.6 ** (1.0 / b)
 
 
 class ExponentialPower(ShiftScaleDistribution):

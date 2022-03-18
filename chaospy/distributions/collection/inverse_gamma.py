@@ -6,30 +6,31 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class inverse_gamma(SimpleDistribution):
-
     def __init__(self, a):
         super(inverse_gamma, self).__init__(dict(a=a))
 
     def _lower(self, a):
-        return 0.
+        return 0.0
 
     def _upper(self, a):
-        return 1./special.gammainccinv(a, 1-1e-16)
+        return 1.0 / special.gammainccinv(a, 1 - 1e-16)
 
     def _pdf(self, x, a):
         x_ = numpy.where(x, x, 1)
-        return numpy.where(x, x_**(-a-1)*numpy.exp(-1./x_)/special.gamma(a), 0)
+        return numpy.where(
+            x, x_ ** (-a - 1) * numpy.exp(-1.0 / x_) / special.gamma(a), 0
+        )
 
     def _cdf(self, x, a):
-        return numpy.where(x, special.gammaincc(a, 1./numpy.where(x, x, 1)), 0)
+        return numpy.where(x, special.gammaincc(a, 1.0 / numpy.where(x, x, 1)), 0)
 
     def _ppf(self, q, a):
-        return 1./special.gammainccinv(a, q)
+        return 1.0 / special.gammainccinv(a, q)
 
     def _mom(self, k, a):
         if k > a:
             return self._upper(a)
-        return 1./numpy.prod(a-numpy.arange(1, k.item()+1))
+        return 1.0 / numpy.prod(a - numpy.arange(1, k.item() + 1))
 
 
 class InverseGamma(ShiftScaleDistribution):
