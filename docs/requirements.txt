@@ -1,5 +1,7 @@
-Sphinx<4.3
 nbsphinx==0.8.5
+markupsafe==2.0.1
 pydata_sphinx_theme==0.6.3
+Sphinx<4.3
 sphinxcontrib-bibtex==2.2.0
+
 git+https://github.com/jonathf/numpoly.git@master
