@@ -4,16 +4,16 @@ Introduction
 In `numpy`_ the concept of *array* is generalized to imply arrays of arbitrary
 dimension, overlapping with the concept of *scalars*, *matrices* and *tensors*.
 To allow arrays of various dimensions to operate together it defines
-unambiguous broadcasting rules for what to expect. The results is a library
-that is used as the reference for almost all of the numerical Python community.
+unambiguous broadcasting rules for what to expect. The results are a library
+that is used as the reference for almost all the numerical Python community.
 
 In mathematical literature the term *polynomial expansions* is used to denote a
 collection of polynomials. Though they strictly do not need to, they are often
 indexed, giving each polynomial both a label and a position for where to locate
 a polynomial relative to the others. Assuming that there always is an index,
 one could say that *polynomial expansions* could just as well be termed
-*polynomial array*. And using the rules defined in `numpy`_, there no reason
-not to also start talking about *multi-dimensional polynomial arrays*.
+*polynomial array*. And using the rules defined in `numpy`_, there is no reason
+not to also start talking about *multidimensional polynomial arrays*.
 
 The main idea here is that in the same way as :class:`numpy.ndarray` are
 composed of scalars, :class:`chaospy.ndpoly` -- the baseclass for the
@@ -49,16 +49,16 @@ be defined as:
 
     \Phi(q_1, \dots, q_D) = \sum_{n=1}^N c_n q_1^{k_{1n}} \cdots q_D^{k_{Dn}}
 
-where :math:`c_n` is a multi-dimensional polynomial
+where :math:`c_n` is a multidimensional polynomial
 coefficients, and :math:`k_{nd}` is the exponent for the :math:`n`-th
 polynomial term and the :math:`d`-th indeterminant name.
 
 Neither of the two ways of representing a polynomial array is incorrect, and
-serves different purposes. The former works well for visualisation, while the
+serves different purposes. The former works well for visualization, while the
 latter form gives a better mental model of how ``chaospy`` handles its
 polynomial internally.
 
-Modelling polynomials by storing the coefficients as multi-dimensional arrays
+Modeling polynomials by storing the coefficients as multidimensional arrays
 is deliberate. Assuming few :math:`k_{nd}` and large dimensional :math:`c_n`,
 all numerical operations that are limited to the coefficients, can be done
 fast, as `numpy`_ can do the heavy lifting.
@@ -67,7 +67,7 @@ This way of representing a polynomial also means that to uniquely defined a
 polynomial, we only need the three components:
 
 * :attr:`~chaospy.ndpoly.coefficients` -- the polynomial coefficients
-  :math:`c_n` as multi-dimensional arrays.
+  :math:`c_n` as multidimensional arrays.
 * :attr:`~chaospy.ndpoly.exponents` -- the exponents :math:`k_{nd}` as a
   2-dimensional matrix.
 * :attr:`~chaospy.ndpoly.indeterminants` -- the names of the variables,
@@ -115,7 +115,7 @@ how this works.
 .. note::
 
     As mentioned the chosen representation works best with relatively few
-    :math:`k_{nd}` and large :math:`c_n`. for large number :math:`k_{nd}` and
+    :math:`k_{nd}` and large :math:`c_n`. For large number :math:`k_{nd}` and
     relatively small :math:`c_n` however, the advantage disappears. And even
     worse, in the case where polynomial terms :math:`q_1^{k_{1n}} \cdots
     q_D^{k_{Dn}}` are sparsely represented, the ``chaospy`` representation is

@@ -10,7 +10,7 @@ Chaospy
 
 Chaospy is a numerical toolbox for performing uncertainty quantification using
 polynomial chaos expansions, advanced Monte Carlo methods implemented in
-Python. It also include a full suite of tools for doing low-discrepancy
+Python. It also includes a full suite of tools for doing low-discrepancy
 sampling, quadrature creation, polynomial manipulations, and a lot more.
 
 The philosophy behind ``chaospy`` is not to be a single tool that solves every
@@ -19,13 +19,13 @@ let the user solve problems themselves. This includes both well established
 problems, but also to be a foundry for experimenting with new problems, that
 are not so well established. To do this, emphasis is put on the following:
 
-* Focus on an easy to use interface that embraces the `pythonic code style
+* Focus on an easy-to-use interface that embraces the `pythonic code style
   <https://docs.python-guide.org/writing/style/>`_.
 * Make sure the code is "composable", such a way that changing one part of the
   code with something user defined should be easy and encouraged.
 * Try to support a broad width of the various methods for doing uncertainty
   quantification where that makes sense to involve ``chaospy``.
-* Make sure that ``chaospy`` plays nice with a large set of of other other
+* Make sure that ``chaospy`` plays nice with a large set of other
   similar projects. This includes `numpy <https://numpy.org/>`_, `scipy
   <https://scipy.org/>`_, `scikit-learn <https://scikit-learn.org>`_,
   `statsmodels <https://statsmodels.org/>`_, `openturns
