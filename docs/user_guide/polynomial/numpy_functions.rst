@@ -15,12 +15,12 @@ direct subclass of :class:`numpy.ndarray`:
 The intentions is to have a library that is fast with the respect of the number
 of coefficients, as it leverages `numpy`_'s speed where possible.
 
-In addition ``chaospy`` is designed to be behave both as you would expect as a
+In addition, ``chaospy`` is designed to behave both as you would expect as a
 polynomial, but also, where possible, to behave as a `numpy`_ numerical array.
-In practice this means that ``chaospy`` provides a lot functions that also
+In practice this means that ``chaospy`` provides a lot of functions that also
 exists in `numpy`_, which does about the same thing. If one of these
 ``chaospy`` function is provided with a :class:`numpy.ndarray` object, the
-returned values is the same as if provided to the `numpy`_ function with the
+returned values are the same as if provided to the `numpy`_ function with the
 same name. For example :func:`chaospy.transpose`:
 
 .. code:: python
@@ -64,13 +64,13 @@ the ability to evaluate the polynomials:
 Function compatibility
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The numpy library comes with a large number of functions for manipulating
+The Numpy library comes with numerous functions for manipulating
 :class:`numpy.ndarray` objects. Many of these functions are supported
 ``chaospy`` as well.
 
-For numpy version >=1.17, the `numpy`_ library introduced dispatching of its
+For Numpy version >=1.17, the `numpy`_ library introduced dispatching of its
 functions to subclasses. This means that functions in ``chaospy`` with the
-same name as a numpy counterpart, it will work the same irrespectively if the
+same name as a Numpy counterpart, it will work the same irrespectively if the
 function used was from `numpy`_ or ``chaospy``, as the former will pass any
 job to the latter.
 
@@ -91,7 +91,7 @@ raise an error.
 
 In addition, not everything is possible to support, and even within the list of
 supported functions, not all use cases can be covered. Bit if such an
-unsupported edge case is encountered, an :class:`chaospy.FeatureNotSupported`
+unsupported edge case is encountered, a :class:`chaospy.FeatureNotSupported`
 error should be raised, so it should be obvious when they happen.
 
 As a developer note, ``chaospy`` aims at being backwards compatible with

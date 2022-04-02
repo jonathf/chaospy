@@ -31,7 +31,7 @@ many choices dealing with various edge cases. However, it is possible to impose
 a total order that is both internally consistent and which is backwards
 compatible with the behavior of
 ``numpy.ndarray``. It requires some design choices, which are opinionated, and
-might not always align with everyones taste.
+might not always align with everyone's taste.
 
 With this in mind, the ordering implemented in ``chaospy`` is defined
 as follows:
@@ -162,7 +162,7 @@ behavior. In particular:
 ``sort_graded``
   Impose that polynomials are sorted by grade, meaning the indices are always
   sorted by the index sum. E.g. ``q0**2*q1**2*q2**2`` has an exponent sum of 6,
-  and will therefore be consider larger than both ``q0**3*q1*q2``,
+  and will therefore be considered larger than both ``q0**3*q1*q2``,
   ``q0*q1**3*q2`` and ``q0*q1*q2**3``. Defaults to true.
 ``sort_reverse``
   Impose that polynomials are sorted by reverses lexicographical sorting,

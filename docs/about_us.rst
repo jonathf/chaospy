@@ -5,7 +5,7 @@ About us
 
 Chaospy was created by Hans Petter Langtangen and Jonathan Feinberg in
 2011-2012, as a need to solve some problems related to Jonathan's doctoral
-work. The paper outlining chaospy was published in 2015. It has since been
+work. The paper outlining Chaospy was published in 2015. It has since been
 continued to be developed by Jonathan with some help here and there by others.
 In 2019 the polynomial class we split out into `numpoly
 <https://github.com/jonathf/numpoly>`_.
@@ -48,7 +48,7 @@ A few shout-outs to people who have contributed to the Chaospy project:
 .. _Nico Schlömer: https://github.com/nschloe
 .. _Florian Künzner: https://github.com/flo2k
 
-Chaospy is being used in other related projects that requires uncertainty
+Chaospy is being used in other related projects that require uncertainty
 quantification components ``chaospy`` provides. For example:
 
 +-----------------+-----------------------------------------------------------+

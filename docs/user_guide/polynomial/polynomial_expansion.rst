@@ -74,7 +74,7 @@ Or in the multivariate case:
     polynomial([q0**2, q0**3, q1**2, q1**3])
 
 To help construct these exponent, there is function :func:`chaospy.glexindex`.
-It behave the same as :func:`chaospy.monomial`, but only creates the exponents.
+It behaves the same as :func:`chaospy.monomial`, but only creates the exponents.
 E.g.:
 
 .. code:: python

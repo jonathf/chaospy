@@ -31,7 +31,7 @@ follows:
 
 
 In the case of polynomials, neither true nor floor division is supported like
-this. Instead it support its own kind of polynomial division
+this. Instead, it supports its own kind of polynomial division
 :func:`chaospy.poly_divide`. Polynomial division falls back to behave like
 floor division for all constants, as it does not round values:
 

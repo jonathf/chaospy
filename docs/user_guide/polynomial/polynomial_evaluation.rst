@@ -18,7 +18,7 @@ per variable:
     array([1, 4, 2])
 
 Here the return value is a :class:`numpy.ndarray`. However, it is also possible
-to get a polynomial in return, given a partial evaluations:
+to get a polynomial in return, given a partial evaluation:
 
 .. code:: python
 
@@ -50,7 +50,7 @@ compatible object. ``chaospy`` will expand the shape such that it ends up being
                 [0, q0, 2*q0, 3*q0]])
 
 It is also possible to mix both scalar and vector arguments, as long as they
-are broadcastable in `numpy`_ sense. For example:
+can be broadcasted in `numpy`_. For example:
 
 .. code:: python
 
@@ -63,7 +63,7 @@ are broadcastable in `numpy`_ sense. For example:
            [1, 4, 9],
            [1, 4, 9]])
 
-Passing arguments with an other datatype than the polynomial, results in the
+Passing arguments with another datatype than the polynomial, results in the
 output using the common denomination:
 
 .. code:: python
@@ -73,7 +73,7 @@ output using the common denomination:
     >>> poly(q1=1j)
     polynomial([(1+0j), q0**2, 1j*q0])
 
-Assuming the input you want to evaluate is a large matrix and you want an
+Assuming the input you want to evaluate is a large matrix, and you want an
 interface where the matrix is kept intact, you can use :func:`chaospy.call`. E.g.:
 
 .. code:: python

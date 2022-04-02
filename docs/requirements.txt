@@ -1,3 +1,4 @@
+Sphinx<4.3
 nbsphinx==0.8.5
 pydata_sphinx_theme==0.6.3
 sphinxcontrib-bibtex==2.2.0
