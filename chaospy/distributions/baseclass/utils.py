@@ -172,7 +172,7 @@ def declare_dependencies(
     return dependencies, parameters, rotation
 
 
-DISTRIBUTION_IDENTIFIERS = WeakValueDictionary
+DISTRIBUTION_IDENTIFIERS = WeakValueDictionary()
 
 
 def init_dependencies(
@@ -205,7 +205,7 @@ def init_dependencies(
         >>> core = chaospy.Normal()
         >>> core._dependencies
         [{0}]
-        >>> DISTRIBUTION_IDENTIFIERS
+        >>> dict(DISTRIBUTION_IDENTIFIERS)
         {0: normal()}
         >>> distribution = chaospy.Iid(core, 2)
         >>> distribution._dependencies
@@ -223,7 +223,7 @@ def init_dependencies(
     rotation = numpy.asarray(rotation)
     assert rotation.dtype == int and rotation.ndim == 1
     length = len(rotation)
-    next_new_id = max(DISTRIBUTION_IDENTIFIERS) + 1
+    next_new_id = max(list(DISTRIBUTION_IDENTIFIERS.keys()) + [-1]) + 1
     new_identifiers = numpy.arange(next_new_id, next_new_id + length, dtype=int)
     for idx in new_identifiers:
         DISTRIBUTION_IDENTIFIERS[idx] = distribution
