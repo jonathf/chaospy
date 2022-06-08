@@ -1,8 +1,5 @@
 """Distribution utility functions."""
-import sys
-import os
-import logging
-from contextlib import wraps
+from weakref import WeakValueDictionary
 from itertools import permutations
 
 import numpy
@@ -175,7 +172,7 @@ def declare_dependencies(
     return dependencies, parameters, rotation
 
 
-DISTRIBUTION_IDENTIFIERS = {}
+DISTRIBUTION_IDENTIFIERS = WeakValueDictionary
 
 
 def init_dependencies(
@@ -226,7 +223,7 @@ def init_dependencies(
     rotation = numpy.asarray(rotation)
     assert rotation.dtype == int and rotation.ndim == 1
     length = len(rotation)
-    next_new_id = len(DISTRIBUTION_IDENTIFIERS)
+    next_new_id = max(DISTRIBUTION_IDENTIFIERS) + 1
     new_identifiers = numpy.arange(next_new_id, next_new_id + length, dtype=int)
     for idx in new_identifiers:
         DISTRIBUTION_IDENTIFIERS[idx] = distribution
@@ -270,8 +267,6 @@ def format_repr_kwargs(**parameters):
         []
 
     """
-    out = []
-
     defaults_only = True
     for name, (param, default) in list(parameters.items()):
         defaults_only &= (isinstance(param, (int, float)) and param == default) or (
