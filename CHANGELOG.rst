@@ -1,6 +1,12 @@
 Master Branch
 =============
 
+Version 4.3.8 (2022-11-10)
+==========================
+
+FIXED:
+  * Correct scaling of Trunc-normal distribution.
+
 Version 4.3.7 (2022-02-22)
 ==========================
 

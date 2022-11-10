@@ -9,6 +9,7 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class trunc_normal(SimpleDistribution):
+
     def __init__(self, lower=-1, upper=1, mu=0, sigma=1):
         super(trunc_normal, self).__init__(
             parameters=dict(a=lower, b=upper, mu=mu, sigma=sigma),
@@ -19,6 +20,12 @@ class trunc_normal(SimpleDistribution):
                 "sigma=%s" % sigma,
             ],
         )
+
+    def get_parameters(self, idx, cache, assert_numerical=True):
+        parameters = super().get_parameters(idx, cache, assert_numerical=assert_numerical)
+        parameters["a"] = (parameters["a"] - parameters["mu"]) / parameters["sigma"]
+        parameters["b"] = (parameters["b"] - parameters["mu"]) / parameters["sigma"]
+        return parameters
 
     def _pdf(self, x, a, b, mu, sigma):
         return truncnorm.pdf(x, a, b, loc=mu, scale=sigma)
