@@ -9,7 +9,6 @@ from ..baseclass import SimpleDistribution, ShiftScaleDistribution
 
 
 class trunc_normal(SimpleDistribution):
-
     def __init__(self, lower=-1, upper=1, mu=0, sigma=1):
         super(trunc_normal, self).__init__(
             parameters=dict(a=lower, b=upper, mu=mu, sigma=sigma),
