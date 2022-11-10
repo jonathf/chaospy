@@ -1,7 +1,7 @@
 """Truncated normal distribution."""
 import numpy
 from scipy import special
-from scipy.stats import truncnorm
+from scipy.stats import truncnorm, norm
 import chaospy
 
 from .normal import normal
@@ -20,22 +20,21 @@ class trunc_normal(SimpleDistribution):
             ],
         )
 
-    def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super().get_parameters(
-            idx, cache, assert_numerical=assert_numerical
-        )
-        parameters["a"] = (parameters["a"] - parameters["mu"]) / parameters["sigma"]
-        parameters["b"] = (parameters["b"] - parameters["mu"]) / parameters["sigma"]
-        return parameters
-
     def _pdf(self, x, a, b, mu, sigma):
+        a = (a - mu) / sigma
+        b = (b - mu) / sigma
         return truncnorm.pdf(x, a, b, loc=mu, scale=sigma)
 
     def _cdf(self, x, a, b, mu, sigma):
+        a = (a - mu) / sigma
+        b = (b - mu) / sigma
         return truncnorm.cdf(x, a, b, loc=mu, scale=sigma)
 
     def _ppf(self, q, a, b, mu, sigma):
-        return truncnorm.ppf(q, a, b, loc=mu, scale=sigma)
+        a = norm.cdf(a, loc=mu, scale=sigma)
+        b = norm.cdf(b, loc=mu, scale=sigma)
+        q = (b - a) * q + a
+        return norm.ppf(q, mu, sigma)
 
     def _lower(self, a, b, mu, sigma):
         del b
@@ -86,9 +85,9 @@ class TruncNormal(ShiftScaleDistribution):
         array([ 0.266, -0.715,  0.868, -0.03 ])
         >>> half_trunc.sample(4).round(3)
         array([ 0.625, -0.921, -1.822, -0.428])
-        >>> full_trunc.mom([1, 2, 3])
+        >>> full_trunc.mom([1, 2, 3]).round(8)
         array([0.        , 0.29112509, 0.        ])
-        >>> half_trunc.mom([1, 2, 3])
+        >>> half_trunc.mom([1, 2, 3]).round(8)
         array([-0.28759997,  0.71240003, -0.86279991])
 
     """
