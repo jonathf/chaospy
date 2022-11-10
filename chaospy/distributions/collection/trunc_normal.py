@@ -22,7 +22,9 @@ class trunc_normal(SimpleDistribution):
         )
 
     def get_parameters(self, idx, cache, assert_numerical=True):
-        parameters = super().get_parameters(idx, cache, assert_numerical=assert_numerical)
+        parameters = super().get_parameters(
+            idx, cache, assert_numerical=assert_numerical
+        )
         parameters["a"] = (parameters["a"] - parameters["mu"]) / parameters["sigma"]
         parameters["b"] = (parameters["b"] - parameters["mu"]) / parameters["sigma"]
         return parameters
