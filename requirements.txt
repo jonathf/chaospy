@@ -1,6 +1,6 @@
 # This file is used by Binder and Github graph
 chaospy
-numpoly==1.0.8
+numpoly
 numpy
 scipy
 matplotlib
