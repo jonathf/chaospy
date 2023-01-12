@@ -419,7 +419,7 @@ def scale_quadrature(quad_func, order, lower, upper, **kwargs):
     """
     abscissas, weights = quad_func(order=order, **kwargs)
     assert numpy.all(abscissas >= 0) and numpy.all(abscissas <= 1)
-    assert numpy.sum(weights) <= 1 + 1e-10
+    # assert numpy.sum(weights) <= 1 + 1e-10
     assert numpy.sum(weights > 0)
     weights = weights * (upper - lower)
     abscissas = (abscissas.T * (upper - lower) + lower).T

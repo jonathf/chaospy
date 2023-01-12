@@ -43,7 +43,6 @@ def configure_logging():
     loglevel = (
         logging.DEBUG if os.environ.get("CHAOSPY_DEBUG", "") == "1" else logging.WARNING
     )
-    loglevel = logging.DEBUG
     streamer.setLevel(loglevel)
 
     logger = logging.getLogger("chaospy")
