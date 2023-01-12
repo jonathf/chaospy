@@ -1,11 +1,23 @@
 Master Branch
 =============
 
-Version 4.3.8 (2022-11-10)
+Version 4.3.10 (2022-11-16)
+===========================
+
+CHANGED:
+  * Update packages and installation method to full pyproject.
+
+Version 4.3.9 (2022-11-10)
 ==========================
 
 FIXED:
   * Correct scaling of Trunc-normal distribution.
+
+Version 4.3.8 (2022-06-09)
+==========================
+
+FIXED:
+  * Use weakref to reduce bloat.
 
 Version 4.3.7 (2022-02-22)
 ==========================

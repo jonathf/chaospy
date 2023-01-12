@@ -1,10 +1,49 @@
 [build-system]
-requires = [
-    "setuptools>=45",
-    "setuptools_scm>=6.2",
-    "setuptools_scm_git_archive",
-]
+requires = ["setuptools>=45"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools_scm]
-version_scheme = "guess-next-dev"
+[project]
+name = "chaospy"
+version = "4.3.10"
+license = {text = "MIT license"}
+description = "Numerical tool for performing uncertainty quantification"
+readme = "README.rst"
+classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Mathematics",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+]
+
+requires-python = ">=3.7"
+dependencies = [
+  "numpy >=1.20",
+  "numpoly >=1.2.5",
+  "scipy",
+  "setuptools >=40.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "openturns",
+  "scikit-learn",
+  "gstools",
+  "jupyter",
+  "matplotlib",
+  "nbsphinx",
+  "sphinxcontrib-bibtex",
+  "black ==22.10.0",
+  "pylint ==2.15.5",
+  "pydocstyle ==3.0.0",
+  "pydata_sphinx_theme ==0.11.0",
+  "sympy",
+  "pytest",
+  "pytest-cov",
+  "codecov",
+  "coverage >=5.0",
+  "Sphinx",
+  "sphinx_automodapi",
+  "build",
+  "twine",
+]
