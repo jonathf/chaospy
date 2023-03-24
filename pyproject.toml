@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chaospy"
-version = "4.3.10"
+version = "4.3.11"
 license = {text = "MIT license"}
 description = "Numerical tool for performing uncertainty quantification"
 readme = "README.rst"
