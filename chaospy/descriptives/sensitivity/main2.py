@@ -65,3 +65,56 @@ def Sens_m2(poly, dist, **kws):
     out[indices] = numpy.swapaxes(out, 0, 1)[indices]
 
     return out
+
+
+def SecondOrderSobol(
+    expansion,
+    coefficients,
+):
+    """
+    Second order variance-based decomposition/Sobol' indices.
+
+    Args:
+        expansion (numpoly.ndpoly):
+            The polynomial expansion used as basis when creating a chaos
+            expansion.
+        coefficients (numpy.ndarray):
+            The Fourier coefficients generated whent fitting the chaos
+            expansion. Typically retrieved by passing ``retall=True`` to
+            ``chaospy.fit_regression`` or ``chaospy.fit_quadrature``.
+
+    Examples:
+        >>> q0, q1 = chaospy.variable(2)
+        >>> expansion = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
+        >>> coeffs = [1, 2, 2, 4]
+        >>> chaospy.SecondOrderSobol(expansion, coeffs)
+        array([[0.  , 0.16],
+               [0.16, 0.  ]])
+    """
+    dic = expansion.todict()
+    alphas = []
+    for idx in range(len(expansion)):
+        expons = numpy.array([key for key, value in dic.items() if value[idx]])
+        alphas.append(tuple(expons[numpy.argmax(expons.sum(1))]))
+    coefficients = numpy.asfarray(coefficients)
+    variance = numpy.sum(coefficients**2, axis=0)
+
+    sens = numpy.zeros(
+        (len(alphas[0]), len(alphas[0])) + coefficients.shape[1:], dtype=float
+    )
+    for idx in range(len(alphas[0])):
+        for idy in range(idx):
+            index = numpy.array(
+                [
+                    bool(
+                        alpha[idx]
+                        and alpha[idx]
+                        and not any(alpha[:idy] + alpha[idy:idx] + alpha[idx + 1 :])
+                    )
+                    for alpha in alphas
+                ]
+            )
+            sens[idx, idy] = sens[idy, idx] = (
+                numpy.sum(coefficients[index] ** 2, axis=0) / variance
+            )
+    return sens

@@ -139,19 +139,29 @@ class OpenTURNSDist(J):
 
     def __init__(self, distribution):
         if isinstance(distribution, Iterable):
-            assert all([dist.isContinuous() for dist in distribution]
+            assert all(
+                [dist.isContinuous() for dist in distribution]
             ), "Only (iterable of) continuous OpenTURNS distributions supported"
             distributions = [openturns_dist(dist) for dist in distribution]
         else:
             from openturns import Distribution, DistributionImplementation
-            if isinstance(distribution, Distribution) or isinstance(distribution, DistributionImplementation):
-                assert distribution.isContinuous(), "Only (iterable of) continuous OpenTURNS distributions supported"
+
+            if isinstance(distribution, Distribution) or isinstance(
+                distribution, DistributionImplementation
+            ):
+                assert (
+                    distribution.isContinuous()
+                ), "Only (iterable of) continuous OpenTURNS distributions supported"
             if not distribution.hasIndependentCopula():
                 raise chaospy.StochasticallyDependentError(
                     "Stochastically dependent " "OpenTURNS distribution unsupported"
                 )
             distributions = [
                 openturns_dist(dist)
-                for dist in [distribution.getMarginal(i) for i in range(distribution.getDimension())]]
+                for dist in [
+                    distribution.getMarginal(i)
+                    for i in range(distribution.getDimension())
+                ]
+            ]
         super(OpenTURNSDist, self).__init__(*distributions)
         self._repr_args = [distributions]

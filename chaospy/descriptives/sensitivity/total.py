@@ -50,3 +50,41 @@ def Sens_t(poly, dist, **kws):
         out[idx] /= variance
 
     return out
+
+
+def TotalOrderSobol(
+    expansion,
+    coefficients,
+):
+    """
+    Total Sobel indices.
+
+    Args:
+        expansion (numpoly.ndpoly):
+            The polynomial expansion used as basis when creating a chaos
+            expansion.
+        coefficients (numpy.ndarray):
+            The Fourier coefficients generated whent fitting the chaos
+            expansion. Typically retrieved by passing ``retall=True`` to
+            ``chaospy.fit_regression`` or ``chaospy.fit_quadrature``.
+
+    Examples:
+        >>> q0, q1 = chaospy.variable(2)
+        >>> expansion = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
+        >>> coeffs = [1, 2, 2, 4]
+        >>> chaospy.TotalOrderSobol(expansion, coeffs)
+        array([0.8, 0.8])
+    """
+    dic = expansion.todict()
+    alphas = []
+    for idx in range(len(expansion)):
+        expons = numpy.array([key for key, value in dic.items() if value[idx]])
+        alphas.append(tuple(expons[numpy.argmax(expons.sum(1))]))
+    coefficients = numpy.asfarray(coefficients)
+    variance = numpy.sum(coefficients**2, axis=0)
+
+    sens = []
+    for idx in range(len(alphas[0])):
+        index = numpy.array([alpha[idx] > 0 for alpha in alphas])
+        sens.append(numpy.sum(coefficients[index] ** 2, axis=0) / variance)
+    return numpy.array(sens)
