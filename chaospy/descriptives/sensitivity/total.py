@@ -73,7 +73,7 @@ def TotalOrderSobol(
         >>> expansion = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> coeffs = [1, 2, 2, 4]
         >>> chaospy.TotalOrderSobol(expansion, coeffs)
-        array([0.8, 0.8])
+        array([0.83333333, 0.83333333])
     """
     dic = expansion.todict()
     alphas = []
@@ -81,7 +81,9 @@ def TotalOrderSobol(
         expons = numpy.array([key for key, value in dic.items() if value[idx]])
         alphas.append(tuple(expons[numpy.argmax(expons.sum(1))]))
     coefficients = numpy.asfarray(coefficients)
-    variance = numpy.sum(coefficients**2, axis=0)
+
+    index = numpy.array([any(alpha) for alpha in alphas])
+    variance = numpy.sum(coefficients[index] ** 2, axis=0)
 
     sens = []
     for idx in range(len(alphas[0])):

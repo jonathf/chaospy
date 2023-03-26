@@ -88,8 +88,9 @@ def SecondOrderSobol(
         >>> expansion = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> coeffs = [1, 2, 2, 4]
         >>> chaospy.SecondOrderSobol(expansion, coeffs)
-        array([[0.  , 0.16],
-               [0.16, 0.  ]])
+        array([[0.        , 0.16666667],
+               [0.16666667, 0.        ]])
+
     """
     dic = expansion.todict()
     alphas = []
@@ -97,7 +98,9 @@ def SecondOrderSobol(
         expons = numpy.array([key for key, value in dic.items() if value[idx]])
         alphas.append(tuple(expons[numpy.argmax(expons.sum(1))]))
     coefficients = numpy.asfarray(coefficients)
-    variance = numpy.sum(coefficients**2, axis=0)
+
+    index = numpy.array([any(alpha) for alpha in alphas])
+    variance = numpy.sum(coefficients[index] ** 2, axis=0)
 
     sens = numpy.zeros(
         (len(alphas[0]), len(alphas[0])) + coefficients.shape[1:], dtype=float
