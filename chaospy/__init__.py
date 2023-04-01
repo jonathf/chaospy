@@ -6,7 +6,7 @@ This module contains tools for performing uncertainty quantification of models.
 """
 import logging
 import os
-import pkg_resources
+import importlib_metadata
 
 from numpoly import *
 
@@ -29,11 +29,7 @@ from chaospy.regression import *
 from chaospy.external import *
 from chaospy.recurrence import *
 
-try:
-    __version__ = pkg_resources.get_distribution("chaospy").version
-except pkg_resources.DistributionNotFound:  # pragma: no cover
-    __version__ = None
-
+__version__ = importlib_metadata.version("chaospy")
 
 def configure_logging():
     """Configure logging for Chaospy."""
