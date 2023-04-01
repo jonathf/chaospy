@@ -47,3 +47,9 @@ dev = [
   "build",
   "twine",
 ]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  "error::DeprecationWarning",
+  "ignore:elementwise:DeprecationWarning"
+]
