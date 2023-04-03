@@ -31,6 +31,7 @@ from chaospy.recurrence import *
 
 __version__ = importlib_metadata.version("chaospy")
 
+
 def configure_logging():
     """Configure logging for Chaospy."""
     logpath = os.environ.get("CHAOSPY_LOGPATH", os.devnull)
