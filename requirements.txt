@@ -4,3 +4,4 @@ numpoly
 numpy
 scipy
 matplotlib
+importlib-metadata
