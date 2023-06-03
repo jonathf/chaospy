@@ -112,7 +112,7 @@ def SecondOrderSobol(
                     bool(
                         alpha[idx]
                         and alpha[idx]
-                        and not any(alpha[:idy] + alpha[idy:idx] + alpha[idx + 1 :])
+                        and not any(alpha[:idy] + alpha[idy + 1:idx] + alpha[idx + 1 :])
                     )
                     for alpha in alphas
                 ]
