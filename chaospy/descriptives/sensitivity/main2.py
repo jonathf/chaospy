@@ -88,8 +88,8 @@ def SecondOrderSobol(
         >>> expansion = chaospy.polynomial([1, q0, q1, 10*q0*q1-1])
         >>> coeffs = [1, 2, 2, 4]
         >>> chaospy.SecondOrderSobol(expansion, coeffs)
-        array([[0.        , 0.16666667],
-               [0.16666667, 0.        ]])
+        array([[0.        , 0.83333333],
+               [0.83333333, 0.        ]])
 
     """
     dic = expansion.todict()
