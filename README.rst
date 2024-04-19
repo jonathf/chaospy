@@ -77,8 +77,7 @@ To install ``chaospy`` and its dependencies in developer mode:
 
 .. code-block:: bash
 
-    pip install -r requirements-dev.txt
-    pip install -e .
+    pip install -e .[dev]
 
 Testing
 -------
