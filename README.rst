@@ -23,54 +23,57 @@
 * `Changelog <https://github.com/jonathf/chaospy/blob/master/CHANGELOG.md>`_
 * `License <https://github.com/jonathf/chaospy/blob/master/LICENCE.txt>`_
 
-Chaospy is a numerical toolbox for performing uncertainty quantification using
-polynomial chaos expansions, advanced Monte Carlo methods implemented in
-Python. It also include a full suite of tools for doing low-discrepancy
-sampling, quadrature creation, polynomial manipulations, and a lot more.
+Chaospy is a numerical toolbox designed for performing uncertainty
+quantification through polynomial chaos expansions and advanced Monte
+Carlo methods implemented in Python. It includes a comprehensive suite
+of tools for low-discrepancy sampling, quadrature creation, polynomial
+manipulations, and much more.
 
-The philosophy behind ``chaospy`` is not to be a single tool that solves every
-uncertainty quantification problem, but instead be a specific tools to aid to
-let the user solve problems themselves. This includes both well established
-problems, but also to be a foundry for experimenting with new problems, that
-are not so well established. To do this, emphasis is put on the following:
+The philosophy behind ``chaospy`` is not to serve as a single solution
+for all uncertainty quantification challenges, but rather to provide
+specific tools that empower users to solve problems themselves. This
+approach accommodates well-established problems but also serves as a
+foundry for experimenting with new, emerging problems. Emphasis is
+placed on the following:
 
-* Focus on an easy to use interface that embraces the `pythonic code style
-  <https://docs.python-guide.org/writing/style/>`_.
-* Make sure the code is "composable", such a way that changing one part of the
-  code with something user defined should be easy and encouraged.
-* Try to support a broad width of the various methods for doing uncertainty
-  quantification where that makes sense to involve ``chaospy``.
-* Make sure that ``chaospy`` plays nice with a large set of of other other
-  similar projects. This includes `numpy <https://numpy.org/>`_, `scipy
-  <https://scipy.org/>`_, `scikit-learn <https://scikit-learn.org>`_,
-  `statsmodels <https://statsmodels.org/>`_, `openturns
-  <https://openturns.org/>`_, and `gstools <https://geostat-framework.org/>`_
-  to mention a few.
-* Contribute all code to the community open source.
+* Focus on an easy-to-use interface that embraces the `pythonic code
+  style <https://docs.python-guide.org/writing/style/>`.
+* Ensure the code is "composable," meaning it's designed so that users
+  can easily and effectively modify parts of the code with their own
+  solutions.
+* Strive to support a broad range of methods for uncertainty
+  quantification where it makes sense to use ``chaospy``.
+* Ensure that ``chaospy`` integrates well with a wide array of other
+  projects, including `numpy <https://numpy.org/>`, `scipy
+  <https://scipy.org/>`, `scikit-learn <https://scikit-learn.org>`,
+  `statsmodels <https://statsmodels.org/>`, `openturns
+  <https://openturns.org/>`, and `gstools
+  <https://geostat-framework.org/>`, among others.
+* Contribute all code as open source to the community.
 
 Installation
 ============
 
-Installation should be straight forward from `pip <https://pypi.org/>`_:
+Installation is straightforward via `pip <https://pypi.org/>`_:
 
 .. code-block:: bash
 
     pip install chaospy
 
-Or if `Conda <https://conda.io/>`_ is more to your liking:
+Alternatively, if you prefer `Conda <https://conda.io/>`_:
 
 .. code-block:: bash
 
     conda install -c conda-forge chaospy
 
-Then go over to the `documentation <https://chaospy.readthedocs.io/en/master>`_
-to see how to use the toolbox.
+After installation, visit the `documentation
+<https://chaospy.readthedocs.io/en/master>`_ to learn how to use the
+toolbox.
 
 Development
 ===========
 
-Installing ``chaospy`` and its dependencies in developer mode is done as
-follows:
+To install ``chaospy`` and its dependencies in developer mode:
 
 .. code-block:: bash
 
@@ -80,7 +83,7 @@ follows:
 Testing
 -------
 
-To ensure that the code run on your local system, run the following:
+To run tests on your local system:
 
 .. code-block:: bash
 
@@ -89,16 +92,15 @@ To ensure that the code run on your local system, run the following:
 Documentation
 -------------
 
-The documentation build assumes that ``pandoc`` is installed on your
-system and available in your path.
+Ensure that ``pandoc`` is installed and available in your path to
+build the documentation.
 
-To build documentation locally on your system, use ``make`` from the ``docs/``
-folder:
+From the ``docs/`` directory, build the documentation locally using:
 
 .. code-block:: bash
 
     cd docs/
     make html
 
-Run ``make`` without argument to get a list of build targets.
-The HTML target stores output to the folder ``doc/.build/html``.
+Run ``make`` without arguments to view other build targets.
+The HTML documentation will be output to ``doc/.build/html``.
