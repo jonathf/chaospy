@@ -107,7 +107,7 @@ class ShiftScaleDistribution(Distribution):
         poly = numpoly.set_dimensions(numpoly.prod(poly**kloc), len(self))
         out = sum(
             [
-                dist._get_mom(key) * coeff
+                dist._get_mom(numpy.asarray(key, dtype=int)) * coeff
                 for key, coeff in zip(poly.exponents, poly.coefficients)
             ]
         )
