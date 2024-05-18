@@ -55,10 +55,9 @@ def E_cond(poly, freeze, dist, **kws):
     if not freeze.size:
         return numpoly.polynomial(chaospy.E(poly, dist))
     if not freeze.isconstant():
-        freeze = [
-            name in freeze.names
-            for name in sorted(poly.names, key=lambda x: int(x[1:]))
-        ]
+        poly, freeze = numpoly.align_indeterminants(poly, freeze)
+        poly, freeze = numpoly.align_exponents(poly, freeze)
+        freeze = freeze.exponents[numpy.array(freeze.coefficients, dtype=bool)].flatten()
 
     else:
         freeze = freeze.tonumpy()
