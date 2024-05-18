@@ -90,7 +90,7 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
         order_saved = order
         order = int(numpy.log(order - dim))
         order = order if order > 1 else 1
-        while (order - 1) * 2**(dim - 1) < order_saved:
+        while (order - 1) * 2 ** (dim - 1) < order_saved:
             order += 1
         trans_ = trans
         trans = lambda x_data: trans_(

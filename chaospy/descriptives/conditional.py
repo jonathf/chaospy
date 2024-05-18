@@ -57,7 +57,9 @@ def E_cond(poly, freeze, dist, **kws):
     if not freeze.isconstant():
         poly, freeze = numpoly.align_indeterminants(poly, freeze)
         poly, freeze = numpoly.align_exponents(poly, freeze)
-        freeze = freeze.exponents[numpy.array(freeze.coefficients, dtype=bool)].flatten()
+        freeze = freeze.exponents[
+            numpy.array(freeze.coefficients, dtype=bool)
+        ].flatten()
 
     else:
         freeze = freeze.tonumpy()
