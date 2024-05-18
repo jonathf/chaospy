@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chaospy"
-version = "4.3.13"
+version = "4.3.15"
 license = {text = "MIT license"}
 description = "Numerical tool for performing uncertainty quantification"
 readme = "README.rst"
@@ -19,7 +19,7 @@ classifiers = [
 requires-python = ">=3.7"
 dependencies = [
   "numpy >=1.20",
-  "numpoly >=1.2.5",
+  "numpoly >=1.2.12",
   "scipy",
   "setuptools >=40.9.0",
   "importlib-metadata"
