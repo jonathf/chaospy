@@ -118,7 +118,7 @@ class TCopula(CopulaDistribution):
         """
         assert len(dist) == len(covariance)
         df = float(df)
-        covariance = numpy.asfarray(covariance)
+        covariance = numpy.asarray(covariance)
         super(TCopula, self).__init__(
             dist=dist,
             trans=t_copula(df, covariance, dist._rotation),

@@ -43,9 +43,9 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None):
     """
     orth = numpoly.polynomial(orth)
     assert orth.ndim == 1
-    weights = numpy.asfarray(weights)
+    weights = numpy.asarray(weights)
     assert weights.ndim == 1
-    solves = numpy.asfarray(solves)
+    solves = numpy.asarray(solves)
     nodes = numpy.atleast_2d(nodes)
     assert nodes.ndim == 2
     assert nodes.shape[1] == len(weights) == len(solves)
@@ -58,7 +58,7 @@ def fit_quadrature(orth, nodes, weights, solves, retall=False, norms=None):
 
     if norms is None:
         norms = numpy.sum(ovals**2 * weights, -1)
-    norms = numpy.asfarray(norms)
+    norms = numpy.asarray(norms)
     assert norms.ndim == 1
 
     coeffs = (numpy.sum(vals1, 1).T / norms).T

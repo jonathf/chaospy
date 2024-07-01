@@ -42,7 +42,7 @@ def lagrange(abscissas, graded=True, reverse=True, sort=None):
             ...
         LinAlgError: Lagrange abscissas resulted in invertible matrix
     """
-    abscissas = numpy.asfarray(abscissas)
+    abscissas = numpy.asarray(abscissas)
     if len(abscissas.shape) == 1:
         abscissas = abscissas.reshape(1, abscissas.size)
     dim, size = abscissas.shape

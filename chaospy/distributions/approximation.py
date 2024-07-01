@@ -256,7 +256,7 @@ def approximate_density(distribution, idx, xloc, cache=None, step_size=1e-7):
     """
     cache = {} if cache is None else cache
     assert (idx, distribution) not in cache
-    xloc = numpy.asfarray(xloc)
+    xloc = numpy.asarray(xloc)
     assert xloc.ndim == 1
     lower, upper = numpy.min(xloc), numpy.max(xloc)
     middle = 0.5 * (lower + upper)

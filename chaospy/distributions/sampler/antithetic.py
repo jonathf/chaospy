@@ -19,7 +19,7 @@ def create_antithetic_variates(samples, axes=()):
         Same as ``samples``, but with samples internally reflected. roughly
         equivalent to ``numpy.vstack([samples, 1-samples])`` in one dimensions.
     """
-    samples = numpy.asfarray(samples)
+    samples = numpy.asarray(samples)
     assert numpy.all(samples <= 1) and numpy.all(
         samples >= 0
     ), "all samples assumed on interval [0, 1]."
