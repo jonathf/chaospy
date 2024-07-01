@@ -67,7 +67,7 @@ def generate_samples(order, domain=1, rule="random", antithetic=None):
         trans = lambda x_data: x_data
 
     elif isinstance(domain, (tuple, list, numpy.ndarray)):
-        domain = numpy.asfarray(domain)
+        domain = numpy.asarray(domain)
         if len(domain.shape) < 2:
             dim = 1
         else:

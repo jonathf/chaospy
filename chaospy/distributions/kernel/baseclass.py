@@ -60,7 +60,7 @@ class KernelDensityBaseclass(Distribution):
                 raise ValueError("unknown estimator rule: %s" % estimator_rule)
 
         else:
-            covariance = numpy.asfarray(h_mat)
+            covariance = numpy.asarray(h_mat)
             if covariance.ndim in (0, 1):
                 covariance = covariance * numpy.eye(len(samples))
         if covariance.ndim == 2:

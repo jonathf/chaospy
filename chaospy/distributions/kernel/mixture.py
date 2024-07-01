@@ -68,7 +68,7 @@ class GaussianMixture(GaussianKDE):
         means = numpy.atleast_2d(numpy.transpose(means))
         n, m = means.shape
 
-        covariances = numpy.asfarray(covariances)
+        covariances = numpy.asarray(covariances)
         if covariances.ndim in (1, 2):
             covariances = numpy.broadcast_to(covariances.T, (n, n, m))
         else:
