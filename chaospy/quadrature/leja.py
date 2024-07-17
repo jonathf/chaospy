@@ -115,7 +115,10 @@ def leja(
     weights = create_weights(abscissas, dist, rule)
     abscissas = abscissas.reshape(1, abscissas.size)
 
-    return numpy.asarray(abscissas, dtype=float), numpy.asarray(weights, dtype=float).flatten()
+    return (
+        numpy.asarray(abscissas, dtype=float),
+        numpy.asarray(weights, dtype=float).flatten(),
+    )
 
 
 def create_weights(
