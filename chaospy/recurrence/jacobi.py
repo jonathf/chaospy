@@ -20,7 +20,7 @@ def coefficients_to_quadrature(coeffs):
         >>> weights.round(4)
         array([0.0113, 0.2221, 0.5333, 0.2221, 0.0113])
     """
-    coeffs = numpy.asfarray(coeffs)
+    coeffs = numpy.asarray(coeffs, dtype=float)
     if len(coeffs.shape) == 2:
         coeffs = coeffs.reshape(1, 2, -1)
     assert len(coeffs.shape) == 3, "shape %s not allowed" % coeffs.shape

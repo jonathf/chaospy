@@ -97,7 +97,7 @@ def SecondOrderSobol(
     for idx in range(len(expansion)):
         expons = numpy.array([key for key, value in dic.items() if value[idx]])
         alphas.append(tuple(expons[numpy.argmax(expons.sum(1))]))
-    coefficients = numpy.asfarray(coefficients)
+    coefficients = numpy.asarray(coefficients, dtype=float)
 
     index = numpy.array([any(alpha) for alpha in alphas])
     variance = numpy.sum(coefficients[index] ** 2, axis=0)

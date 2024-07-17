@@ -138,7 +138,7 @@ def gill_king(mat, tolerance=1e-16):
                [2.   , 6.   , 3.   ],
                [1.   , 3.   , 3.004]])
     """
-    mat = numpy.asfarray(mat)
+    mat = numpy.asarray(mat, dtype=float)
     assert numpy.allclose(mat, mat.T)
 
     size = mat.shape[0]

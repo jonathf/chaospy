@@ -249,4 +249,4 @@ def kronrod_jacobi(order, coeffs):
     coeffs_a[2 * order] = (
         coeffs_a[order - 1] - coeffs_b[2 * order] * sigma[0, 1] / sigma[1, 1]
     )
-    return numpy.asfarray([coeffs_a, coeffs_b])
+    return numpy.asarray([coeffs_a, coeffs_b], dtype=float)
