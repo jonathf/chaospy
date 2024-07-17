@@ -111,11 +111,11 @@ def leja(
         index = numpy.argmin(vals)
         abscissas.insert(index + 1, opts[index])
 
-    abscissas = numpy.asfarray(abscissas).flatten()[1:-1]
+    abscissas = numpy.asarray(abscissas, dtype=float).flatten()[1:-1]
     weights = create_weights(abscissas, dist, rule)
     abscissas = abscissas.reshape(1, abscissas.size)
 
-    return numpy.asfarray(abscissas), numpy.asfarray(weights).flatten()
+    return numpy.asarray(abscissas, dtype=float), numpy.asarray(weights, dtype=float).flatten()
 
 
 def create_weights(

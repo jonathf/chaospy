@@ -24,7 +24,7 @@ def modified_chebyshev(moments):
         array([[0.        , 0.        , 0.        , 0.        ],
                [1.        , 0.33333333, 0.26666667, 0.25714286]])
     """
-    moments = numpy.asfarray(moments).flatten()
+    moments = numpy.asarray(moments, dtype=float).flatten()
     order = len(moments)
     assert order % 2 == 0
 

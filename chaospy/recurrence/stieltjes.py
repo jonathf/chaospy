@@ -118,7 +118,7 @@ def discretized_stieltjes(
         variables = list(numpoly.variable(len(dist)))
         orths = [orths[idx](q0=variables[idx]) for idx in range(len(dist))]
         orths = numpoly.polynomial(orths).reshape(len(dist), order + 1)
-        norms = numpy.asfarray(norms).reshape(len(dist), order + 1)
+        norms = numpy.asarray(norms, dtype=float).reshape(len(dist), order + 1)
         return coeffs, orths, norms
 
     if rule is None:

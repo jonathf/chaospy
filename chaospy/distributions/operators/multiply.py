@@ -233,7 +233,7 @@ class Multiply(OperatorDistribution):
         """
         if isinstance(right, Distribution):
             left, right = right, left
-        uloc = numpy.where(numpy.asfarray(right).T > 0, uloc.T, 1 - uloc.T).T
+        uloc = numpy.where(numpy.asarray(right, dtype=float).T > 0, uloc.T, 1 - uloc.T).T
         xloc = left._get_inv(uloc, idx, cache=cache)
         xloc = (xloc.T * right.T).T
 
@@ -260,7 +260,7 @@ class Multiply(OperatorDistribution):
         """
         if isinstance(right, Distribution):
             left, right = right, left
-        right = (numpy.asfarray(right).T + numpy.zeros(xloc.shape).T).T
+        right = (numpy.asarray(right, dtype=float).T + numpy.zeros(xloc.shape).T).T
         valids = right != 0
         xloc = xloc.copy()
         xloc.T[valids.T] = xloc.T[valids.T] / right.T[valids.T]

@@ -118,4 +118,4 @@ def lanczos(
                 alpha[idy] -= increment_new - increment
                 beta[idy] = beta_new
 
-    return numpy.asfarray([alpha.ravel(), beta.ravel()])
+    return numpy.asarray([alpha.ravel(), beta.ravel()], dtype=float)

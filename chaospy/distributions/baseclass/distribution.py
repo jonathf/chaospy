@@ -194,7 +194,7 @@ class Distribution(object):
         """
         logger = logging.getLogger(__name__)
         check_dependencies(self)
-        x_data = numpy.asfarray(x_data)
+        x_data = numpy.asarray(x_data, dtype=float)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
         cache = {}
@@ -312,7 +312,7 @@ class Distribution(object):
         """
         logger = logging.getLogger(__name__)
         check_dependencies(self)
-        q_data = numpy.asfarray(q_data)
+        q_data = numpy.asarray(q_data, dtype=float)
         assert numpy.all((q_data >= 0) & (q_data <= 1)), "sanitize your inputs!"
         shape = q_data.shape
         q_data = q_data.reshape(len(self), -1)
@@ -468,7 +468,7 @@ class Distribution(object):
         """
         logger = logging.getLogger(__name__)
         check_dependencies(self)
-        x_data = numpy.asfarray(x_data)
+        x_data = numpy.asarray(x_data, dtype=float)
         shape = x_data.shape
         x_data = x_data.reshape(len(self), -1)
         f_data = numpy.zeros(x_data.shape)
@@ -732,8 +732,8 @@ class Distribution(object):
         alpha, beta = self._ttr(kdata, **parameters)
         assert not isinstance(alpha, Distribution), (self, alpha)
         assert not isinstance(beta, Distribution), (self, beta)
-        alpha = numpy.asfarray(alpha).item()
-        beta = numpy.asfarray(beta).item()
+        alpha = numpy.asarray(alpha, dtype=float).item()
+        beta = numpy.asarray(beta, dtype=float).item()
         self._ttr_cache[idx, kdata] = (alpha, beta)
         return alpha, beta
 

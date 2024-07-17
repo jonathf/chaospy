@@ -123,7 +123,7 @@ class Add(OperatorDistribution):
     def _cdf(self, xloc, idx, left, right, cache):
         if isinstance(right, Distribution):
             left, right = right, left
-        xloc = (xloc.T - numpy.asfarray(right).T).T
+        xloc = (xloc.T - numpy.asarray(right, dtype=float).T).T
         uloc = left._get_fwd(xloc, idx, cache=cache)
         return uloc
 
@@ -142,7 +142,7 @@ class Add(OperatorDistribution):
         """
         if isinstance(right, Distribution):
             left, right = right, left
-        xloc = (xloc.T - numpy.asfarray(right).T).T
+        xloc = (xloc.T - numpy.asarray(right, dtype=float).T).T
         return left._get_pdf(xloc, idx, cache=cache)
 
     def _ppf(self, uloc, idx, left, right, cache):
@@ -161,7 +161,7 @@ class Add(OperatorDistribution):
         if isinstance(right, Distribution):
             left, right = right, left
         xloc = left._get_inv(uloc, idx, cache=cache)
-        right = numpy.asfarray(right)
+        right = numpy.asarray(right, dtype=float)
         return self._operator(xloc, right)
 
     def _mom(self, keys, left, right, cache):
