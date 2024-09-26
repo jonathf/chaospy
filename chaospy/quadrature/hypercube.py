@@ -127,7 +127,7 @@ def align_arguments(
             args.append(segments[:, 0])
         else:
             args.append(segments)
-    args = numpy.broadcast_arrays(*args)
+    args = list(numpy.broadcast_arrays(*args))
 
     output = [args.pop(0)]
     if not isinstance(domain, chaospy.Distribution):
