@@ -57,7 +57,7 @@ class Uniform(LowerUpperDistribution):
         >>> distribution.sample(4).round(3)
         array([3.307, 2.23 , 3.901, 2.964])
         >>> distribution.mom(1).round(4)
-        3.0
+        np.float64(3.0)
         >>> distribution.ttr([0, 1, 2, 3]).round(4)
         array([[ 3.    ,  3.    ,  3.    ,  3.    ],
                [-0.    ,  0.3333,  0.2667,  0.2571]])

@@ -107,15 +107,15 @@ def isserlis_moment(k, scale):
     Examples:
         >>> scale = 0.5*numpy.eye(3)+0.5
         >>> isserlis_moment((2, 2, 2), scale)
-        3.5
+        np.float64(3.5)
         >>> isserlis_moment((0, 0, 0), scale)
-        1.0
+        np.float64(1.0)
         >>> isserlis_moment((1, 0, 0), scale)
-        0.0
+        np.float64(0.0)
         >>> isserlis_moment((0, 1, 1), scale)
-        0.5
+        np.float64(0.5)
         >>> isserlis_moment((0, 0, 2), scale)
-        1.0
+        np.float64(1.0)
     """
     if scale.ndim == 2:
         scale = scale[numpy.newaxis]

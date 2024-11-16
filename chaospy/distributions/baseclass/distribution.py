@@ -126,7 +126,8 @@ class Distribution(object):
         cache = {}
         out = numpy.zeros(len(self))
         for idx in self._rotation:
-            out[idx] = self._get_lower(idx, cache=cache)
+            out[idx:idx + 1] = self._get_lower(idx, cache=cache)
+
         return out
 
     def _get_lower(self, idx, cache):
@@ -154,7 +155,7 @@ class Distribution(object):
         cache = {}
         out = numpy.zeros(len(self))
         for idx in self._rotation:
-            out[idx] = self._get_upper(idx, cache=cache)
+            out[idx:idx + 1] = self._get_upper(idx, cache=cache)
         return out
 
     def _get_upper(self, idx, cache):
@@ -690,7 +691,7 @@ class Distribution(object):
         else:
             parameters = self.get_parameters(idx=None, cache={}, assert_numerical=False)
         assert "idx" not in parameters, (self, parameters)
-        ret_val = float(self._mom(kdata, **parameters))
+        ret_val = numpy.array(self._mom(kdata, **parameters), dtype=float).item()
         assert not isinstance(ret_val, Distribution), (self, ret_val)
         self._mom_cache[tuple(kdata)] = ret_val
         return ret_val

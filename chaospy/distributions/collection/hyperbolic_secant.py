@@ -57,7 +57,7 @@ class HyperbolicSecant(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([ 0.32 , -1.082,  1.622, -0.036])
         >>> distribution.mom(2).round(3)
-        1.0
+        np.float64(1.0)
 
     """
 

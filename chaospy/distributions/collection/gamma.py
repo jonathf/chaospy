@@ -66,7 +66,7 @@ class Gamma(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.683, 0.587, 3.152, 1.301])
         >>> distribution.mom(1).round(3)
-        1.5
+        np.float64(1.5)
         >>> distribution.ttr([0, 1, 2, 3]).round(3)
         array([[1.5 , 2.5 , 3.5 , 4.5 ],
                [0.  , 0.75, 2.  , 3.75]])
@@ -109,7 +109,7 @@ class Exponential(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.06 , 0.122, 3.001, 0.658])
         >>> distribution.mom(1).round(3)
-        1.0
+        np.float64(1.0)
         >>> distribution.ttr([1, 2, 3]).round(3)
         array([[3., 5., 7.],
                [1., 4., 9.]])

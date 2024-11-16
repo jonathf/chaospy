@@ -64,7 +64,7 @@ class Chi(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.229, 0.321, 2.234, 0.924])
         >>> distribution.mom(1).round(3)
-        1.046
+        np.float64(1.046)
 
     """
 
@@ -105,7 +105,7 @@ class Maxwell(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.819, 0.806, 2.798, 1.507])
         >>> distribution.mom(1).round(3)
-        1.596
+        np.float64(1.596)
 
     """
 
@@ -145,7 +145,7 @@ class Rayleigh(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.456, 0.494, 2.45 , 1.147])
         >>> distribution.mom(1).round(3)
-        1.253
+        np.float64(1.253)
 
     """
 

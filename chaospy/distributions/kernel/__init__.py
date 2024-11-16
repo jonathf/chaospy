@@ -15,7 +15,7 @@ This distribution can be used as any other distributions::
     >>> distribution.cdf([3, 3.5, 4, 4.5, 5]).round(4)
     array([0.1393, 0.2542, 0.3889, 0.5512, 0.7359])
     >>> distribution.mom(1).round(4)
-    4.25
+    np.float64(4.25)
     >>> distribution.sample(4).round(4)
     array([4.7784, 2.8769, 5.8109, 4.2995])
 

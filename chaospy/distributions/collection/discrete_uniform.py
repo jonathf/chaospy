@@ -26,7 +26,7 @@ class DiscreteUniform(SimpleDistribution):
         >>> distribution.sample(4)
         array([3, 2, 4, 3])
         >>> distribution.mom(1).round(4)
-        3.0
+        np.float64(3.0)
 
     """
 
@@ -73,5 +73,5 @@ class DiscreteUniform(SimpleDistribution):
     def _mom(self, k_data, lower, upper):
         """Raw statistical moments."""
         return numpy.mean(
-            numpy.arange(numpy.ceil(lower), numpy.floor(upper) + 1) ** k_data
+            numpy.arange(numpy.ceil(lower).item(), numpy.floor(upper).item() + 1) ** k_data
         )

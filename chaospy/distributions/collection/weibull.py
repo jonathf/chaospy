@@ -61,7 +61,7 @@ class Weibull(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.03 , 0.35 , 1.732, 0.811])
         >>> distribution.mom(1).round(4)
-        0.8862
+        np.float64(0.8862)
 
     """
 

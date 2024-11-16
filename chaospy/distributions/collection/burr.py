@@ -70,7 +70,7 @@ class Burr(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([0.931, 0.575, 1.284, 0.828])
         >>> distribution.mom(1).round(3)
-        1.283
+        np.float64(1.283)
 
     """
 

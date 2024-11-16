@@ -29,7 +29,7 @@ class Logn(OperatorDistribution):
         >>> distribution.sample(4).round(4)
         array([0.4578, 0.0991, 0.608 , 0.3582])
         >>> distribution.mom(1).round(4)
-        0.3516
+        np.float64(0.3516)
 
     """
 

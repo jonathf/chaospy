@@ -70,7 +70,7 @@ class GeneralizedGamma(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.034, 0.928, 1.095, 1.009])
         >>> distribution.mom(1).round(3)
-        4.591
+        np.float64(4.591)
 
     """
 

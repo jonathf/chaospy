@@ -110,7 +110,7 @@ class openturns_dist(SimpleDistribution):
         return self.distribution.getRange().getUpperBound()[0]
 
     def _mom(self, k_loc):
-        return self.distribution.getMoment(int(k_loc))[0]
+        return self.distribution.getMoment(k_loc.item())[0]
 
     def __str__(self):
         return "openturns." + str(self.distribution)

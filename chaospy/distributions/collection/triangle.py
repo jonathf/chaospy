@@ -87,7 +87,7 @@ class Triangle(LowerUpperDistribution):
         >>> distribution.sample(4).round(3)
         array([ 0.168, -0.52 ,  0.685, -0.018])
         >>> distribution.mom(1).round(4)
-        0.0
+        np.float64(0.0)
         >>> distribution = chaospy.Triangle(-1, 2 ,1)
         Traceback (most recent call last):
         ValueError: condition not satisfied: `lower <= midpoint <= upper`

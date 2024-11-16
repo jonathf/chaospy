@@ -59,7 +59,7 @@ class Reciprocal(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([3.146, 2.166, 3.865, 2.794])
         >>> distribution.mom(1).round(4)
-        2.8854
+        np.float64(2.8854)
 
     """
 

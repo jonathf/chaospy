@@ -47,7 +47,7 @@ class trunc_normal(SimpleDistribution):
         return numpy.where(b > upper, upper, b)
 
     def _mom(self, n, a, b, mu, sigma):
-        return truncnorm.moment(int(n), a, b, loc=mu, scale=sigma)
+        return truncnorm.moment(n.item(), a.item(), b.item(), loc=mu.item(), scale=sigma.item())
 
 
 class TruncNormal(ShiftScaleDistribution):

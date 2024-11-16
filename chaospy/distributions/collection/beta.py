@@ -20,10 +20,10 @@ class beta_(SimpleDistribution):
         return out
 
     def _cdf(self, x, a, b):
-        return special.btdtr(a, b, x)
+        return special.betainc(a, b, x)
 
     def _ppf(self, qloc, a, b):
-        return special.btdtri(a, b, qloc)
+        return special.betaincinv(a, b, qloc)
 
     def _mom(self, k, a, b):
         return special.beta(a + k, b) / special.beta(a, b)
@@ -82,7 +82,7 @@ class Beta(LowerUpperDistribution):
         >>> distribution.sample(4).round(3)
         array([0.358, 0.083, 0.651, 0.263])
         >>> distribution.mom(1).round(4)
-        0.3
+        np.float64(0.3)
         >>> distribution.ttr([0, 1, 2, 3]).round(4)
         array([[0.3   , 0.4143, 0.4524, 0.4697],
                [0.035 , 0.035 , 0.0478, 0.0535]])
@@ -128,7 +128,7 @@ class ArcSinus(LowerUpperDistribution):
         >>> distribution.sample(4).round(3)
         array([0.732, 0.032, 0.994, 0.472])
         >>> distribution.mom(1).round(4)
-        0.5
+        np.float64(0.5)
         >>> distribution.ttr([0, 1, 2, 3]).round(4)
         array([[0.5   , 0.5   , 0.5   , 0.5   ],
                [0.125 , 0.125 , 0.0625, 0.0625]])
@@ -173,7 +173,7 @@ class PowerLaw(LowerUpperDistribution):
         >>> distribution.sample(4).round(3)
         array([0.588, 0.067, 0.938, 0.402])
         >>> distribution.mom(1).round(4)
-        0.4444
+        np.float64(0.4444)
         >>> distribution.ttr([0, 1, 2, 3]).round(4)
         array([[0.4444, 0.5029, 0.5009, 0.5004],
                [0.0882, 0.0882, 0.0668, 0.0643]])
@@ -216,7 +216,7 @@ class Wigner(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([ 0.366, -0.983,  1.209, -0.042])
         >>> distribution.mom(1).round(4)
-        0.0
+        np.float64(0.0)
         >>> distribution.ttr([0, 1, 2, 3]).round(4)
         array([[0.    , 0.    , 0.    , 0.    ],
                [0.5625, 0.5625, 0.5625, 0.5625]])
@@ -269,7 +269,7 @@ class PERT(Beta):
         >>> distribution.sample(4).round(3)
         array([ 0.167, -0.479,  0.622, -0.019])
         >>> distribution.mom(1).round(4)
-        0.0
+        np.float64(0.0)
         >>> distribution.ttr([0, 1, 2, 3]).round(4)
         array([[0.    , 0.    , 0.    , 0.    ],
                [0.1429, 0.1429, 0.1905, 0.2121]])

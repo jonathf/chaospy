@@ -76,7 +76,7 @@ class StudentT(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([ 0.407, -1.278,  1.816, -0.046])
         >>> distribution.mom(1).round(3)
-        0.0
+        np.float64(0.0)
         >>> distribution.ttr([0, 1, 2, 3]).round(3)
         array([[ 0.  ,  0.  ,  0.  ,  0.  ],
                [ 0.  ,  1.25,  3.75, 10.  ]])

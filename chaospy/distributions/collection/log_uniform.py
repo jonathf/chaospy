@@ -62,7 +62,7 @@ class LogUniform(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([3.17 , 1.85 , 4.264, 2.67 ])
         >>> distribution.mom(1).round(3)
-        2.833
+        np.float64(2.833)
 
     """
 

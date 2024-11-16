@@ -45,7 +45,7 @@ class MvLogNormal(Distribution):
         array([[ 4.0351,  0.8185, 14.1201,  2.5996],
                [23.279 ,  1.8986,  4.9261,  5.8399]])
         >>> distribution.mom((1, 2)).round(4)
-        6002.9122
+        np.float64(6002.9122)
     """
 
     def __init__(

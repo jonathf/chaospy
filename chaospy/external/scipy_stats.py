@@ -71,4 +71,4 @@ class ScipyStatsDist(SimpleDistribution):
         return self.distribution.interval(1 - 1e-14)[1]
 
     def _mom(self, k_loc):
-        return self.distribution.moment(int(k_loc))
+        return self.distribution.moment(k_loc.item())

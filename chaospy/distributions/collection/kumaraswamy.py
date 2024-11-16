@@ -67,7 +67,7 @@ class Kumaraswamy(LowerUpperDistribution):
         >>> distribution.sample(4).round(3)
         array([0.492, 0.132, 0.788, 0.377])
         >>> distribution.mom(1).round(4)
-        0.404
+        np.float64(0.404)
 
     """
 

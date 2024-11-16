@@ -60,7 +60,7 @@ class Normal(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([ 3.185, -1.601,  6.943,  1.866])
         >>> distribution.mom(1).round(3)
-        2.0
+        np.float64(2.0)
         >>> distribution.ttr([0, 1, 2, 3]).round(3)
         array([[ 2.,  2.,  2.,  2.],
                [ 0.,  9., 18., 27.]])

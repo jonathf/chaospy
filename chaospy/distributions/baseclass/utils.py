@@ -204,18 +204,18 @@ def init_dependencies(
         >>> DISTRIBUTION_IDENTIFIERS.clear()
         >>> core = chaospy.Normal()
         >>> core._dependencies
-        [{0}]
+        [{np.int64(0)}]
         >>> dict(DISTRIBUTION_IDENTIFIERS)
-        {0: normal()}
+        {np.int64(0): normal()}
         >>> distribution = chaospy.Iid(core, 2)
         >>> distribution._dependencies
-        [{1}, {2}]
+        [{np.int64(1)}, {np.int64(2)}]
         >>> chaospy.init_dependencies(distribution, [0, 1])
-        [{3}, {4}]
+        [{np.int64(3)}, {np.int64(4)}]
         >>> chaospy.init_dependencies(distribution, [0, 1], "accumulate")
-        [{5}, {5, 6}]
+        [{np.int64(5)}, {np.int64(5), np.int64(6)}]
         >>> chaospy.init_dependencies(distribution, [1, 0])
-        [{8}, {7}]
+        [{np.int64(8)}, {np.int64(7)}]
         >>> DISTRIBUTION_IDENTIFIERS[8]
         Iid(Normal(mu=0, sigma=1), 2)
 

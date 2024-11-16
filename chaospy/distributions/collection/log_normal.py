@@ -73,7 +73,7 @@ class LogNormal(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([1.04 , 0.887, 1.179, 0.996])
         >>> distribution.mom(1).round(3)
-        1.005
+        np.float64(1.005)
         >>> distribution.ttr([0, 1, 2, 3]).round(3)
         array([[1.005, 1.035, 1.067, 1.098],
                [0.   , 0.01 , 0.021, 0.033]])
@@ -119,7 +119,7 @@ class Gilbrat(ShiftScaleDistribution):
         >>> distribution.sample(4).round(4)
         array([0.0022, 0.0005, 0.0078, 0.0014])
         >>> distribution.mom(1).round(8)
-        0.00247308
+        np.float64(0.00247308)
         >>> distribution.ttr([0, 1, 2]).round(4)
         array([[0.0025, 0.0225, 0.178 ],
                [0.    , 0.    , 0.0008]])

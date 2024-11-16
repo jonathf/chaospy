@@ -49,7 +49,7 @@ class binomial(SimpleDistribution):
         return numpy.round(size) + 0.5 - 1e-10
 
     def _mom(self, k_data, size, prob):
-        x_data = numpy.arange(int(size) + 1, dtype=int)
+        x_data = numpy.arange(numpy.array(size, dtype=int).item() + 1, dtype=int)
         return numpy.sum(
             x_data**k_data * self._pdf(x_data, size=numpy.floor(size), prob=prob)
         )

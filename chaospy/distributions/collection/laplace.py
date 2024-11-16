@@ -58,7 +58,7 @@ class Laplace(ShiftScaleDistribution):
         >>> distribution.sample(4).round(3)
         array([ 0.367, -1.47 ,  2.308, -0.036])
         >>> distribution.mom(1).round(3)
-        0.0
+        np.float64(0.0)
 
     """
 
