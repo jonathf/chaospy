@@ -80,7 +80,9 @@ def generate_expansion(
             Use hyperbolic cross truncation scheme to reduce the number of
             terms in expansion. only include terms where the exponents ``K``
             satisfied the equation
-            ``order >= sum(K**(1/cross_truncation))**cross_truncation``.
+            ``order >= sum(K**(1/cross_truncation))**cross_truncation``. Set to
+            ``np.inf`` to include all terms in a tensor product of marinalized
+            expansion. Set to 0, to not include any cross terms.
 
     Returns:
         (numpoly.ndpoly, numpy.ndarray):
