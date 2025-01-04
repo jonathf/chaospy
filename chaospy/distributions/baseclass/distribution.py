@@ -126,7 +126,7 @@ class Distribution(object):
         cache = {}
         out = numpy.zeros(len(self))
         for idx in self._rotation:
-            out[idx:idx + 1] = self._get_lower(idx, cache=cache)
+            out[idx : idx + 1] = self._get_lower(idx, cache=cache)
 
         return out
 
@@ -155,7 +155,7 @@ class Distribution(object):
         cache = {}
         out = numpy.zeros(len(self))
         for idx in self._rotation:
-            out[idx:idx + 1] = self._get_upper(idx, cache=cache)
+            out[idx : idx + 1] = self._get_upper(idx, cache=cache)
         return out
 
     def _get_upper(self, idx, cache):

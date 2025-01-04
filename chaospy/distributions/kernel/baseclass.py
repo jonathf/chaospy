@@ -48,7 +48,9 @@ class KernelDensityBaseclass(Distribution):
         if h_mat is None:
 
             if estimator_rule in ("scott", "silverman"):
-                qrange = numpy.ptp(numpy.quantile(samples, [0.25, 0.75], axis=1), axis=0)
+                qrange = numpy.ptp(
+                    numpy.quantile(samples, [0.25, 0.75], axis=1), axis=0
+                )
                 scale = numpy.min([numpy.std(samples, axis=1), qrange / 1.34], axis=0)
                 factor = samples.shape[1]
                 if estimator_rule == "silverman":
