@@ -44,7 +44,7 @@ def legendre(order, lower=-1.0, upper=1.0, physicist=False):
     Examples:
         >>> abscissas, weights = chaospy.quadrature.legendre(2)
         >>> abscissas.round(9)
-        array([[-0.77459667, -0.        ,  0.77459667]])
+        array([[-0.77459667,  0.        ,  0.77459667]])
         >>> weights
         array([0.27777778, 0.44444444, 0.27777778])
 
