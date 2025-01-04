@@ -1,6 +1,5 @@
 """Triangle probability distribution."""
 import numpy
-from scipy import special, misc
 
 from ..baseclass import SimpleDistribution, LowerUpperDistribution
 from .beta import beta_
