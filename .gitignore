@@ -6,4 +6,5 @@ __pycache__
 .mypy_cache
 .envrc
 docs/.build
-docs/reference/api
+docs/api
+build

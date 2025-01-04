@@ -52,6 +52,10 @@ html_theme_options = {
     "navbar_end": ["search-field.html"],
     "navigation_depth": 2,
     "show_prev_next": False,
+    "logo": {
+        "image_light": "chaospy_logo2.svg",
+        "image_dark": "chaospy_logo2.svg",  # Use the same logo or a different one for dark mode
+    },
 }
 html_short_title = "chaospy"
 html_context = {
