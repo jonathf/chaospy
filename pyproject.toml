@@ -27,7 +27,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "openturns",
+  "openturns<=1.23",
   "scikit-learn",
   "gstools",
   "jupyter",
