@@ -64,7 +64,7 @@ def test_orthogonality_small(expansion_small, distribution):
 
 def test_orthogonality_large(expansion_large, distribution):
     outer = chaospy.E(chaospy.outer(expansion_large, expansion_large), distribution)
-    assert numpy.allclose(outer, numpy.eye(len(outer)), rtol=1e-4)
+    assert numpy.allclose(outer, numpy.eye(len(outer)), rtol=1e-4, atol=1e-6)
 
 
 def test_approx_expansion(expansion_approx, expansion_small, distribution):

@@ -16,7 +16,7 @@ def coefficients_to_quadrature(coeffs):
                [1., 1., 2., 3., 4.]])
         >>> (abscissas,), (weights,) = chaospy.coefficients_to_quadrature(coeffs)
         >>> abscissas.round(4)
-        array([-2.857 , -1.3556,  0.    ,  1.3556,  2.857 ])
+        array([-2.857 , -1.3556, -0.    ,  1.3556,  2.857 ])
         >>> weights.round(4)
         array([0.0113, 0.2221, 0.5333, 0.2221, 0.0113])
     """

@@ -73,5 +73,6 @@ class DiscreteUniform(SimpleDistribution):
     def _mom(self, k_data, lower, upper):
         """Raw statistical moments."""
         return numpy.mean(
-            numpy.arange(numpy.ceil(lower).item(), numpy.floor(upper).item() + 1) ** k_data
+            numpy.arange(numpy.ceil(lower).item(), numpy.floor(upper).item() + 1)
+            ** k_data
         )
