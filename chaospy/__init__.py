@@ -6,10 +6,11 @@ This module contains tools for performing uncertainty quantification of models.
 """
 import logging
 import os
+
 try:  # Python < 3.10
-    from importlib_metadata import version 
-except ImportError: 
-    from importlib.metadata import version 
+    from importlib_metadata import version
+except ImportError:
+    from importlib.metadata import version
 
 from numpoly import *
 
