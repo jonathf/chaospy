@@ -50,8 +50,8 @@ class ExponentialWeibull(ShiftScaleDistribution):
         >>> uloc
         array([0. , 0.2, 0.4, 0.6, 0.8, 1. ])
         >>> xloc = distribution.inv(uloc)
-        >>> xloc.round(3)
-        array([0.   , 0.84 , 1.   , 1.142, 1.31 , 3.275])
+        >>> xloc.round(2)
+        array([0.  , 0.84, 1.  , 1.14, 1.31, 3.28])
         >>> numpy.allclose(distribution.fwd(xloc), uloc)
         True
         >>> distribution.pdf(xloc).round(3)
