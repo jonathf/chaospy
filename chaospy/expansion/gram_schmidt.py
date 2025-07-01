@@ -1,4 +1,5 @@
 """Gram-Schmidt process for generating orthogonal polynomials."""
+
 import logging
 
 import numpy
@@ -14,7 +15,7 @@ def gram_schmidt(
     reverse=True,
     retall=False,
     cross_truncation=1.0,
-    **kws
+    **kws,
 ):
     """
     Gram-Schmidt process for generating orthogonal polynomials.
@@ -49,7 +50,9 @@ def gram_schmidt(
 
     Examples:
         >>> distribution = chaospy.J(chaospy.Normal(), chaospy.Normal())
-        >>> polynomials, norms = chaospy.expansion.gram_schmidt(2, distribution, retall=True)
+        >>> polynomials, norms = chaospy.expansion.gram_schmidt(
+        ...     2, distribution, retall=True
+        ... )
         >>> polynomials.round(10)
         polynomial([1.0, q1, q0, q1**2-1.0, q0*q1, q0**2-1.0])
         >>> norms.round(10)
@@ -66,7 +69,7 @@ def gram_schmidt(
         order = numpoly.monomial(
             0,
             order + 1,
-            dimensions=numpoly.variable(2).names,
+            dimensions=numpoly.variable(dim).names,
             graded=graded,
             reverse=reverse,
             cross_truncation=cross_truncation,
@@ -76,7 +79,6 @@ def gram_schmidt(
 
     norms = [1.0]
     for idx in range(1, len(basis)):
-
         # orthogonalize polynomial:
         for idy in range(idx):
             orth = chaospy.E(basis[idx] * polynomials[idy], dist, **kws)
