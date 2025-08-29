@@ -47,7 +47,6 @@ class trunc_normal(SimpleDistribution):
         return numpy.where(b > upper, upper, b)
 
     def _mom(self, n, a, b, mu, sigma):
-        print(a, b, mu, sigma)
         a = (a - mu) / sigma
         b = (b - mu) / sigma
         return truncnorm.moment(
