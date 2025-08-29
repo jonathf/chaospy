@@ -1,6 +1,6 @@
 """Truncated normal distribution."""
+
 import numpy
-from scipy import special
 from scipy.stats import truncnorm, norm
 import chaospy
 
@@ -47,6 +47,9 @@ class trunc_normal(SimpleDistribution):
         return numpy.where(b > upper, upper, b)
 
     def _mom(self, n, a, b, mu, sigma):
+        print(a, b, mu, sigma)
+        a = (a - mu) / sigma
+        b = (b - mu) / sigma
         return truncnorm.moment(
             n.item(), a.item(), b.item(), loc=mu.item(), scale=sigma.item()
         )
