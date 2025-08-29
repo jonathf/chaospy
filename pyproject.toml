@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chaospy"
-version = "4.3.20"
+version = "4.3.21"
 license = {text = "MIT license"}
 description = "Numerical tool for performing uncertainty quantification"
 readme = "README.rst"
@@ -15,7 +15,7 @@ classifiers = [
         "Natural Language :: English",
 ]
 
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 dependencies = [
   "numpy >=1.20",
   "numpoly >=1.2.12",
@@ -26,7 +26,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "openturns<=1.23",
+  "openturns",
   "scikit-learn",
   "gstools",
   "jupyter",
